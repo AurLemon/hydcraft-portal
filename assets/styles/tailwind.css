@@ -1,0 +1,343 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+@theme {
+	/* 基于 hsl(200 55% 48%) 的主色系 */
+	--color-primary-25: hsl(200 55% 98%);
+	--color-primary-50: hsl(200 60% 96%);
+	--color-primary-100: hsl(200 58% 92%);
+	--color-primary-200: hsl(200 57% 84%);
+	--color-primary-300: hsl(200 56% 72%);
+	--color-primary-400: hsl(200 56% 60%);
+	--color-primary-500: hsl(200 55% 48%);
+	--color-primary-600: hsl(200 58% 42%);
+	--color-primary-700: hsl(200 62% 36%);
+	--color-primary-800: hsl(200 66% 30%);
+	--color-primary-900: hsl(200 70% 24%);
+	--color-primary-950: hsl(200 74% 16%);
+
+	/* 适用于界面表面的中性灰阶 */
+	--color-neutral-25: hsl(210 14% 99%);
+	--color-neutral-50: hsl(210 12% 97%);
+	--color-neutral-100: hsl(210 10% 95%);
+	--color-neutral-200: hsl(210 9% 90%);
+	--color-neutral-300: hsl(210 8% 83%);
+	--color-neutral-400: hsl(210 7% 70%);
+	--color-neutral-500: hsl(210 6% 58%);
+	--color-neutral-600: hsl(210 7% 46%);
+	--color-neutral-700: hsl(210 9% 36%);
+	--color-neutral-800: hsl(210 10% 27%);
+	--color-neutral-900: hsl(210 12% 18%);
+	--color-neutral-950: hsl(210 14% 11%);
+
+	/* 兼容 `*-slate-*` 工具类：让 slate 使用当前 neutral 灰阶 */
+	--color-slate-50: var(--color-neutral-50);
+	--color-slate-100: var(--color-neutral-100);
+	--color-slate-200: var(--color-neutral-200);
+	--color-slate-300: var(--color-neutral-300);
+	--color-slate-400: var(--color-neutral-400);
+	--color-slate-500: var(--color-neutral-500);
+	--color-slate-600: var(--color-neutral-600);
+	--color-slate-700: var(--color-neutral-700);
+	--color-slate-800: var(--color-neutral-800);
+	--color-slate-900: var(--color-neutral-900);
+	--color-slate-950: var(--color-neutral-950);
+
+	/* 语义场景可复用的辅助色系列 */
+	--color-success-50: hsl(147 60% 96%);
+	--color-success-100: hsl(147 55% 90%);
+	--color-success-200: hsl(147 50% 80%);
+	--color-success-300: hsl(147 46% 68%);
+	--color-success-400: hsl(147 44% 58%);
+	--color-success-500: hsl(147 42% 46%);
+	--color-success-600: hsl(147 44% 38%);
+	--color-success-700: hsl(147 46% 30%);
+	--color-success-800: hsl(147 48% 22%);
+	--color-success-900: hsl(147 50% 17%);
+
+	--color-warning-50: hsl(37 95% 96%);
+	--color-warning-100: hsl(37 94% 90%);
+	--color-warning-200: hsl(37 93% 82%);
+	--color-warning-300: hsl(37 92% 70%);
+	--color-warning-400: hsl(37 92% 60%);
+	--color-warning-500: hsl(37 92% 52%);
+	--color-warning-600: hsl(37 94% 46%);
+	--color-warning-700: hsl(37 96% 40%);
+	--color-warning-800: hsl(37 98% 32%);
+	--color-warning-900: hsl(37 98% 24%);
+
+	--color-danger-50: hsl(358 88% 97%);
+	--color-danger-100: hsl(358 86% 91%);
+	--color-danger-200: hsl(358 84% 83%);
+	--color-danger-300: hsl(358 82% 70%);
+	--color-danger-400: hsl(358 80% 60%);
+	--color-danger-500: hsl(358 80% 52%);
+	--color-danger-600: hsl(358 82% 44%);
+	--color-danger-700: hsl(358 84% 36%);
+	--color-danger-800: hsl(358 86% 28%);
+	--color-danger-900: hsl(358 88% 20%);
+}
+
+@layer base {
+	:root {
+		/* 核心色相与明度饱和度控制 */
+		--color-primary__h: 200;
+		--color-primary__s: 55%;
+		--color-primary__l: 48%;
+
+		--color-surface-0__s: 6%;
+		--color-surface-0__l: 98%;
+		--color-surface-1__s: 6%;
+		--color-surface-1__l: 95%;
+		--color-surface-2__s: 8%;
+		--color-surface-2__l: 92%;
+		--color-surface-3__s: 10%;
+		--color-surface-3__l: 84%;
+		--color-surface-4__s: 12%;
+		--color-surface-4__l: 72%;
+
+		--color-primary: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			var(--color-primary__l)
+		);
+		--color-primary--hover: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			calc(var(--color-primary__l) * 1.12)
+		);
+		--color-primary--active: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			calc(var(--color-primary__l) * 0.88)
+		);
+
+		--color-surface-0: hsl(
+			var(--color-primary__h),
+			var(--color-surface-0__s),
+			var(--color-surface-0__l)
+		);
+		--color-surface-1: hsl(
+			var(--color-primary__h),
+			var(--color-surface-1__s),
+			var(--color-surface-1__l)
+		);
+		--color-surface-2: hsl(
+			var(--color-primary__h),
+			var(--color-surface-2__s),
+			var(--color-surface-2__l)
+		);
+		--color-surface-3: hsl(
+			var(--color-primary__h),
+			var(--color-surface-3__s),
+			var(--color-surface-3__l)
+		);
+		--color-surface-4: hsl(
+			var(--color-primary__h),
+			var(--color-surface-4__s),
+			var(--color-surface-4__l)
+		);
+
+		--color-light:
+			var(--color-primary__h), var(--color-surface-0__s),
+			var(--color-surface-0__l);
+		--color-dark: var(--color-primary__h), 28%, 12%;
+
+		--border-color-base: rgba(21, 31, 43, 0.08);
+		--border-color-base--lighter: rgba(21, 31, 43, 0.04);
+		--border-color-base--darker: rgba(21, 31, 43, 0.12);
+		--border-color-input: rgba(25, 42, 58, 0.08);
+		--border-color-input--hover: rgba(25, 42, 58, 0.38);
+
+		--box-shadow-diverge: 0 14px 32px rgba(18, 33, 45, 0.08);
+
+		--background-color-primary--hover: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			95%
+		);
+		--background-color-primary--active: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			90%
+		);
+		--background-color-overlay: hsla(
+			var(--color-primary__h),
+			var(--color-surface-1__s),
+			var(--color-surface-1__l),
+			0.96
+		);
+		--background-color-overlay--lighter: hsla(
+			var(--color-primary__h),
+			var(--color-surface-1__s),
+			var(--color-surface-1__l),
+			0.62
+		);
+
+		--background-light-0: hsla(var(--color-light), 0.08);
+		--background-light-0--active: hsla(var(--color-light), 0.05);
+		--background-light-1: hsla(var(--color-light), 0.22);
+		--background-light-2: hsla(var(--color-light), 0.45);
+		--background-light-2--hover: hsla(var(--color-light), 0.4);
+		--background-light-3: hsla(var(--color-light), 0.68);
+		--background-light-4: hsla(var(--color-light), 0.88);
+
+		--background-dark-0: hsla(var(--color-dark), 0.12);
+		--background-dark-1: hsla(var(--color-dark), 0.28);
+		--background-dark-2: hsla(var(--color-dark), 0.54);
+
+		--color-text: hsl(var(--color-primary__h), 15%, 24%);
+		--color-text--emphasized: hsl(var(--color-primary__h), 65%, 8%);
+		--color-text--subtle: hsl(var(--color-primary__h), 14%, 35%);
+		--color-text--muted: hsl(var(--color-primary__h), 14%, 52%);
+		--color-text--disabled: hsl(var(--color-primary__h), 14%, 62%);
+
+		--color-success: var(--color-success-500);
+		--color-warning: var(--color-warning-500);
+		--color-danger: var(--color-danger-500);
+
+		/* Nuxt UI 相关 token 覆盖 */
+		--ui-background: var(--color-surface-0);
+		--ui-foreground: var(--color-text);
+		--ui-muted: var(--color-neutral-200);
+		--ui-accent: var(--color-surface-2);
+		--ui-border: var(--border-color-base);
+		--ui-primary: var(--color-primary-500);
+		--ui-primary-foreground: var(--color-primary-25);
+		--ui-primary-hover: var(--color-primary-400);
+		--ui-primary-active: var(--color-primary-600);
+		--ui-success: var(--color-success-500);
+		--ui-warning: var(--color-warning-500);
+		--ui-danger: var(--color-danger-500);
+
+		/* 将 Tailwind 色票转换为 Nuxt UI 语义色票 */
+		--ui-color-primary-25: var(--color-primary-25);
+		--ui-color-primary-50: var(--color-primary-50);
+		--ui-color-primary-100: var(--color-primary-100);
+		--ui-color-primary-200: var(--color-primary-200);
+		--ui-color-primary-300: var(--color-primary-300);
+		--ui-color-primary-400: var(--color-primary-400);
+		--ui-color-primary-500: var(--color-primary-500);
+		--ui-color-primary-600: var(--color-primary-600);
+		--ui-color-primary-700: var(--color-primary-700);
+		--ui-color-primary-800: var(--color-primary-800);
+		--ui-color-primary-900: var(--color-primary-900);
+		--ui-color-primary-950: var(--color-primary-950);
+
+		--ui-color-neutral-25: var(--color-neutral-25);
+		--ui-color-neutral-50: var(--color-neutral-50);
+		--ui-color-neutral-100: var(--color-neutral-100);
+		--ui-color-neutral-200: var(--color-neutral-200);
+		--ui-color-neutral-300: var(--color-neutral-300);
+		--ui-color-neutral-400: var(--color-neutral-400);
+		--ui-color-neutral-500: var(--color-neutral-500);
+		--ui-color-neutral-600: var(--color-neutral-600);
+		--ui-color-neutral-700: var(--color-neutral-700);
+		--ui-color-neutral-800: var(--color-neutral-800);
+		--ui-color-neutral-900: var(--color-neutral-900);
+		--ui-color-neutral-950: var(--color-neutral-950);
+
+		--ui-color-success-50: var(--color-success-50);
+		--ui-color-success-100: var(--color-success-100);
+		--ui-color-success-200: var(--color-success-200);
+		--ui-color-success-300: var(--color-success-300);
+		--ui-color-success-400: var(--color-success-400);
+		--ui-color-success-500: var(--color-success-500);
+		--ui-color-success-600: var(--color-success-600);
+		--ui-color-success-700: var(--color-success-700);
+		--ui-color-success-800: var(--color-success-800);
+		--ui-color-success-900: var(--color-success-900);
+
+		--ui-color-warning-50: var(--color-warning-50);
+		--ui-color-warning-100: var(--color-warning-100);
+		--ui-color-warning-200: var(--color-warning-200);
+		--ui-color-warning-300: var(--color-warning-300);
+		--ui-color-warning-400: var(--color-warning-400);
+		--ui-color-warning-500: var(--color-warning-500);
+		--ui-color-warning-600: var(--color-warning-600);
+		--ui-color-warning-700: var(--color-warning-700);
+		--ui-color-warning-800: var(--color-warning-800);
+		--ui-color-warning-900: var(--color-warning-900);
+
+		--ui-color-danger-50: var(--color-danger-50);
+		--ui-color-danger-100: var(--color-danger-100);
+		--ui-color-danger-200: var(--color-danger-200);
+		--ui-color-danger-300: var(--color-danger-300);
+		--ui-color-danger-400: var(--color-danger-400);
+		--ui-color-danger-500: var(--color-danger-500);
+		--ui-color-danger-600: var(--color-danger-600);
+		--ui-color-danger-700: var(--color-danger-700);
+		--ui-color-danger-800: var(--color-danger-800);
+		--ui-color-danger-900: var(--color-danger-900);
+	}
+
+	.dark {
+		--color-primary__s: 60%;
+		--color-primary__l: 58%;
+
+		--color-surface-0__s: 18%;
+		--color-surface-0__l: 12%;
+		--color-surface-1__s: 16%;
+		--color-surface-1__l: 16%;
+		--color-surface-2__s: 14%;
+		--color-surface-2__l: 22%;
+		--color-surface-3__s: 12%;
+		--color-surface-3__l: 28%;
+		--color-surface-4__s: 10%;
+		--color-surface-4__l: 36%;
+
+		--color-primary--hover: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			calc(var(--color-primary__l) * 1.05)
+		);
+		--color-primary--active: hsl(
+			var(--color-primary__h),
+			var(--color-primary__s),
+			calc(var(--color-primary__l) * 0.9)
+		);
+
+		--border-color-base: rgba(10, 18, 27, 0.7);
+		--border-color-base--lighter: rgba(38, 58, 77, 0.45);
+		--border-color-base--darker: rgba(5, 10, 18, 0.9);
+		--border-color-input: rgba(84, 132, 168, 0.45);
+		--border-color-input--hover: rgba(110, 170, 210, 0.66);
+
+		--box-shadow-diverge: 0 18px 38px rgba(5, 10, 16, 0.55);
+
+		--background-color-overlay: hsla(
+			var(--color-primary__h),
+			var(--color-surface-2__s),
+			var(--color-surface-2__l),
+			0.92
+		);
+		--background-color-overlay--lighter: hsla(
+			var(--color-primary__h),
+			var(--color-surface-2__s),
+			var(--color-surface-2__l),
+			0.55
+		);
+
+		--background-light-0: hsla(var(--color-light), 0.05);
+		--background-light-0--active: hsla(var(--color-light), 0.02);
+		--background-light-1: hsla(var(--color-light), 0.12);
+		--background-light-2: hsla(var(--color-light), 0.25);
+		--background-light-2--hover: hsla(var(--color-light), 0.18);
+		--background-light-3: hsla(var(--color-light), 0.32);
+		--background-light-4: hsla(var(--color-light), 0.4);
+
+		--background-dark-0: hsla(var(--color-dark), 0.22);
+		--background-dark-1: hsla(var(--color-dark), 0.45);
+		--background-dark-2: hsla(var(--color-dark), 0.68);
+
+		--color-text: hsl(var(--color-primary__h), 28%, 92%);
+		--color-text--emphasized: hsl(var(--color-primary__h), 58%, 96%);
+		--color-text--subtle: hsl(var(--color-primary__h), 20%, 72%);
+		--color-text--muted: hsl(var(--color-primary__h), 18%, 60%);
+		--color-text--disabled: hsl(var(--color-primary__h), 15%, 48%);
+
+		--ui-muted: var(--color-neutral-800);
+		--ui-accent: var(--color-surface-1);
+		--ui-foreground: var(--color-text);
+	}
+}

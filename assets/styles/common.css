@@ -1,0 +1,157 @@
+@font-face {
+	font-family: 'MiSans Latin';
+	src: url('~/assets/fonts/MiSans_Latin.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Inter';
+	src: url('~/assets/fonts/Inter.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Minecraft AE';
+	src: url('~/assets/fonts/Minecraft_AE.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Site Wordmark Font';
+	src: url('~/assets/fonts/Site_Wordmark_Font.woff2') format('woff2');
+}
+
+:root {
+	--font-family:
+		'Inter', 'MiSans Latin', 'Helvetica Neue', 'Helvetica', 'Roboto',
+		'BlinkMacSystemFont', 'MiSans', 'HarmonyOS Sans SC', 'PingFang SC',
+		'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+	--color-primary__h: 200;
+	--color-primary__s: 55%;
+	--color-primary__l: 48%;
+	--color-surface-0__s: 3%;
+	--color-surface-0__l: 99%;
+	--color-surface-1__s: 3%;
+	--color-surface-1__l: 95%;
+	--color-surface-2__s: 10%;
+	--color-surface-2__l: 93%;
+	--color-surface-3__s: 10%;
+	--color-surface-3__l: 85%;
+	--color-surface-4__s: 10%;
+	--color-surface-4__l: 74%;
+	--color-primary: hsl(
+		var(--color-primary__h),
+		var(--color-primary__s),
+		var(--color-primary__l)
+	);
+	--color-primary--hover: hsl(
+		var(--color-primary__h),
+		var(--color-primary__s),
+		calc(var(--color-primary__l) * 1.2)
+	);
+	--color-primary--active: hsl(
+		var(--color-primary__h),
+		var(--color-primary__s),
+		calc(var(--color-primary__l) * 0.8)
+	);
+	--color-surface-0: hsl(
+		var(--color-primary__h),
+		var(--color-surface-0__s),
+		var(--color-surface-0__l)
+	);
+	--color-surface-1: hsl(
+		var(--color-primary__h),
+		var(--color-surface-1__s),
+		var(--color-surface-1__l)
+	);
+	--color-surface-2: hsl(
+		var(--color-primary__h),
+		var(--color-surface-2__s),
+		var(--color-surface-2__l)
+	);
+	--color-surface-3: hsl(
+		var(--color-primary__h),
+		var(--color-surface-3__s),
+		var(--color-surface-3__l)
+	);
+	--color-surface-4: hsl(
+		var(--color-primary__h),
+		var(--color-surface-4__s),
+		var(--color-surface-4__l)
+	);
+	--color-light:
+		var(--color-primary__h), var(--color-surface-0__s),
+		var(--color-surface-0__l);
+	--color-dark: var(--color-primary__h), 20%, 10%;
+	--background-color-primary--hover: hsl(
+		var(--color-primary__h),
+		var(--color-primary__s),
+		95%
+	);
+	--background-color-primary--active: hsl(
+		var(--color-primary__h),
+		var(--color-primary__s),
+		90%
+	);
+	--background-color-overlay: hsla(
+		var(--color-primary__h),
+		var(--color-surface-0__s),
+		var(--color-surface-0__l),
+		0.95
+	);
+	--background-color-overlay--lighter: hsla(
+		var(--color-primary__h),
+		var(--color-surface-0__s),
+		var(--color-surface-0__l),
+		0.6
+	);
+	--background-light-0: hsla(var(--color-light), 0.1);
+	--background-light-0--active: hsla(var(--color-light), 0.05);
+	--background-light-1: hsla(var(--color-light), 0.3);
+	--background-light-2: hsla(var(--color-light), 0.6);
+	--background-light-2--hover: hsla(var(--color-light), 0.5);
+	--background-light-3: hsla(var(--color-light), 0.75);
+	--background-light-4: hsla(var(--color-light), 0.9);
+	--background-dark-0: hsla(var(--color-dark), 0.1);
+	--background-dark-1: hsla(var(--color-dark), 0.3);
+	--background-dark-2: hsla(var(--color-dark), 0.6);
+	--color-text: hsl(var(--color-primary__h), 29%, 24%);
+	--color-text--emphasized: hsl(var(--color-primary__h), 85%, 5%);
+	--color-text--subtle: hsl(var(--color-primary__h), 30%, 35%);
+	--color-text--weaken: hsl(var(--color-primary__h), 15%, 73%);
+	--color-hydcraft-red: rgb(211, 47, 47);
+	--color-hydcraft-blue: rgb(3, 169, 244);
+	--home-background-status-unknown: #808080;
+	--home-background-status-offline: #ff3c00;
+	--home-background-status-loading: #e4ca23;
+	--home-background-status-online: #008000;
+}
+
+::selection {
+	background: hsla(var(--color-primary__h), 5%, 54%, 22%);
+}
+
+*,
+*::before,
+*::after {
+	scrollbar-color: var(--color-surface-3) transparent;
+	scrollbar-width: thin;
+	box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	color: var(--color-text);
+	font-family: var(--font-family);
+	background: var(--color-surface-1);
+}
+
+a {
+	color: var(--color-primary);
+	text-decoration: none;
+}
