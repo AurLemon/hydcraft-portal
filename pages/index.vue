@@ -1,22 +1,9 @@
 <template>
 	<div
-		class="flex flex-col justify-end min-h-[140vh] sm:min-h-[110vh] xl:min-h-[74vh] pt-24"
+		class="home-hero-shell flex flex-col justify-end pt-24"
+		:class="{ 'home-hero-shell--entered': homeHeroEntered }"
 	>
 		<div class="flex flex-col">
-			<div
-				class="absolute top-0 left-0 right-0 z-0 h-screen min-h-160 select-none pointer-events-none mask-[linear-gradient(to_bottom,#000_0%,#000_40%,rgba(0,0,0,0.98)_52%,rgba(0,0,0,0.9)_58%,rgba(0,0,0,0.76)_64%,rgba(0,0,0,0.56)_70%,rgba(0,0,0,0.34)_77%,rgba(0,0,0,0.14)_84%,transparent_90%)]"
-				aria-hidden="true"
-			>
-				<video
-					autoplay
-					muted
-					loop
-					playsinline
-					:src="backgroundVideo"
-					class="h-full w-full object-cover brightness-75"
-				/>
-			</div>
-
 			<div class="relative z-10">
 				<div class="max-w-4xl">
 					<h1
@@ -39,17 +26,23 @@
 				<section
 					class="relative z-60 mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
 				>
-					<HomeInfoCard
+					<div
 						v-for="card in homeCards"
 						:key="card.key"
-						:title="card.title"
-						:description="card.description"
-						:background-src="card.backgroundSrc"
-						:background-alt="
-							t('home.cards.backgroundAlt', { title: card.title })
-						"
-						:background-class="card.backgroundClass"
-					/>
+						:ref="setCardRef(card.index)"
+						class="home-card-magnet"
+						:style="cardMagnetStyle(card.index)"
+					>
+						<HomeInfoCard
+							:title="card.title"
+							:description="card.description"
+							:background-src="card.backgroundSrc"
+							:background-alt="
+								t('home.cards.backgroundAlt', { title: card.title })
+							"
+							:background-class="card.backgroundClass"
+						/>
+					</div>
 				</section>
 			</div>
 		</div>
@@ -58,11 +51,10 @@
 
 <script setup lang="ts">
 import HomeInfoCard from '~/components/cards/HomeInfoCard.vue'
-import cultureBackground from '~/assets/resources/homepage/image_card_background_culture_1.png'
-import nitrogenBackground from '~/assets/resources/homepage/image_card_background_nitrogen_2.png'
-import railwayBackground from '~/assets/resources/homepage/image_card_background_railway_1.png'
-import citiesBackground from '~/assets/resources/homepage/image_home_background_240730.webp'
-import backgroundVideo from '~/assets/resources/homepage/video_background_240726.webm'
+import cultureBackground from '~/assets/resources/homepage/culture_bg.webp'
+import nitrogenBackground from '~/assets/resources/homepage/nitrogen_bg.webp'
+import railwayBackground from '~/assets/resources/homepage/railway_bg.webp'
+import citiesBackground from '~/assets/resources/homepage/cities_bg.webp'
 
 definePageMeta({
 	headerVariant: 'hero',
@@ -71,6 +63,7 @@ definePageMeta({
 type HomeCardKey = 'nitrogen' | 'railway' | 'culture' | 'cities'
 
 interface HomeCard {
+	index: number
 	key: HomeCardKey
 	title: string
 	description: string
@@ -78,8 +71,33 @@ interface HomeCard {
 	backgroundClass?: string
 }
 
+interface Vector2D {
+	x: number
+	y: number
+}
+
+const HOME_HERO_PARALLAX_MAX_OFFSET = 24
+const HOME_HERO_ROTATION_MAX_DEGREE = 1.4
+const CARD_MAGNET_MAX_OFFSET = 6
+const DESKTOP_POINTER_MIN_WIDTH = 1024
+
+const cardRefs = ref<HTMLElement[]>([])
+const cardOffsets = reactive<Vector2D[]>([
+	{ x: 0, y: 0 },
+	{ x: 0, y: 0 },
+	{ x: 0, y: 0 },
+	{ x: 0, y: 0 },
+])
+const pointer = reactive<Vector2D>({ x: 0, y: 0 })
+const pointerActive = ref(false)
+const pointerEffectsEnabled = ref(false)
+const pointerListenersBound = ref(false)
+const homeHeroEntered = ref(false)
+const updateFrame = ref<number | null>(null)
+
 const homeCards = computed<HomeCard[]>(() => [
 	{
+		index: 0,
 		key: 'nitrogen',
 		title: 'Nitrogen',
 		description: t('home.cards.nitrogen.description'),
@@ -87,6 +105,7 @@ const homeCards = computed<HomeCard[]>(() => [
 		backgroundClass: 'object-center',
 	},
 	{
+		index: 1,
 		key: 'railway',
 		title: 'Railway',
 		description: t('home.cards.railway.description'),
@@ -94,6 +113,7 @@ const homeCards = computed<HomeCard[]>(() => [
 		backgroundClass: 'object-left',
 	},
 	{
+		index: 2,
 		key: 'culture',
 		title: 'Culture',
 		description: t('home.cards.culture.description'),
@@ -101,6 +121,7 @@ const homeCards = computed<HomeCard[]>(() => [
 		backgroundClass: 'object-center',
 	},
 	{
+		index: 3,
 		key: 'cities',
 		title: 'Cities',
 		description: t('home.cards.cities.description'),
@@ -108,4 +129,242 @@ const homeCards = computed<HomeCard[]>(() => [
 		backgroundClass: 'object-center',
 	},
 ])
+
+const setCardRef =
+	(index: number) => (element: Element | ComponentPublicInstance | null) => {
+		if (element instanceof HTMLElement) {
+			cardRefs.value[index] = element
+		}
+	}
+
+const resetCardOffsets = (): void => {
+	for (const offset of cardOffsets) {
+		offset.x = 0
+		offset.y = 0
+	}
+}
+
+const setHeroVideoTransform = (
+	x = 0,
+	y = 0,
+	rotateX = 0,
+	rotateY = 0,
+): void => {
+	if (!import.meta.client) {
+		return
+	}
+
+	document.documentElement.style.setProperty('--home-hero-video-x', `${x}px`)
+	document.documentElement.style.setProperty('--home-hero-video-y', `${y}px`)
+	document.documentElement.style.setProperty(
+		'--home-hero-video-rotate-x',
+		`${rotateX}deg`,
+	)
+	document.documentElement.style.setProperty(
+		'--home-hero-video-rotate-y',
+		`${rotateY}deg`,
+	)
+}
+
+const bindPointerListeners = (): void => {
+	if (pointerListenersBound.value) {
+		return
+	}
+
+	window.addEventListener('mousemove', handleMouseMove, { passive: true })
+	window.addEventListener('mouseout', handleMouseOut, { passive: true })
+	pointerListenersBound.value = true
+}
+
+const unbindPointerListeners = (): void => {
+	if (!pointerListenersBound.value) {
+		return
+	}
+
+	window.removeEventListener('mousemove', handleMouseMove)
+	window.removeEventListener('mouseout', handleMouseOut)
+	pointerListenersBound.value = false
+}
+
+const updatePointerEffectsEnabled = (): void => {
+	pointerEffectsEnabled.value =
+		window.innerWidth >= DESKTOP_POINTER_MIN_WIDTH &&
+		window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+	if (!pointerEffectsEnabled.value) {
+		pointerActive.value = false
+		resetCardOffsets()
+		setHeroVideoTransform()
+		unbindPointerListeners()
+		return
+	}
+
+	bindPointerListeners()
+}
+
+const updateCardOffsets = (): void => {
+	if (!pointerActive.value || !pointerEffectsEnabled.value) {
+		resetCardOffsets()
+		return
+	}
+
+	cardRefs.value.forEach((element, index) => {
+		const offset = cardOffsets[index]
+
+		if (!offset) {
+			return
+		}
+
+		const rect = element.getBoundingClientRect()
+		const pointerInsideCard =
+			pointer.x >= rect.left &&
+			pointer.x <= rect.right &&
+			pointer.y >= rect.top &&
+			pointer.y <= rect.bottom
+
+		if (pointerInsideCard) {
+			offset.x = 0
+			offset.y = 0
+			return
+		}
+
+		const centerX = rect.left + rect.width / 2
+		const centerY = rect.top + rect.height / 2
+		const deltaX = centerX - pointer.x
+		const deltaY = centerY - pointer.y
+		const distance = Math.hypot(deltaX, deltaY)
+		const maxDistance = Math.max(rect.width, rect.height) * 1.1
+
+		if (distance >= maxDistance) {
+			offset.x = 0
+			offset.y = 0
+			return
+		}
+
+		const strength = 1 - distance / maxDistance
+		const directionX = distance === 0 ? 0 : deltaX / distance
+		const directionY = distance === 0 ? 0 : deltaY / distance
+
+		offset.x = directionX * CARD_MAGNET_MAX_OFFSET * strength
+		offset.y = directionY * CARD_MAGNET_MAX_OFFSET * strength
+	})
+}
+
+const updateHeroParallax = (): void => {
+	if (!pointerActive.value || !pointerEffectsEnabled.value) {
+		setHeroVideoTransform()
+		return
+	}
+
+	const viewportWidth = window.innerWidth || 1
+	const viewportHeight = window.innerHeight || 1
+	const relativeX = pointer.x / viewportWidth
+	const relativeY = pointer.y / viewportHeight
+	const offsetX = (relativeX - 0.5) * HOME_HERO_PARALLAX_MAX_OFFSET * -1
+	const offsetY = (relativeY - 0.5) * HOME_HERO_PARALLAX_MAX_OFFSET * -1
+	const rotateX = (relativeY - 0.5) * HOME_HERO_ROTATION_MAX_DEGREE
+	const rotateY = (relativeX - 0.5) * HOME_HERO_ROTATION_MAX_DEGREE * -1
+
+	setHeroVideoTransform(offsetX, offsetY, rotateX, rotateY)
+}
+
+const updatePointerEffects = (): void => {
+	updateFrame.value = null
+	updateCardOffsets()
+	updateHeroParallax()
+}
+
+const schedulePointerEffectsUpdate = (): void => {
+	if (updateFrame.value !== null) {
+		return
+	}
+
+	updateFrame.value = window.requestAnimationFrame(updatePointerEffects)
+}
+
+const handleMouseMove = (event: MouseEvent): void => {
+	if (!pointerEffectsEnabled.value) {
+		return
+	}
+
+	pointer.x = event.clientX
+	pointer.y = event.clientY
+	pointerActive.value = true
+	schedulePointerEffectsUpdate()
+}
+
+const handleMouseOut = (event: MouseEvent): void => {
+	if (event.relatedTarget) {
+		return
+	}
+
+	pointerActive.value = false
+	schedulePointerEffectsUpdate()
+}
+
+const handleResize = (): void => {
+	updatePointerEffectsEnabled()
+	schedulePointerEffectsUpdate()
+}
+
+const cardMagnetStyle = (index: number): Record<string, string> => ({
+	transform: `translate3d(${cardOffsets[index]?.x ?? 0}px, ${cardOffsets[index]?.y ?? 0}px, 0)`,
+	transition: 'transform 400ms ease-out',
+	willChange: 'transform',
+})
+
+onMounted(() => {
+	updatePointerEffectsEnabled()
+	window.addEventListener('resize', handleResize, { passive: true })
+	schedulePointerEffectsUpdate()
+	window.requestAnimationFrame(() => {
+		homeHeroEntered.value = true
+	})
+})
+
+onBeforeUnmount(() => {
+	unbindPointerListeners()
+	window.removeEventListener('resize', handleResize)
+
+	if (updateFrame.value !== null) {
+		window.cancelAnimationFrame(updateFrame.value)
+		updateFrame.value = null
+	}
+
+	resetCardOffsets()
+	setHeroVideoTransform()
+})
 </script>
+
+<style scoped>
+.home-card-magnet {
+	will-change: transform;
+}
+
+.home-hero-shell {
+	min-height: 0;
+	transition: min-height 560ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-hero-shell--entered {
+	min-height: 140vh;
+}
+
+@media (width >= 40rem) {
+	.home-hero-shell--entered {
+		min-height: 110vh;
+	}
+}
+
+@media (width >= 80rem) {
+	.home-hero-shell--entered {
+		min-height: 74vh;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-hero-shell {
+		transition: none;
+	}
+}
+</style>
