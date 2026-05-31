@@ -1,6 +1,6 @@
 <template>
 	<article
-		class="group relative h-46 overflow-hidden rounded-[1.15rem] border-6 border-slate-400/80 dark:border-slate-800/80 hover:border-slate-400/60 bg-white/80 dark:bg-slate-950/80 text-left backdrop-blur-xl transition duration-80"
+		class="group relative h-46 overflow-hidden rounded-[1.15rem] border-6 border-slate-400/80 hover:border-slate-500/70 dark:border-slate-800/80 hover:dark:border-slate-700/80 bg-white/80 dark:bg-slate-950/80 text-left backdrop-blur-xl transition duration-100"
 	>
 		<div
 			class="absolute top-0 -left-2 right-0 bottom-0 flex items-end justify-end"
@@ -8,7 +8,7 @@
 			<img
 				:src="backgroundSrc"
 				:alt="backgroundAlt"
-				class="block object-cover brightness-[0.85] saturate-[0.95] transition duration-350 lg:group-hover:brightness-100 lg:group-hover:saturate-125 lg:group-hover:translate-x-2 lg:group-hover:scale-[1.02]"
+				class="select-none block object-cover brightness-[0.85] saturate-[0.95] transition duration-350 lg:group-hover:brightness-100 lg:group-hover:saturate-125 lg:group-hover:translate-x-2 lg:group-hover:scale-[1.02]"
 				:class="backgroundClass"
 				draggable="false"
 			/>
@@ -33,7 +33,7 @@ withDefaults(
 	defineProps<{
 		title: string
 		description: string
-		backgroundSrc: string
+		backgroundSrc?: string
 		backgroundAlt?: string
 		backgroundClass?: string
 	}>(),

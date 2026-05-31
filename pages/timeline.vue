@@ -1,3 +1,3 @@
 <template>
-	<ContentPage />
+	<MarkdownPage />
 </template>

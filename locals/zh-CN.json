@@ -3,7 +3,9 @@
 		"entry": "入口",
 		"timeline": "历程",
 		"overview": "概览",
-		"about": "关于"
+		"about": "关于",
+		"links": "友情链接",
+		"partners": "社区伙伴"
 	},
 	"header": {
 		"nav": {
@@ -39,19 +41,21 @@
 	},
 	"footer": {
 		"links": {
-			"knowledgeBase": "知识库",
+			"wiki": "知识库",
 			"docs": "文档库",
-			"status": "状态监控"
+			"status": "状态监控",
+			"friendLinks": "友情链接",
+			"communityPartners": "社区伙伴"
 		},
 		"records": {
 			"icp": "闽ICP备2023007345号-1",
 			"police": "闽公网安备35010202001677号"
 		},
 		"disclaimers": {
-			"community": "Minecraft 是一款沙盒游戏，氢气工艺是面向该游戏玩家的社区与游戏服务器，非化工、管道或工业工程项目。",
-			"trademark": "Minecraft 是 Mojang Studios 的注册商标，氢气工艺与 Mojang Studios、网易公司没有从属、授权或合作关系。"
+			"trademark": "Minecraft 是 Mojang Studios 的注册商标，氢气工艺与 Mojang Studios、网易公司没有从属、授权或合作关系。",
+			"community": "Minecraft 是一款沙盒游戏，氢气工艺是面向该游戏玩家的社区与游戏服务器，非化工、管道或工业工程项目。氢气工艺不从事氢气管道建设、化工生产相关服务。"
 		},
-		"copyright": "Copyright © 2018 — 2026 Hydrlab. 版权所有"
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
 	},
 	"localeNotice": {
 		"title": "检测到你的系统语言偏好为 {targetLanguage}",

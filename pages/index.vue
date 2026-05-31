@@ -22,7 +22,7 @@
 					<h1
 						class="text-left text-5xl leading-none font-medium tracking-tight text-white sm:text-6xl lg:text-7xl"
 					>
-						<span class="block text-4xl sm:inline sm:text-7xl">Here is </span>
+						<span class="block text-4xl sm:inline sm:text-7xl">This is </span>
 						<span class="block sm:inline">
 							<span class="font-semibold text-hydcraft-red">Hyd</span>
 							<span class="font-semibold text-hydcraft-blue">Craft</span>
@@ -30,9 +30,9 @@
 						</span>
 					</h1>
 					<p
-						class="mt-5 text-left text-xl leading-relaxed font-medium text-white sm:text-2xl"
+						class="mt-3 text-left text-xl leading-relaxed font-medium text-white sm:text-2xl"
 					>
-						{{ $t('home.lead') }}
+						{{ t('home.lead') }}
 					</p>
 				</div>
 
@@ -46,7 +46,7 @@
 						:description="card.description"
 						:background-src="card.backgroundSrc"
 						:background-alt="
-							$t('home.cards.backgroundAlt', { title: card.title })
+							t('home.cards.backgroundAlt', { title: card.title })
 						"
 						:background-class="card.backgroundClass"
 					/>
@@ -67,8 +67,6 @@ import backgroundVideo from '~/assets/resources/homepage/video_background_240726
 definePageMeta({
 	headerVariant: 'hero',
 })
-
-const { t } = useGlobalI18n()
 
 type HomeCardKey = 'nitrogen' | 'railway' | 'culture' | 'cities'
 

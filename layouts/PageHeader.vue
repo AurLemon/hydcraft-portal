@@ -25,9 +25,9 @@ type ThemeMode = 'light' | 'dark' | 'system'
 
 const route = useRoute()
 const localePath = useLocalePath()
-const { locale, t } = useGlobalI18n()
 const nuxtApp = useNuxtApp()
 const colorMode = nuxtApp.$colorMode
+const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
 const menuInner = ref<HTMLElement | null>(null)
 const fallbackMeasure = ref<HTMLElement | null>(null)
 const shellWidth = ref<number | null>(null)
@@ -106,6 +106,8 @@ const currentFallback = computed<MenuItem | null>(() => {
 		'/story': 'routes.timeline',
 		'/overview': 'routes.overview',
 		'/about': 'routes.about',
+		'/links': 'routes.links',
+		'/partners': 'routes.partners',
 	}
 
 	const normalizedPath = normalizePath(route.path)

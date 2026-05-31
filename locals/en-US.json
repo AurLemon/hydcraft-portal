@@ -3,7 +3,9 @@
 		"entry": "Entry",
 		"timeline": "Timeline",
 		"overview": "Overview",
-		"about": "About"
+		"about": "About",
+		"links": "Friend Links",
+		"partners": "Community Partners"
 	},
 	"header": {
 		"nav": {
@@ -20,7 +22,7 @@
 		}
 	},
 	"home": {
-		"lead": "Build towers, lay rails, shape cities, and settle down. Why is a Minecraft server called HydCraft? I have no idea either.",
+		"lead": "Build towers, lay rails, shape cities, and settle down. Why name a Minecraft server after chemistry? I have no idea either.",
 		"cards": {
 			"backgroundAlt": "{title} background",
 			"nitrogen": {
@@ -39,19 +41,21 @@
 	},
 	"footer": {
 		"links": {
-			"knowledgeBase": "Knowledge Base",
+			"wiki": "Wiki",
 			"docs": "Docs",
-			"status": "Status"
+			"status": "Status",
+			"friendLinks": "Friend Links",
+			"communityPartners": "Community Partners"
 		},
 		"records": {
-			"icp": "Min ICP No. 2023007345-1",
-			"police": "Min Public Security Record No. 35010202001677"
+			"icp": "ICP License",
+			"police": "PSB License"
 		},
 		"disclaimers": {
-			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project.",
-			"trademark": "Minecraft is a registered trademark of Mojang Studios. HydCraft is not affiliated, authorized, or partnered with Mojang Studios or NetEase."
+			"trademark": "Minecraft is a registered trademark of Mojang Studios. HydCraft is not affiliated, authorized, or partnered with Mojang Studios or NetEase.",
+			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project. HydCraft does not provide hydrogen pipeline construction, chemical production, or related services."
 		},
-		"copyright": "Copyright © 2018 — 2026 Hydrlab. All rights reserved."
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
 	},
 	"localeNotice": {
 		"title": "Your system language looks like {targetLanguage}",

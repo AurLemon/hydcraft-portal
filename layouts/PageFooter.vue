@@ -4,7 +4,7 @@
 	>
 		<div class="flex flex-col items-center text-center">
 			<div
-				class="mb-2 text-[15px] text-slate-600"
+				class="mb-4 text-sm text-slate-600"
 				@mouseleave="hoveredInfoLink = null"
 			>
 				<template
@@ -29,7 +29,7 @@
 				</template>
 			</div>
 
-			<div @mouseleave="hoveredRecordLink = null" class="w-fit">
+			<div @mouseleave="hoveredRecordLink = null" class="w-fit flex gap-1.5">
 				<template
 					v-for="(link, index) in footerLinkGroups.records"
 					:key="link.labelKey"
@@ -44,24 +44,30 @@
 					>
 						{{ t(link.labelKey) }}
 					</NuxtLink>
-					<span v-if="index < footerLinkGroups.records.length - 1">&nbsp;</span>
 				</template>
+			</div>
+
+			<div>
+				{{ t('footer.disclaimers.trademark') }}
 			</div>
 
 			<div>
 				{{ t('footer.disclaimers.community') }}
 			</div>
 
-			<div>
-				{{ t('footer.disclaimers.trademark') }}
+			<div class="mt-2">
+				{{ t('footer.copyright', { year: currentCopyrightYear }) }}
 			</div>
-			<div>{{ t('footer.copyright') }}</div>
 		</div>
 	</footer>
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { ref } from 'vue'
+
+dayjs.extend(utc)
 
 interface FooterLink {
 	labelKey: string
@@ -74,11 +80,10 @@ interface FooterLinkGroups {
 	records: FooterLink[]
 }
 
-const { t } = useGlobalI18n()
 const footerLinkGroups: FooterLinkGroups = {
 	resources: [
 		{
-			labelKey: 'footer.links.knowledgeBase',
+			labelKey: 'footer.links.wiki',
 			to: 'https://wiki.hydcraft.cn',
 			external: true,
 		},
@@ -91,6 +96,14 @@ const footerLinkGroups: FooterLinkGroups = {
 			labelKey: 'footer.links.status',
 			to: 'https://monitor.hydcraft.cn',
 			external: true,
+		},
+		{
+			labelKey: 'footer.links.friendLinks',
+			to: '/links',
+		},
+		{
+			labelKey: 'footer.links.communityPartners',
+			to: '/partners',
 		},
 	],
 	records: [
@@ -109,13 +122,14 @@ const footerLinkGroups: FooterLinkGroups = {
 
 const hoveredInfoLink = ref<number | null>(null)
 const hoveredRecordLink = ref<number | null>(null)
+const currentCopyrightYear = dayjs().utcOffset(8).year()
 
 const linkClass = (index: number, hoveredIndex: number | null) => [
 	'transition-colors duration-200',
 	hoveredIndex === null
-		? 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100'
+		? 'text-slate-600 dark:text-slate-300'
 		: hoveredIndex === index
-			? 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100'
+			? 'text-slate-600 dark:text-slate-300'
 			: 'text-slate-400 dark:text-slate-500',
 ]
 
@@ -125,6 +139,6 @@ const recordLinkClass = (index: number, hoveredIndex: number | null) => [
 		? 'text-slate-400/80 dark:text-slate-700'
 		: hoveredIndex === index
 			? 'text-slate-400/80 dark:text-slate-700'
-			: 'text-slate-400/55 dark:text-slate-700/60',
+			: 'text-slate-300/80 dark:text-slate-700/60',
 ]
 </script>

@@ -1,3 +1,5 @@
+import { queryCollection } from '@nuxt/content/nitro'
+
 export default defineEventHandler(async (event) => {
 	const locale = getRouterParam(event, 'locale') || 'zh-cn'
 	const page = getRouterParam(event, 'page') || 'index'

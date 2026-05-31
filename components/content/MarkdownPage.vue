@@ -10,7 +10,8 @@
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'en-US'
 
 const route = useRoute()
-const { locale } = useGlobalI18n()
+const { $i18n } = useNuxtApp()
+const locale = ($i18n as { locale: Ref<LocaleCode> }).locale
 
 const normalizedPage = computed(() => {
 	const path = route.path

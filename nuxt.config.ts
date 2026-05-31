@@ -32,6 +32,9 @@ export default defineNuxtConfig({
 			pathPrefix: false,
 		},
 	],
+	imports: {
+		dirs: ['composables'],
+	},
 	ui: {
 		fonts: false,
 		theme: {

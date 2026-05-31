@@ -12,9 +12,9 @@ interface NuxtI18nApi {
 	loadLocaleMessages?: (code: LocaleCode) => Promise<void>
 }
 
-const { locale, t } = useGlobalI18n()
 const toast = useToast()
 const nuxtApp = useNuxtApp()
+const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
 
 const CHINESE_PRIMARY_LOCALES = new Set([
 	'zh',
