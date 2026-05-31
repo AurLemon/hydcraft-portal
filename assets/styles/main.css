@@ -4,6 +4,7 @@
 		sans-serif;
 	--font-serif: 'Literata', 'Noto Serif SC', serif;
 	--font-mono: 'JetBrains Mono', 'MiSans', monospace;
+	--site-shell-max-width: 80rem;
 	line-height: 1.75;
 	font-family: var(--font-family);
 	-webkit-font-smoothing: antialiased;
@@ -11,6 +12,10 @@
 	text-rendering: optimizeLegibility;
 	font-synthesis: none;
 	color-scheme: light;
+}
+
+.site-shell {
+	max-width: var(--site-shell-max-width);
 }
 
 html[lang='ja-JP'],

@@ -1,0 +1,67 @@
+{
+	"routes": {
+		"entry": "入口",
+		"timeline": "歷程",
+		"overview": "概覽",
+		"about": "關於"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "目前頁面"
+		},
+		"theme": {
+			"switch": "切換主題模式",
+			"light": "淺色",
+			"dark": "深色",
+			"system": "跟隨系統"
+		},
+		"language": {
+			"switch": "切換語言"
+		}
+	},
+	"home": {
+		"lead": "修樓、鋪軌、造城、養老。至於為什麼一個 MC 伺服器叫氫氣？我也不知道。",
+		"cards": {
+			"backgroundAlt": "{title} 背景",
+			"nitrogen": {
+				"description": "伺服器目前周目（1.20.1）"
+			},
+			"railway": {
+				"description": "鐵路系統與交通網路"
+			},
+			"culture": {
+				"description": "地標、活動與共同記憶"
+			},
+			"cities": {
+				"description": "城市規劃與建築群落"
+			}
+		}
+	},
+	"footer": {
+		"links": {
+			"knowledgeBase": "知識庫",
+			"docs": "文件庫",
+			"status": "狀態監控"
+		},
+		"records": {
+			"icp": "閩ICP備2023007345號-1",
+			"police": "閩公網安備35010202001677號"
+		},
+		"disclaimers": {
+			"community": "Minecraft 是一款沙盒遊戲，氫氣工藝是面向該遊戲玩家的社群與遊戲伺服器，非化工、管線或工業工程專案。",
+			"trademark": "Minecraft 是 Mojang Studios 的註冊商標，氫氣工藝與 Mojang Studios、網易公司沒有從屬、授權或合作關係。"
+		},
+		"copyright": "Copyright © 2018 — 2026 Hydrlab. 版權所有"
+	},
+	"localeNotice": {
+		"title": "偵測到你的系統語言偏好為 {targetLanguage}",
+		"description": "目前頁面語言是 {currentLanguage}。要切換到 {targetLanguage} 嗎？",
+		"switchAction": "切換到 {targetLanguage}",
+		"keepAction": "暫不切換",
+		"localeNames": {
+			"zhCN": "简体中文",
+			"zhTW": "繁體中文",
+			"enUS": "English"
+		}
+	}
+}

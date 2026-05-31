@@ -1,0 +1,67 @@
+{
+	"routes": {
+		"entry": "入口",
+		"timeline": "历程",
+		"overview": "概览",
+		"about": "关于"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "当前页"
+		},
+		"theme": {
+			"switch": "切换主题模式",
+			"light": "浅色",
+			"dark": "深色",
+			"system": "跟随系统"
+		},
+		"language": {
+			"switch": "切换语言"
+		}
+	},
+	"home": {
+		"lead": "修楼、铺轨、造城、养老。至于为什么一个 MC 服务器叫氢气？我也不知道。",
+		"cards": {
+			"backgroundAlt": "{title} 背景",
+			"nitrogen": {
+				"description": "服务器现行周目（1.20.1）"
+			},
+			"railway": {
+				"description": "铁路系统与交通网络"
+			},
+			"culture": {
+				"description": "地标、活动与共同记忆"
+			},
+			"cities": {
+				"description": "城市规划与建筑群落"
+			}
+		}
+	},
+	"footer": {
+		"links": {
+			"knowledgeBase": "知识库",
+			"docs": "文档库",
+			"status": "状态监控"
+		},
+		"records": {
+			"icp": "闽ICP备2023007345号-1",
+			"police": "闽公网安备35010202001677号"
+		},
+		"disclaimers": {
+			"community": "Minecraft 是一款沙盒游戏，氢气工艺是面向该游戏玩家的社区与游戏服务器，非化工、管道或工业工程项目。",
+			"trademark": "Minecraft 是 Mojang Studios 的注册商标，氢气工艺与 Mojang Studios、网易公司没有从属、授权或合作关系。"
+		},
+		"copyright": "Copyright © 2018 — 2026 Hydrlab. 版权所有"
+	},
+	"localeNotice": {
+		"title": "检测到你的系统语言偏好为 {targetLanguage}",
+		"description": "当前页面语言是 {currentLanguage}。要切换到 {targetLanguage} 吗？",
+		"switchAction": "切换到 {targetLanguage}",
+		"keepAction": "暂不切换",
+		"localeNames": {
+			"zhCN": "简体中文",
+			"zhTW": "繁體中文",
+			"enUS": "English"
+		}
+	}
+}

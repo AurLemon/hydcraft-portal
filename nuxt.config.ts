@@ -4,7 +4,28 @@ export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
 	devtools: { enabled: false },
-	modules: ['@nuxt/eslint', ['@nuxtjs/seo', {}], '@nuxt/content', '@nuxt/ui'],
+	modules: [
+		'@nuxt/eslint',
+		[
+			'@nuxtjs/i18n',
+			{
+				defaultLocale: 'zh-CN',
+				strategy: 'prefix_except_default',
+				lazy: true,
+				langDir: '../locals',
+				locales: [
+					{ code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
+					{ code: 'zh-TW', name: '繁體中文', file: 'zh-TW.json' },
+					{ code: 'en-US', name: 'English', file: 'en-US.json' },
+				],
+				detectBrowserLanguage: false,
+				vueI18n: './i18n.config.ts',
+			},
+		],
+		['@nuxtjs/seo', {}],
+		'@nuxt/content',
+		'@nuxt/ui',
+	],
 	components: [
 		{
 			path: '~/components',
@@ -30,10 +51,11 @@ export default defineNuxtConfig({
 			icons: [
 				'lucide:chevron-right',
 				'lucide:external-link',
-				'lucide:ear',
-				'lucide:layout-dashboard',
-				'lucide:circle-help',
-				'lucide:ellipsis-vertical',
+				'lucide:sun',
+				'lucide:moon',
+				'lucide:monitor',
+				'lucide:languages',
+				'lucide:check',
 				'lucide:x',
 				'lucide:info',
 				'lucide:map',

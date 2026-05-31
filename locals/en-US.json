@@ -1,0 +1,67 @@
+{
+	"routes": {
+		"entry": "Entry",
+		"timeline": "Timeline",
+		"overview": "Overview",
+		"about": "About"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "Current Page"
+		},
+		"theme": {
+			"switch": "Switch theme mode",
+			"light": "Light",
+			"dark": "Dark",
+			"system": "System"
+		},
+		"language": {
+			"switch": "Switch language"
+		}
+	},
+	"home": {
+		"lead": "Build towers, lay rails, shape cities, and settle down. Why is a Minecraft server called HydCraft? I have no idea either.",
+		"cards": {
+			"backgroundAlt": "{title} background",
+			"nitrogen": {
+				"description": "Current server season (1.20.1)"
+			},
+			"railway": {
+				"description": "Railway systems and transport networks"
+			},
+			"culture": {
+				"description": "Landmarks, events, and shared memories"
+			},
+			"cities": {
+				"description": "City planning and building clusters"
+			}
+		}
+	},
+	"footer": {
+		"links": {
+			"knowledgeBase": "Knowledge Base",
+			"docs": "Docs",
+			"status": "Status"
+		},
+		"records": {
+			"icp": "Min ICP No. 2023007345-1",
+			"police": "Min Public Security Record No. 35010202001677"
+		},
+		"disclaimers": {
+			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project.",
+			"trademark": "Minecraft is a registered trademark of Mojang Studios. HydCraft is not affiliated, authorized, or partnered with Mojang Studios or NetEase."
+		},
+		"copyright": "Copyright © 2018 — 2026 Hydrlab. All rights reserved."
+	},
+	"localeNotice": {
+		"title": "Your system language looks like {targetLanguage}",
+		"description": "This page is currently in {currentLanguage}. Switch to {targetLanguage}?",
+		"switchAction": "Switch to {targetLanguage}",
+		"keepAction": "Keep current language",
+		"localeNames": {
+			"zhCN": "Simplified Chinese",
+			"zhTW": "Traditional Chinese",
+			"enUS": "English"
+		}
+	}
+}
