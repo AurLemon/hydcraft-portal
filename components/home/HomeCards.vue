@@ -5,7 +5,9 @@
 			@click="showCard('card', 'helium')"
 		>
 			<div class="hydstart-home-card__background">
-				<img src="~/assets/images/home/image_card_background_helium_1.png" />
+				<img
+					src="~/assets/resources/homepage/image_card_background_helium_1.png"
+				/>
 			</div>
 			<div class="hydstart-home-card__foreground">
 				<div class="hydstart-home-card-world__title hydstart-home-card__title">
@@ -19,7 +21,9 @@
 			@click="showCard('card', 'nitrogen')"
 		>
 			<div class="hydstart-home-card__background">
-				<img src="~/assets/images/home/image_card_background_nitrogen_2.png" />
+				<img
+					src="~/assets/resources/homepage/image_card_background_nitrogen_2.png"
+				/>
 			</div>
 			<div class="hydstart-home-card__foreground">
 				<div class="hydstart-home-card-world__title hydstart-home-card__title">
@@ -33,7 +37,9 @@
 			@click="showCard('content-card', 'culture')"
 		>
 			<div class="hydstart-home-card__background">
-				<img src="~/assets/images/home/image_card_background_culture_1.png" />
+				<img
+					src="~/assets/resources/homepage/image_card_background_culture_1.png"
+				/>
 			</div>
 			<div class="hydstart-home-card__foreground">
 				<div class="hydstart-home-card__title">Culture</div>
@@ -44,7 +50,9 @@
 			@click="showCard('content-card', 'cities')"
 		>
 			<div class="hydstart-home-card__background">
-				<img src="~/assets/images/image_home_background_240730.webp" />
+				<img
+					src="~/assets/resources/homepage/image_home_background_240730.webp"
+				/>
 			</div>
 			<div class="hydstart-home-card__foreground">
 				<div class="hydstart-home-card__title">Cities</div>
@@ -55,7 +63,9 @@
 			@click="showCard('content-card', 'railway')"
 		>
 			<div class="hydstart-home-card__background">
-				<img src="~/assets/images/home/image_card_background_railway_1.png" />
+				<img
+					src="~/assets/resources/homepage/image_card_background_railway_1.png"
+				/>
 			</div>
 			<div class="hydstart-home-card__foreground">
 				<div class="hydstart-home-card__title">Railway</div>

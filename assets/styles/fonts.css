@@ -9,6 +9,11 @@
 }
 
 @font-face {
+	font-family: 'Site Wordmark Font';
+	src: url('~/assets/fonts/Site_Wordmark_Font.woff2') format('woff2');
+}
+
+@font-face {
 	font-family: 'Literata';
 	font-style: italic;
 	font-weight: 200;

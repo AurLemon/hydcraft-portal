@@ -5,7 +5,7 @@
 				<div class="hydstart-card-foreground">
 					<div class="hydstart-card-foreground-wrapper">
 						<button class="hydstart-card-close" @click="closeCard">
-							<span class="material-icons">close</span>
+							<UIcon name="i-lucide-x" class="hydstart-card-close__icon" />
 						</button>
 						<div class="hydstart-card-title"><slot name="title" /></div>
 						<div class="hydstart-card-content"><slot /></div>
@@ -103,10 +103,11 @@ const closeCard = () => setTimeout(() => emit('closeCard'), 50)
 	.hydstart-card-foreground
 	.hydstart-card-foreground-wrapper
 	.hydstart-card-close
-	.material-icons {
+	.hydstart-card-close__icon {
 	display: block;
 	color: var(--color-text--subtle);
-	font-size: 36px;
+	width: 36px;
+	height: 36px;
 	transition: all 300ms ease;
 	position: relative;
 	z-index: 20;
@@ -121,7 +122,7 @@ const closeCard = () => setTimeout(() => emit('closeCard'), 50)
 	.hydstart-card-foreground
 	.hydstart-card-foreground-wrapper
 	.hydstart-card-close:hover
-	.material-icons {
+	.hydstart-card-close__icon {
 	color: var(--color-hydcraft-red);
 }
 .hydstart-card-wrapper
@@ -140,7 +141,7 @@ const closeCard = () => setTimeout(() => emit('closeCard'), 50)
 	.hydstart-card-foreground
 	.hydstart-card-foreground-wrapper
 	.hydstart-card-close:active
-	.material-icons {
+	.hydstart-card-close__icon {
 	opacity: 0.7;
 }
 .hydstart-card-wrapper

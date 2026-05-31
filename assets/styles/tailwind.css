@@ -2,6 +2,9 @@
 @import '@nuxt/ui';
 
 @theme {
+	--color-hydcraft-red: rgb(211, 47, 47);
+	--color-hydcraft-blue: rgb(3, 169, 244);
+
 	/* 基于 hsl(200 55% 48%) 的主色系 */
 	--color-primary-25: hsl(200 55% 98%);
 	--color-primary-50: hsl(200 60% 96%);

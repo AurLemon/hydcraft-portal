@@ -2,7 +2,7 @@
 	<footer :class="{ main: showMain }">
 		<div class="hydstart-footer">
 			<div class="hydstart-footer-register">
-				<img src="~/assets/images/logo_mps_register.png" alt="备案" />
+				<img src="~/assets/resources/brand/logo_mps_register.png" alt="备案" />
 				ICP 备案号:
 				<span class="hydstart-footer-register__icp">
 					<a href="https://beian.miit.gov.cn/"> 闽ICP备2023007345号-1 </a>

@@ -19,16 +19,25 @@
 			</ul>
 			<ul class="hydstart-header-link">
 				<li class="hydstart-header-link__comment">
-					<span class="material-icons">hearing</span>
+					<UIcon name="i-lucide-ear" class="hydstart-header-link__icon" />
 				</li>
 				<li class="hydstart-header-link__dashboard">
-					<span class="material-icons">dashboard</span>
+					<UIcon
+						name="i-lucide-layout-dashboard"
+						class="hydstart-header-link__icon"
+					/>
 				</li>
 				<li class="hydstart-header-link__help">
-					<span class="material-icons">help_outline</span>
+					<UIcon
+						name="i-lucide-circle-help"
+						class="hydstart-header-link__icon"
+					/>
 				</li>
 				<li class="hydstart-header-link__more">
-					<span class="material-icons">more_vert</span>
+					<UIcon
+						name="i-lucide-ellipsis-vertical"
+						class="hydstart-header-link__icon"
+					/>
 				</li>
 			</ul>
 		</div>
@@ -183,8 +192,12 @@ header {
 	opacity: 0;
 	transition: all 150ms ease;
 }
-.hydstart-header-link [class^='hydstart-header-link__'] .material-icons {
+.hydstart-header-link
+	[class^='hydstart-header-link__']
+	.hydstart-header-link__icon {
 	display: block;
+	width: 24px;
+	height: 24px;
 	position: relative;
 	z-index: 10;
 }

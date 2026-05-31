@@ -1,6 +1,6 @@
-# hydcraft-intro
+# hydcraft-portal
 
-HydCraft intro site, built with Nuxt and TypeScript. It keeps the original home page experience while moving the project to a modern Nuxt application structure.
+HydCraft portal site, built with Nuxt and TypeScript. It keeps the original home page experience while moving the project to a modern Nuxt application structure.
 
 ## Structure
 
@@ -8,7 +8,7 @@ This repository uses a single Nuxt application structure.
 
 ```
 root
-├── assets/           # Fonts, images, videos, and global styles
+├── assets/           # Fonts, resources, and global styles
 ├── components/       # Reusable Vue components
 ├── layouts/          # Page header and footer
 ├── pages/            # Application routes
@@ -18,6 +18,6 @@ root
 ## Tech Stack
 
 - Nuxt 4 + Vue 3 + TypeScript
-- Nuxt UI + TailwindCSS
+- Nuxt UI + Nuxt Content + Nuxt SEO + TailwindCSS
 - Vite + pnpm
-- MiSans + Inter + HydCraft wordmark fonts
+- MiSans + Rubik + Literata + HydCraft wordmark fonts

@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import backgroundVideo from '~/assets/images/video_background_240726.webm'
+import backgroundVideo from '~/assets/resources/homepage/video_background_240726.webm'
 
 withDefaults(
 	defineProps<{

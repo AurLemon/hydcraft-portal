@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
 	devtools: { enabled: false },
-	modules: ['@nuxt/eslint', '@nuxt/ui'],
+	modules: ['@nuxt/eslint', ['@nuxtjs/seo', {}], '@nuxt/content', '@nuxt/ui'],
 	components: [
 		{
 			path: '~/components',
@@ -30,6 +30,12 @@ export default defineNuxtConfig({
 			icons: [
 				'lucide:chevron-right',
 				'lucide:external-link',
+				'lucide:ear',
+				'lucide:layout-dashboard',
+				'lucide:circle-help',
+				'lucide:ellipsis-vertical',
+				'lucide:x',
+				'lucide:info',
 				'lucide:map',
 				'lucide:server',
 				'lucide:users',
@@ -43,10 +49,42 @@ export default defineNuxtConfig({
 	colorMode: {
 		preference: 'system',
 	},
+	seo: {
+		enabled: false,
+	},
+	schemaOrg: {
+		enabled: false,
+	},
+	ogImage: {
+		enabled: false,
+	},
+	sitemap: {
+		autoLastmod: true,
+	},
+	robots: {
+		sitemap: '/sitemap.xml',
+	},
+	linkChecker: {
+		failOnError: true,
+		fetchRemoteUrls: false,
+		report: {
+			html: true,
+			markdown: true,
+		},
+	},
+	site: {
+		url: process.env.NUXT_SITE_URL,
+		name: 'HydCraft Portal',
+		description:
+			'氢气工艺 HydCraft 是一个 Minecraft 服务器社区，连接交通、科技、建筑与开发爱好者。',
+		defaultLocale: 'zh-CN',
+	},
+	content: {
+		experimental: {
+			sqliteConnector: 'native',
+		},
+	},
 	css: [
-		'material-icons/iconfont/material-icons.css',
-		'material-icons/iconfont/outlined.css',
-		'~/assets/styles/common.css',
 		'~/assets/styles/fonts.css',
 		'~/assets/styles/main.css',
 		'~/assets/styles/tailwind.css',
@@ -56,7 +94,7 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
-			title: 'HydCraft Intro',
+			title: 'HydCraft Portal',
 			link: [
 				{
 					rel: 'preconnect',

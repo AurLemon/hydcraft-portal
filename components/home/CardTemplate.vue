@@ -13,7 +13,10 @@
 				class="hydstart-card-world-overview hydstart-card-world-overview--online"
 			>
 				<div class="hydstart-card-world-label">
-					在线人数<span class="material-icons-outlined">info</span>
+					在线人数<UIcon
+						name="i-lucide-info"
+						class="hydstart-card-world-label__icon"
+					/>
 				</div>
 				<div class="hydstart-card-world-value">
 					{{ serverStatus.online
@@ -24,7 +27,10 @@
 				class="hydstart-card-world-overview hydstart-card-world-overview--days"
 			>
 				<div class="hydstart-card-world-label">
-					运行天数<span class="material-icons-outlined">info</span>
+					运行天数<UIcon
+						name="i-lucide-info"
+						class="hydstart-card-world-label__icon"
+					/>
 				</div>
 				<div class="hydstart-card-world-value">
 					{{ daysAgo(serverStatus.created_time) }}
@@ -143,9 +149,10 @@ const daysAgo = (dateString: string) => dayjs().diff(dayjs(dateString), 'day')
 }
 .hydstart-card-world-container
 	.hydstart-card-world-label
-	.material-icons-outlined {
+	.hydstart-card-world-label__icon {
 	display: block;
-	font-size: 16px;
+	width: 16px;
+	height: 16px;
 }
 .hydstart-card-world-container .hydstart-card-world-value {
 	font-size: 54px;

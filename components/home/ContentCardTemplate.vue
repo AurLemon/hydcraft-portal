@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import cultureBg from '~/assets/images/home/image_card_background_culture_1.png'
+import cultureBg from '~/assets/resources/homepage/image_card_background_culture_1.png'
 interface ContentCardData {
 	title: string
 	description: string
@@ -51,7 +51,7 @@ const expandCard = (index: number) => {
 	expandCardContent.value[index] = !expandCardContent.value[index]
 }
 const backgroundMap: Record<string, string> = {
-	'images/home/image_card_background_culture_1.png': cultureBg,
+	'resources/homepage/image_card_background_culture_1.png': cultureBg,
 }
 const resolveBackground = (background: string) =>
 	backgroundMap[background] ?? ''

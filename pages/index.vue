@@ -62,7 +62,8 @@
 				/>
 				<div class="hydstart-home-belong">
 					隶属于<span class="hydstart-home-belong__hydrlab" translate="no"
-						><img src="~/assets/images/logo_Hydrlab.png" />Hydrlab Studio</span
+						><img src="~/assets/resources/brand/logo_Hydrlab.png" />Hydrlab
+						Studio</span
 					>
 				</div>
 				<div class="hydstart-home-dialog">
@@ -140,21 +141,21 @@ const content: ContentItem[] = [
 		title: 'OMEC',
 		description:
 			'OMEC（Oxygen Minecraft Entertainment Competition，氧气游戏竞赛）是由 Oxygen 团队负责的游戏竞赛，由氢运会转隶而成。2024年8月举办了第一届 OMEC，即 OMEC 2024。',
-		background: 'images/home/image_card_background_culture_1.png',
+		background: 'resources/homepage/image_card_background_culture_1.png',
 		link: 'https://wiki.hydcraft.cn/氧气工作室',
 	},
 	{
 		title: 'HCTV',
 		description:
 			'OMEC（Oxygen Minecraft Entertainment Competition，氧气游戏竞赛）是由 Oxygen 团队负责的游戏竞赛，由氢运会转隶而成。2024年8月举办了第一届 OMEC，即 OMEC 2024。',
-		background: 'images/home/image_card_background_culture_1.png',
+		background: 'resources/homepage/image_card_background_culture_1.png',
 		link: 'https://wiki.hydcraft.cn/HCTV',
 	},
 	{
 		title: 'HCTV',
 		description:
 			'OMEC（Oxygen Minecraft Entertainment Competition，氧气游戏竞赛）是由 Oxygen 团队负责的游戏竞赛，由氢运会转隶而成。2024年8月举办了第一届 OMEC，即 OMEC 2024。',
-		background: 'images/home/image_card_background_culture_1.png',
+		background: 'resources/homepage/image_card_background_culture_1.png',
 		link: 'https://wiki.hydcraft.cn/HCTV',
 	},
 ]
