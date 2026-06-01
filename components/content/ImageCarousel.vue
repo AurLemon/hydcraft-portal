@@ -18,9 +18,12 @@
 					class="m-0 shrink-0"
 					:style="{ width: image.width }"
 				>
-					<div
-						class="overflow-hidden rounded-2xl select-none"
+					<button
+						type="button"
+						class="block w-full cursor-zoom-in overflow-hidden rounded-2xl select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400"
 						:style="{ height: image.height }"
+						:aria-label="`Open image preview: ${image.alt}`"
+						@click="openPreview(index)"
 					>
 						<SkeletonImage
 							v-if="loadedImageIndexes.has(index)"
@@ -30,7 +33,7 @@
 							image-class="block h-full w-full object-cover transition-opacity duration-200"
 						/>
 						<USkeleton v-else class="h-full w-full" />
-					</div>
+					</button>
 					<figcaption
 						v-if="image.caption"
 						class="mt-2 text-center text-sm leading-6 text-slate-500 dark:text-slate-400"
@@ -77,6 +80,12 @@
 			<UIcon name="i-lucide-chevron-right" class="text-xl" />
 		</button>
 	</div>
+
+	<ContentImageLightbox
+		:open="activeImageIndex !== null"
+		:image="activeImage"
+		@update:open="handlePreviewOpenChange"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -84,7 +93,7 @@ import {
 	normalizeContentImage,
 	parseContentImages,
 	type ContentImageItem,
-} from './content-image'
+} from './utils/content-image'
 
 type ScrollDirection = 'left' | 'right'
 
@@ -103,6 +112,7 @@ const scrollContainer = ref<HTMLDivElement | null>(null)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 const loadedImageIndexes = ref<Set<number>>(new Set())
+const activeImageIndex = ref<number | null>(null)
 
 const sourceImages = computed<Array<string | ContentImageItem>>(() =>
 	parseContentImages(props.images),
@@ -112,6 +122,12 @@ const normalizedImages = computed(() =>
 	sourceImages.value.map((image, index) =>
 		normalizeContentImage(image, index, 'min(78vw, 28rem)', '13rem'),
 	),
+)
+
+const activeImage = computed(() =>
+	activeImageIndex.value === null
+		? null
+		: (normalizedImages.value[activeImageIndex.value] ?? null),
 )
 
 const getCarouselSidePadding = (itemWidth?: string): string => {
@@ -300,6 +316,16 @@ const scrollImages = (direction: ScrollDirection): void => {
 		left: targetScrollLeft,
 		behavior: 'smooth',
 	})
+}
+
+const openPreview = (index: number): void => {
+	activeImageIndex.value = index
+}
+
+const handlePreviewOpenChange = (open: boolean): void => {
+	if (!open) {
+		activeImageIndex.value = null
+	}
 }
 
 onMounted(() => {
