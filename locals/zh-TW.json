@@ -61,7 +61,8 @@
 		},
 		"disclaimers": {
 			"trademark": "Minecraft 是 Mojang Studios 的註冊商標，氫氣工藝與 Mojang Studios、網易公司沒有從屬、授權或合作關係。",
-			"community": "Minecraft 是一款沙盒遊戲，氫氣工藝是面向該遊戲玩家的社群與遊戲伺服器，非化工、管線或工業工程專案。氫氣工藝不從事氫氣管線建設、化工生產相關服務。"
+			"community": "Minecraft 是一款沙盒遊戲，氫氣工藝是面向該遊戲玩家的社群與遊戲伺服器，非化工、管線或工業工程專案。氫氣工藝不從事氫氣管線建設、化工生產相關服務。",
+			"fictionalNotice": "站內提及的城市、地區、組織、品牌及相關設定，除特別說明外，均為虛構內容，不指向任何現實機構或商業實體。"
 		},
 		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
 	},

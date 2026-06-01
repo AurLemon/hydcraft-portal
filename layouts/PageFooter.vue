@@ -55,6 +55,10 @@
 				{{ t('footer.disclaimers.community') }}
 			</div>
 
+			<div>
+				{{ t('footer.disclaimers.fictionalNotice') }}
+			</div>
+
 			<div class="mt-2">
 				{{ t('footer.copyright', { year: currentCopyrightYear }) }}
 			</div>

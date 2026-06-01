@@ -61,7 +61,8 @@
 		},
 		"disclaimers": {
 			"trademark": "Minecraft is a registered trademark of Mojang Studios. HydCraft is not affiliated, authorized, or partnered with Mojang Studios or NetEase.",
-			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project. HydCraft does not provide hydrogen pipeline construction, chemical production, or related services."
+			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project. HydCraft does not provide hydrogen pipeline construction, chemical production, or related services.",
+			"fictionalNotice": "Cities, regions, organizations, brands, and related settings mentioned on the site are fictional unless otherwise stated, and do not refer to any real-world institution or commercial entity."
 		},
 		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
 	},

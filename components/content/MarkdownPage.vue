@@ -1,6 +1,6 @@
 <template>
 	<article
-		class="site-shell mx-auto px-6 pb-18 text-[17px] leading-8 text-slate-800 dark:text-slate-100 lg:px-0"
+		class="site-shell mx-auto pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
 	>
 		<ContentRenderer v-if="doc" :value="doc" />
 	</article>
