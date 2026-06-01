@@ -4,7 +4,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_Latin.woff2') format('woff2');
-	unicode-range: U+0000-00FF, U+0100-024F, U+0250-02AF, U+1E00-1EFF;
 }
 
 @font-face {
@@ -13,7 +12,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_CN.woff2') format('woff2');
-	unicode-range: U+3000-303F, U+31C0-31EF, U+4E00-9FFF, U+FF00-FFEF;
 }
 
 @font-face {
@@ -22,7 +20,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_TW.woff2') format('woff2');
-	unicode-range: U+3000-303F, U+31C0-31EF, U+4E00-9FFF, U+FF00-FFEF;
 }
 
 @font-face {
@@ -31,7 +28,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_HK.woff2') format('woff2');
-	unicode-range: U+3000-303F, U+31C0-31EF, U+4E00-9FFF, U+FF00-FFEF;
 }
 
 @font-face {
@@ -40,7 +36,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_TR.woff2') format('woff2');
-	unicode-range: U+3000-303F, U+31C0-31EF, U+4E00-9FFF, U+FF00-FFEF;
 }
 
 @font-face {
@@ -49,7 +44,6 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_ja.woff2') format('woff2');
-	unicode-range: U+3000-303F, U+3040-30FF, U+4E00-9FFF, U+FF00-FFEF;
 }
 
 @font-face {
@@ -58,5 +52,4 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_ko.woff2') format('woff2');
-	unicode-range: U+1100-11FF, U+3130-318F, U+AC00-D7AF, U+FF00-FFEF;
 }

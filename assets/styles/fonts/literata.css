@@ -1,175 +1,18 @@
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 200;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8f7XWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap');
 
 @font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 300;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8obXWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 400;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8_7XWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 500;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8zbXWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 600;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8IbLWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 700;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8GLLWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 800;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8f7LWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: italic;
-	font-weight: 900;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3NQ6P12-iJxAIgLYT1PLs1Zd0nfUwAbeGVKoRYzNiCp1OUedn8VrLWSQ.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata_Italic.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
+	font-family: 'Literata Local';
 	font-style: normal;
-	font-weight: 200;
+	font-weight: 100 900;
 	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbJG_F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
+	src: url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
 }
 
 @font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 300;
+	font-family: 'Literata Local';
+	font-style: italic;
+	font-weight: 100 900;
 	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbE-_F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbBG_F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 500;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbCO_F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 600;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbM-4F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 700;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbQ-4F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 800;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbU-4F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
-}
-
-@font-face {
-	font-family: 'Literata';
-	font-style: normal;
-	font-weight: 900;
-	font-display: swap;
-	src:
-		url('https://fonts.gstatic.cn/s/literata/v40/or3PQ6P12-iJxAIgLa78DkrbXsDgk0oVDaDPYLanFLHpPf2TbY-4F_Y.ttf')
-			format('truetype'),
-		url('../../fonts/Literata/Literata.woff2') format('woff2-variations');
+	src: url('../../fonts/Literata/Literata_Italic.woff2')
+		format('woff2-variations');
 }
