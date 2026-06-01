@@ -54,6 +54,7 @@ export default defineNuxtConfig({
 			icons: [
 				'lucide:chevron-right',
 				'lucide:external-link',
+				'lucide:history',
 				'lucide:sun',
 				'lucide:moon',
 				'lucide:monitor',

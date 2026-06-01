@@ -9,10 +9,16 @@
 	},
 	"pages": {
 		"about": {
-			"title": "我们在做什么？"
+			"title": "我们是什么?"
 		},
 		"timeline": {
-			"title": "氢气是怎么走到现在的？"
+			"title": "氢气是怎么走到现在的?"
+		}
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "更新于 {date}",
+			"stats": "{count} 字 / {minutes} 分钟"
 		}
 	},
 	"header": {

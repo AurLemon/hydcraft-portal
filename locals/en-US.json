@@ -1,6 +1,6 @@
 {
 	"routes": {
-		"entry": "Entry",
+		"entry": "Portal",
 		"timeline": "Timeline",
 		"overview": "Overview",
 		"about": "About",
@@ -9,10 +9,16 @@
 	},
 	"pages": {
 		"about": {
-			"title": "What We Are Doing?"
+			"title": "Who Are We?"
 		},
 		"timeline": {
 			"title": "How HydCraft Got Here?"
+		}
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "Updated at {date}",
+			"stats": "{count} words / {minutes} min"
 		}
 	},
 	"header": {

@@ -2,7 +2,9 @@
 	<article
 		class="site-shell mx-auto pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
 	>
+		<slot v-if="doc" name="header" :doc="doc" />
 		<ContentRenderer v-if="doc" :value="doc" />
+		<slot v-if="doc" name="footer" :doc="doc" />
 	</article>
 </template>
 
@@ -28,16 +30,18 @@ const localePath = computed(() =>
 const { data: doc } = await useAsyncData(
 	() => `content-${localePath.value}-${normalizedPage.value}`,
 	async () => {
-		const localizedDoc = await $fetch(
-			`/api/content-page/${localePath.value}/${normalizedPage.value}`,
-		)
+		const localizedDoc = await queryCollection('content')
+			.path(`/${localePath.value}/${normalizedPage.value}`)
+			.first()
 
 		if (localizedDoc) {
 			return localizedDoc
 		}
 
 		if (localePath.value !== 'zh-cn') {
-			return await $fetch(`/api/content-page/zh-cn/${normalizedPage.value}`)
+			return await queryCollection('content')
+				.path(`/zh-cn/${normalizedPage.value}`)
+				.first()
 		}
 
 		return null

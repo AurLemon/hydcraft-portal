@@ -396,7 +396,7 @@ onBeforeUnmount(() => {
 			class="site-shell relative z-40 mx-auto flex items-center justify-between px-6 lg:px-0"
 		>
 			<div
-				class="flex h-9 w-9 items-center justify-center"
+				class="flex h-10 w-10 items-center justify-center select-none"
 				aria-label="HydCraft"
 			>
 				<img

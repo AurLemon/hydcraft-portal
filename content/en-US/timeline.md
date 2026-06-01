@@ -2,8 +2,6 @@
 updatedAt: 2026-06-01T21:59:44+08:00
 ---
 
-## Current State
-
 HydCraft is a Minecraft server, mainly built around city building and railway construction. Beyond the server itself, an entire player community has gradually grown around it.
 
 From 2018 to now, HydCraft has gone through seven seasons. In its early days, it was more like a few friends casually playing together, and everything it later became was almost an accident. It has seen lively times and chaotic ones alike. It has left behind many memorable moments, as well as arguments and partings that are still hard to write down clearly.

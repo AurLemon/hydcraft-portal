@@ -17,11 +17,11 @@
 			class="absolute inset-0 z-10 flex flex-col justify-end bg-[linear-gradient(180deg,rgba(12,18,25,0.04)_0%,rgba(13,20,28,0.1)_65%,rgba(15,22,30,1)_100%)] p-4"
 		>
 			<div
-				class="text-2xl leading-tight font-semibold tracking-tight text-white sm:text-3xl"
+				class="text-2xl leading-tight truncate font-semibold tracking-tight text-white sm:text-3xl"
 			>
 				{{ title }}
 			</div>
-			<div class="text-base leading-relaxed text-white/78">
+			<div class="text-base leading-relaxed truncate text-white/78">
 				{{ description }}
 			</div>
 		</div>

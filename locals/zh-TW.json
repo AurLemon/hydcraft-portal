@@ -9,10 +9,16 @@
 	},
 	"pages": {
 		"about": {
-			"title": "我們在做什麼？"
+			"title": "我們是什麼?"
 		},
 		"timeline": {
-			"title": "氫氣是怎麼走到現在的？"
+			"title": "氫氣是怎麼走到現在的?"
+		}
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "更新于 {date}",
+			"stats": "{count} 字 / {minutes} 分鐘"
 		}
 	},
 	"header": {
