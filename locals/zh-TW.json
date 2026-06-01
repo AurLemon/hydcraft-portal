@@ -7,6 +7,14 @@
 		"links": "友情連結",
 		"partners": "社群夥伴"
 	},
+	"pages": {
+		"about": {
+			"title": "我們在做什麼？"
+		},
+		"timeline": {
+			"title": "氫氣是怎麼走到現在的？"
+		}
+	},
 	"header": {
 		"nav": {
 			"currentPage": "目前頁面"

@@ -3,53 +3,5 @@
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_Latin.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
 	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_CN.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_TW.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_HK.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_zh_TR.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_ja.woff2') format('woff2');
-}
-
-@font-face {
-	font-family: 'Ark Pixel';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('../../fonts/Ark_Pixel/Ark_Pixel_ko.woff2') format('woff2');
 }

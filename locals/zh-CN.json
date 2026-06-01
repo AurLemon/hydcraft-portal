@@ -7,6 +7,14 @@
 		"links": "友情链接",
 		"partners": "社区伙伴"
 	},
+	"pages": {
+		"about": {
+			"title": "我们在做什么？"
+		},
+		"timeline": {
+			"title": "氢气是怎么走到现在的？"
+		}
+	},
 	"header": {
 		"nav": {
 			"currentPage": "当前页"

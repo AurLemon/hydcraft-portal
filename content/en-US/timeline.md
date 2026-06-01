@@ -2,8 +2,6 @@
 updatedAt: 2026-05-31T00:00:00+08:00
 ---
 
-# HydCraft Timeline
-
 This page records key HydCraft moments from the early server period to the current season. The first version stays short, and it can later expand by season, project, and community event.
 
 ## Early Stage

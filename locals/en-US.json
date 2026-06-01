@@ -7,6 +7,14 @@
 		"links": "Friend Links",
 		"partners": "Community Partners"
 	},
+	"pages": {
+		"about": {
+			"title": "What We Are Doing?"
+		},
+		"timeline": {
+			"title": "How HydCraft Got Here?"
+		}
+	},
 	"header": {
 		"nav": {
 			"currentPage": "Current Page"

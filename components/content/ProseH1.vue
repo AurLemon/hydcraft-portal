@@ -1,7 +1,7 @@
 <template>
 	<h1
 		:id="id"
-		class="mb-5 text-4xl leading-tight font-semibold tracking-tight text-slate-950 dark:text-slate-50"
+		class="mb-5 text-4xl leading-tight font-semibold tracking-tight font-arkpixel text-slate-950 dark:text-slate-50"
 	>
 		<a v-if="id" :href="`#${id}`">
 			<slot />

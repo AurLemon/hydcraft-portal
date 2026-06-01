@@ -3,7 +3,7 @@
 		<HomeHeroVideo />
 		<main
 			id="page-container"
-			class="site-shell z-10 mx-auto flex w-full flex-1 flex-col px-6 pt-8 pb-16"
+			class="site-shell z-10 mx-auto flex w-full flex-1 flex-col px-6 pt-12 pb-16"
 		>
 			<NuxtPage />
 		</main>

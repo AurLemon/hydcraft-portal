@@ -2,8 +2,6 @@
 updatedAt: 2026-05-31T00:00:00+08:00
 ---
 
-# About HydCraft
-
 HydCraft is a Minecraft community around building, railways, city planning, and server development. It combines long-running survival worlds with player-maintained documentation, transport systems, and shared infrastructure.
 
 ## Community Focus
