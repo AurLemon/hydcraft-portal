@@ -80,40 +80,22 @@
 </template>
 
 <script setup lang="ts">
+import {
+	normalizeContentImage,
+	parseContentImages,
+	type ContentImageItem,
+} from './content-image'
+
 type ScrollDirection = 'left' | 'right'
 
 const carouselMaskWidthPx = 64
 const carouselMaskWidth = '4rem'
 
-const contentImageModules = import.meta.glob<string>(
-	'~/assets/resources/content/**/*.{avif,gif,jpeg,jpg,png,svg,webp}',
-	{
-		eager: true,
-		import: 'default',
-	},
-)
-
-interface ContentSkeletonImageCarouselItem {
-	src: string
-	alt?: string
-	caption?: string
-	width?: string
-	height?: string
+interface ContentImageCarouselProps {
+	images?: string | Array<string | ContentImageItem>
 }
 
-interface ContentSkeletonImageCarouselProps {
-	images?: string | Array<string | ContentSkeletonImageCarouselItem>
-}
-
-interface NormalizedContentSkeletonImageCarouselItem {
-	src: string
-	alt: string
-	caption: string
-	width: string
-	height: string
-}
-
-const props = withDefaults(defineProps<ContentSkeletonImageCarouselProps>(), {
+const props = withDefaults(defineProps<ContentImageCarouselProps>(), {
 	images: () => [],
 })
 
@@ -122,76 +104,15 @@ const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 const loadedImageIndexes = ref<Set<number>>(new Set())
 
-const contentImageMap = Object.fromEntries(
-	Object.entries(contentImageModules).flatMap(([path, url]) => {
-		const normalizedPath = path
-			.replace(/^.*\/assets\/resources\/content\//, '')
-			.replace(/^\//, '')
-		const filename = normalizedPath.split('/').at(-1) ?? normalizedPath
-
-		return [
-			[normalizedPath, url],
-			[`content/${normalizedPath}`, url],
-			[filename, url],
-		]
-	}),
-) as Record<string, string>
-
-const resolveImageSrc = (src: string): string => {
-	return contentImageMap[src] ?? src
-}
-
-const normalizeImage = (
-	image: string | ContentSkeletonImageCarouselItem,
-	index: number,
-): NormalizedContentSkeletonImageCarouselItem => {
-	if (typeof image === 'string') {
-		return {
-			src: resolveImageSrc(image),
-			alt: `Content image ${index + 1}`,
-			caption: '',
-			width: 'min(78vw, 28rem)',
-			height: '13rem',
-		}
-	}
-
-	return {
-		src: resolveImageSrc(image.src),
-		alt: image.alt ?? `Content image ${index + 1}`,
-		caption: image.caption ?? '',
-		width: image.width ?? 'min(78vw, 28rem)',
-		height: image.height ?? '13rem',
-	}
-}
-
-const sourceImages = computed<Array<string | ContentSkeletonImageCarouselItem>>(
-	() => {
-		if (typeof props.images !== 'string') {
-			return props.images
-		}
-
-		try {
-			const parsedImages: unknown = JSON.parse(props.images)
-
-			if (Array.isArray(parsedImages)) {
-				return parsedImages.filter(
-					(image): image is string | ContentSkeletonImageCarouselItem =>
-						typeof image === 'string' ||
-						(typeof image === 'object' &&
-							image !== null &&
-							typeof (image as ContentSkeletonImageCarouselItem).src ===
-								'string'),
-				)
-			}
-		} catch {
-			return [props.images]
-		}
-
-		return [props.images]
-	},
+const sourceImages = computed<Array<string | ContentImageItem>>(() =>
+	parseContentImages(props.images),
 )
 
-const normalizedImages = computed(() => sourceImages.value.map(normalizeImage))
+const normalizedImages = computed(() =>
+	sourceImages.value.map((image, index) =>
+		normalizeContentImage(image, index, 'min(78vw, 28rem)', '13rem'),
+	),
+)
 
 const getCarouselSidePadding = (itemWidth?: string): string => {
 	if (!itemWidth) {
