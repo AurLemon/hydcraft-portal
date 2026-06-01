@@ -1,9 +1,11 @@
 <template>
 	<article
-		class="site-shell mx-auto pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
+		class="site-shell mx-auto w-full min-w-0 pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
 	>
 		<slot v-if="doc" name="header" :doc="doc" />
-		<ContentRenderer v-if="doc" :value="doc" />
+		<div v-if="doc" class="mx-auto w-full max-w-3xl min-w-0">
+			<ContentRenderer :value="doc" />
+		</div>
 		<slot v-if="doc" name="footer" :doc="doc" />
 	</article>
 </template>

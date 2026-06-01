@@ -12,6 +12,9 @@ updatedAt: 2026-06-01T21:59:44+08:00
 
 ## 最初
 
+::skeleton-image-carousel{images='[{"src":"timeline/about_cover.webp","alt":"关于页封面","caption":"关于页封面测试"},{"src":"timeline/timeline_cover.webp","alt":"时间线封面","caption":"时间线封面测试"},{"src":"timeline/timeline_cover.webp","alt":"时间线封面","caption":"时间线封面测试"},{"src":"timeline/timeline_cover.webp","alt":"时间线封面","caption":"时间线封面测试"}]'}
+::
+
 氢气工艺并不是从一开始就拥有完整制度、明确目标和技术的服务器，而是在多次周目更替、版本迁移、玩家聚散和社区摩擦中逐渐成形的，一切的一切都要收敛到最开始的那一刻。
 
 2018 年 9 月 1 日，氢气工艺的最早形态诞生于几名好友之间的 MC 联机，最初的玩家多来自 RTM（一个火车模组）相关的交流群。玩家们在出生点附近陆续修建了各种建筑、道路、车站和早期城市轨道交通，后面被命名为滨城市。那时的服务器规模很小，群内人数不多，日常在线玩家也有限，不过最初的交通建设方向和共同建设习惯已经定下来了。

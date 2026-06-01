@@ -2,19 +2,25 @@
 	<div class="site-shell flex flex-col items-center">
 		<MarkdownPage>
 			<template #header="{ doc }">
-				<div class="-mt-12 mb-6 flex flex-col items-center gap-2">
-					<SkeletonImage
-						:src="aboutCover"
-						alt="About cover"
-						class="mb-6 aspect-video w-full max-w-4xl overflow-hidden rounded-2xl h-64 select-none"
-						image-class="block h-full w-full object-cover transition-opacity duration-200"
-					/>
-					<div
-						class="text-4xl text-center font-arkpixel tracking-wider uppercase text-slate-950 dark:text-slate-50"
-					>
-						{{ t('pages.about.title') }}
+				<div class="lg:-mt-12 mb-6 w-full">
+					<div class="mb-6 w-full">
+						<SkeletonImage
+							:src="aboutCover"
+							alt="About cover"
+							class="w-full overflow-hidden rounded-2xl h-54 lg:h-80 select-none"
+							image-class="block h-full w-full object-cover transition-opacity duration-200"
+						/>
 					</div>
-					<ContentReadingStats :doc="doc" />
+					<div
+						class="mx-auto flex w-full max-w-3xl flex-col items-center gap-2"
+					>
+						<div
+							class="text-4xl text-center font-arkpixel tracking-wider uppercase text-slate-950 dark:text-slate-50"
+						>
+							{{ t('pages.about.title') }}
+						</div>
+						<ContentReadingStats :doc="doc" />
+					</div>
 				</div>
 			</template>
 			<template #footer="{ doc }">
