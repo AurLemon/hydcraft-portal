@@ -184,7 +184,7 @@ const isHeroHeader = computed(() => route.meta.headerVariant === 'hero')
 const headerScrimClass = computed(() =>
 	isHeroHeader.value
 		? 'bg-[#192024]/25'
-		: 'bg-[#FAFAFA]/55 dark:bg-[#192024]/45',
+		: 'bg-[#FAFAFA]/90 dark:bg-[#192024]/90',
 )
 
 const headerActionButtonClass = computed(() =>

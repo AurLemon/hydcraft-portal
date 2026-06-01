@@ -110,9 +110,9 @@ export default defineNuxtConfig({
 		},
 	},
 	css: [
-		'~/assets/styles/fonts.css',
-		'~/assets/styles/main.css',
-		'~/assets/styles/tailwind.css',
+		'~/assets/styles/fonts/index.css',
+		'~/assets/styles/base/main.css',
+		'~/assets/styles/base/tailwind.css',
 	],
 	vite: {
 		plugins: [tailwindcss()],

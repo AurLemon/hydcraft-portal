@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="home-hero-shell flex flex-col justify-end pt-24"
-		:class="{ 'home-hero-shell--entered': homeHeroEntered }"
-	>
+	<div class="home-hero-shell flex flex-col justify-end pt-24">
 		<div class="flex flex-col">
 			<div class="relative z-10">
 				<div class="max-w-4xl">
@@ -92,7 +89,6 @@ const pointer = reactive<Vector2D>({ x: 0, y: 0 })
 const pointerActive = ref(false)
 const pointerEffectsEnabled = ref(false)
 const pointerListenersBound = ref(false)
-const homeHeroEntered = ref(false)
 const updateFrame = ref<number | null>(null)
 
 const homeCards = computed<HomeCard[]>(() => [
@@ -317,9 +313,6 @@ onMounted(() => {
 	updatePointerEffectsEnabled()
 	window.addEventListener('resize', handleResize, { passive: true })
 	schedulePointerEffectsUpdate()
-	window.requestAnimationFrame(() => {
-		homeHeroEntered.value = true
-	})
 })
 
 onBeforeUnmount(() => {
@@ -342,29 +335,18 @@ onBeforeUnmount(() => {
 }
 
 .home-hero-shell {
-	min-height: 0;
-	transition: min-height 560ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.home-hero-shell--entered {
 	min-height: 140vh;
 }
 
 @media (width >= 40rem) {
-	.home-hero-shell--entered {
+	.home-hero-shell {
 		min-height: 110vh;
 	}
 }
 
 @media (width >= 80rem) {
-	.home-hero-shell--entered {
-		min-height: 74vh;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
 	.home-hero-shell {
-		transition: none;
+		min-height: 74vh;
 	}
 }
 </style>

@@ -1,0 +1,153 @@
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 300;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-WYi1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-NYi1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-2Y-1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-4I-1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 800;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-h4-1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-ro-1UA.ttf')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 300;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8sDE0UwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 400;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tdE0UwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 500;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tvE0UwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 600;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8uDFEUwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 700;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8u6FEUwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 800;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8vdFEUwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	font-style: italic;
+	font-weight: 900;
+	font-display: swap;
+	src:
+		url('https://fonts.gstatic.cn/l/font?kit=iJWbBXyIfDnIV7nEt3KSJbVDV49rz8v0UwbYSs8-Y&skey=80e52bf85b0b1958&v=v31')
+			format('truetype'),
+		url('../../fonts/Rubik/Rubik_Italic.woff2') format('woff2-variations');
+}

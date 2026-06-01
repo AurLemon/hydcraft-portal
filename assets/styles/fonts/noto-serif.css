@@ -1,0 +1,62 @@
+@font-face {
+	font-family: 'Noto Serif SC';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifsc/v35/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SCqyWv.ttf')
+		format('truetype');
+	unicode-range:
+		U+3000-303F, U+31C0-31EF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+		U+FF00-FFEF, U+20000-2EBEF;
+}
+
+@font-face {
+	font-family: 'Noto Serif SC';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifsc/v35/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SwqyWv.ttf')
+		format('truetype');
+	unicode-range:
+		U+3000-303F, U+31C0-31EF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+		U+FF00-FFEF, U+20000-2EBEF;
+}
+
+@font-face {
+	font-family: 'Noto Serif SC';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifsc/v35/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7RlrCWv.ttf')
+		format('truetype');
+	unicode-range:
+		U+3000-303F, U+31C0-31EF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+		U+FF00-FFEF, U+20000-2EBEF;
+}
+
+@font-face {
+	font-family: 'Noto Serif JP';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifjp/v33/xn71YHs72GKoTvER4Gn3b5eMRtWGkp6o7MjQ2bwxOubA.ttf')
+		format('truetype');
+}
+
+@font-face {
+	font-family: 'Noto Serif JP';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifjp/v33/xn71YHs72GKoTvER4Gn3b5eMRtWGkp6o7MjQ2bwDOubA.ttf')
+		format('truetype');
+}
+
+@font-face {
+	font-family: 'Noto Serif JP';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('https://fonts.gstatic.cn/s/notoserifjp/v33/xn71YHs72GKoTvER4Gn3b5eMRtWGkp6o7MjQ2bzWPebA.ttf')
+		format('truetype');
+}

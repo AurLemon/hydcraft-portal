@@ -36,6 +36,7 @@
 		"@nuxt/eslint": "1.15.2",
 		"eslint": "10.1.0",
 		"prettier": "3.8.1",
+		"puppeteer-core": "^25.1.0",
 		"typescript": "5.9.3",
 		"vue-tsc": "3.2.6"
 	}
