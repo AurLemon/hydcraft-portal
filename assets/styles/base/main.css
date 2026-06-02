@@ -9,6 +9,7 @@
 	--font-mono:
 		'JetBrains Mono', 'MiSans VF', 'Misans TC VF', 'MiSans L3', 'Noto Sans SC',
 		'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', monospace;
+	--font-sans: var(--font-family);
 	--site-shell-max-width: 80rem;
 	line-height: 1.75;
 	font-family: var(--font-family);

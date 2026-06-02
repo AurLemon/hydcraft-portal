@@ -218,6 +218,6 @@ And not only for HydCraft. Somewhere in the corners of the internet, there are p
 
 If you were ever here, then I hope that whenever HydCraft comes back to mind, you can know that this place once remembered you seriously.
 
-<span class="font-serif">This page is here to record the fact that HydCraft once existed in one corner of the internet. It is also here to record the people who left behind their names, buildings, routes, and memories here.<span>
+And if you are only passing by, then just treat this as a bit of archaeology in some forgotten corner of the internet. Or pretend I never said any of this. Honestly, the thought that someone might resonate with this little essay of mine is enough to make me excited.
 
-(And if you are only passing by, then just treat this as a bit of archaeology in some forgotten corner of the internet. Or pretend I never said any of this. Honestly, the thought that someone might resonate with this little essay of mine is enough to make me excited.)
+<span class="block font-serif font-semibold text-xl pt-4">This page is here to record the fact that HydCraft once existed in one corner of the internet. It is also here to record the people who left behind their names, buildings, routes, and memories here.<span>

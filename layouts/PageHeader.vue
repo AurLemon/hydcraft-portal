@@ -255,42 +255,21 @@ const syncViewportWidth = (): void => {
 	viewportWidth.value = window.innerWidth
 }
 
-const restoreScrollPosition = (savedY: number): void => {
-	if (!import.meta.client) {
-		return
-	}
-
-	const restore = () => {
-		window.scrollTo({ top: savedY, behavior: 'auto' })
-	}
-
-	restore()
-	requestAnimationFrame(() => {
-		restore()
-		window.dispatchEvent(new Event('scroll'))
-	})
-}
-
 const selectLocale = async (value: LocaleCode): Promise<void> => {
 	if (!value || value === locale.value) {
 		return
 	}
 
-	const savedScrollY = import.meta.client ? window.scrollY : 0
 	const setLocale = (
 		nuxtApp.$i18n as { setLocale?: (code: LocaleCode) => Promise<void> }
 	).setLocale
 
 	if (setLocale) {
 		await setLocale(value)
-		await nextTick()
-		restoreScrollPosition(savedScrollY)
 		return
 	}
 
 	locale.value = value
-	await nextTick()
-	restoreScrollPosition(savedScrollY)
 }
 
 const onResize = (): void => {

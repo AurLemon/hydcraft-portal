@@ -2,8 +2,14 @@ import type { RouterConfig } from '@nuxt/schema'
 
 const scrollPositions = new Map<string, number>()
 
-const getScrollKey = (fullPath: string | undefined): string =>
-	(fullPath ?? '').split('#', 1)[0] ?? ''
+const LOCALE_PREFIX_RE = /^\/(?:zh-CN|zh-TW|en-US)(?=\/|$)/
+
+const getScrollKey = (fullPath: string | undefined): string => {
+	const pathWithoutHash = (fullPath ?? '').split('#', 1)[0] ?? ''
+	const normalizedPath = pathWithoutHash.replace(LOCALE_PREFIX_RE, '')
+
+	return normalizedPath || '/'
+}
 
 export default <RouterConfig>{
 	scrollBehavior(to, from, savedPosition) {
