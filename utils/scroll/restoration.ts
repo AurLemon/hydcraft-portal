@@ -25,15 +25,73 @@ type PendingScrollRestore = AbsoluteScrollRestore | ProgressScrollRestore
 const LOCALE_PREFIX_RE = /^\/(?:zh-CN|zh-TW|ja-JP|en-US)(?=\/|$)/
 const FALLBACK_RESTORE_INTERVAL_MS = 120
 const FALLBACK_RESTORE_TIMEOUT_MS = 2000
+const SESSION_STORAGE_KEY = 'hydcraft:scroll-snapshots'
 
 const scrollSnapshots = new Map<string, ScrollSnapshot>()
 
 let pendingRestore: PendingScrollRestore | null = null
 let pendingRestoreTimer: ReturnType<typeof setTimeout> | null = null
 let pendingRestoreExpiresAt = 0
+let persistenceInitialized = false
 
 const stripHash = (fullPath: string | undefined): string =>
 	(fullPath ?? '').split('#', 1)[0] ?? ''
+
+const readPersistedScrollSnapshots = (): Record<string, ScrollSnapshot> => {
+	if (!import.meta.client) {
+		return {}
+	}
+
+	const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY)
+
+	if (!raw) {
+		return {}
+	}
+
+	try {
+		const parsed = JSON.parse(raw) as Record<string, ScrollSnapshot>
+
+		return parsed && typeof parsed === 'object' ? parsed : {}
+	} catch {
+		return {}
+	}
+}
+
+const persistScrollSnapshots = (): void => {
+	if (!import.meta.client) {
+		return
+	}
+
+	const nextSnapshots = Object.fromEntries(scrollSnapshots.entries())
+	window.sessionStorage.setItem(
+		SESSION_STORAGE_KEY,
+		JSON.stringify(nextSnapshots),
+	)
+}
+
+const initializeScrollSnapshotPersistence = (): void => {
+	if (!import.meta.client || persistenceInitialized) {
+		return
+	}
+
+	persistenceInitialized = true
+
+	for (const [key, snapshot] of Object.entries(
+		readPersistedScrollSnapshots(),
+	)) {
+		scrollSnapshots.set(key, snapshot)
+	}
+
+	window.addEventListener('pagehide', () => {
+		const currentPath = window.location.pathname + window.location.search
+
+		if (!isHomeScrollPath(currentPath)) {
+			scrollSnapshots.set(getScrollRouteKey(currentPath), readScrollSnapshot())
+		}
+
+		persistScrollSnapshots()
+	})
+}
 
 export const normalizeScrollPath = (fullPath: string | undefined): string => {
 	const pathWithoutHash = stripHash(fullPath)
@@ -61,17 +119,23 @@ export const readScrollSnapshot = (): ScrollSnapshot => {
 }
 
 export const saveScrollSnapshot = (fullPath: string | undefined): void => {
+	initializeScrollSnapshotPersistence()
+
 	if (!import.meta.client || isHomeScrollPath(fullPath)) {
 		return
 	}
 
 	scrollSnapshots.set(getScrollRouteKey(fullPath), readScrollSnapshot())
+	persistScrollSnapshots()
 }
 
 export const getScrollSnapshot = (
 	fullPath: string | undefined,
-): ScrollSnapshot | undefined =>
-	scrollSnapshots.get(getScrollRouteKey(fullPath))
+): ScrollSnapshot | undefined => {
+	initializeScrollSnapshotPersistence()
+
+	return scrollSnapshots.get(getScrollRouteKey(fullPath))
+}
 
 const resolvePendingRestorePosition = (
 	restore: PendingScrollRestore,
@@ -148,6 +212,8 @@ export const queueAbsoluteScrollRestore = (
 		return
 	}
 
+	initializeScrollSnapshotPersistence()
+
 	pendingRestore = {
 		key: getScrollRouteKey(fullPath),
 		type: 'absolute',
@@ -164,6 +230,8 @@ export const queueProgressScrollRestore = (
 	if (!import.meta.client) {
 		return
 	}
+
+	initializeScrollSnapshotPersistence()
 
 	pendingRestore = {
 		key: getScrollRouteKey(fullPath),

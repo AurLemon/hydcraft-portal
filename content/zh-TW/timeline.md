@@ -15,12 +15,18 @@ HydCraft 是怎麼走到現在的？我也不太清楚。這一路我最大的�
 ## 最初
 
 HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的伺服器，而是在多次周目更替、版本遷移、玩家聚散和社群摩擦中逐漸成形的，一切的一切都要收斂到最開始的那一刻。
+::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"伺服器早期 LOGO（濱城市伺服器）","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"二周目行政區劃","width":"20rem"}]'}
+::
 
 2018 年 9 月 1 日，HydCraft 最早的形態誕生於幾名好友之間的 MC 聯機，最初的玩家多來自 RTM（一個火車模組）相關的交流群。玩家們在出生點附近陸續修建了各種建築、道路、車站和早期城市軌道交通，後來被命名為濱城市。那時的伺服器規模很小，群內人數不多，日常在線玩家也有限，不過最初的交通建設方向和共同建設習慣已經定下來了。
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"一周目早期建設痕跡"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"出生點旁車站發車"}]'}
+::
 
 一周目只持續了一個月左右。它不成熟，也沒有清晰的規劃。一周目更像是一段純粹的野蠻生長的時期。服務端最初運行在家用機上，頻寬、配置和外掛環境都不穩定。直到伺服器遷移到雲主機，遊戲體驗才有所改善。這一階段更接近「隨便玩玩」，而且是真正的隨便玩玩。硬要上一點價值的話，或許它奠定了最早的玩家關係？也讓 HydCraft 第一次有了模糊的社群雛形。
 
 二周目開始後，伺服器逐漸擺脫單純熟人聯機的狀態，進入更複雜的探索階段。玩家人數緩慢增加，城市和地區也開始擴展，濱城市、崑崙市、西京市、冬木市、東風市、北海市、平果市等地方陸續出現。說是城市，其實很多地方更接近由一兩名玩家長期經營的個人領地或小團體據點。它們有自己的名字、線路、建築風格和人際關係，也因此讓伺服器從一張單純的地圖，變成了一組由人維繫的地方。反正，這個時候，大家都開始圈地了。
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"玩家的電腦截圖"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"伺服器人數截圖"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"玩家記錄下的 RTM 車輛鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"玩家們駕駛 MTS 飛行器飛行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"玩家駕駛車輛行駛"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"東風島政府駐地"}]'}
+::
 
 這些地區之間當然有協作，也有摩擦。但很多時候，所謂城市之間的關係，本質上還是玩家之間的關係。誰願意一起修路？誰願意互相接線路？誰對誰的規劃不滿意？誰和誰關係更近？這些看似遊戲裡的建設問題，本質都是熟人社會裡的合作、邊界和情緒。
 
@@ -29,6 +35,9 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 二周目也暴露出早期社群的不成熟。主機頻繁更換、服務商不穩定、模組配置反覆嘗試、外部伺服器關係、玩家自建群爭議、建設審美分歧，這麼多事疊在一起，讓 HydCraft 第一次真正面對「社群」本身帶來的問題。那時的伺服器已經不只是幾個人一起玩的小地方，而是一個開始擁有對外關係、內部秩序、公共資源和玩家認同的小社群。
 
 不過，二周目的結束並不是一次經過計畫的收尾，而是一場意外。當時使用的免費服務商突然跑路，伺服器也隨之中斷。這一階段最終停在了 2019 年 5 月 7 日。
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"氫核四零一廠俯瞰圖","height":"18rem"}]'}
+::
 
 三周目則更像一次短暫的技術過渡。二周目被迫結束後，伺服器從 1.7.10 邁向 1.12.2，期間經歷過兩次存檔更替，也嘗試過新的主機方案。免費服務商跑路之後，有玩家提議大家湊錢購買自建機，伺服器因此短暫擺脫了完全依賴免費資源的狀態。
 
@@ -39,6 +48,9 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 一周目到三周目，是 HydCraft 最初的幾步。有很多試錯，也有很多現在看來並不成熟的決定。不過凡事往好處想，正是這些不成熟，構成了伺服器最早的經驗樣本。如何開服，如何遷移，如何面對玩家增長，如何處理模組問題，如何在一次又一次重開中保存最重要的東西。
 
 ## 逐漸成形
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"青城都北湖市俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"舊南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"新南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"清澄市俯瞰圖"}]'}
+::
 
 2019 年 7 月 30 日，四周目啟動。相比前三個周目，四周目擁有更穩定的資源、更多的人脈和更明確的發展方向。伺服器繼續圍繞鐵路、城市和公共建設展開。
 
@@ -54,9 +66,15 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 
 ## 別樣的夏天
 
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"源江都廣陽區俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"舊西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"新西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"北海某車站列車正在通過橋梁"}]'}
+::
+
 2020 年 5 月，經過大家共同決定，四周目和平結束。這是 HydCraft 第二個沒有因技術意外而中斷的周目。6 月 7 日，五周目正式啟動。這個周目在很大程度上，是為了結束四周目後期的混亂，讓伺服器進入一個更有規律、也更適合長期建設的新階段。
 
 這一時期的 HydCraft，更像一個「大型基友服」。它沒有完全擺脫熟人社群的底色，也並不追求像大型伺服器那樣高度制度化。相比複雜的規則和宏大的規劃，大家更在意的是能不能一起玩得開心，能不能在伺服器裡留下自己的建築、線路和故事。某種意義上，「快樂是遊戲的第一目的」，就是那段時間最樸素的共識。
+
+::image-grid{defaultHeight="20rem" images='[{"src":"timeline/gallery/season_5/misc_division.webp","caption":"五周目行政區劃","width":"18rem"},{"src":"timeline/gallery/season_5/misc_sports_game.webp","caption":"第一屆氫運會","width":"14rem"}]'}
+::
 
 五周目最重要的意義，不只是建設規模的擴大，而是伺服器第一次真正擁有了大量共同記憶。2020 年暑假，伺服器迎來了第一個小高峰。到 2021 年，隨著玩家文化逐漸累積、暑期活躍再次出現，五周目又迎來了第二個高峰。而且，受東京奧運會氛圍啟發，伺服器還舉辦過一場運動會。不過這場運動會不算嚴謹，甚至可以說相當混亂，但也正因為這種混亂，才留下了許多後來會被反覆提起的片段。
 
@@ -71,6 +89,8 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 2022 年 1 月，大家開始提議嘗試更現代的鐵路模組 MTR。為了避免影響五周目的正常運行，新的伺服器先以「氦氣分服」的名義於 2022 年 2 月 17 日啟動，並與五周目並行了一段時間。只是這種並行並沒有持續太久。一個月後，五周目因維護開銷過高而關閉，實際仍在運行的只剩下氦氣分服。後來，它被正式更名為六周目。
 
 六周目升級到了 1.16.5，引入了 MTR、機械動力等新的模組生態，也標誌著 HydCraft 從 RTM 時代進入新的建設階段。相比過去，MTR 帶來了更流暢的鐵路體驗，也讓大家對城市、線路和公共交通系統有了新的想像空間。
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南嶼都東峰區政府廣場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南嶼都東峰區工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恆丹縣軌道交通站內"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港縣諾姆地區"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南嶼都東峰區政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"臨東市伺服器駐 HydCraft 辦事處內部景觀"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南嶼都平海門片區俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"臨東市伺服器駐 HydCraft 辦事處正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恆丹縣軌道交通車輛段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"發規辦辦事處正門處懸掛的兩幅外島開發規劃圖"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南嶼都平海門片區的華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港縣赫爾海姆地區"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四屆氫運會開幕式場地"}]'}
+::
 
 六周目是 HydCraft 最難忘的一段時間，七周目只是六周目的延續。新模組、新生態帶來了很多，也改變了很多。
 
@@ -81,6 +101,9 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 不過，六周目的熱鬧也帶來了更明顯的矛盾。島嶼地圖讓玩家更容易聚在一起建設，也讓空間衝突變得更頻繁。鐵路線路無序擴張，部分地區逐漸飽和，甚至出現過拒絕鐵路過境的情況。地形修整、專案申報、建築審批和地區關係，開始從單純的建設問題，變成伺服器必須認真面對的公共事務。
 
 許多地區名義上是伺服器行政區，實際更像由不同玩家或小圈子長期經營的勢力範圍。它們有各自的審美、路線、計畫和人際網路，也自然會產生邊界問題。伺服器既想保持自由建設和隨緣氛圍，又不得不面對公共空間被過度占用、線路衝突和審批爭議。很多矛盾表面上是鐵路怎麼走、建築能不能批、地形能不能改，背後其實是熟人社群在規模擴大後必然遇到的問題：誰有資格決定？誰應該讓步？誰能代表公共利益？誰又只是在保護自己的一畝三分地？
+
+::image-grid{defaultHeight="18rem" images='[{"src":"timeline/gallery/season_6/misc_division.webp","caption":"六周目行政區劃","width":"16rem"},{"src":"timeline/gallery/season_6/misc_o2_comm.webp","caption":"負責處理審批業務的氧氣社群","width":"22rem"}]'}
+::
 
 為了緩解這些問題，我們嘗試建立更規範的流程，例如專案審批、社群平台、專設的審核機構和更明確的建設管理規定。但這些制度並沒有完全解決問題。對一個熟人社會色彩很強的小社群來說，過多層級和過於死板的審批，反而可能讓矛盾從「建設問題」變成「人和人之間的問題」。一些制度嘗試的出發點是為了減少混亂，卻也在實際運作中暴露出新的摩擦。
 
@@ -102,6 +125,9 @@ WorldEdit 指令導致伺服器主執行緒卡死後的集體刷屏「1」，也
 
 2023 年 8 月 7 日，在六周目矛盾爆發後的餘波中，七周目正式啟動。七周目使用由玩家自主繪製的地圖，主導繪製者後來也成為了現在的副服主。與此同時，伺服器升級到 1.18.2，並引入更高版本的模組生態。相比六周目，七周目在地圖設計、模組豐富度和高版本體驗上都有新的優勢，也承接了六周目後期關於建設空間、組織結構和發展方向的討論。2025 年 12 月 31 日，七周目在保留存檔的情況下升級到了 1.20.1。
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/lighting_1.webp","caption":"七周目民營鐵路公司通運鐵路的車站","height":"18rem"}]'}
+::
+
 七周目的啟動帶有很強的玩家自組織色彩。地圖設計、測試服、客戶端整合和初期籌備，都離不開玩家的主動推動。它並不是由管理層自上而下完整規劃出來的，而是在六周目後期的矛盾、停滯和疲態中，由一批仍然願意繼續建設的玩家共同推動出來的新階段。
 
 但七周目之後，伺服器的整體節奏明顯變慢了。許多老玩家陸續進入升學、工作和現實生活的新階段，能夠投入 MC 建設的時間逐漸減少。七周目雖然擁有更大的地圖和更高版本生態，卻也面對新的問題。地圖尺度過大，建設顯得分散；長期帶頭推進的人不足，新玩家補充有限。伺服器也不再像 2022 年暑假那樣持續熱鬧。
@@ -115,6 +141,9 @@ WorldEdit 指令導致伺服器主執行緒卡死後的集體刷屏「1」，也
 如果要用一個物體來比喻的話，我覺得伺服器是一盞燈。伺服器已經不再像那個熱鬧的夏天，卻像一盞還亮著的燈，不刺眼、不喧嘩。這裡一直都是亮著的，只是亮度暗了一些。
 
 ## 熟人社群
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202311.webp","height":"18rem"}]'}
+::
 
 我們伺服器一直有熟人社會的特徵。或者說，大部分長期 MC 伺服器大概都是如此，至少從我們伺服器的發展路徑來看是這樣。早期，伺服器靠好友關係和共同興趣聚集。中期，靠建設、活動、暑假和宣傳逐漸擴大。後來，則更多依賴少數核心玩家之間的長期聯繫維持。
 
@@ -136,6 +165,9 @@ WorldEdit 指令導致伺服器主執行緒卡死後的集體刷屏「1」，也
 
 也正因如此，如今仍然活躍的那一小群人顯得格外重要。目前，仍有三十多名常駐玩家在內群保持活躍。對大型社群來說，三十個人或許只是很小的數字。但對 HydCraft 這樣的長期小社群來說，這些人就是伺服器仍然有聲音、仍然能聊天、仍然會被想起的原因。
 
+::image-carousel{defaultHeight="16rem" images='[{"src":"timeline/gallery/season_6/player_group_20220728_103226.webp"},{"src":"timeline/gallery/season_6/player_group_20220825_211438.webp"},{"src":"timeline/gallery/season_6/player_group_20220903_212648.webp"},{"src":"timeline/gallery/season_6/player_group_20221112_143851.webp"},{"src":"timeline/gallery/season_6/player_group_20221221_213040.webp"},{"src":"timeline/gallery/season_6/player_group_20230108_155518.webp"},{"src":"timeline/gallery/season_6/player_group_20230712_172939.webp"}]'}
+::
+
 我們曾經被評價過氛圍很好。我想，這或許並不只是因為規則寫得完整、網站做得好看，或者伺服器配置足夠穩定，而是因為還有一批人願意用比較溫和、低噪聲的方式留在這裡。大家不一定每天上線，也不一定總有新的建設成果，但只要群聊裡還有人說話，存檔還被保存，Wiki 還被維護，過去的事情還會被偶爾提起，HydCraft 就沒有真正消失。
 
 至少對我來說，這件事也證明了我並不是一個人在自娛自樂。我在這裡投入過很多時間和精力，做了一些未必能帶來現實回報、卻真實留下痕跡的事情。它們帶來過正向回饋，也帶來過爭執、疲憊和一些不太愉快的經歷。但無論如何，它們都參與塑造了現在的我。
@@ -143,6 +175,9 @@ WorldEdit 指令導致伺服器主執行緒卡死後的集體刷屏「1」，也
 這些年裡，有些人已經在線下面過面，有些人逐漸把重心放回了學習、工作和生活，也有些人只是偶爾回來看看。我們未必還像最熱鬧的時候那樣每天聚在一起，但至少曾經在同一個世界裡生活過一段時間，也仍然存在於彼此的記憶當中。
 
 ## 燈也被風吹過
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202858.webp","height":"18rem"}]'}
+::
 
 > 管理者本人的性格、能力、邊界感、溝通方式，會反過來塑造社群。小社群尤其如此。大型組織可以靠制度稀釋個人風格，小型熟人社群不行。
 
@@ -170,6 +205,9 @@ HydCraft 當然不是一個沒有矛盾的理想社群。長期熟人社群有�
 
 ## 另一條線
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20230720_175842.webp","height":"18rem"}]'}
+::
+
 除了社群的變化，還有技術上的。
 
 最早的時候，問題其實很簡單。怎麼把伺服器開起來，怎麼讓玩家連進來，怎麼讓客戶端少崩一點，怎麼讓存檔別丟。家用機、雲主機、面板服、服務商、動態 IP、備份、客戶端整合，這些問題在一周目到三周目反覆出現。那時我們對基礎設施的理解還很有限，很多經驗都是在事故發生後才被迫學會的。
@@ -196,6 +234,9 @@ HydCraft 當然不是一個沒有矛盾的理想社群。長期熟人社群有�
 
 ## 為我們留一盞燈
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/player_group_20250713_005755.webp","height":"18rem"}]'}
+::
+
 最後，我們當然知道，HydCraft 不是一個完美的伺服器。
 
 它有過混亂的早期，有過好幾個熱鬧的暑假，有過失敗的制度嘗試，也有過很多難以完全寫清楚的爭論與分離。它曾經被很多人認真對待，也曾經讓一些人疲憊、失望，甚至選擇離開。
@@ -211,6 +252,9 @@ HydCraft 當然不是一個沒有矛盾的理想社群。長期熟人社群有�
 還有一些東西就這樣留了下來。有人給城市取了一個名字就不怎麼來了，那個名字卻這樣一直留在地圖上。有人離開了，但他的建築還在。有人現實裡見過面以後，群裡的 ID 突然不再只是 ID 了。也有人平時不怎麼說話，卻在某次伺服器出事、地圖更新或舊事被提起時，突然冒出來補上一句。很多人已經不常回來，但某條線路、某個城市、某次暑假語音和某個只有老玩家才懂的梗，仍然把他們和這裡輕輕連在一起。
 
 我們只是盡量保留那些還值得保留的東西，給願意回來的人留一個入口，給過去共同生活過的人留一份記錄。當然，如果還有人願意加入我們，這盞燈也會繼續為新的故事留出位置。
+
+::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）東峰別墅區前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委會江戶駐地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工藝代表團在 HydCraft 互訪時的合照"}]'}
+::
 
 畢竟，故事還在繼續。
 

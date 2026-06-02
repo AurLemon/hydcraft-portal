@@ -16,11 +16,20 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 氢气工艺并不是从一开始就拥有完整制度、明确目标和技术的服务器，而是在多次周目更替、版本迁移、玩家聚散和社区摩擦中逐渐成形的，一切的一切都要收敛到最开始的那一刻。
 
+::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"服务器早期 LOGO（滨城市服务器）","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"二周目行政区划","width":"20rem"}]'}
+::
+
 2018 年 9 月 1 日，氢气工艺的最早形态诞生于几名好友之间的 MC 联机，最初的玩家多来自 RTM（一个火车模组）相关的交流群。玩家们在出生点附近陆续修建了各种建筑、道路、车站和早期城市轨道交通，后面被命名为滨城市。那时的服务器规模很小，群内人数不多，日常在线玩家也有限，不过最初的交通建设方向和共同建设习惯已经定下来了。
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"一周目早期建设痕迹"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"出生点旁车站发车"}]'}
+::
 
 一周目只持续了一个月左右。它不成熟，也没有清晰的规划。一周目更像是一段纯粹的野蛮生长的时期。服务端最初运行在家用机上，带宽、配置和插件环境都不稳定。直到服务器迁移到云主机，游戏体验才有所改善。这一阶段更接近「随便玩玩」，而且是真正的随便玩玩。硬要上一点价值的话，或许它奠定了最早的玩家关系？也让氢气工艺第一次有了模糊的社区雏形。
 
 二周目开始后，服务器逐渐摆脱单纯熟人联机的状态，进入更复杂的探索阶段。玩家人数缓慢增加，城市和地区也开始扩展，滨城市、昆仑市、西京市、冬木市、东风市、北海市、平果市等地方陆续出现。说是城市，其实很多地方更接近由一两名玩家长期经营的个人领地或小团体据点。它们有自己的名字、线路、建筑风格和人际关系，也因此让服务器从一张单纯的地图，变成了一组由人维系的地方。反正，这个时候，大家都开始圈地了。
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"玩家的电脑截图"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"服务器人数截图"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"玩家记录下的 RTM 车辆鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"玩家们驾驶 MTS 飞行器飞行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"玩家驾驶车辆行驶"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"东风岛政府驻地"}]'}
+::
 
 这些地区之间当然有协作，也有摩擦。但很多时候，所谓城市之间的关系，本质上还是玩家之间的关系。谁愿意一起修路？谁愿意互相接线路？谁对谁的规划不满意？谁和谁关系更近？这些看似游戏里的建设问题，本质都是熟人社会里的合作、边界和情绪。
 
@@ -29,6 +38,9 @@ updatedAt: 2026-06-02T16:09:07+08:00
 二周目也暴露出早期社区的不成熟。主机频繁更换、服务商不稳定、模组配置反复尝试、外部服务器关系、玩家自建群争议、建设审美分歧，这么多事叠在一起，让氢气工艺第一次真正面对「社区」本身带来的问题。那时的服务器已经不只是几个人一起玩的小地方，而是一个开始拥有对外关系、内部秩序、公共资源和玩家认同的小社区。
 
 不过，二周目的结束并不是一次经过计划的收尾，而是一场意外。当时使用的免费服务商突然跑路，服务器也随之中断。这一阶段最终停在了 2019 年 5 月 7 日。
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"氢核四零一厂俯瞰图","height":"18rem"}]'}
+::
 
 三周目则更像一次短暂的技术过渡。二周目被迫结束后，服务器从 1.7.10 迈向 1.12.2，期间经历过两次存档更替，也尝试过新的主机方案。免费服务商跑路之后，有玩家提议大家凑钱购买自建机，服务器因此短暂地摆脱了完全依赖免费资源的状态。
 
@@ -39,6 +51,9 @@ updatedAt: 2026-06-02T16:09:07+08:00
 一周目到三周目，是氢气工艺最初的几步。有很多试错，也有很多现在看来并不成熟的决定。不过凡事要往好处想，正是这些不成熟，构成了服务器最早的经验样本。如何开服，如何迁移，如何面对玩家增长，如何处理模组问题，如何在一次又一次重开中保存最重要的东西。
 
 ## 逐渐成形
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"青城都北湖市俯瞰图"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"旧南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"新南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"清澄市俯瞰图"}]'}
+::
 
 2019 年 7 月 30 日，四周目启动。相比前三个周目，四周目拥有更稳定的资源、更多的人脉和更明确的发展方向。服务器继续围绕铁路、城市和公共建设展开。
 
@@ -54,9 +69,15 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 ## 别样的夏天
 
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"源江都广阳区俯瞰图"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"旧西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"新西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"北海某车站列车正在通过桥梁"}]'}
+::
+
 2020 年 5 月，经过大家共同决定，四周目和平结束。这是氢气工艺第二个没有因为技术意外而中断的周目。6 月 7 日，五周目正式启动。这个周目在很大程度上，是为了结束四周目后期的混乱，让服务器进入一个更有规律、也更适合长期建设的新阶段。
 
 这一时期的氢气工艺，更像一个「大号基友服」。它没有完全摆脱熟人社区的底色，也并不追求像大型服务器那样高度制度化。相比复杂的规则和宏大的规划，大家更在意的是能不能一起玩得开心，能不能在服务器里留下自己的建筑、线路和故事。某种意义上，「快乐是游戏的第一目的」，就是那段时间最朴素的共识。
+
+::image-grid{defaultHeight="20rem" images='[{"src":"timeline/gallery/season_5/misc_division.webp","caption":"五周目行政区划","width":"18rem"},{"src":"timeline/gallery/season_5/misc_sports_game.webp","caption":"第一届氢运会","width":"14rem"}]'}
+::
 
 五周目最重要的意义，不只是建设规模的扩大，而是服务器第一次真正拥有了大量共同记忆。2020 年暑假，服务器迎来了第一个小高峰。到 2021 年，随着玩家文化逐渐积累、暑期活跃再次出现，五周目又迎来了第二个高峰。而且，受东京奥运会氛围启发，服务器还举办过一场运动会。不过这场运动和不算严谨，甚至可以说相当混乱，但也正因为这种混乱，才留下了许多后来会被反复提起的片段。
 
@@ -72,6 +93,9 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 六周目升级到了 1.16.5，引入了 MTR、机械动力等新的模组生态，也标志着氢气工艺从 RTM 时代进入了新的建设阶段。相比过去，MTR 带来了更流畅的铁路体验，也让大家对城市、线路和公共交通系统有了新的想象空间。
 
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南屿都东峰区政府广场"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南屿都东峰区工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恒丹县轨道交通站内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港县诺姆地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南屿都东峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"临东市服务器驻氢气工艺办事处内部景观"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南屿都平海门片区俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"临东市服务器驻氢气工艺办事处正门"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恒丹县轨道交通车辆段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"发规办办事处正门处悬挂的两幅外岛开发规划图"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南屿都平海门片区的华表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港县赫尔海姆地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四届氢运会开幕式场地"}]'}
+::
+
 六周目是氢气工艺最难忘的一段时间，七周目只是六周目的延续。新模组、新生态带来了很多，也改变了很多。
 
 六周目是氢气工艺最热闹、也最复杂的时期之一。岛屿地图让城市之间的距离变得更近，建设活动也更加集中。南屿、海港、恒丹、旧巷等地区快速发展，玩家通过视频、宣传、暑期活动和熟人邀请不断涌入，服务器一度迎来非常活跃的建设潮。
@@ -81,6 +105,9 @@ updatedAt: 2026-06-02T16:09:07+08:00
 不过，六周目的热闹也带来了更明显的矛盾。岛屿地图让玩家更容易聚在一起建设，也让空间冲突变得更频繁。铁路线路无序扩张，部分地区逐渐饱和，甚至出现过拒绝铁路过境的情况。地形修整、项目申报、建筑审批和地区关系，开始从单纯的建设问题，变成服务器必须认真面对的公共事务。
 
 许多地区名义上是服务器行政区，实际更像由不同玩家或小圈子长期经营的势力范围。它们有各自的审美、路线、计划和人际网络，也自然会产生边界问题。服务器既想保持自由建设和随缘氛围，又不得不面对公共空间被过度占用、线路冲突和审批争议。很多矛盾表面上是铁路怎么走、建筑能不能批、地形能不能改，背后其实是熟人社区在规模扩大后必然遇到的问题：谁有资格决定？谁应该让步？谁能代表公共利益？谁又只是在保护自己的一亩三分地？
+
+::image-grid{defaultHeight="18rem" images='[{"src":"timeline/gallery/season_6/misc_division.webp","caption":"六周目行政区划","width":"16rem"},{"src":"timeline/gallery/season_6/misc_o2_comm.webp","caption":"负责处理审批业务的氧气社区","width":"22rem"}]'}
+::
 
 为了缓解这些问题，我们尝试建立更规范的流程，例如项目审批、社区平台、专设的审核机构和更明确的建设管理规定。但这些制度并没有完全解决问题。对于一个熟人社会色彩很强的小社区来说，过多层级和过于死板的审批，反而可能让矛盾从「建设问题」变成「人和人之间的问题」。一些制度尝试的出发点是为了减少混乱，却也在实际运行中暴露出新的摩擦。
 
@@ -102,6 +129,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 
 2023 年 8 月 7 日，在六周目矛盾爆发后的余波中，七周目正式启动。七周目使用由玩家自主绘制的地图，主导绘制者后来也成为了现在的副服主。与此同时，服务器升级到 1.18.2，并引入更高版本的模组生态。相比六周目，七周目在地图设计、模组丰富度和高版本体验上都有新的优势，也承接了六周目后期关于建设空间、组织结构和发展方向的讨论。2025 年 12 月 31 日，七周目在保留存档的情况下升级到了 1.20.1。
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/lighting_1.webp","caption":"七周目民营铁路公司通运铁路的车站","height":"18rem"}]'}
+::
+
 七周目的启动带有很强的玩家自组织色彩。地图设计、测试服、客户端整合和初期筹备，都离不开玩家的主动推动。它并不是由管理层从上而下完整规划出来的，而是在六周目后期的矛盾、停滞和疲态中，由一批仍然愿意继续建设的玩家共同推出来的新阶段。
 
 但七周目之后，服务器的整体节奏明显变慢了。许多老玩家陆续进入升学、工作和现实生活的新阶段，能够投入 MC 建设的时间逐渐减少。七周目虽然拥有更大的地图和更高版本生态，却也面对新的问题。地图尺度过大，建设显得分散；长期带头推进的人不足，新玩家补充有限。服务器也不再像 2022 年暑假那样持续热闹。
@@ -115,6 +145,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 如果要用一个物体来比喻的话，我觉得服务器是一盏灯。服务器已经不再像那个热闹的夏天，却像一盏还亮着的灯，不刺眼、不喧哗。这里一直都是亮着的，只是亮度暗了一些。
 
 ## 熟人社区
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202311.webp","height":"18rem"}]'}
+::
 
 我们服务器一直有熟人社会的特征。或者说，大部分长期 MC 服务器大概都是如此，至少从我们服务器的发展路径来看是这样。早期，服务器靠好友关系和共同兴趣聚集。中期，靠建设、活动、暑假和宣传逐渐扩大。后来，则更多依赖少数核心玩家之间的长期联系维持。
 
@@ -136,6 +169,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 
 也正因为如此，如今仍然活跃的那一小群人显得格外重要。目前，仍有三十多名常驻玩家在内群保持活跃。对大型社区来说，三十个人也许只是很小的数字。但对氢气工艺这样的长期小社区来说，这些人就是服务器仍然有声音、仍然能聊天、仍然会被想起的原因。
 
+::image-carousel{defaultHeight="16rem" images='[{"src":"timeline/gallery/season_6/player_group_20220728_103226.webp"},{"src":"timeline/gallery/season_6/player_group_20220825_211438.webp"},{"src":"timeline/gallery/season_6/player_group_20220903_212648.webp"},{"src":"timeline/gallery/season_6/player_group_20221112_143851.webp"},{"src":"timeline/gallery/season_6/player_group_20221221_213040.webp"},{"src":"timeline/gallery/season_6/player_group_20230108_155518.webp"},{"src":"timeline/gallery/season_6/player_group_20230712_172939.webp"}]'}
+::
+
 我们曾经被评价过氛围好。我想，这或许并不只是因为规则写得完整，网站做得好看，或者服务器配置足够稳定，而是因为还有一批人愿意用比较温和、低噪声的方式留在这里。大家不一定每天上线，也不一定总有新的建设成果，但只要群聊里还有人说话，存档还被保存，Wiki 还被维护，过去的事情还会被偶尔提起，氢气工艺就没有真正消失。
 
 至少对我来说，这件事也证明了我并不是一个人在自娱自乐。我在这里投入过很多时间和精力，做了一些未必能带来现实回报、却真实留下痕迹的事情。它们带来过正反馈，也带来过争执、疲惫和一些不太愉快的经历。但无论如何，它们都参与塑造了现在的我。
@@ -143,6 +179,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 这些年里，有些人已经在线下面过面，有些人逐渐把重心放回了学习、工作和生活，也有些人只是偶尔回来看看。我们未必还像最热闹的时候那样每天聚在一起，但至少曾经在同一个世界里生活过一段时间，也仍然存在于彼此的记忆当中。
 
 ## 灯也被风吹过
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202858.webp","height":"18rem"}]'}
+::
 
 > 管理者本人的性格、能力、边界感、沟通方式，会反过来塑造社区。小社区尤其如此。大型组织可以靠制度稀释个人风格，小型熟人社区不行。
 
@@ -170,6 +209,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 
 ## 另一条线
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20230720_175842.webp","height":"18rem"}]'}
+::
+
 除了社区的变化，还有技术上的。
 
 最早的时候，问题其实很简单。怎么把服务器开起来，怎么让玩家连进来，怎么让客户端少崩一点，怎么让存档别丢。家用机、云主机、面板服、服务商、动态 IP、备份、客户端整合，这些问题在一周目到三周目反复出现。那时我们对基础设施的理解还很有限，很多经验都是在事故发生后才被迫学会的。
@@ -196,6 +238,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 
 ## 为我们留一盏灯
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/player_group_20250713_005755.webp","height":"18rem"}]'}
+::
+
 最后，我们当然知道，氢气工艺不是一个完美的服务器。
 
 它有过混乱的早期，有过好几个热闹的暑假，有过失败的制度尝试，也有过很多难以完全写清楚的争论和分离。它曾经被很多人认真对待，也曾经让一些人疲惫、失望，甚至选择离开。
@@ -211,6 +256,9 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 还有一些东西就这样留了下来。有人给城市起了一个名字就不怎么来了，那个名字却这样一直留在地图上。有人离开了，但他的建筑还在。有人现实里见过面以后，群里的 ID 突然不再只是 ID 了。也有人平时不怎么说话，却在某次服务器出事、地图更新或旧事被提起时，突然冒出来补上一句。很多人已经不常回来，但某条线路、某个城市、某次暑假语音和某个只有老玩家才懂的梗，仍然把他们和这里轻轻连在一起。
 
 我们只是尽量保留那些还值得保留的东西，给愿意回来的人留一个入口，给过去共同生活过的人留一份记录。当然，如果还有人愿意加入我们，这盏灯也会继续为新的故事留出位置。
+
+::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）东峰别墅区前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委会江户驻地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工艺代表团在氢气工艺互访时的合照"}]'}
+::
 
 毕竟，故事还在继续。
 

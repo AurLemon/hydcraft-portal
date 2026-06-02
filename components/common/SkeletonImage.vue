@@ -9,7 +9,11 @@
 			ref="imageRef"
 			:src="src"
 			:alt="alt"
-			:class="[imageClass, imageReady ? 'opacity-100' : 'opacity-0']"
+			:class="[
+				'transition-opacity duration-200',
+				imageClass,
+				imageReady ? 'opacity-100' : 'opacity-0',
+			]"
 			:loading="loading"
 			:decoding="decoding"
 			@load="markImageReady"

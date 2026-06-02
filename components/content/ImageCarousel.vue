@@ -25,14 +25,13 @@
 						:aria-label="`Open image preview: ${image.alt}`"
 						@click="openPreview(image.sourceIndex)"
 					>
-						<SkeletonImage
-							v-if="loadedImageIndexes.has(image.sourceIndex)"
+						<DeferredSkeletonImage
 							:src="image.src"
 							:alt="image.alt"
+							:root="scrollContainer"
 							class="h-full w-full"
 							image-class="block h-full w-full object-cover transition-opacity duration-200"
 						/>
-						<USkeleton v-else class="h-full w-full" />
 					</button>
 					<figcaption
 						v-if="image.caption"
@@ -45,22 +44,18 @@
 		</div>
 
 		<div
-			class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-linear-to-r from-white to-transparent opacity-0 transition-opacity duration-200 dark:from-slate-950"
+			class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-linear-to-r from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
 			:class="{ 'opacity-100': canScrollLeft }"
 		/>
 		<div
-			class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-white to-transparent opacity-0 transition-opacity duration-200 dark:from-slate-950"
+			class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
 			:class="{ 'opacity-100': canScrollRight }"
 		/>
 
 		<button
 			type="button"
 			class="absolute top-1/2 left-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
-			:class="
-				canScrollLeft
-					? 'scale-100 opacity-100'
-					: 'pointer-events-none scale-90 opacity-0'
-			"
+			:class="leftButtonClass"
 			aria-label="Scroll images left"
 			@click="scrollImages('left')"
 		>
@@ -69,11 +64,7 @@
 		<button
 			type="button"
 			class="absolute top-1/2 right-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
-			:class="
-				canScrollRight
-					? 'scale-100 opacity-100'
-					: 'pointer-events-none scale-90 opacity-0'
-			"
+			:class="rightButtonClass"
 			aria-label="Scroll images right"
 			@click="scrollImages('right')"
 		>
@@ -103,20 +94,24 @@ const carouselMaskWidth = '4rem'
 interface ContentImageCarouselProps {
 	images?: string | Array<string | ContentImageItem>
 	cycle?: boolean | string
+	defaultWidth?: string
+	defaultHeight?: string
 }
 
 const props = withDefaults(defineProps<ContentImageCarouselProps>(), {
 	images: () => [],
-	cycle: true,
+	cycle: false,
+	defaultWidth: 'min(78vw, 28rem)',
+	defaultHeight: '13rem',
 })
 
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
-const loadedImageIndexes = ref<Set<number>>(new Set())
+const currentImageIndex = ref(0)
 const activeImageIndex = ref<number | null>(null)
 const isAdjustingLoopPosition = ref(false)
-const scrollEndTimeoutId = ref<number | null>(null)
+const loopSyncFrameId = ref<number | null>(null)
 
 const sourceImages = computed<Array<string | ContentImageItem>>(() =>
 	parseContentImages(props.images),
@@ -124,11 +119,20 @@ const sourceImages = computed<Array<string | ContentImageItem>>(() =>
 
 const normalizedImages = computed(() =>
 	sourceImages.value.map((image, index) =>
-		normalizeContentImage(image, index, 'min(78vw, 28rem)', '13rem'),
+		normalizeContentImage(
+			image,
+			index,
+			props.defaultWidth,
+			props.defaultHeight,
+		),
 	),
 )
 
 const cycleEnabled = computed(() => {
+	return normalizedImages.value.length > 1
+})
+
+const buttonAlwaysVisible = computed(() => {
 	if (typeof props.cycle === 'string') {
 		return props.cycle !== 'false'
 	}
@@ -184,13 +188,6 @@ const updateScrollState = (): void => {
 	}
 
 	if (normalizedImages.value.length > 1) {
-		if (!cycleEnabled.value) {
-			const maxScrollLeft = container.scrollWidth - container.clientWidth
-			canScrollLeft.value = container.scrollLeft > 1
-			canScrollRight.value = container.scrollLeft < maxScrollLeft - 1
-			return
-		}
-
 		canScrollLeft.value = true
 		canScrollRight.value = true
 		return
@@ -201,63 +198,82 @@ const updateScrollState = (): void => {
 	canScrollRight.value = container.scrollLeft < maxScrollLeft - 1
 }
 
-const getCarouselItemElements = (container: HTMLDivElement): HTMLElement[] => {
-	return Array.from(container.querySelectorAll<HTMLElement>('figure'))
-}
-
-const loadVisibleImages = (): void => {
+const updateCurrentImageIndex = (): void => {
 	const container = scrollContainer.value
 
-	if (!container) {
+	if (!container || !normalizedImages.value.length) {
+		currentImageIndex.value = 0
+		return
+	}
+
+	if (normalizedImages.value.length === 1) {
+		currentImageIndex.value = 0
 		return
 	}
 
 	const itemElements = getCarouselItemElements(container)
+	const realItemStartIndex = getRealItemStartIndex()
+	const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
+	const viewportCenter = container.scrollLeft + container.clientWidth / 2
+	let nearestRealIndex = 0
+	let nearestDistance = Number.POSITIVE_INFINITY
 
-	if (!itemElements.length) {
-		return
+	for (let index = 0; index < normalizedImages.value.length; index += 1) {
+		const realIndex = realItemStartIndex + index
+		const element = itemElements[realIndex]
+		const itemStart = itemScrollOffsets[realIndex]
+
+		if (!element || itemStart === undefined) {
+			continue
+		}
+
+		const itemCenter = itemStart + element.offsetWidth / 2
+		const distance = Math.abs(itemCenter - viewportCenter)
+
+		if (distance < nearestDistance) {
+			nearestDistance = distance
+			nearestRealIndex = index
+		}
 	}
 
-	const viewportStart = container.scrollLeft
-	const viewportEnd = viewportStart + container.clientWidth
-	const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
-	const nextLoadedImageIndexes = new Set(loadedImageIndexes.value)
+	currentImageIndex.value = nearestRealIndex
+}
 
-	itemElements.forEach((element, index) => {
-		const itemStart = itemScrollOffsets[index] ?? 0
-		const itemEnd = itemStart + element.offsetWidth
-		const isVisible = itemStart < viewportEnd && itemEnd > viewportStart
+const leftButtonClass = computed(() =>
+	buttonAlwaysVisible.value || currentImageIndex.value > 0
+		? 'scale-100 opacity-100'
+		: 'pointer-events-none scale-90 opacity-0',
+)
 
-		if (isVisible) {
-			const image = carouselImages.value[index]
+const rightButtonClass = computed(() =>
+	buttonAlwaysVisible.value ||
+	currentImageIndex.value < normalizedImages.value.length - 1
+		? 'scale-100 opacity-100'
+		: 'pointer-events-none scale-90 opacity-0',
+)
 
-			if (image) {
-				nextLoadedImageIndexes.add(image.sourceIndex)
-			}
-		}
-	})
-
-	loadedImageIndexes.value = nextLoadedImageIndexes
+const getCarouselItemElements = (container: HTMLDivElement): HTMLElement[] => {
+	return Array.from(container.querySelectorAll<HTMLElement>('figure'))
 }
 
 const queueLoopPositionSync = (): void => {
-	if (scrollEndTimeoutId.value !== null) {
-		window.clearTimeout(scrollEndTimeoutId.value)
+	if (loopSyncFrameId.value !== null) {
+		window.cancelAnimationFrame(loopSyncFrameId.value)
 	}
 
-	scrollEndTimeoutId.value = window.setTimeout(() => {
-		scrollEndTimeoutId.value = null
+	loopSyncFrameId.value = window.requestAnimationFrame(() => {
+		loopSyncFrameId.value = null
 		syncLoopPosition()
-	}, 120)
+	})
 }
 
 const handleScroll = (): void => {
-	if (cycleEnabled.value && normalizedImages.value.length > 1) {
+	if (cycleEnabled.value) {
 		queueLoopPositionSync()
 	}
 
 	updateScrollState()
-	loadVisibleImages()
+	updateCurrentImageIndex()
 }
 
 const syncCarouselLayout = async (): Promise<void> => {
@@ -418,7 +434,6 @@ const syncLoopPosition = (): void => {
 		requestAnimationFrame(() => {
 			isAdjustingLoopPosition.value = false
 			updateScrollState()
-			loadVisibleImages()
 		})
 		return
 	}
@@ -446,7 +461,6 @@ const syncLoopPosition = (): void => {
 		requestAnimationFrame(() => {
 			isAdjustingLoopPosition.value = false
 			updateScrollState()
-			loadVisibleImages()
 		})
 	}
 }
@@ -457,11 +471,6 @@ const initializeLoopPosition = async (): Promise<void> => {
 	const container = scrollContainer.value
 
 	if (!container || normalizedImages.value.length <= 1) {
-		handleScroll()
-		return
-	}
-
-	if (!cycleEnabled.value) {
 		handleScroll()
 		return
 	}
@@ -513,13 +522,14 @@ const scrollImages = (direction: ScrollDirection): void => {
 		currentViewportCenter,
 		direction,
 	)
-	if (
-		targetIndex === -1 &&
-		cycleEnabled.value &&
-		normalizedImages.value.length > 1
-	) {
+	if (targetIndex === -1 && normalizedImages.value.length > 1) {
 		targetIndex = direction === 'left' ? itemElements.length - 2 : 1
 	}
+
+	const targetSourceIndex =
+		carouselImages.value[targetIndex]?.sourceIndex ?? currentImageIndex.value
+
+	currentImageIndex.value = targetSourceIndex
 	const targetElement = itemElements[targetIndex]
 	const targetScrollLeft = targetElement
 		? getCenteredScrollLeft(
@@ -555,13 +565,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', handleResize)
 
-	if (scrollEndTimeoutId.value !== null) {
-		window.clearTimeout(scrollEndTimeoutId.value)
+	if (loopSyncFrameId.value !== null) {
+		window.cancelAnimationFrame(loopSyncFrameId.value)
 	}
 })
 
 watch(normalizedImages, async () => {
-	loadedImageIndexes.value = new Set()
 	await initializeLoopPosition()
 })
 </script>

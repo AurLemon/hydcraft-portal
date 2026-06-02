@@ -16,11 +16,20 @@ More often now, people are not necessarily logging in every day to build. They a
 
 HydCraft did not begin as a server with a complete system, a clear goal, or mature technical foundations. It took shape through repeated season changes, version migrations, players coming and going, and friction within the community. In the end, all of that still narrows back down to the very beginning.
 
+::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"Early server logo (Binhai City server)","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"Season 2 administrative divisions","width":"20rem"}]'}
+::
+
 On September 1, 2018, the earliest form of HydCraft was born from a small MC multiplayer world shared by a few friends. Most of the first players came from group chats around RTM, a train mod. Near the spawn point, players gradually built all kinds of structures, roads, stations, and early urban rail transit, in an area that was later named Binhai City. The server was small, the chat group was small, and the number of daily online players was limited, but even then the first direction in transport building and the habit of building together had already been set.
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"Early traces of Season 1 construction"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"A train departing from the station by spawn"}]'}
+::
 
 Season 1 lasted only about a month. It was immature, and it had no clear plan. More than anything else, it was a period of raw, uncontrolled growth. The server first ran on a home machine, with unstable bandwidth, hardware, and plugin conditions. Only after moving to a cloud host did the gameplay improve somewhat. This phase was basically just people fooling around, and genuinely so. If it had any larger meaning at all, maybe it was that it formed the earliest player relationships and gave HydCraft its first vague outline as a community.
 
 After Season 2 began, the server gradually moved beyond a simple friends-only multiplayer world and entered a more complicated exploratory phase. The player base grew slowly, and both cities and regions started to expand. Places such as Binhai City, Kunlun City, Xijing City, Fuyuki City, Dongfeng City, Beihai City, and Pingguo City appeared one after another. Calling them cities is only partly accurate. Many of them were closer to personal territories or small-group bases maintained by one or two players over a long period. Each had its own name, routes, architectural style, and social relationships. That is how the server changed from a plain map into a set of places held together by people. In any case, this was when everyone started claiming land.
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"A player&#39;s PC screenshot"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"A screenshot of the server player count"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"A player&#39;s recording of RTM rolling stock chaos"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"Players flying MTS aircraft"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"A player driving a vehicle"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"Dongfeng Island government outpost"}]'}
+::
 
 Those regions cooperated, of course, but they also clashed. Much of what looked like relationships between cities was, in reality, still just relationships between players. Who wanted to build roads together? Who was willing to connect lines? Who disliked someone else's plans? Who was closer to whom? These looked like in-game construction issues, but at heart they were questions of cooperation, boundaries, and emotion inside an acquaintance-based community.
 
@@ -29,6 +38,9 @@ If someone disliked another player's building style, a few passive-aggressive re
 Season 2 also exposed how immature the early community still was. Hosts changed frequently, providers were unreliable, mod configurations were repeatedly reworked, external server relationships became a factor, player-made side groups caused disputes, and building aesthetics created splits. All of that piled together and forced HydCraft to face problems created by the community itself for the first time. By then, the server was no longer just a small place where a few people played together. It was becoming a small community with outside relationships, internal order, shared resources, and a sense of player identity.
 
 Still, Season 2 did not end through any planned wrap-up. It ended because of an accident. The free hosting provider suddenly disappeared, and the server stopped with it. That stage ultimately came to an end on May 7, 2019.
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"Aerial view of HydCore Factory 401","height":"18rem"}]'}
+::
 
 Season 3 felt more like a short technical transition. After Season 2 was forced to stop, the server moved from 1.7.10 toward 1.12.2. Along the way it went through two world-save replacements and tried new hosting arrangements. After the free provider vanished, one player suggested pooling money to buy a self-managed machine, so for a brief moment the server was no longer fully dependent on free resources.
 
@@ -39,6 +51,9 @@ Season 3 did not leave behind the most durable building achievements, but it was
 Seasons 1 through 3 were HydCraft's first steps. There was a lot of trial and error, and many decisions that now look immature. Still, looked at from the better angle, that immaturity became the earliest set of lessons the server ever had: how to launch a server, how to migrate it, how to respond to player growth, how to handle mod problems, and how to keep the most important things alive through one restart after another.
 
 ## Taking Shape
+
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"Aerial view of Beihu City, Qingcheng Metropolis"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"Aerial view of Old Nanchuan"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"Aerial view of New Nanchuan"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"Aerial view of Qingcheng City"}]'}
+::
 
 On July 30, 2019, Season 4 began. Compared with the first three seasons, it had more stable resources, broader connections, and a clearer direction. The server kept expanding around railways, cities, and public construction.
 
@@ -54,9 +69,15 @@ Season 4 was the stage where HydCraft truly began to take shape. It carried forw
 
 ## A Different Summer
 
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"Aerial view of Guangyang District, Yuanjiang Metropolis"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"Aerial view of Old Xihai"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"Aerial view of New Xihai"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"A train crossing a bridge near a station in Beihai"}]'}
+::
+
 In May 2020, Season 4 ended peacefully after a shared decision. It was HydCraft's second season not to be cut short by a technical accident. On June 7, Season 5 officially began. To a large extent, this season was meant to close out the messier late stage of Season 4 and move the server into a more orderly phase better suited for long-term building.
 
 During that time, HydCraft felt more like a large friends-only server. It never completely left behind the character of an acquaintance-based community, nor did it try to become highly institutionalized like a large public server. More than complex rules or grand planning, what mattered was whether people could have fun together and leave behind their own buildings, routes, and stories. In a way, "fun comes first" was the plainest shared belief of that period.
+
+::image-grid{defaultHeight="20rem" images='[{"src":"timeline/gallery/season_5/misc_division.webp","caption":"Season 5 administrative divisions","width":"18rem"},{"src":"timeline/gallery/season_5/misc_sports_game.webp","caption":"The first HydCraft Games","width":"14rem"}]'}
+::
 
 The importance of Season 5 was not only its larger building scale. It was also the first time the server truly accumulated a large body of shared memories. In the summer of 2020, the server saw its first small peak. Then in 2021, after player culture had built up further and another active summer returned, Season 5 hit a second peak. It even held a sports meet inspired by the atmosphere of the Tokyo Olympics. That event was not exactly rigorous, and could fairly be called chaotic. But that very chaos is why so many fragments of it kept getting remembered later.
 
@@ -72,6 +93,9 @@ In January 2022, players began proposing a try at MTR, a more modern railway mod
 
 Season 6 upgraded to 1.16.5 and brought in a new mod ecosystem including MTR and Create. That shift also marked HydCraft's move out of the RTM era and into a new stage of construction. Compared with the past, MTR offered a smoother railway experience and gave players a new way to imagine cities, routes, and public transport systems.
 
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"Government square in Dongfeng District, Nanyu Metropolis"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"Workers&#39; New Village in Dongfeng District, Nanyu Metropolis"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"Inside a Hengdan County rapid transit station"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"The Nome area of Haigang County"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"Government building of Dongfeng District, Nanyu Metropolis"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"Interior view of the Lindong Server liaison office in HydCraft"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"Aerial view of the Pinghaimen area in Nanyu Metropolis"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"Front gate of the Lindong Server liaison office in HydCraft"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"Hengdan County rapid transit depot"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"Two outer-island development plans hanging at the entrance of the Development and Planning Office"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"The huabiao in the Pinghaimen area of Nanyu Metropolis"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"The Helheim area of Haigang County"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"Venue of the opening ceremony of the fourth HydCraft Games"}]'}
+::
+
 Season 6 is the part of HydCraft I remember most vividly. Season 7 is really just a continuation of it. The new mods and the new ecosystem brought a lot with them, and they changed a lot too.
 
 Season 6 was one of the busiest and most complicated periods in HydCraft's history. The island map brought cities closer together and made building activity more concentrated. Regions such as Nanyu, Haigang, Hengdan, and Jiuxiang grew quickly. Players kept arriving through videos, publicity, summer events, and invitations from acquaintances, and for a while the server entered a very active construction boom.
@@ -81,6 +105,9 @@ This period also carried forward the feel of a large friends-only server. HydCra
 The liveliness of Season 6 also made its conflicts much more visible. The island map made it easier for players to build close to one another, which also made spatial conflict more frequent. Railway lines sprawled without much order. Some regions gradually became saturated, and there were even cases where a city refused to let rail lines pass through. Terrain reshaping, project applications, building approvals, and inter-regional relationships stopped being just construction issues and became public matters the server had to take seriously.
 
 Many regions were nominally administrative areas of the server, but in practice they looked more like spheres of influence run over time by different players or small circles. They had their own aesthetics, routes, plans, and social networks, so boundary problems arose naturally. The server wanted to preserve freeform building and a casual atmosphere, yet it also had to deal with overused public space, route conflicts, and approval disputes. On the surface, these arguments were about where a railway should go, whether a building could be approved, or whether terrain could be modified. Underneath, they were the inevitable problems a small acquaintance-based community faces once it scales up: who gets to decide? Who should compromise? Who can speak for the public interest? And who is simply defending a personal corner of the map?
+
+::image-grid{defaultHeight="18rem" images='[{"src":"timeline/gallery/season_6/misc_division.webp","caption":"Season 6 administrative divisions","width":"16rem"},{"src":"timeline/gallery/season_6/misc_o2_comm.webp","caption":"The Oxygen community that handled approval work","width":"22rem"}]'}
+::
 
 To ease those problems, we tried building more formal processes, including project review, community platforms, dedicated review bodies, and clearer rules for construction management. Those systems never solved everything. In a small community with a strong acquaintance-based character, too many layers and approvals that are too rigid can easily turn a "building problem" into a "people problem." Some institutional experiments were meant to reduce chaos, but in practice they created new friction of their own.
 
@@ -102,6 +129,9 @@ Later on, Season 6 was reopened from time to time. Perhaps it never became entir
 
 On August 7, 2023, in the aftermath of the conflicts that broke out in Season 6, Season 7 officially began. It used a player-drawn map, and the person who led that map work later became the current vice owner. At the same time, the server upgraded to 1.18.2 and adopted a higher-version mod ecosystem. Compared with Season 6, Season 7 brought new advantages in map design, mod variety, and modern-version experience. It also inherited the late-Season-6 discussion around building space, organizational structure, and future direction. On December 31, 2025, Season 7 was upgraded to 1.20.1 while keeping the existing save file.
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/lighting_1.webp","caption":"A station of Tongyun Railway, a private rail company in Season 7","height":"18rem"}]'}
+::
+
 The launch of Season 7 had a strong player-organized character. Map design, test servers, client integration, and early preparation all depended on players pushing things forward themselves. It was not fully planned from the top down by a management team. It was a new stage brought into being by a group of players who were still willing to keep building, in the middle of the conflict, stagnation, and fatigue that marked late Season 6.
 
 But after Season 7 began, the overall pace of the server clearly slowed down. Many veteran players gradually entered new phases of school, work, and real life, and the time they could invest in MC construction decreased. Season 7 had a larger map and a newer version ecosystem, but it also faced new problems. The scale of the map made building feel scattered. There were too few people consistently driving long-term projects, and too few new players to replenish that energy. The server was no longer steadily lively in the way it had been during the summer of 2022.
@@ -115,6 +145,9 @@ If the early seasons looked like clear intervals with beginnings and endings, th
 If I had to compare the server to an object, I would say it is a lamp. It is no longer like that lively summer, but it is still a lamp that remains lit, not blinding and not noisy. This place has always stayed illuminated. It is just a little dimmer now.
 
 ## An Acquaintance-Based Community
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202311.webp","height":"18rem"}]'}
+::
 
 Our server has always carried the traits of an acquaintance-based community. Or rather, most long-running MC servers probably do, at least judging from the way ours developed. Early on, the server gathered around friendships and shared interests. In the middle years, it expanded through building, events, summer activity, and word of mouth. Later, it depended more on the long-term connections between a small group of core players.
 
@@ -136,6 +169,9 @@ Seen from today, the most suitable form for HydCraft may not be a complex instit
 
 That is also why the small group of people who are still active now matters so much. At present, more than thirty regular players remain active in the inner group. For a large community, thirty people may sound insignificant. For a long-running small community like HydCraft, those people are exactly why the server still has a voice, still has conversations, and still gets remembered.
 
+::image-carousel{defaultHeight="16rem" images='[{"src":"timeline/gallery/season_6/player_group_20220728_103226.webp"},{"src":"timeline/gallery/season_6/player_group_20220825_211438.webp"},{"src":"timeline/gallery/season_6/player_group_20220903_212648.webp"},{"src":"timeline/gallery/season_6/player_group_20221112_143851.webp"},{"src":"timeline/gallery/season_6/player_group_20221221_213040.webp"},{"src":"timeline/gallery/season_6/player_group_20230108_155518.webp"},{"src":"timeline/gallery/season_6/player_group_20230712_172939.webp"}]'}
+::
+
 People have said that HydCraft has a good atmosphere. I think that is probably not only because the rules are complete, the websites look good, or the server is stable enough. It is because there is still a group of people willing to remain here in a gentler, lower-noise way. They may not log in every day, and there may not always be new construction results, but as long as people are still talking in the group chat, the save files are still preserved, the Wiki is still maintained, and old stories are still brought up from time to time, HydCraft has not truly disappeared.
 
 At least for me, that also proves that I was never entertaining myself alone. I invested a great deal of time and energy here, and I did things that may never bring direct real-world rewards but did leave real traces behind. Some of those things brought positive feedback. Some brought arguments, fatigue, and unpleasant experiences. Either way, they all helped shape who I am now.
@@ -143,6 +179,9 @@ At least for me, that also proves that I was never entertaining myself alone. I 
 Over the years, some people have already met offline, some have gradually shifted their focus back to study, work, and life, and some only return once in a while. We may no longer gather together every day the way we did at the busiest point, but we did spend part of our lives in the same world, and we still remain in one another's memory.
 
 ## The Lamp Was Also Shaken by the Wind
+
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20220730_202858.webp","height":"18rem"}]'}
+::
 
 > The personality, ability, sense of boundaries, and way of communicating of the people who manage a community will in turn shape that community. This is especially true for small communities. Large organizations can dilute personal style through institutions. Small acquaintance-based communities cannot.
 
@@ -170,6 +209,9 @@ These experiences really did change the way we understand community, management,
 
 ## The Other Line
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_6/player_group_20230720_175842.webp","height":"18rem"}]'}
+::
+
 There was another line of change besides the community itself: the technical side.
 
 At first, the problems were simple. How do you get the server running? How do you let players connect? How do you make the client crash less? How do you keep world saves from being lost? Home machines, cloud hosts, panel-based hosting, providers, dynamic IP, backups, and client pack integration kept coming up again and again from Seasons 1 to 3. At that point our understanding of infrastructure was still limited, and many lessons were only learned after something had already gone wrong.
@@ -196,6 +238,9 @@ If the cities, railways, and buildings inside the game preserve the traces of pl
 
 ## Leaving a Light On for Us
 
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/player_group_20250713_005755.webp","height":"18rem"}]'}
+::
+
 In the end, we know perfectly well that HydCraft is not a perfect server.
 
 It had a chaotic early phase, several lively summers, failed institutional experiments, and many arguments and separations that are hard to fully write down. Many people once treated it seriously. It also exhausted some people, disappointed some people, and even pushed some people to leave.
@@ -211,6 +256,9 @@ Some people joined for the first time and got completely confused by the group f
 Some things simply stayed behind. Someone named a city and then mostly stopped coming back, but that name remained on the map. Someone left, but their buildings stayed. After some people met in real life, the IDs in the group chat stopped feeling like mere IDs. Others usually said very little, yet would suddenly reappear to add one sentence when the server had an incident, the map was updated, or some old story came up again. Many people no longer return often, but a certain route, a certain city, a certain summer voice chat, or a meme only veteran players understand still ties them gently to this place.
 
 We simply try to keep what is still worth keeping, leave an entry point for the people who want to return, and leave a record for the people who once lived together here. And if someone still wants to join us, that light can keep making room for new stories too.
+
+::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"July 30, 2022 (Season 6): player group photo in front of Hyeongwa-dae"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"August 18, 2022 (Season 6): player group photo in front of the Dongfeng villa district"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"July 10, 2023 (Season 6): player group photo in front of Hyeongwa-dae"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"June 22, 2025 (Season 7): a snapshot in front of the Jianghu station of the Administrative Committee"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"October 18, 2025 (Season 7): group photo of the Yiqiu Craft delegation during a reciprocal visit to HydCraft"}]'}
+::
 
 After all, the story is still continuing.
 
