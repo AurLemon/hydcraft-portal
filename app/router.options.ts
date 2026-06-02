@@ -44,7 +44,7 @@ export default <RouterConfig>{
 
 			if (fromSnapshot) {
 				queueProgressScrollRestore(to.fullPath, fromSnapshot.progress)
-				return false
+				return { left: 0, top: fromSnapshot.top }
 			}
 		}
 

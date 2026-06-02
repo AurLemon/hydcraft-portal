@@ -3,11 +3,15 @@
 		ref="articleRef"
 		class="site-shell mx-auto w-full min-w-0 pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
 	>
-		<slot v-if="doc" name="header" :doc="doc" />
-		<div v-if="doc" class="mx-auto w-full max-w-3xl min-w-0">
-			<ContentRenderer :value="doc" />
-		</div>
-		<slot v-if="doc" name="footer" :doc="doc" />
+		<Transition name="markdown-locale" mode="out-in" appear>
+			<div v-if="doc" :key="displayKey" class="min-w-0">
+				<slot name="header" :doc="doc" />
+				<div class="mx-auto w-full max-w-3xl min-w-0">
+					<ContentRenderer :value="doc" />
+				</div>
+				<slot name="footer" :doc="doc" />
+			</div>
+		</Transition>
 	</article>
 </template>
 
@@ -28,6 +32,7 @@ const { $i18n } = useNuxtApp()
 const locale = ($i18n as { locale: Ref<LocaleCode> }).locale
 const articleRef = ref<HTMLElement | null>(null)
 const displayDoc = shallowRef<MarkdownPageDoc | null>(null)
+const displayKey = ref('')
 
 let readyObserver: ResizeObserver | null = null
 let readyTimer: ReturnType<typeof setTimeout> | null = null
@@ -65,7 +70,12 @@ const loadDoc = async (): Promise<MarkdownPageDoc | null> => {
 	return null
 }
 
-displayDoc.value = await loadDoc()
+const commitDisplayDoc = (nextDoc: MarkdownPageDoc | null): void => {
+	displayDoc.value = nextDoc
+	displayKey.value = `${route.fullPath}::${requestSequence}`
+}
+
+commitDisplayDoc(await loadDoc())
 
 watch(
 	() => [localePath.value, normalizedPage.value],
@@ -77,7 +87,7 @@ watch(
 			return
 		}
 
-		displayDoc.value = nextDoc
+		commitDisplayDoc(nextDoc)
 	},
 	{ immediate: false },
 )
@@ -155,7 +165,7 @@ const scheduleRestoreReadyNotification = async (): Promise<void> => {
 }
 
 watch(
-	() => [doc.value, route.fullPath],
+	() => [doc.value, displayKey.value],
 	() => {
 		void scheduleRestoreReadyNotification()
 	},

@@ -166,6 +166,28 @@ body {
 	transform: translateY(0);
 }
 
+.markdown-locale-enter-active,
+.markdown-locale-leave-active {
+	transition:
+		opacity 180ms ease,
+		filter 180ms ease,
+		transform 180ms ease;
+}
+
+.markdown-locale-enter-from,
+.markdown-locale-leave-to {
+	opacity: 0;
+	filter: blur(2px);
+	transform: translateY(4px);
+}
+
+.markdown-locale-enter-to,
+.markdown-locale-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.page-enter-active,
 	.page-leave-active {
@@ -188,6 +210,19 @@ body {
 	.home-hero-video-leave-to,
 	.home-hero-video-enter-to,
 	.home-hero-video-leave-from {
+		transform: none;
+	}
+
+	.markdown-locale-enter-active,
+	.markdown-locale-leave-active {
+		transition: none;
+	}
+
+	.markdown-locale-enter-from,
+	.markdown-locale-leave-to,
+	.markdown-locale-enter-to,
+	.markdown-locale-leave-from {
+		filter: none;
 		transform: none;
 	}
 }
