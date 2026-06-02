@@ -3,6 +3,7 @@ import { useToast } from '@nuxt/ui/composables'
 import PageFooter from '~/layouts/PageFooter.vue'
 import PageContainer from '~/layouts/PageContainer.vue'
 import PageHeader from '~/layouts/PageHeader.vue'
+import PageStatusBar from '~/layouts/PageStatusBar.vue'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'
@@ -231,6 +232,7 @@ useHead(() => ({
 			<PageHeader />
 			<PageContainer />
 			<PageFooter />
+			<PageStatusBar />
 		</div>
 	</UApp>
 </template>

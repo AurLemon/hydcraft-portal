@@ -1,5 +1,8 @@
 <template>
-	<p class="mt-2 text-sm leading-[normal] text-slate-400 dark:text-slate-500">
+	<p
+		class="mt-2 text-sm leading-[normal] text-slate-400 dark:text-slate-500"
+		data-reading-stats
+	>
 		{{ statsText }}
 	</p>
 </template>

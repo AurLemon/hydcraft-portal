@@ -2,9 +2,11 @@
 	<article
 		ref="articleRef"
 		class="site-shell mx-auto w-full min-w-0 pb-12 text-lg leading-8 text-slate-800 dark:text-slate-100"
+		data-markdown-page
 	>
 		<Transition name="markdown-locale" mode="out-in" appear>
 			<div v-if="doc" :key="displayKey" class="min-w-0">
+				<MarkdownReadingProgressStatus :doc="doc" />
 				<slot name="header" :doc="doc" />
 				<div class="mx-auto w-full max-w-3xl min-w-0">
 					<ContentRenderer :value="doc" />
