@@ -1,8 +1,10 @@
 ---
-updatedAt: 2026-06-01T21:59:44+08:00
+updatedAt: 2026-06-02T16:09:07+08:00
 ---
 
-HydCraft is a Minecraft server, mainly built around city building and railway construction. Beyond the server itself, an entire player community has gradually grown around it.
+I am AurLemon, the owner of the HydCraft server, and in this piece I want to tell the story of these past years from the owner's point of view.
+
+How did HydCraft make it this far? I am not even sure myself. More than anything, what I have come to feel along the way is that the most precious thing was never any specific world save, but the player community that slowly grew around the server. And for a bit of background: HydCraft is a Minecraft server built mainly around city building and railway construction. It has some variety, but not that much.
 
 From 2018 to now, HydCraft has gone through seven seasons. In its early days, it was more like a few friends casually playing together, and everything it later became was almost an accident. It has seen lively times and chaotic ones alike. It has left behind many memorable moments, as well as arguments and partings that are still hard to write down clearly.
 
@@ -22,7 +24,7 @@ After Season 2 began, the server gradually moved beyond a simple friends-only mu
 
 Those regions cooperated, of course, but they also clashed. Much of what looked like relationships between cities was, in reality, still just relationships between players. Who wanted to build roads together? Who was willing to connect lines? Who disliked someone else's plans? Who was closer to whom? These looked like in-game construction issues, but at heart they were questions of cooperation, boundaries, and emotion inside an acquaintance-based community.
 
-If someone disliked another player's building style, a few passive-aggressive remarks would show up in the group chat. If someone felt their planning had been offended, they might leave the group outright. Looking back now, that was already more than just "let's open a server and play together." It was slowly becoming a place with shared space, player identity, and friction.
+If someone disliked another player's building style, a few passive-aggressive remarks would show up in the group chat. If someone felt their planning had been offended, they might leave the group outright. By then, it was already no longer just "let's open a server and play together." It had become a place with shared space, player identity, and friction between players.
 
 Season 2 also exposed how immature the early community still was. Hosts changed frequently, providers were unreliable, mod configurations were repeatedly reworked, external server relationships became a factor, player-made side groups caused disputes, and building aesthetics created splits. All of that piled together and forced HydCraft to face problems created by the community itself for the first time. By then, the server was no longer just a small place where a few people played together. It was becoming a small community with outside relationships, internal order, shared resources, and a sense of player identity.
 
@@ -70,6 +72,8 @@ In January 2022, players began proposing a try at MTR, a more modern railway mod
 
 Season 6 upgraded to 1.16.5 and brought in a new mod ecosystem including MTR and Create. That shift also marked HydCraft's move out of the RTM era and into a new stage of construction. Compared with the past, MTR offered a smoother railway experience and gave players a new way to imagine cities, routes, and public transport systems.
 
+Season 6 is the part of HydCraft I remember most vividly. Season 7 is really just a continuation of it. The new mods and the new ecosystem brought a lot with them, and they changed a lot too.
+
 Season 6 was one of the busiest and most complicated periods in HydCraft's history. The island map brought cities closer together and made building activity more concentrated. Regions such as Nanyu, Haigang, Hengdan, and Jiuxiang grew quickly. Players kept arriving through videos, publicity, summer events, and invitations from acquaintances, and for a while the server entered a very active construction boom.
 
 This period also carried forward the feel of a large friends-only server. HydCraft was not held together by commercial operation or aggressive traffic acquisition. It was held together by shared interests, social connections, and the relationships between players. Many people joined not only to build railways or cities, but also to take part in a lively, joke-filled, conversational acquaintance-based community where they could leave traces behind.
@@ -106,7 +110,9 @@ That does not mean HydCraft is over. We may simply have shifted from a high-freq
 
 From 2023 to now, Season 7 has not seen many earth-shaking events. It has been, more than anything, a calm period of long-term maintenance. Sometimes someone returns for a look. Sometimes something new goes online. Sometimes there is another discussion about administrative divisions, server status, or whether to build something new in the future. It is not as lively as Seasons 5 and 6, but it is closer to what the latter half of a real long-term community often looks like. People may not show up every day, but they have not truly left either.
 
-If the early seasons looked like clear intervals with beginnings and endings, then present-day HydCraft feels more like a curve that has not fully converged yet. It no longer changes violently every day, and it has no clearly written endpoint. It simply keeps extending forward at a slow pace, sometimes fluctuating, sometimes pausing, and sometimes changing a little more because one person comes back. It is no longer a loud summer. It is more like a lamp that is still on. Not blinding, not noisy, but enough to let people know this place is still here.
+If the early seasons looked like clear intervals with beginnings and endings, then present-day HydCraft feels more like a curve that has not fully converged yet. It no longer changes violently every day, and it has no clearly written endpoint. It simply keeps extending forward at a slow pace, sometimes fluctuating, sometimes pausing, and sometimes changing a little more because one person comes back.
+
+If I had to compare the server to an object, I would say it is a lamp. It is no longer like that lively summer, but it is still a lamp that remains lit, not blinding and not noisy. This place has always stayed illuminated. It is just a little dimmer now.
 
 ## An Acquaintance-Based Community
 
@@ -136,6 +142,32 @@ At least for me, that also proves that I was never entertaining myself alone. I 
 
 Over the years, some people have already met offline, some have gradually shifted their focus back to study, work, and life, and some only return once in a while. We may no longer gather together every day the way we did at the busiest point, but we did spend part of our lives in the same world, and we still remain in one another's memory.
 
+## The Lamp Was Also Shaken by the Wind
+
+> The personality, ability, sense of boundaries, and way of communicating of the people who manage a community will in turn shape that community. This is especially true for small communities. Large organizations can dilute personal style through institutions. Small acquaintance-based communities cannot.
+
+That is something I only gradually came to understand over these past few years.
+
+The way a server is managed is never neutral. How the managers speak, how they handle conflict, who is trusted, who gets to explain, who gets to make the final call, whose emotions are cared for, and whose boundaries are protected, all of that slowly settles into place and becomes part of the community's underlying tone.
+
+For a small community like HydCraft in particular, its earliest organizational form, the members who joined later, and the personality and ability of the people managing it all deeply affect what it eventually becomes. I used to think, rather crudely, that if we just rewrote the rules and reorganized the structure, then the community could be refactored the way a software project can be refactored and started over. Later, reality made it clear that things are not that simple.
+
+The inertia of a small circle is often much stronger than people imagine. It does not exist only in an online server. It also exists in real-life classes, dormitories, clubs, and friendships. Who gathered first, who joined later, who is closer to whom, who is used to speaking, who is used to staying silent, who can influence decisions, and who always yields under emotional pressure, none of those things are easy to rewrite through a single reform. Maybe there really are people capable of reshaping a community through more mature management. But for a small server like ours, the ability, energy, and timing that would require are enormous.
+
+Very often, all we can do is adjust slowly within relationships and history that already exist, patch things slowly, and slowly learn restraint. If only community atmosphere could be refactored the way code can. But it cannot. After changing a few rules, people's relationships still continue to run along the same old inertia. That was another thing I only realized later: atmosphere is not something outside the server, and the way a community was first organized is not an irrelevant backdrop. Those things are themselves part of the community, and they are almost impossible to fully separate from it.
+
+In the early years, we did not always know how to handle conflicts, and we often mixed together friendship, contribution, position, and stance. Someone could be a friend and also a player. Someone could be a contributor and also a manager. Someone might have given a lot to the server and still hurt other people in certain situations. Once those identities overlap, many problems become difficult to handle through rules alone. Looking back now, many of the ways we handled things were immature. But maybe those experiences are also exactly why we came to understand the weight of boundaries and restraint more clearly.
+
+Small circles are not naturally pure, either. People can be friends and competitors at the same time. They can learn from one another and still look down on one another. They can want newcomers to join and still worry that newcomers will disrupt the existing order. They can say they are taking things casually and still care very much about how others see them. For a long time, HydCraft was not isolated either. Between us and nearby servers, player groups, and railway-mod circles, there was always some degree of mutual observation, mutual imitation, and quiet rivalry. Sometimes the website, the Wiki, and the map were not just information and tools. They also became ways for a small community to present itself outwardly. Those subtle feelings of not wanting to lose were not always mature, but they were real.
+
+And of course, if I am writing about the community, I cannot write only about the people who are still here. The true portrait of a long-running community also includes the people who already left.
+
+Some people left for their own reasons. Some left because we handled things badly. Some left because everyone involved had their share of fault. Some could not fit in. Some faded away slowly. Others did not leave naturally at all, but left amid arguments, disappointment, misunderstanding, and broken relationships. Some people were genuinely hurt at the time, and some people also made immature decisions. These are not the parts of a server one would most like to keep putting on display, but they happened, and we went through them. Whose fault were they? I do not know. It is very hard to reduce every conflict to one person or one simple cause.
+
+HydCraft is obviously not an ideal community without conflict. A long-running acquaintance-based community has warmth, but it also has costs. When people are close to one another, many things become difficult to handle through rules alone. When identities like player, friend, manager, and contributor overlap, boundaries become blurred as well.
+
+These experiences really did change the way we understand community, management, and relationships. Over time, we slowly learned that not every problem needs to be solved through complicated systems, and not every emotion deserves to be amplified. For a small community to last, what often matters is a small number of people willing to take responsibility, somewhat clearer boundaries, somewhat more restrained expression, and the willingness to keep the lamp on even after the lively days are over.
+
 ## The Other Line
 
 There was another line of change besides the community itself: the technical side.
@@ -150,17 +182,25 @@ Later, the question became how to let more players keep playing in a stable way.
 
 From the perspective of the owner, this was also how HydCraft kept pushing my technical ability forward. In the early years I was mostly just maintaining a server that could stay online. Only later did I begin to understand the relationships between server software, plugins, mods, networking, deployment, backups, and monitoring. For a long time, especially with plugin and mod issues, I could only stay at the level of usage and troubleshooting. It was only in recent years, after building projects of my own, doing backend work, wrestling with deployment, and reading and reusing much more code, that I finally became able to understand some of the problems I could not solve before.
 
-Later still, HydCraft needed an entry point outside the game. The Wiki let players record and supplement content freely. Docs organized documents and explanations. Status monitoring made it possible to check whether the server was running normally. The Portal served as a unified front door. Player profiles, account linking, identity systems, server status, map entry points, and historical records also helped HydCraft grow from a plain MC save file into a more complete community system.
+Later still, HydCraft needed an entry point outside the game. In March 2021, the Wiki gave players a place to record and supplement content freely. In July 2024, Docs began organizing documents and explanations. In August 2024, status monitoring gave us a way to check whether the server was running normally. In 2026, the Portal became the unified front door. Player profiles, account linking, identity systems, server status, map entry points, and historical records all helped HydCraft grow from a plain MC save file into a more complete community system.
 
-Of course, those web projects were not well made from the start either. I made plenty of mistakes in them. I wrote structures that were not mature enough, created designs I later wanted to tear down and rebuild, and ran into all kinds of problems around deployment, permissions, interfaces, caching, CORS, proxies, and account systems. But precisely because HydCraft kept generating real needs, it also gave me a real environment in which to keep training technical ability. A lot of things were not learned first and then built. They were learned because the server genuinely needed them.
+Of course, those web projects did not appear with some complete grand plan from the beginning. Very often, they only came into being because at some point I suddenly felt that "there should probably be an entry point," or "this page could look a little better," or "this would also be a good chance to practice some web work," and then they were written little by little. Some of them stalled for a long time, and many designs were overturned along the way. They are both infrastructure the server actually needed and traces left behind in the course of my own technical growth.
+
+So there is no need to imagine HydCraft as something overly formal. If you write too much about grand missions, it starts to sound like a project proposal. A lot of the time, this was not some sacred construction. It was simply something that a group of middle schoolers, high schoolers, and even younger kids alongside high schoolers pieced together bit by bit out of real needs, interest, procrastination, sudden bursts of enthusiasm, and late-night page building.
+
+One day I felt like writing a little, and the next day I might leave it alone again. At first I only wanted to make a page look nicer, and only later did it slowly become a more complete system of records, status, identity, and entry points. The truest reason may be very simple: the server really needed it, and that is why I was forced to learn it bit by bit.
 
 I do not want those sites and projects to be mere decoration. For a long-running community, records, status, identity, and entry points are themselves part of how memory is preserved. Maps restart. Servers upgrade. Players leave and come back. Group chats grow quiet. But if the records still exist, if the entry points still exist, if the old screenshots, old pages, old maps, and old documents still exist, then the community still has a chance to reconnect with itself.
 
 If the cities, railways, and buildings inside the game preserve the traces of players inside the world save, then the systems outside the server preserve something else: how the community runs, how it remembers itself, and how it hands the past over to those who come later. They may not be the most visible parts, but they are what make HydCraft more than a server that was once open. They make it a place that can still be looked up, remembered, and maintained.
 
-## Leaving a Light On
+## Leaving a Light On for Us
 
-HydCraft is not a perfect server, of course. It had a chaotic early phase, several lively summers, failed institutional experiments, and many arguments and separations that are hard to fully write down. Many people once treated it seriously. It also exhausted some people, disappointed some people, and even pushed some people to leave.
+In the end, we know perfectly well that HydCraft is not a perfect server.
+
+It had a chaotic early phase, several lively summers, failed institutional experiments, and many arguments and separations that are hard to fully write down. Many people once treated it seriously. It also exhausted some people, disappointed some people, and even pushed some people to leave.
+
+For newcomers, if there still are newcomers, entering a community that has existed for many years inevitably takes some time to adapt to. There are old place names, old buildings, and old memes here, along with many habits and tacit understandings that were never written into the rules. We do not want those things to become barriers, but we also admit that a long-running community cannot start from zero the way a newly opened server can. People who arrive later need time to find their place, and we need to keep learning how to leave a clear and friendly enough entry point for them.
 
 But none of that erases the fact that it existed. People built railways here. People built cities here. People held meetings here, ran events here, argued here, reconciled here, left the group here, and came back here. Some pulled in classmates. Some brought real-life friends into the group chat. Some taught newcomers how to install the modpack. Some took screenshots and videos everywhere to spread the word. Some stayed up late changing code just to keep the server running. Some were only called over by an acquaintance to take a look and still ended up leaving part of their time here.
 
@@ -170,10 +210,14 @@ Some people joined for the first time and got completely confused by the group f
 
 Some things simply stayed behind. Someone named a city and then mostly stopped coming back, but that name remained on the map. Someone left, but their buildings stayed. After some people met in real life, the IDs in the group chat stopped feeling like mere IDs. Others usually said very little, yet would suddenly reappear to add one sentence when the server had an incident, the map was updated, or some old story came up again. Many people no longer return often, but a certain route, a certain city, a certain summer voice chat, or a meme only veteran players understand still ties them gently to this place.
 
-HydCraft is no longer at its busiest. Still, I think it is more like a lamp that remains on. We do not ask everyone to come back every day, and we do not pretend the past will never end. We simply try to keep what is still worth keeping, leave an entry point for the people who want to return, and leave a record for the people who once lived together here. And if someone still wants to join us, that light can keep making room for new stories too.
+We simply try to keep what is still worth keeping, leave an entry point for the people who want to return, and leave a record for the people who once lived together here. And if someone still wants to join us, that light can keep making room for new stories too.
+
+After all, the story is still continuing.
+
+And not only for HydCraft. Somewhere in the corners of the internet, there are probably many other servers, many other groups, and many other small places where friends and like-minded people gather together, all going through their own liveliness, chaos, building, and farewells. There may even still be middle school and high school students like we were in 2018, somewhere in a group chat, on a map, or inside a server that has only just been opened, clumsily but seriously writing down stories of their own.
 
 If you were ever here, then I hope that whenever HydCraft comes back to mind, you can know that this place once remembered you seriously.
 
-This page is here to record the fact that HydCraft once existed in one corner of the internet. It is also here to record the people who left behind their names, buildings, routes, and memories here.
+<span class="font-serif">This page is here to record the fact that HydCraft once existed in one corner of the internet. It is also here to record the people who left behind their names, buildings, routes, and memories here.<span>
 
-And if you are only passing by, then just treat this as a bit of archaeology in some forgotten corner of the internet. Or pretend I never said any of this. Either way works.
+(And if you are only passing by, then just treat this as a bit of archaeology in some forgotten corner of the internet. Or pretend I never said any of this. Honestly, the thought that someone might resonate with this little essay of mine is enough to make me excited.)
