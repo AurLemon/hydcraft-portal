@@ -74,13 +74,13 @@ const headerActionButtonClass = computed(() =>
 
 const activeNavItemClass = computed(() =>
 	isHeroHeader.value
-		? 'font-semibold text-white opacity-100'
+		? 'font-semibold text-primary opacity-100 dark:text-primary'
 		: 'font-semibold text-primary opacity-100 dark:text-primary',
 )
 
 const fallbackNavItemClass = computed(() =>
 	isHeroHeader.value
-		? 'text-white opacity-100'
+		? 'text-primary opacity-100 dark:text-primary'
 		: 'text-primary opacity-100 dark:text-primary',
 )
 
