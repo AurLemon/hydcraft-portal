@@ -23,7 +23,8 @@
 	},
 	"header": {
 		"nav": {
-			"currentPage": "Current Page"
+			"currentPage": "Current Page",
+			"errorPage": "Error Page"
 		},
 		"theme": {
 			"switch": "Switch theme mode",
@@ -83,5 +84,10 @@
 			"jaJP": "Japanese",
 			"enUS": "English"
 		}
+	},
+	"error": {
+		"pageTitle": "Error Page",
+		"headline": "This page is temporarily unavailable",
+		"fallbackDetail": "Unknown error"
 	}
 }

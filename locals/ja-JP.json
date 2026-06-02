@@ -23,7 +23,8 @@
 	},
 	"header": {
 		"nav": {
-			"currentPage": "現在のページ"
+			"currentPage": "現在のページ",
+			"errorPage": "異常ページ"
 		},
 		"theme": {
 			"switch": "テーマを切り替える",
@@ -83,5 +84,10 @@
 			"jaJP": "日本語",
 			"enUS": "English"
 		}
+	},
+	"error": {
+		"pageTitle": "エラーページ",
+		"headline": "このページは一時的にアクセスできません",
+		"fallbackDetail": "不明なエラー"
 	}
 }

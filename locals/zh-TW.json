@@ -23,7 +23,8 @@
 	},
 	"header": {
 		"nav": {
-			"currentPage": "目前頁面"
+			"currentPage": "目前頁面",
+			"errorPage": "異常頁"
 		},
 		"theme": {
 			"switch": "切換主題模式",
@@ -83,5 +84,10 @@
 			"jaJP": "日本語",
 			"enUS": "English"
 		}
+	},
+	"error": {
+		"pageTitle": "錯誤頁面",
+		"headline": "頁面暫時無法訪問",
+		"fallbackDetail": "未知錯誤"
 	}
 }

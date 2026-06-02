@@ -1,38 +1,61 @@
 import type { RouterConfig } from '@nuxt/schema'
-
-const scrollPositions = new Map<string, number>()
-
-const LOCALE_PREFIX_RE = /^\/(?:zh-CN|zh-TW|en-US)(?=\/|$)/
-
-const getScrollKey = (fullPath: string | undefined): string => {
-	const pathWithoutHash = (fullPath ?? '').split('#', 1)[0] ?? ''
-	const normalizedPath = pathWithoutHash.replace(LOCALE_PREFIX_RE, '')
-
-	return normalizedPath || '/'
-}
+import {
+	clearPendingScrollRestore,
+	getScrollRouteKey,
+	getScrollSnapshot,
+	isHomeScrollPath,
+	normalizeScrollPath,
+	queueAbsoluteScrollRestore,
+	queueProgressScrollRestore,
+	saveScrollSnapshot,
+} from '../utils/scroll'
 
 export default <RouterConfig>{
 	scrollBehavior(to, from, savedPosition) {
 		if (savedPosition) {
+			clearPendingScrollRestore()
 			return savedPosition
 		}
 
-		if (import.meta.client) {
-			scrollPositions.set(getScrollKey(from.fullPath), window.scrollY)
-		}
-
 		if (to.hash) {
+			clearPendingScrollRestore()
 			return { el: to.hash, behavior: 'smooth' }
 		}
 
-		if (import.meta.client) {
-			const savedScroll = scrollPositions.get(getScrollKey(to.fullPath))
+		if (!import.meta.client) {
+			return { left: 0, top: 0 }
+		}
 
-			if (savedScroll !== undefined) {
-				return { left: 0, top: savedScroll }
+		saveScrollSnapshot(from.fullPath)
+
+		if (isHomeScrollPath(to.fullPath)) {
+			clearPendingScrollRestore()
+			return { left: 0, top: 0 }
+		}
+
+		const fromNormalizedPath = normalizeScrollPath(from.fullPath)
+		const toNormalizedPath = normalizeScrollPath(to.fullPath)
+		const isLocaleSwitchWithinSamePage =
+			fromNormalizedPath === toNormalizedPath &&
+			getScrollRouteKey(from.fullPath) !== getScrollRouteKey(to.fullPath)
+
+		if (isLocaleSwitchWithinSamePage) {
+			const fromSnapshot = getScrollSnapshot(from.fullPath)
+
+			if (fromSnapshot) {
+				queueProgressScrollRestore(to.fullPath, fromSnapshot.progress)
+				return false
 			}
 		}
 
+		const savedSnapshot = getScrollSnapshot(to.fullPath)
+
+		if (savedSnapshot) {
+			queueAbsoluteScrollRestore(to.fullPath, savedSnapshot.top)
+			return false
+		}
+
+		clearPendingScrollRestore()
 		return { left: 0, top: 0 }
 	},
 }

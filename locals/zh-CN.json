@@ -23,7 +23,8 @@
 	},
 	"header": {
 		"nav": {
-			"currentPage": "当前页"
+			"currentPage": "当前页",
+			"errorPage": "异常页"
 		},
 		"theme": {
 			"switch": "切换主题模式",
@@ -83,5 +84,10 @@
 			"jaJP": "日本語",
 			"enUS": "English"
 		}
+	},
+	"error": {
+		"pageTitle": "错误页面",
+		"headline": "页面暂时无法访问",
+		"fallbackDetail": "未知错误"
 	}
 }
