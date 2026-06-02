@@ -15,16 +15,25 @@
 import { notifyScrollRestoreReady } from '~/utils/scroll'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
+interface MarkdownPageDoc {
+	body?: unknown
+	meta?: {
+		updatedAt?: string
+	}
+	updatedAt?: string
+}
 
 const route = useRoute()
 const { $i18n } = useNuxtApp()
 const locale = ($i18n as { locale: Ref<LocaleCode> }).locale
 const articleRef = ref<HTMLElement | null>(null)
+const displayDoc = shallowRef<MarkdownPageDoc | null>(null)
 
 let readyObserver: ResizeObserver | null = null
 let readyTimer: ReturnType<typeof setTimeout> | null = null
 let readyFallbackTimer: ReturnType<typeof setTimeout> | null = null
 let readySequence = 0
+let requestSequence = 0
 
 const normalizedPage = computed(() => {
 	const path = route.path
@@ -38,27 +47,42 @@ const localePath = computed(() =>
 	String(locale.value as LocaleCode).toLowerCase(),
 )
 
-const { data: doc } = await useAsyncData(
-	() => `content-${localePath.value}-${normalizedPage.value}`,
-	async () => {
-		const localizedDoc = await queryCollection('content')
-			.path(`/${localePath.value}/${normalizedPage.value}`)
+const loadDoc = async (): Promise<MarkdownPageDoc | null> => {
+	const localizedDoc = await queryCollection('content')
+		.path(`/${localePath.value}/${normalizedPage.value}`)
+		.first()
+
+	if (localizedDoc) {
+		return localizedDoc
+	}
+
+	if (localePath.value !== 'zh-cn') {
+		return await queryCollection('content')
+			.path(`/zh-cn/${normalizedPage.value}`)
 			.first()
+	}
 
-		if (localizedDoc) {
-			return localizedDoc
+	return null
+}
+
+displayDoc.value = await loadDoc()
+
+watch(
+	() => [localePath.value, normalizedPage.value],
+	async () => {
+		const sequence = ++requestSequence
+		const nextDoc = await loadDoc()
+
+		if (sequence !== requestSequence) {
+			return
 		}
 
-		if (localePath.value !== 'zh-cn') {
-			return await queryCollection('content')
-				.path(`/zh-cn/${normalizedPage.value}`)
-				.first()
-		}
-
-		return null
+		displayDoc.value = nextDoc
 	},
-	{ watch: [localePath, normalizedPage] },
+	{ immediate: false },
 )
+
+const doc = computed(() => displayDoc.value)
 
 const clearReadyWaiters = (): void => {
 	if (readyObserver) {

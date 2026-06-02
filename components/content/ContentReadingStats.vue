@@ -7,12 +7,12 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-interface ContentDoc {
+interface ReadingStatsDoc {
 	body?: unknown
 }
 
 const props = defineProps<{
-	doc: ContentDoc
+	doc: ReadingStatsDoc
 }>()
 
 const { t } = useI18n()
