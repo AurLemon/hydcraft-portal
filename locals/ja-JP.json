@@ -1,0 +1,87 @@
+{
+	"routes": {
+		"entry": "ポータル",
+		"timeline": "歩み",
+		"overview": "概要",
+		"about": "私たちについて",
+		"links": "相互リンク",
+		"partners": "コミュニティパートナー"
+	},
+	"pages": {
+		"about": {
+			"title": "私たちは何者か?"
+		},
+		"timeline": {
+			"title": "HydCraft はどうやってここまで来たのか?"
+		}
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "{date} 更新",
+			"stats": "{count} 字 / {minutes} 分"
+		}
+	},
+	"header": {
+		"nav": {
+			"currentPage": "現在のページ"
+		},
+		"theme": {
+			"switch": "テーマを切り替える",
+			"light": "ライト",
+			"dark": "ダーク",
+			"system": "システム"
+		},
+		"language": {
+			"switch": "言語を切り替える"
+		}
+	},
+	"home": {
+		"lead": "ビルを建てて、線路を敷いて、街をつくって、のんびり暮らす。じゃあ、どうして MC サーバーの名前が水素なのかって？ それは私にもわからない。",
+		"cards": {
+			"backgroundAlt": "{title} の背景",
+			"nitrogen": {
+				"description": "現在のサーバーシーズン（1.20.1）"
+			},
+			"railway": {
+				"description": "鉄道システムと交通ネットワーク"
+			},
+			"culture": {
+				"description": "ランドマーク、イベント、そして共有された記憶"
+			},
+			"cities": {
+				"description": "都市計画と建築コミュニティ"
+			}
+		}
+	},
+	"footer": {
+		"links": {
+			"wiki": "Wiki",
+			"docs": "Docs",
+			"status": "ステータス",
+			"friendLinks": "相互リンク",
+			"communityPartners": "コミュニティパートナー"
+		},
+		"records": {
+			"icp": "閩ICP備2023007345號-1",
+			"police": "閩公網安備35010202001677號"
+		},
+		"disclaimers": {
+			"trademark": "Minecraft は Mojang Studios の登録商標です。HydCraft は Mojang Studios および NetEase と提携・認可・協力関係にありません。",
+			"community": "Minecraft はサンドボックスゲームです。HydCraft はそのプレイヤー向けのコミュニティ兼ゲームサーバーであり、化学工業、パイプライン、工業エンジニアリングのプロジェクトではありません。HydCraft は水素パイプライン建設や化学生産に関するサービスを提供していません。",
+			"fictionalNotice": "サイト内に登場する都市、地域、組織、ブランドおよび関連設定は、特記がない限りすべて架空のものであり、現実の機関や商業主体を指すものではありません。"
+		},
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
+	},
+	"localeNotice": {
+		"title": "お使いのシステム言語は {targetLanguage} のようです",
+		"description": "現在のページ言語は {currentLanguage} です。{targetLanguage} に切り替えますか？",
+		"switchAction": "{targetLanguage} に切り替える",
+		"keepAction": "このままにする",
+		"localeNames": {
+			"zhCN": "简体中文",
+			"zhTW": "繁體中文",
+			"jaJP": "日本語",
+			"enUS": "English"
+		}
+	}
+}

@@ -20,7 +20,7 @@ interface ThemeModeItem {
 	icon: string
 }
 
-type LocaleCode = 'zh-CN' | 'zh-TW' | 'en-US'
+type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type ThemeMode = 'light' | 'dark' | 'system'
 
 const route = useRoute()
@@ -52,6 +52,7 @@ const getThemeModeIcon = (mode: ThemeMode): string =>
 const localeItems: LocaleItem[] = [
 	{ label: '简体中文', value: 'zh-CN' },
 	{ label: '繁體中文', value: 'zh-TW' },
+	{ label: '日本語', value: 'ja-JP' },
 	{ label: 'English', value: 'en-US' },
 ]
 
@@ -74,7 +75,7 @@ const themeModes = computed<ThemeModeItem[]>(() => [
 const resolveTo = (item: MenuItem): string => localePath(item.to)
 
 const normalizePath = (path: string): string => {
-	const matched = path.match(/^\/(?:zh-CN|zh-TW|en-US)(?=\/|$)(.*)$/)
+	const matched = path.match(/^\/(?:zh-CN|zh-TW|ja-JP|en-US)(?=\/|$)(.*)$/)
 	if (!matched) {
 		return path
 	}

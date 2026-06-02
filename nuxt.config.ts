@@ -16,6 +16,7 @@ export default defineNuxtConfig({
 				locales: [
 					{ code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
 					{ code: 'zh-TW', name: '繁體中文', file: 'zh-TW.json' },
+					{ code: 'ja-JP', name: '日本語', file: 'ja-JP.json' },
 					{ code: 'en-US', name: 'English', file: 'en-US.json' },
 				],
 				detectBrowserLanguage: false,

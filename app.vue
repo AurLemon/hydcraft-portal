@@ -4,8 +4,8 @@ import PageFooter from '~/layouts/PageFooter.vue'
 import PageContainer from '~/layouts/PageContainer.vue'
 import PageHeader from '~/layouts/PageHeader.vue'
 
-type LocaleCode = 'zh-CN' | 'zh-TW' | 'en-US'
-type LocaleNameKey = 'zhCN' | 'zhTW' | 'enUS'
+type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
+type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'
 
 interface NuxtI18nApi {
 	setLocale?: (code: LocaleCode) => Promise<void>
@@ -26,6 +26,7 @@ const CHINESE_PRIMARY_LOCALES = new Set([
 ])
 
 const TRADITIONAL_CHINESE_REGIONS = new Set(['tw', 'hk', 'mo'])
+const JAPANESE_PRIMARY_LOCALES = new Set(['ja', 'jp'])
 
 const isChineseLocale = (localeTag: string): boolean => {
 	if (!localeTag) {
@@ -68,6 +69,14 @@ const normalizeLocaleCode = (value: string | null | undefined): LocaleCode => {
 		return resolveChineseLocaleCode(normalized)
 	}
 
+	const primary = normalized.split('-', 1)[0] ?? ''
+	if (
+		JAPANESE_PRIMARY_LOCALES.has(primary) ||
+		normalized.includes('japanese')
+	) {
+		return 'ja-JP'
+	}
+
 	return 'en-US'
 }
 
@@ -78,6 +87,10 @@ const toLocaleNameKey = (localeCode: LocaleCode): LocaleNameKey => {
 
 	if (localeCode === 'en-US') {
 		return 'enUS'
+	}
+
+	if (localeCode === 'ja-JP') {
+		return 'jaJP'
 	}
 
 	return 'zhCN'
@@ -197,6 +210,12 @@ const maybePromptLocaleSwitch = async (): Promise<void> => {
 if (import.meta.client) {
 	void maybePromptLocaleSwitch()
 }
+
+useHead(() => ({
+	htmlAttrs: {
+		lang: locale.value,
+	},
+}))
 </script>
 
 <template>

@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-type LocaleCode = 'zh-CN' | 'zh-TW' | 'en-US'
+type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 
 const route = useRoute()
 const { $i18n } = useNuxtApp()
@@ -19,7 +19,7 @@ const locale = ($i18n as { locale: Ref<LocaleCode> }).locale
 
 const normalizedPage = computed(() => {
 	const path = route.path
-		.replace(/^\/(?:zh-CN|zh-TW|en-US)(?=\/|$)/, '')
+		.replace(/^\/(?:zh-CN|zh-TW|ja-JP|en-US)(?=\/|$)/, '')
 		.replace(/^\/+|\/+$/g, '')
 
 	return path || 'index'
