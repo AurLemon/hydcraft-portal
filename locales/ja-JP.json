@@ -89,5 +89,12 @@
 		"pageTitle": "エラーページ",
 		"headline": "このページは一時的にアクセスできません",
 		"fallbackDetail": "不明なエラー"
+	},
+	"content": {
+		"imageCarousel": {
+			"openPreview": "画像プレビューを開く: {alt}",
+			"scrollLeft": "画像を左へスクロール",
+			"scrollRight": "画像を右へスクロール"
+		}
 	}
 }

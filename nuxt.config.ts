@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 				defaultLocale: 'zh-CN',
 				strategy: 'prefix_except_default',
 				lazy: true,
-				langDir: '../locals',
+				langDir: '../locales',
 				locales: [
 					{ code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
 					{ code: 'zh-TW', name: '繁體中文', file: 'zh-TW.json' },

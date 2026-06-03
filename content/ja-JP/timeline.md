@@ -250,7 +250,7 @@ HydCraft は、もちろん無矛盾の理想郷ではありません。長期�
 
 私たちはただ、まだ残す価値のあるものをなるべく残し、戻りたい人のために入口を残し、かつて一緒に生きた人たちのために記録を残そうとしているだけです。もちろん、今後も誰かが来てくれるなら、この灯りは新しい物語のためにも場所を空け続けるはずです。
 
-::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（第六周目）東峰別荘区前でのプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（第七周目）管委会江戸駐在地前で撮られたスナップ"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（第七周目）HydCraft 相互訪問時の翊秋工芸代表団の集合写真"}]'}
+::image-carousel{reverse=true images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（第六周目）東峰別荘区前でのプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（第七周目）管委会江戸駐在地前で撮られたスナップ"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（第七周目）HydCraft 相互訪問時の翊秋工芸代表団の集合写真"}]'}
 ::
 
 だって、物語はまだ続いているのですから。

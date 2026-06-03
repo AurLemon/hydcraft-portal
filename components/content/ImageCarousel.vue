@@ -22,7 +22,9 @@
 						type="button"
 						class="block w-full cursor-zoom-in overflow-hidden rounded-2xl select-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400"
 						:style="{ height: image.height }"
-						:aria-label="`Open image preview: ${image.alt}`"
+						:aria-label="
+							t('content.imageCarousel.openPreview', { alt: image.alt })
+						"
 						@click="openPreview(image.sourceIndex)"
 					>
 						<DeferredSkeletonImage
@@ -56,7 +58,7 @@
 			type="button"
 			class="absolute top-1/2 left-3 z-20 flex h-10 w-10 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
 			:class="leftButtonClass"
-			aria-label="Scroll images left"
+			:aria-label="t('content.imageCarousel.scrollLeft')"
 			@click.stop="scrollImages('left')"
 		>
 			<UIcon name="i-lucide-chevron-left" class="text-xl" />
@@ -65,7 +67,7 @@
 			type="button"
 			class="absolute top-1/2 right-3 z-20 flex h-10 w-10 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
 			:class="rightButtonClass"
-			aria-label="Scroll images right"
+			:aria-label="t('content.imageCarousel.scrollRight')"
 			@click.stop="scrollImages('right')"
 		>
 			<UIcon name="i-lucide-chevron-right" class="text-xl" />
@@ -91,6 +93,7 @@ type ScrollDirection = 'left' | 'right'
 interface ContentImageCarouselProps {
 	images?: string | Array<string | ContentImageItem>
 	cycle?: boolean | string
+	reverse?: boolean | string
 	defaultWidth?: string
 	defaultHeight?: string
 }
@@ -98,9 +101,12 @@ interface ContentImageCarouselProps {
 const props = withDefaults(defineProps<ContentImageCarouselProps>(), {
 	images: () => [],
 	cycle: false,
+	reverse: false,
 	defaultWidth: 'min(78vw, 28rem)',
 	defaultHeight: '13rem',
 })
+
+const { t } = useI18n()
 
 const scrollContainer = ref<HTMLDivElement | null>(null)
 const canScrollLeft = ref(false)
@@ -116,15 +122,37 @@ const sourceImages = computed<Array<string | ContentImageItem>>(() =>
 	parseContentImages(props.images),
 )
 
-const normalizedImages = computed(() =>
-	sourceImages.value.map((image, index) =>
-		normalizeContentImage(
+const reverseEnabled = computed(() => {
+	if (typeof props.reverse === 'string') {
+		return props.reverse !== 'false'
+	}
+
+	return props.reverse !== false
+})
+
+const orderedSourceImages = computed(() => {
+	const images = sourceImages.value.map((image, index) => ({
+		image,
+		sourceIndex: index,
+	}))
+
+	return reverseEnabled.value ? [...images].reverse() : images
+})
+
+const orderedNormalizedImages = computed<CarouselImageItem[]>(() =>
+	orderedSourceImages.value.map(({ image, sourceIndex }, index) => ({
+		...normalizeContentImage(
 			image,
 			index,
 			props.defaultWidth,
 			props.defaultHeight,
 		),
-	),
+		sourceIndex,
+	})),
+)
+
+const normalizedImages = computed(() =>
+	orderedNormalizedImages.value.map(({ sourceIndex, ...image }) => image),
 )
 
 const cycleEnabled = computed(() => {
@@ -144,10 +172,7 @@ interface CarouselImageItem extends ReturnType<typeof normalizeContentImage> {
 }
 
 const carouselImages = computed<CarouselImageItem[]>(() => {
-	const images = normalizedImages.value.map((image, index) => ({
-		...image,
-		sourceIndex: index,
-	}))
+	const images = orderedNormalizedImages.value
 
 	if (!cycleEnabled.value || images.length <= 1) {
 		return images
@@ -159,7 +184,9 @@ const carouselImages = computed<CarouselImageItem[]>(() => {
 const activeImage = computed(() =>
 	activeImageIndex.value === null
 		? null
-		: (normalizedImages.value[activeImageIndex.value] ?? null),
+		: (carouselImages.value.find(
+				(image) => image.sourceIndex === activeImageIndex.value,
+			) ?? null),
 )
 
 const getCarouselSidePadding = (itemWidth?: string): string => {

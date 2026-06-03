@@ -89,5 +89,12 @@
 		"pageTitle": "Error Page",
 		"headline": "This page is temporarily unavailable",
 		"fallbackDetail": "Unknown error"
+	},
+	"content": {
+		"imageCarousel": {
+			"openPreview": "Open image preview: {alt}",
+			"scrollLeft": "Scroll images left",
+			"scrollRight": "Scroll images right"
+		}
 	}
 }

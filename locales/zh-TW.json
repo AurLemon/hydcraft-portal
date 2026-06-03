@@ -89,5 +89,12 @@
 		"pageTitle": "錯誤頁面",
 		"headline": "頁面暫時無法訪問",
 		"fallbackDetail": "未知錯誤"
+	},
+	"content": {
+		"imageCarousel": {
+			"openPreview": "打開圖片預覽：{alt}",
+			"scrollLeft": "向左捲動圖片",
+			"scrollRight": "向右捲動圖片"
+		}
 	}
 }

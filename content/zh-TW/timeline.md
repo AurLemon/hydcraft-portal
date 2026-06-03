@@ -251,7 +251,7 @@ HydCraft 當然不是一個沒有矛盾的理想社群。長期熟人社群有�
 
 我們只是盡量保留那些還值得保留的東西，給願意回來的人留一個入口，給過去共同生活過的人留一份記錄。當然，如果還有人願意加入我們，這盞燈也會繼續為新的故事留出位置。
 
-::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）東峰別墅區前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委會江戶駐地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工藝代表團在 HydCraft 互訪時的合照"}]'}
+::image-carousel{reverse=true images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）東峰別墅區前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氫瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委會江戶駐地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工藝代表團在 HydCraft 互訪時的合照"}]'}
 ::
 
 畢竟，故事還在繼續。

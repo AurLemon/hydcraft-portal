@@ -255,7 +255,7 @@ WorldEdit 指令导致服务器主线程卡死后的集体刷屏「1」，也成
 
 我们只是尽量保留那些还值得保留的东西，给愿意回来的人留一个入口，给过去共同生活过的人留一份记录。当然，如果还有人愿意加入我们，这盏灯也会继续为新的故事留出位置。
 
-::image-carousel{images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）东峰别墅区前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委会江户驻地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工艺代表团在氢气工艺互访时的合照"}]'}
+::image-carousel{reverse=true images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（六周目）东峰别墅区前的玩家合照"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（六周目）氢瓦台前的玩家合照"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（七周目）在管委会江户驻地前的抓拍"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（七周目）翊秋工艺代表团在氢气工艺互访时的合照"}]'}
 ::
 
 毕竟，故事还在继续。

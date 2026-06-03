@@ -43,6 +43,7 @@ let resizeObserver: ResizeObserver | null = null
 const circleRadius = 10
 const circleCircumference = 2 * Math.PI * circleRadius
 const digitCharacters = Array.from({ length: 10 }, (_, index) => `${index}`)
+const digitStepEm = 1.2
 const progressText = computed(() => `${progress.value}%`)
 const progressDigits = computed(() => String(progress.value).split(''))
 
@@ -297,7 +298,7 @@ onBeforeUnmount(() => {
 					class="flex min-h-10 items-center gap-1 overflow-hidden whitespace-nowrap rounded-full border border-slate-300 bg-white px-3 shadow-[0_4rem_5rem_#000a0f80] transition-[width,box-shadow,background-color] duration-500 ease-out dark:border-slate-700 dark:bg-slate-900"
 					aria-live="polite"
 				>
-					<div class="flex items-center gap-1 whitespace-nowrap">
+					<div class="flex items-center whitespace-nowrap">
 						<div
 							class="relative flex h-6 w-6 items-center justify-center text-primary-500"
 						>
@@ -329,44 +330,53 @@ onBeforeUnmount(() => {
 							</svg>
 						</div>
 						<span
-							class="min-w-9 overflow-hidden text-lg font-medium tracking-wide text-slate-800 transition-[width] duration-220 ease-out dark:text-slate-300"
+							class="progress-text min-w-9 overflow-hidden text-lg leading-none font-medium tracking-wide text-slate-800 transition-[width] duration-220 ease-out dark:text-slate-300"
 							:style="
 								progressTextWidth === null
 									? undefined
 									: { width: `${progressTextWidth}px` }
 							"
 						>
-							<span class="flex w-max items-center" :aria-label="progressText">
+							<span class="progress-text__inner" :aria-label="progressText">
 								<span
 									v-for="(digit, index) in progressDigits"
 									:key="`${progressDigits.length}-${index}`"
-									class="digit-flip inline-block overflow-hidden"
+									class="digit-flip"
 									aria-hidden="true"
 								>
 									<span
-										class="digit-flip__reel block transition-transform duration-300 ease-out"
+										class="digit-flip__reel transition-transform duration-150 ease-out"
 										:style="{
-											transform: `translateY(-${Number(digit)}em)`,
+											transform: `translate3d(0, -${Number(digit) * digitStepEm}em, 0)`,
 										}"
 									>
 										<span
 											v-for="digitCharacter in digitCharacters"
 											:key="digitCharacter"
-											class="block h-[1em] leading-none"
+											class="digit-flip__digit"
 										>
 											{{ digitCharacter }}
 										</span>
 									</span>
 								</span>
-								<span aria-hidden="true">%</span>
+								<span class="progress-percent" aria-hidden="true">%</span>
 							</span>
 						</span>
 						<span
 							ref="progressMeasureRef"
-							class="pointer-events-none fixed top-0 left-0 -z-10 text-lg font-medium tracking-wide opacity-0"
+							class="progress-text pointer-events-none fixed top-0 left-0 -z-10 text-lg leading-none font-medium tracking-wide opacity-0"
 							aria-hidden="true"
 						>
-							{{ progressText }}
+							<span class="progress-text__inner">
+								<span
+									v-for="(digit, index) in progressDigits"
+									:key="`measure-${progressDigits.length}-${index}`"
+									class="digit-flip"
+								>
+									{{ digit }}
+								</span>
+								<span class="progress-percent">%</span>
+							</span>
 						</span>
 					</div>
 					<div class="text-sm text-slate-400 dark:text-slate-500">
@@ -402,13 +412,55 @@ onBeforeUnmount(() => {
 }
 
 .digit-flip {
+	display: inline-block;
 	width: 0.62em;
-	height: 1em;
-	line-height: 1;
+	height: 1.2em;
+	overflow: hidden;
+	overflow: clip;
+	clip-path: inset(0);
+	contain: paint;
+	line-height: 1.2em;
+	text-align: center;
 	font-variant-numeric: tabular-nums;
+	vertical-align: -0.16em;
 }
 
 .digit-flip__reel {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2em;
 	will-change: transform;
+}
+
+.digit-flip__digit {
+	display: block;
+	width: 100%;
+	height: 1.2em;
+	line-height: 1.2em;
+	text-align: center;
+}
+
+.progress-text {
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: 'tnum';
+}
+
+.progress-text__inner {
+	display: inline-block;
+	width: max-content;
+	height: 1.2em;
+	line-height: 1.2em;
+	transform: translateY(-0.12em);
+	white-space: nowrap;
+}
+
+.progress-percent {
+	display: inline-block;
+	height: 1.2em;
+	margin-left: 0.02em;
+	line-height: 1.2em;
+	font-variant-numeric: tabular-nums;
+	vertical-align: -0.16em;
 }
 </style>
