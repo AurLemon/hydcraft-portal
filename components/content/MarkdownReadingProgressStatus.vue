@@ -42,7 +42,9 @@ let resizeObserver: ResizeObserver | null = null
 
 const circleRadius = 10
 const circleCircumference = 2 * Math.PI * circleRadius
+const digitCharacters = Array.from({ length: 10 }, (_, index) => `${index}`)
 const progressText = computed(() => `${progress.value}%`)
+const progressDigits = computed(() => String(progress.value).split(''))
 
 const extractText = (node: unknown): string => {
 	if (typeof node === 'string') {
@@ -334,8 +336,29 @@ onBeforeUnmount(() => {
 									: { width: `${progressTextWidth}px` }
 							"
 						>
-							<span class="block w-max">
-								{{ progressText }}
+							<span class="flex w-max items-center" :aria-label="progressText">
+								<span
+									v-for="(digit, index) in progressDigits"
+									:key="`${progressDigits.length}-${index}`"
+									class="digit-flip inline-block overflow-hidden"
+									aria-hidden="true"
+								>
+									<span
+										class="digit-flip__reel block transition-transform duration-300 ease-out"
+										:style="{
+											transform: `translateY(-${Number(digit)}em)`,
+										}"
+									>
+										<span
+											v-for="digitCharacter in digitCharacters"
+											:key="digitCharacter"
+											class="block h-[1em] leading-none"
+										>
+											{{ digitCharacter }}
+										</span>
+									</span>
+								</span>
+								<span aria-hidden="true">%</span>
 							</span>
 						</span>
 						<span
@@ -376,5 +399,16 @@ onBeforeUnmount(() => {
 	opacity: 1;
 	filter: blur(0);
 	transform: translateY(0) scale(1);
+}
+
+.digit-flip {
+	width: 0.62em;
+	height: 1em;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.digit-flip__reel {
+	will-change: transform;
 }
 </style>

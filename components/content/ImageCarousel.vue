@@ -2,7 +2,7 @@
 	<div class="relative my-6 w-[min(calc(100vw-2rem),48rem)] max-w-full min-w-0">
 		<div
 			ref="scrollContainer"
-			class="skeleton-image-carousel-scroll overflow-x-auto overflow-y-hidden"
+			class="skeleton-image-carousel-scroll relative z-0 overflow-x-auto overflow-y-hidden"
 			@scroll="handleScroll"
 		>
 			<div
@@ -44,29 +44,29 @@
 		</div>
 
 		<div
-			class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-linear-to-r from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
+			class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
 			:class="{ 'opacity-100': canScrollLeft }"
 		/>
 		<div
-			class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
+			class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-[#FAFAFA] to-transparent opacity-0 transition-opacity duration-200 dark:from-[#192024]"
 			:class="{ 'opacity-100': canScrollRight }"
 		/>
 
 		<button
 			type="button"
-			class="absolute top-1/2 left-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
+			class="absolute top-1/2 left-3 z-20 flex h-10 w-10 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
 			:class="leftButtonClass"
 			aria-label="Scroll images left"
-			@click="scrollImages('left')"
+			@click.stop="scrollImages('left')"
 		>
 			<UIcon name="i-lucide-chevron-left" class="text-xl" />
 		</button>
 		<button
 			type="button"
-			class="absolute top-1/2 right-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
+			class="absolute top-1/2 right-3 z-20 flex h-10 w-10 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-lg ring-1 ring-slate-200/80 backdrop-blur transition duration-200 hover:bg-white hover:text-slate-950 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-slate-950 dark:hover:text-slate-50"
 			:class="rightButtonClass"
 			aria-label="Scroll images right"
-			@click="scrollImages('right')"
+			@click.stop="scrollImages('right')"
 		>
 			<UIcon name="i-lucide-chevron-right" class="text-xl" />
 		</button>
@@ -87,9 +87,6 @@ import {
 } from './utils/content-image'
 
 type ScrollDirection = 'left' | 'right'
-
-const carouselMaskWidthPx = 64
-const carouselMaskWidth = '4rem'
 
 interface ContentImageCarouselProps {
 	images?: string | Array<string | ContentImageItem>
@@ -112,6 +109,8 @@ const currentImageIndex = ref(0)
 const activeImageIndex = ref<number | null>(null)
 const isAdjustingLoopPosition = ref(false)
 const loopSyncFrameId = ref<number | null>(null)
+const resizeFrameId = ref<number | null>(null)
+let carouselResizeObserver: ResizeObserver | null = null
 
 const sourceImages = computed<Array<string | ContentImageItem>>(() =>
 	parseContentImages(props.images),
@@ -168,7 +167,7 @@ const getCarouselSidePadding = (itemWidth?: string): string => {
 		return '0px'
 	}
 
-	return `max(calc((100% - ${carouselMaskWidth} - ${itemWidth}) / 2), 0px)`
+	return `max(calc((100% - ${itemWidth}) / 2), 0px)`
 }
 
 const carouselSidePaddingLeft = computed(() =>
@@ -276,13 +275,56 @@ const handleScroll = (): void => {
 	updateCurrentImageIndex()
 }
 
-const syncCarouselLayout = async (): Promise<void> => {
-	await nextTick()
+const centerImageAtIndex = (
+	sourceIndex: number,
+	behavior: ScrollBehavior = 'auto',
+): void => {
+	const container = scrollContainer.value
+
+	if (!container || !normalizedImages.value.length) {
+		return
+	}
+
+	const itemElements = getCarouselItemElements(container)
+	const targetIndex =
+		normalizedImages.value.length > 1
+			? getRealItemStartIndex() + sourceIndex
+			: sourceIndex
+	const targetElement = itemElements[targetIndex]
+
+	if (!targetElement) {
+		return
+	}
+
+	const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
+	const targetScrollLeft = getCenteredScrollLeft(
+		container,
+		targetElement,
+		itemScrollOffsets[targetIndex] ?? 0,
+	)
+
+	setScrollPosition(targetScrollLeft, behavior)
+}
+
+const centerCurrentImage = (): void => {
+	centerImageAtIndex(currentImageIndex.value)
 	handleScroll()
 }
 
+const syncCarouselLayout = async (): Promise<void> => {
+	await nextTick()
+	centerCurrentImage()
+}
+
 const handleResize = (): void => {
-	void syncCarouselLayout()
+	if (resizeFrameId.value !== null) {
+		window.cancelAnimationFrame(resizeFrameId.value)
+	}
+
+	resizeFrameId.value = window.requestAnimationFrame(() => {
+		resizeFrameId.value = null
+		void syncCarouselLayout()
+	})
 }
 
 const setScrollPosition = (
@@ -323,26 +365,8 @@ const getCenteredScrollLeft = (
 	itemStart: number,
 ): number => {
 	const maxScrollLeft = container.scrollWidth - container.clientWidth
-	const itemEnd = itemStart + element.offsetWidth
 	const itemCenter = itemStart + element.offsetWidth / 2
-	let targetScrollLeft = Math.min(
-		Math.max(itemCenter - container.clientWidth / 2, 0),
-		maxScrollLeft,
-	)
-	const targetCanScrollLeft = targetScrollLeft > 1
-	const targetCanScrollRight = targetScrollLeft < maxScrollLeft - 1
-	const safeLeft = targetCanScrollLeft ? carouselMaskWidthPx : 0
-	const safeRight = targetCanScrollRight ? carouselMaskWidthPx : 0
-	const safeViewportStart = targetScrollLeft + safeLeft
-	const safeViewportEnd = targetScrollLeft + container.clientWidth - safeRight
-
-	if (itemStart < safeViewportStart) {
-		targetScrollLeft = itemStart - safeLeft
-	}
-
-	if (itemEnd > safeViewportEnd) {
-		targetScrollLeft = itemEnd - container.clientWidth + safeRight
-	}
+	const targetScrollLeft = itemCenter - container.clientWidth / 2
 
 	return Math.min(Math.max(targetScrollLeft, 0), maxScrollLeft)
 }
@@ -560,13 +584,24 @@ const handlePreviewOpenChange = (open: boolean): void => {
 onMounted(() => {
 	void initializeLoopPosition()
 	window.addEventListener('resize', handleResize)
+
+	if (scrollContainer.value) {
+		carouselResizeObserver = new ResizeObserver(handleResize)
+		carouselResizeObserver.observe(scrollContainer.value)
+	}
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', handleResize)
+	carouselResizeObserver?.disconnect()
+	carouselResizeObserver = null
 
 	if (loopSyncFrameId.value !== null) {
 		window.cancelAnimationFrame(loopSyncFrameId.value)
+	}
+
+	if (resizeFrameId.value !== null) {
+		window.cancelAnimationFrame(resizeFrameId.value)
 	}
 })
 

@@ -92,9 +92,7 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 ::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南嶼都東峰區政府廣場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南嶼都東峰區工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恆丹縣軌道交通站內"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港縣諾姆地區"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南嶼都東峰區政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"臨東市伺服器駐 HydCraft 辦事處內部景觀"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南嶼都平海門片區俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"臨東市伺服器駐 HydCraft 辦事處正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恆丹縣軌道交通車輛段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"發規辦辦事處正門處懸掛的兩幅外島開發規劃圖"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南嶼都平海門片區的華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港縣赫爾海姆地區"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四屆氫運會開幕式場地"}]'}
 ::
 
-六周目是 HydCraft 最難忘的一段時間，七周目只是六周目的延續。新模組、新生態帶來了很多，也改變了很多。
-
-六周目是 HydCraft 最熱鬧、也最複雜的時期之一。島嶼地圖讓城市之間的距離變得更近，建設活動也更加集中。南嶼、海港、恆丹、舊巷等地區快速發展，玩家透過影片、宣傳、暑期活動和熟人邀請不斷湧入，伺服器一度迎來非常活躍的建設潮。
+六周目是 HydCraft 最難忘的一段時間，也是最熱鬧、也最複雜的時期之一。七周目只是六周目的延續。新模組、新生態帶來了很多，也改變了很多。島嶼地圖讓城市之間的距離變得更近，建設活動也更加集中。南嶼、海港、恆丹、舊巷等地區快速發展，玩家透過影片、宣傳、暑期活動和熟人邀請不斷湧入，伺服器一度迎來非常活躍的建設潮。
 
 這一階段也延續了「大型基友服」的氣質。伺服器並不是靠商業化運營或強行引流維持，而是靠興趣、人脈和玩家之間的關係聚集起來。很多人進入伺服器，不只是為了建鐵路、修城市，也是為了參與一個熱鬧、有梗、能聊天、能留下痕跡的熟人社群。
 

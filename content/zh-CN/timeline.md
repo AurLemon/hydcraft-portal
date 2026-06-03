@@ -96,9 +96,7 @@ updatedAt: 2026-06-02T16:09:07+08:00
 ::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南屿都东峰区政府广场"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南屿都东峰区工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恒丹县轨道交通站内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港县诺姆地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南屿都东峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"临东市服务器驻氢气工艺办事处内部景观"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南屿都平海门片区俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"临东市服务器驻氢气工艺办事处正门"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恒丹县轨道交通车辆段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"发规办办事处正门处悬挂的两幅外岛开发规划图"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南屿都平海门片区的华表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港县赫尔海姆地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四届氢运会开幕式场地"}]'}
 ::
 
-六周目是氢气工艺最难忘的一段时间，七周目只是六周目的延续。新模组、新生态带来了很多，也改变了很多。
-
-六周目是氢气工艺最热闹、也最复杂的时期之一。岛屿地图让城市之间的距离变得更近，建设活动也更加集中。南屿、海港、恒丹、旧巷等地区快速发展，玩家通过视频、宣传、暑期活动和熟人邀请不断涌入，服务器一度迎来非常活跃的建设潮。
+六周目是氢气工艺最难忘的一段时间，也是最热闹、也最复杂的时期之一。七周目只是六周目的延续。新模组、新生态带来了很多，也改变了很多。岛屿地图让城市之间的距离变得更近，建设活动也更加集中。南屿、海港、恒丹、旧巷等地区快速发展，玩家通过视频、宣传、暑期活动和熟人邀请不断涌入，服务器一度迎来非常活跃的建设潮。
 
 这一阶段也延续了「大号基友服」的气质。服务器并不是靠商业化运营或强引流维持，而是靠兴趣、人脉和玩家之间的关系聚集起来。很多人进入服务器，不只是为了建铁路、修城市，也是为了参与一个热闹、有梗、能聊天、能留下痕迹的熟人社区。
 

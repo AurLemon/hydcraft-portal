@@ -92,9 +92,7 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 ::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南屿都東峰区政府広場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南屿都東峰区労働者新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恒丹県軌道交通駅構内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港県ノーム地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南屿都東峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"臨東市サーバー駐 HydCraft 事務所の内部景観"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南屿都平海門地区の俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"臨東市サーバー駐 HydCraft 事務所の正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恒丹県軌道交通車両基地"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"発規辦事務所の正門に掲げられた二枚の外島開発計画図"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南屿都平海門地区の華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港県ヘルヘイム地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四回 HydCraft 運動会開会式の会場"}]'}
 ::
 
-六周目は、HydCraft の中でもとりわけ忘れがたい時間でした。七周目は、ある意味で六周目の延長線上にあります。新しい Mod と新しい生態系は、多くのものをもたらし、多くのものを変えました。
-
-六周目は、HydCraft の歴史の中でももっともにぎやかで、もっとも複雑な時期の一つでした。島マップによって都市同士の距離は近くなり、建設活動もより集中しました。南屿、海港、恒丹、旧巷などの地域が急速に発展し、動画、宣伝、夏のイベント、身内からの誘いを通してプレイヤーが次々に流れ込み、一時は非常に活発な建設ブームが起きました。
+六周目は、HydCraft の中でもとりわけ忘れがたい時間であり、もっともにぎやかで、もっとも複雑な時期の一つでもありました。七周目は、ある意味で六周目の延長線上にあります。新しい Mod と新しい生態系は、多くのものをもたらし、多くのものを変えました。島マップによって都市同士の距離は近くなり、建設活動もより集中しました。南屿、海港、恒丹、旧巷などの地域が急速に発展し、動画、宣伝、夏のイベント、身内からの誘いを通してプレイヤーが次々に流れ込み、一時は非常に活発な建設ブームが起きました。
 
 この時期にも「大きめの身内サーバー」という気質は引き継がれていました。サーバーは商業運営や強い集客で成り立っていたわけではなく、興味、人脈、プレイヤー同士の関係によって集まっていました。多くの人は、鉄道や都市を作るためだけでなく、にぎやかで、ネタがあって、会話できて、自分の痕跡も残せる、そんな身内コミュニティに参加するために入ってきたのです。
 
