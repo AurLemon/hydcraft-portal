@@ -18,14 +18,16 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 ::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"サーバー初期のロゴ（滨城市サーバー）","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"第二周目の行政区画","width":"20rem"}]'}
 ::
 
-2018 年 9 月 1 日、HydCraft のもっとも初期の形は、数人の友人同士による MC マルチから生まれました。最初期のプレイヤーの多くは、RTM（鉄道系 Mod）の関連チャットグループから来ていました。プレイヤーたちはスポーン地点の近くに建物や道路、駅、初期の都市鉄道を少しずつ作っていき、その場所は後に「滨城市」と呼ばれるようになります。当時のサーバー規模はとても小さく、グループ人数も少なく、日常的にオンラインのプレイヤーも限られていましたが、交通建設を重視する方向性と、みんなで一緒に作る習慣だけはこの頃にすでに定まっていました。
+2018 年 9 月 1 日、HydCraft のもっとも初期の形は、数人の友人同士による MC マルチから生まれました。最初期のプレイヤーの多くは、RTM（鉄道系 Mod）の関連チャットグループから来ていました。プレイヤーたちはスポーン地点の近くに建物や道路、駅、初期の都市鉄道を少しずつ作っていき、その場所は後に「滨城市」と呼ばれるようになります。
+
+サーバーの名前も最初は「滨城市サーバー」でしたが、2018 年 11 月に「HydCraft サーバー」へ改名されました。当時のサーバー規模はとても小さく、グループ人数も少なく、日常的にオンラインのプレイヤーも限られていましたが、交通建設を重視する方向性と、みんなで一緒に作る習慣だけはこの頃にすでに定まっていました。
 ::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"第一周目初期の建設の痕跡"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"スポーン地点横の駅を発車する列車"}]'}
 ::
 
 一周目は一か月ほどしか続きませんでした。未熟で、明確な計画もありませんでした。むしろ、純粋に野放図に育っていく時期だったと言ったほうが近いです。サーバーは最初、家庭用 PC で動いており、回線、構成、プラグイン環境のどれもが不安定でした。クラウドサーバーへ移行してから、ようやくプレイ体験が少し改善されました。この段階は本当に「なんとなく遊んでいた」時期です。無理に意味づけをするなら、いちばん早いプレイヤー関係の土台を作り、HydCraft にぼんやりとしたコミュニティの輪郭を初めて与えた時期だったのかもしれません。
 
 二周目が始まると、サーバーは単なる身内マルチの状態を少しずつ抜け出し、もっと複雑な探索段階に入っていきました。プレイヤー数はゆっくり増え、都市や地域も拡張され、滨城市、昆仑市、西京市、冬木市、东风市、北海市、平果市などが次々に現れました。都市といっても、実際には一人か二人のプレイヤーが長く維持する個人領地や小さな拠点に近い場所も多かったです。それぞれに名前があり、路線があり、建築の好みがあり、人間関係がありました。そうしてサーバーは、ただの一枚の地図から、人によって保たれる複数の「場所」の集まりへと変わっていきました。要するに、この頃からみんなが土地を囲い始めたわけです。
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"プレイヤーの PC スクリーンショット"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"サーバー人数のスクリーンショット"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"プレイヤーが記録した RTM 車両のカオスな場面"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"プレイヤーたちが MTS の航空機を操縦して飛行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"プレイヤーが車両を運転して走行"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"東風島政府の駐在地"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"第二周目のプレイヤーの PC スクリーンショット"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"第二周目のサーバー人数のスクリーンショット"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"第二周目のプレイヤーが記録した RTM 車両のカオスな場面"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"第二周目のプレイヤーたちが MTS の航空機を操縦して飛行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"第二周目のプレイヤーが車両を運転して走行"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"第二周目の東風島政府の駐在地"}]'}
 ::
 
 当然、地域同士には協力もあれば摩擦もありました。ただ、多くの場合、都市同士の関係に見えるものの本質は、やはりプレイヤー同士の関係でした。誰が一緒に道路を作りたいのか。誰が路線をつなぎたいのか。誰が誰の計画を気に入らないのか。誰と誰が近いのか。ゲーム内の建設問題に見えても、その根底にあるのは、身内社会の中での協力、境界、感情の問題でした。
@@ -36,7 +38,7 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 
 ただし、二周目の終わりは計画的な締めくくりではなく、事故でした。当時使っていた無料プロバイダが突然逃げ、サーバーもそのまま止まりました。この段階は 2019 年 5 月 7 日で終わりを迎えます。
 
-::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"HydCore 401 工場の俯瞰図","height":"18rem"}]'}
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"第三周目 HydCore 401 工場の俯瞰図","height":"18rem"}]'}
 ::
 
 三周目は、どちらかといえば短い技術的な移行期間でした。二周目がやむなく終わったあと、サーバーは 1.7.10 から 1.12.2 へ進み、そのあいだに二度のワールド差し替えと、新しいホスト案の試行も経験しました。無料サービスが飛んだあと、プレイヤーの一人が自前サーバー用にみんなでお金を出し合おうと提案し、しばらくのあいだ完全に無料資源へ依存する状態からは抜け出しました。
@@ -49,7 +51,7 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 
 ## だんだん形になる
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"青城都北湖市の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"旧南川の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"新南川の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"清澄市の俯瞰図"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"第四周目 青城都北湖市の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"第四周目 旧南川の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"第四周目 新南川の俯瞰図"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"第四周目 清澄市の俯瞰図"}]'}
 ::
 
 2019 年 7 月 30 日、四周目が始まりました。前三つの周目に比べると、四周目はより安定した資源、より広い人脈、より明確な方向性を持っていました。サーバーは引き続き、鉄道、都市、公共建設を中心に展開していきます。
@@ -66,7 +68,7 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 
 ## 少し特別な夏
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"源江都広陽区の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"旧西海の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"新西海の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"北海のある駅で橋を渡る列車"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"第五周目 源江都広陽区の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"第五周目 旧西海の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"第五周目 新西海の俯瞰図"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"第五周目 北海のある駅で橋を渡る列車"}]'}
 ::
 
 2020 年 5 月、みんなの合意によって四周目は平和に終了しました。これは HydCraft にとって、技術事故で中断しなかった二度目の周目です。6 月 7 日、五周目が正式に始まりました。この周目は、かなりの部分で四周目後半の混乱を区切り、より規則的で長期建設に向いた新しい段階へ進むためのものでした。
@@ -89,7 +91,7 @@ HydCraft は、最初から制度が整い、目標が明確で、技術基盤�
 2022 年 1 月、みんなのあいだで、より現代的な鉄道 Mod である MTR を試してみようという提案が出始めました。五周目の通常運営に影響を与えないために、新しいサーバーはまず「氦气分服」という名で 2022 年 2 月 17 日に立ち上がり、しばらく五周目と並行して動いていました。ただ、この並走は長く続きませんでした。一か月後、五周目は維持コストの高さから閉鎖され、実際に動いていたのは氦气分服だけになります。そして後に、それが正式に六周目と呼ばれるようになりました。
 
 六周目は 1.16.5 へアップグレードされ、MTR や Create など新しい Mod 生態系が導入されました。これは HydCraft が RTM の時代を抜け、新しい建設段階へ入ったことを意味していました。以前と比べて MTR はより滑らかな鉄道体験をもたらし、都市、路線、公共交通システムに対する想像の余地も大きく広げました。
-::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南屿都東峰区政府広場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南屿都東峰区労働者新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恒丹県軌道交通駅構内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港県ノーム地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南屿都東峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"臨東市サーバー駐 HydCraft 事務所の内部景観"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南屿都平海門地区の俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"臨東市サーバー駐 HydCraft 事務所の正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恒丹県軌道交通車両基地"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"発規辦事務所の正門に掲げられた二枚の外島開発計画図"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南屿都平海門地区の華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港県ヘルヘイム地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四回 HydCraft 運動会開会式の会場"}]'}
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"第六周目 南屿都東峰区政府広場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"第六周目 南屿都東峰区労働者新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"第六周目 恒丹県軌道交通駅構内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"第六周目 海港県ノーム地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"第六周目 南屿都東峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"第六周目 臨東市サーバー駐 HydCraft 事務所の内部景観"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"第六周目 南屿都平海門地区の俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"第六周目 臨東市サーバー駐 HydCraft 事務所の正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"第六周目 恒丹県軌道交通車両基地"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"第六周目 発規辦事務所の正門に掲げられた二枚の外島開発計画図"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"第六周目 南屿都平海門地区の華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"第六周目 海港県ヘルヘイム地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第六周目 第四回 HydCraft 運動会開会式の会場"}]'}
 ::
 
 六周目は、HydCraft の中でもとりわけ忘れがたい時間であり、もっともにぎやかで、もっとも複雑な時期の一つでもありました。七周目は、ある意味で六周目の延長線上にあります。新しい Mod と新しい生態系は、多くのものをもたらし、多くのものを変えました。島マップによって都市同士の距離は近くなり、建設活動もより集中しました。南屿、海港、恒丹、旧巷などの地域が急速に発展し、動画、宣伝、夏のイベント、身内からの誘いを通してプレイヤーが次々に流れ込み、一時は非常に活発な建設ブームが起きました。
@@ -250,7 +252,7 @@ HydCraft は、もちろん無矛盾の理想郷ではありません。長期�
 
 私たちはただ、まだ残す価値のあるものをなるべく残し、戻りたい人のために入口を残し、かつて一緒に生きた人たちのために記録を残そうとしているだけです。もちろん、今後も誰かが来てくれるなら、この灯りは新しい物語のためにも場所を空け続けるはずです。
 
-::image-carousel{reverse=true images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（第六周目）東峰別荘区前でのプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（第六周目）青瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（第七周目）管委会江戸駐在地前で撮られたスナップ"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（第七周目）HydCraft 相互訪問時の翊秋工芸代表団の集合写真"}]'}
+::image-carousel{reverse=true images='[{"src":"timeline/gallery/season_6/player_group_20220730_210815.webp","caption":"2022 年 7 月 30 日（第六周目）ハイドロ瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20220818_162301.webp","caption":"2022 年 8 月 18 日（第六周目）東峰別荘区前でのプレイヤー集合写真"},{"src":"timeline/gallery/season_6/player_group_20230711_215320.webp","caption":"2023 年 7 月 10 日（第六周目）ハイドロ瓦台前で撮ったプレイヤー集合写真"},{"src":"timeline/gallery/season_7/player_group_20250622_011012.webp","caption":"2025 年 6 月 22 日（第七周目）管委会江戸駐在地前で撮られたスナップ"},{"src":"timeline/gallery/season_7/player_group_20251018_221100.webp","caption":"2025 年 10 月 18 日（第七周目）HydCraft 相互訪問時の翊秋工芸代表団の集合写真"}]'}
 ::
 
 だって、物語はまだ続いているのですから。

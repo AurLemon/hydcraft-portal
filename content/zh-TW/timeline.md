@@ -18,14 +18,16 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 ::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"伺服器早期 LOGO（濱城市伺服器）","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"二周目行政區劃","width":"20rem"}]'}
 ::
 
-2018 年 9 月 1 日，HydCraft 最早的形態誕生於幾名好友之間的 MC 聯機，最初的玩家多來自 RTM（一個火車模組）相關的交流群。玩家們在出生點附近陸續修建了各種建築、道路、車站和早期城市軌道交通，後來被命名為濱城市。那時的伺服器規模很小，群內人數不多，日常在線玩家也有限，不過最初的交通建設方向和共同建設習慣已經定下來了。
+2018 年 9 月 1 日，HydCraft 最早的形態誕生於幾名好友之間的 MC 聯機，最初的玩家多來自 RTM（一個火車模組）相關的交流群。玩家們在出生點附近陸續修建了各種建築、道路、車站和早期城市軌道交通，後來被命名為濱城市。
+
+伺服器一開始也叫濱城市伺服器，到了 2018 年 11 月才更名為氫氣工藝伺服器。那時的伺服器規模很小，群內人數不多，日常在線玩家也有限，不過最初的交通建設方向和共同建設習慣已經定下來了。
 ::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"一周目早期建設痕跡"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"出生點旁車站發車"}]'}
 ::
 
 一周目只持續了一個月左右。它不成熟，也沒有清晰的規劃。一周目更像是一段純粹的野蠻生長的時期。服務端最初運行在家用機上，頻寬、配置和外掛環境都不穩定。直到伺服器遷移到雲主機，遊戲體驗才有所改善。這一階段更接近「隨便玩玩」，而且是真正的隨便玩玩。硬要上一點價值的話，或許它奠定了最早的玩家關係？也讓 HydCraft 第一次有了模糊的社群雛形。
 
 二周目開始後，伺服器逐漸擺脫單純熟人聯機的狀態，進入更複雜的探索階段。玩家人數緩慢增加，城市和地區也開始擴展，濱城市、崑崙市、西京市、冬木市、東風市、北海市、平果市等地方陸續出現。說是城市，其實很多地方更接近由一兩名玩家長期經營的個人領地或小團體據點。它們有自己的名字、線路、建築風格和人際關係，也因此讓伺服器從一張單純的地圖，變成了一組由人維繫的地方。反正，這個時候，大家都開始圈地了。
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"玩家的電腦截圖"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"伺服器人數截圖"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"玩家記錄下的 RTM 車輛鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"玩家們駕駛 MTS 飛行器飛行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"玩家駕駛車輛行駛"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"東風島政府駐地"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"二周目玩家的電腦截圖"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"二周目伺服器人數截圖"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"二周目玩家記錄下的 RTM 車輛鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"二周目玩家們駕駛 MTS 飛行器飛行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"二周目玩家駕駛車輛行駛"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"二周目東風島政府駐地"}]'}
 ::
 
 這些地區之間當然有協作，也有摩擦。但很多時候，所謂城市之間的關係，本質上還是玩家之間的關係。誰願意一起修路？誰願意互相接線路？誰對誰的規劃不滿意？誰和誰關係更近？這些看似遊戲裡的建設問題，本質都是熟人社會裡的合作、邊界和情緒。
@@ -36,7 +38,7 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 
 不過，二周目的結束並不是一次經過計畫的收尾，而是一場意外。當時使用的免費服務商突然跑路，伺服器也隨之中斷。這一階段最終停在了 2019 年 5 月 7 日。
 
-::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"氫核四零一廠俯瞰圖","height":"18rem"}]'}
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"三周目氫核四零一廠俯瞰圖","height":"18rem"}]'}
 ::
 
 三周目則更像一次短暫的技術過渡。二周目被迫結束後，伺服器從 1.7.10 邁向 1.12.2，期間經歷過兩次存檔更替，也嘗試過新的主機方案。免費服務商跑路之後，有玩家提議大家湊錢購買自建機，伺服器因此短暫擺脫了完全依賴免費資源的狀態。
@@ -49,7 +51,7 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 
 ## 逐漸成形
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"青城都北湖市俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"舊南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"新南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"清澄市俯瞰圖"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"四周目青城都北湖市俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"四周目舊南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"四周目新南川俯瞰圖"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"四周目清澄市俯瞰圖"}]'}
 ::
 
 2019 年 7 月 30 日，四周目啟動。相比前三個周目，四周目擁有更穩定的資源、更多的人脈和更明確的發展方向。伺服器繼續圍繞鐵路、城市和公共建設展開。
@@ -66,7 +68,7 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 
 ## 別樣的夏天
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"源江都廣陽區俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"舊西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"新西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"北海某車站列車正在通過橋梁"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"五周目源江都廣陽區俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"五周目舊西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"五周目新西海俯瞰圖"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"五周目北海某車站列車正在通過橋梁"}]'}
 ::
 
 2020 年 5 月，經過大家共同決定，四周目和平結束。這是 HydCraft 第二個沒有因技術意外而中斷的周目。6 月 7 日，五周目正式啟動。這個周目在很大程度上，是為了結束四周目後期的混亂，讓伺服器進入一個更有規律、也更適合長期建設的新階段。
@@ -89,7 +91,7 @@ HydCraft 並不是從一開始就擁有完整制度、明確目標和技術的�
 2022 年 1 月，大家開始提議嘗試更現代的鐵路模組 MTR。為了避免影響五周目的正常運行，新的伺服器先以「氦氣分服」的名義於 2022 年 2 月 17 日啟動，並與五周目並行了一段時間。只是這種並行並沒有持續太久。一個月後，五周目因維護開銷過高而關閉，實際仍在運行的只剩下氦氣分服。後來，它被正式更名為六周目。
 
 六周目升級到了 1.16.5，引入了 MTR、機械動力等新的模組生態，也標誌著 HydCraft 從 RTM 時代進入新的建設階段。相比過去，MTR 帶來了更流暢的鐵路體驗，也讓大家對城市、線路和公共交通系統有了新的想像空間。
-::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南嶼都東峰區政府廣場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南嶼都東峰區工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恆丹縣軌道交通站內"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港縣諾姆地區"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南嶼都東峰區政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"臨東市伺服器駐 HydCraft 辦事處內部景觀"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南嶼都平海門片區俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"臨東市伺服器駐 HydCraft 辦事處正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恆丹縣軌道交通車輛段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"發規辦辦事處正門處懸掛的兩幅外島開發規劃圖"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南嶼都平海門片區的華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港縣赫爾海姆地區"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四屆氫運會開幕式場地"}]'}
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"六周目南嶼都東峰區政府廣場"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"六周目南嶼都東峰區工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"六周目恆丹縣軌道交通站內"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"六周目海港縣諾姆地區"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"六周目南嶼都東峰區政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"六周目臨東市伺服器駐 HydCraft 辦事處內部景觀"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"六周目南嶼都平海門片區俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"六周目臨東市伺服器駐 HydCraft 辦事處正門"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"六周目恆丹縣軌道交通車輛段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"六周目發規辦辦事處正門處懸掛的兩幅外島開發規劃圖"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"六周目南嶼都平海門片區的華表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"六周目海港縣赫爾海姆地區"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"六周目第四屆氫運會開幕式場地"}]'}
 ::
 
 六周目是 HydCraft 最難忘的一段時間，也是最熱鬧、也最複雜的時期之一。七周目只是六周目的延續。新模組、新生態帶來了很多，也改變了很多。島嶼地圖讓城市之間的距離變得更近，建設活動也更加集中。南嶼、海港、恆丹、舊巷等地區快速發展，玩家透過影片、宣傳、暑期活動和熟人邀請不斷湧入，伺服器一度迎來非常活躍的建設潮。

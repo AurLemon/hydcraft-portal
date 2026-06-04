@@ -19,17 +19,19 @@ updatedAt: 2026-06-02T16:09:07+08:00
 ::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"服务器早期 LOGO（滨城市服务器）","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"二周目行政区划","width":"20rem"}]'}
 ::
 
-2018 年 9 月 1 日，氢气工艺的最早形态诞生于几名好友之间的 MC 联机，最初的玩家多来自 RTM（一个火车模组）相关的交流群。玩家们在出生点附近陆续修建了各种建筑、道路、车站和早期城市轨道交通，后面被命名为滨城市。那时的服务器规模很小，群内人数不多，日常在线玩家也有限，不过最初的交通建设方向和共同建设习惯已经定下来了。
+2018 年 9 月 1 日，氢气工艺的最早形态诞生于几名好友之间的 MC 联机，最初的玩家多来自 RTM（一个火车模组）相关的交流群。玩家们在出生点附近陆续修建了各种建筑、道路、车站和早期城市轨道交通，后面被命名为滨城市。
+
+服务器的名字一开始也叫滨城市服务器，2018 年 11 月才更名为氢气工艺服务器。那时的服务器规模很小，群内人数不多，日常在线玩家也有限，不过最初的交通建设方向和共同建设习惯已经定下来了。
 
 ::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_1/lighting_1.webp","caption":"一周目早期建设痕迹"},{"src":"timeline/gallery/season_1/lighting_2.webp","caption":"出生点旁车站发车"}]'}
 ::
 
 一周目只持续了一个月左右。它不成熟，也没有清晰的规划。一周目更像是一段纯粹的野蛮生长的时期。服务端最初运行在家用机上，带宽、配置和插件环境都不稳定。直到服务器迁移到云主机，游戏体验才有所改善。这一阶段更接近「随便玩玩」，而且是真正的随便玩玩。硬要上一点价值的话，或许它奠定了最早的玩家关系？也让氢气工艺第一次有了模糊的社区雏形。
 
-二周目开始后，服务器逐渐摆脱单纯熟人联机的状态，进入更复杂的探索阶段。玩家人数缓慢增加，城市和地区也开始扩展，滨城市、昆仑市、西京市、冬木市、东风市、北海市、平果市等地方陆续出现。说是城市，其实很多地方更接近由一两名玩家长期经营的个人领地或小团体据点。它们有自己的名字、线路、建筑风格和人际关系，也因此让服务器从一张单纯的地图，变成了一组由人维系的地方。反正，这个时候，大家都开始圈地了。
-
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"玩家的电脑截图"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"服务器人数截图"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"玩家记录下的 RTM 车辆鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"玩家们驾驶 MTS 飞行器飞行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"玩家驾驶车辆行驶"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"东风岛政府驻地"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_2/player_group_1.webp","caption":"二周目玩家的电脑截图"},{"src":"timeline/gallery/season_2/player_group_2.webp","caption":"二周目服务器人数截图"},{"src":"timeline/gallery/season_2/player_group_3.webp","caption":"二周目玩家记录下的 RTM 车辆鬼畜"},{"src":"timeline/gallery/season_2/player_group_4.webp","caption":"二周目玩家们驾驶 MTS 飞行器飞行"},{"src":"timeline/gallery/season_2/player_group_5.webp","caption":"二周目玩家驾驶车辆行驶"},{"src":"timeline/gallery/season_2/player_group_6.webp","caption":"二周目东风岛政府驻地"}]'}
 ::
+
+二周目开始后，服务器逐渐摆脱单纯熟人联机的状态，进入更复杂的探索阶段。玩家人数缓慢增加，城市和地区也开始扩展，滨城市、昆仑市、西京市、冬木市、东风市、北海市、平果市等地方陆续出现。说是城市，其实很多地方更接近由一两名玩家长期经营的个人领地或小团体据点。它们有自己的名字、线路、建筑风格和人际关系，也因此让服务器从一张单纯的地图，变成了一组由人维系的地方。反正，这个时候，大家都开始圈地了。
 
 这些地区之间当然有协作，也有摩擦。但很多时候，所谓城市之间的关系，本质上还是玩家之间的关系。谁愿意一起修路？谁愿意互相接线路？谁对谁的规划不满意？谁和谁关系更近？这些看似游戏里的建设问题，本质都是熟人社会里的合作、边界和情绪。
 
@@ -39,7 +41,7 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 不过，二周目的结束并不是一次经过计划的收尾，而是一场意外。当时使用的免费服务商突然跑路，服务器也随之中断。这一阶段最终停在了 2019 年 5 月 7 日。
 
-::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"氢核四零一厂俯瞰图","height":"18rem"}]'}
+::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_3/lighting_1.webp","caption":"三周目氢核四零一厂俯瞰图","height":"18rem"}]'}
 ::
 
 三周目则更像一次短暂的技术过渡。二周目被迫结束后，服务器从 1.7.10 迈向 1.12.2，期间经历过两次存档更替，也尝试过新的主机方案。免费服务商跑路之后，有玩家提议大家凑钱购买自建机，服务器因此短暂地摆脱了完全依赖免费资源的状态。
@@ -52,7 +54,7 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 ## 逐渐成形
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"青城都北湖市俯瞰图"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"旧南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"新南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"清澄市俯瞰图"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_4/lighting_1.webp","caption":"四周目青城都北湖市俯瞰图"},{"src":"timeline/gallery/season_4/lighting_2.webp","caption":"四周目旧南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_3.webp","caption":"四周目新南川俯瞰图"},{"src":"timeline/gallery/season_4/lighting_4.webp","caption":"四周目清澄市俯瞰图"}]'}
 ::
 
 2019 年 7 月 30 日，四周目启动。相比前三个周目，四周目拥有更稳定的资源、更多的人脉和更明确的发展方向。服务器继续围绕铁路、城市和公共建设展开。
@@ -69,7 +71,7 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 ## 别样的夏天
 
-::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"源江都广阳区俯瞰图"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"旧西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"新西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"北海某车站列车正在通过桥梁"}]'}
+::image-grid{class="grid-cols-1 sm:grid-cols-2" images='[{"src":"timeline/gallery/season_5/lighting_1.webp","caption":"五周目源江都广阳区俯瞰图"},{"src":"timeline/gallery/season_5/lighting_2.webp","caption":"五周目旧西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_3.webp","caption":"五周目新西海俯瞰图"},{"src":"timeline/gallery/season_5/lighting_4.webp","caption":"五周目北海某车站列车正在通过桥梁"}]'}
 ::
 
 2020 年 5 月，经过大家共同决定，四周目和平结束。这是氢气工艺第二个没有因为技术意外而中断的周目。6 月 7 日，五周目正式启动。这个周目在很大程度上，是为了结束四周目后期的混乱，让服务器进入一个更有规律、也更适合长期建设的新阶段。
@@ -93,7 +95,7 @@ updatedAt: 2026-06-02T16:09:07+08:00
 
 六周目升级到了 1.16.5，引入了 MTR、机械动力等新的模组生态，也标志着氢气工艺从 RTM 时代进入了新的建设阶段。相比过去，MTR 带来了更流畅的铁路体验，也让大家对城市、线路和公共交通系统有了新的想象空间。
 
-::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"南屿都东峰区政府广场"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"南屿都东峰区工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"恒丹县轨道交通站内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"海港县诺姆地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"南屿都东峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"临东市服务器驻氢气工艺办事处内部景观"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"南屿都平海门片区俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"临东市服务器驻氢气工艺办事处正门"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"恒丹县轨道交通车辆段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"发规办办事处正门处悬挂的两幅外岛开发规划图"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"南屿都平海门片区的华表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"海港县赫尔海姆地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"第四届氢运会开幕式场地"}]'}
+::image-carousel{images='[{"src":"timeline/gallery/season_6/lighting_1.webp","caption":"六周目南屿都东峰区政府广场"},{"src":"timeline/gallery/season_6/lighting_2.webp","caption":"六周目南屿都东峰区工人新村"},{"src":"timeline/gallery/season_6/lighting_3.webp","caption":"六周目恒丹县轨道交通站内"},{"src":"timeline/gallery/season_6/lighting_4.webp","caption":"六周目海港县诺姆地区"},{"src":"timeline/gallery/season_6/lighting_5.webp","caption":"六周目南屿都东峰区政府"},{"src":"timeline/gallery/season_6/lighting_6.webp","caption":"六周目临东市服务器驻氢气工艺办事处内部景观"},{"src":"timeline/gallery/season_6/lighting_7.webp","caption":"六周目南屿都平海门片区俯瞰"},{"src":"timeline/gallery/season_6/lighting_8.webp","caption":"六周目临东市服务器驻氢气工艺办事处正门"},{"src":"timeline/gallery/season_6/lighting_9.webp","caption":"六周目恒丹县轨道交通车辆段"},{"src":"timeline/gallery/season_6/lighting_10.webp","caption":"六周目发规办办事处正门处悬挂的两幅外岛开发规划图"},{"src":"timeline/gallery/season_6/lighting_11.webp","caption":"六周目南屿都平海门片区的华表"},{"src":"timeline/gallery/season_6/lighting_12.webp","caption":"六周目海港县赫尔海姆地区"},{"src":"timeline/gallery/season_6/player_group_20230111_223511.webp","caption":"六周目第四届氢运会开幕式场地"}]'}
 ::
 
 六周目是氢气工艺最难忘的一段时间，也是最热闹、也最复杂的时期之一。七周目只是六周目的延续。新模组、新生态带来了很多，也改变了很多。岛屿地图让城市之间的距离变得更近，建设活动也更加集中。南屿、海港、恒丹、旧巷等地区快速发展，玩家通过视频、宣传、暑期活动和熟人邀请不断涌入，服务器一度迎来非常活跃的建设潮。
