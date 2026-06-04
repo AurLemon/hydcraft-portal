@@ -59,6 +59,12 @@ const themeButtonIcon = computed(() =>
 
 const selectedLocale = computed(() => locale.value as LocaleCode)
 const isHeroHeader = computed(() => route.meta.headerVariant === 'hero')
+const isLightMode = computed(() => colorMode.value === 'light')
+const activeNavTextClass = computed(() =>
+	!isHeroHeader.value && isLightMode.value
+		? 'text-primary'
+		: 'text-[rgb(125,211,252)]',
+)
 
 const headerScrimClass = computed(() =>
 	isHeroHeader.value
@@ -74,14 +80,14 @@ const headerActionButtonClass = computed(() =>
 
 const activeNavItemClass = computed(() =>
 	isHeroHeader.value
-		? 'font-semibold text-primary opacity-100 dark:text-primary'
-		: 'font-semibold text-primary opacity-100 dark:text-primary',
+		? `font-semibold ${activeNavTextClass.value} opacity-100`
+		: `font-semibold ${activeNavTextClass.value} opacity-100`,
 )
 
 const fallbackNavItemClass = computed(() =>
 	isHeroHeader.value
-		? 'text-primary opacity-100 dark:text-primary'
-		: 'text-primary opacity-100 dark:text-primary',
+		? `${activeNavTextClass.value} opacity-100`
+		: `${activeNavTextClass.value} opacity-100`,
 )
 
 const inactiveNavItemClass = computed(() =>
