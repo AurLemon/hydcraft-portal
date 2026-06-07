@@ -5,7 +5,16 @@
 		"overview": "概要",
 		"about": "私たちについて",
 		"links": "相互リンク",
-		"partners": "コミュニティパートナー"
+		"partners": "コミュニティパートナー",
+		"admin": "管理",
+		"adminServers": "サーバー管理",
+		"adminUsers": "ユーザー管理",
+		"profile": "プロフィール",
+		"minecraftAccounts": "ゲームプロフィール",
+		"login": "ログイン",
+		"register": "登録",
+		"forgotPassword": "パスワードを忘れた",
+		"resetPassword": "パスワード再設定"
 	},
 	"pages": {
 		"about": {
@@ -34,6 +43,285 @@
 		},
 		"language": {
 			"switch": "言語を切り替える"
+		},
+		"auth": {
+			"login": "ログイン"
+		},
+		"userMenu": {
+			"open": "ユーザーメニューを開く",
+			"profile": "プロフィール",
+			"minecraftAccounts": "ゲームプロフィール",
+			"admin": "管理画面",
+			"logout": "ログアウト",
+			"logoutSuccessTitle": "ログアウトしました"
+		}
+	},
+	"auth": {
+		"tabs": {
+			"login": "ログイン",
+			"register": "登録"
+		},
+		"actions": {
+			"togglePassword": "パスワード表示を切り替える"
+		},
+		"providers": {
+			"divider": "または",
+			"placeholder": "Hydroline ID / Minecraft 連携ログインは今後対応予定です。"
+		}
+	},
+	"login": {
+		"title": "HydCraft にログイン",
+		"description": "Hydroline ID でログインします",
+		"fields": {
+			"handleOrEmail": "ハンドルまたはメール",
+			"password": "パスワード",
+			"rememberMe": "ログイン状態を保持"
+		},
+		"placeholders": {
+			"handleOrEmail": "ハンドルまたはメールを入力",
+			"password": "パスワードを入力"
+		},
+		"actions": {
+			"submit": "ログイン",
+			"forgotPassword": "パスワードを忘れた?"
+		},
+		"registerPrompt": {
+			"text": "Hydroline ID をお持ちでないですか?",
+			"action": "Hydroline ID を作成"
+		},
+		"notifications": {
+			"successTitle": "ログインしました",
+			"failedTitle": "ログインに失敗しました",
+			"failedDescription": "Hydroline ID、パスワード、ユーザー状態を確認してください。"
+		}
+	},
+	"register": {
+		"title": "Hydroline ID を作成",
+		"description": "Hydroline ID を登録すると HydCraft に入り、後で Minecraft プロフィールを連携できます。",
+		"fields": {
+			"handle": "ハンドル",
+			"email": "メール",
+			"displayName": "表示名",
+			"password": "パスワード"
+		},
+		"placeholders": {
+			"handle": "3-32 文字の英小文字、数字、アンダースコア、ハイフン",
+			"email": "メールアドレスを入力",
+			"displayName": "任意",
+			"password": "8 文字以上"
+		},
+		"actions": {
+			"submit": "登録"
+		},
+		"loginPrompt": {
+			"text": "すでに Hydroline ID をお持ちですか?",
+			"action": "ログイン"
+		},
+		"notifications": {
+			"successTitle": "登録しました",
+			"successDescription": "Hydroline ID でログインしました。",
+			"failedTitle": "登録に失敗しました",
+			"failedDescription": "ハンドル、メール、パスワードの要件を確認してください。"
+		}
+	},
+	"forgotPassword": {
+		"title": "パスワードを復旧",
+		"description": "Hydroline ID のメールを入力してください。再設定チャネル設定後に次の手順を送信します。",
+		"fields": {
+			"email": "メール"
+		},
+		"placeholders": {
+			"email": "メールアドレスを入力"
+		},
+		"actions": {
+			"submit": "再設定メールを送信",
+			"backToLogin": "ログインへ戻る"
+		},
+		"notifications": {
+			"successTitle": "リクエストを受け付けました",
+			"successDescription": "メールが存在する場合、再設定フローを処理します。",
+			"failedTitle": "リクエストに失敗しました",
+			"failedDescription": "メール形式を確認するか、後でもう一度お試しください。"
+		}
+	},
+	"resetPassword": {
+		"title": "パスワード再設定",
+		"description": "再設定トークンと新しいパスワードを入力してください。",
+		"fields": {
+			"token": "再設定トークン",
+			"password": "新しいパスワード"
+		},
+		"placeholders": {
+			"token": "メールの再設定トークンを入力",
+			"password": "8 文字以上"
+		},
+		"actions": {
+			"submit": "パスワードを再設定",
+			"backToLogin": "ログインへ戻る"
+		},
+		"notifications": {
+			"successTitle": "パスワードを再設定しました",
+			"successDescription": "新しいパスワードでログインしてください。",
+			"failedTitle": "再設定に失敗しました",
+			"failedDescription": "トークン、パスワード、再設定チャネル設定を確認してください。"
+		}
+	},
+	"profile": {
+		"title": "プロフィール",
+		"fields": {
+			"handle": "ユーザー名",
+			"displayName": "表示名",
+			"avatarUrl": "アバター URL",
+			"bio": "自己紹介"
+		},
+		"actions": {
+			"save": "保存"
+		},
+		"notifications": {
+			"saved": "プロフィールを保存しました",
+			"savedDescription": "Header のユーザー情報を更新しました。",
+			"saveFailed": "プロフィールの保存に失敗しました",
+			"saveFailedDescription": "ログイン状態と入力内容を確認してください。"
+		}
+	},
+	"minecraftAccounts": {
+		"title": "ゲームプロフィール",
+		"badges": {
+			"primary": "メイン"
+		},
+		"fields": {
+			"note": "メモ",
+			"primary": "メインアカウントにする",
+			"noUuid": "UUID はまだありません"
+		},
+		"actions": {
+			"save": "保存"
+		},
+		"empty": {
+			"title": "連携済み Minecraft アカウントはありません",
+			"description": "連携またはサーバーデータソースからインポートされたアカウントがここに表示されます。",
+			"loadFailed": "ゲームプロフィールの読み込みに失敗しました"
+		},
+		"notifications": {
+			"saved": "ゲームプロフィールを保存しました",
+			"savedDescription": "メモとメインアカウント状態を更新しました。",
+			"saveFailed": "ゲームプロフィールの保存に失敗しました",
+			"saveFailedDescription": "ログイン状態とアカウントの所有関係を確認してください。"
+		}
+	},
+	"admin": {
+		"overview": {
+			"title": "Portal 概要",
+			"description": "おかえりなさい。現在のシステム稼働状態です。",
+			"loading": "Portal 設定を読み込んでいます...",
+			"metrics": {
+				"servers": "サーバー",
+				"users": "ユーザー",
+				"uptimeDays": "稼働日数",
+				"userDelta": "昨日比 {count}",
+				"runningSince": "{date} から稼働中",
+				"runningSinceUnavailable": "開始日は未記録です",
+				"unavailable": "未接続"
+			},
+			"status": {
+				"normal": "すべて正常",
+				"error": "エラー",
+				"inactive": "無効 / 未設定"
+			},
+			"sections": {
+				"serviceStatus": "サービス状態",
+				"recentActivity": "最近の活動",
+				"quickActions": "クイック操作"
+			},
+			"actions": {
+				"viewAll": "すべて表示",
+				"viewAllActivities": "すべての活動を表示"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL データベース",
+					"description": "Portal メインデータベース"
+				},
+				"authme": {
+					"label": "AuthMe データベース",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms データベース",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "未実装",
+				"placeholderDescription": "Audit ログ接続後に最近の活動を表示します。"
+			},
+			"quickActions": {
+				"servers": "サーバーページへ移動",
+				"serversDescription": "サーバー接続とデータソース設定を管理",
+				"users": "全ユーザー管理ページ",
+				"usersDescription": "Portal ユーザーを表示・管理"
+			}
+		},
+		"servers": {
+			"title": "サーバー管理",
+			"create": "サーバーを追加",
+			"loading": "サーバー設定を読み込んでいます...",
+			"empty": {
+				"title": "サーバー設定はまだありません",
+				"description": "サーバーを追加してから PortalBridge、AuthMe、LuckPerms を設定します。"
+			}
+		},
+		"users": {
+			"title": "ユーザー管理",
+			"description": "Portal ユーザー管理入口です。",
+			"placeholder": "ユーザー管理ページは未実装です。"
+		},
+		"serverConfig": {
+			"createEyebrow": "サーバーを追加",
+			"title": "サーバー接続設定",
+			"sections": {
+				"basic": "サーバー基本情報"
+			},
+			"fields": {
+				"serverId": "サーバー ID",
+				"code": "コード",
+				"name": "名前",
+				"sortOrder": "並び順",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "説明",
+				"enabled": "このサーバーを有効化",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "Bridge 接続を有効化"
+			},
+			"placeholders": {
+				"keepSecret": "空欄なら変更しません"
+			},
+			"actions": {
+				"cancel": "キャンセル",
+				"save": "設定を保存"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "データソースを有効化"
+		},
+		"notifications": {
+			"overviewLoadFailed": "概要の読み込みに失敗しました",
+			"serversLoadFailed": "サーバー設定の読み込みに失敗しました",
+			"serverSaved": "サーバー設定を保存しました",
+			"serverSavedDescription": "サーバー一覧を更新しました。",
+			"serverSaveFailed": "設定の保存に失敗しました",
+			"serverSaveFailedDescription": "ログイン状態と入力欄を確認してください。"
 		}
 	},
 	"home": {

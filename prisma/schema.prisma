@@ -1,0 +1,498 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String     @id @default(cuid())
+  handle          String     @unique
+  displayName     String?
+  email           String?    @unique
+  emailVerifiedAt DateTime?
+  avatarUrl       String?
+  bio             String?
+  role            UserRole   @default(USER)
+  status          UserStatus @default(ACTIVE)
+  statusReason    String?
+  title           String?
+  lastLoginAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  minecraftAccounts MinecraftAccount[]
+  externalAccounts  ExternalAccount[]
+  credential        UserCredential?
+  refreshTokens     RefreshToken[]
+}
+
+model UserCredential {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+model MinecraftAccount {
+  id                 String                 @id @default(cuid())
+  userId             String?
+  user               User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username           String
+  normalizedUsername String                 @unique
+  uuid               String?                @unique
+  status             MinecraftAccountStatus @default(PENDING)
+  source             MinecraftAccountSource @default(PORTAL)
+  authmeName         String?
+  authmeId           Int?                   @unique
+  firstJoinedAt      DateTime?
+  lastSeenAt         DateTime?
+  isPrimary          Boolean                @default(false)
+  verifiedAt         DateTime?
+  unlinkedAt         DateTime?
+  note               String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([userId])
+  @@index([username])
+  @@index([authmeName])
+  @@index([status])
+  @@index([source])
+}
+
+model ExternalAccount {
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          ExternalProvider
+  providerAccountId String
+  providerUsername  String?
+  providerEmail     String?
+  avatarUrl         String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model ExternalSyncRun {
+  id           String             @id @default(cuid())
+  source       ExternalSyncSource
+  status       ExternalSyncStatus @default(RUNNING)
+  startedAt    DateTime           @default(now())
+  finishedAt   DateTime?
+  rowsRead     Int                @default(0)
+  rowsUpserted Int                @default(0)
+  errorMessage String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([source])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model MinecraftServer {
+  id          String   @id @default(cuid())
+  serverId    String   @unique
+  code        String   @unique
+  name        String
+  description String?
+  host        String
+  port        Int      @default(25565)
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  portalBridge PortalBridgeConfig?
+  authMe       AuthMeSourceConfig?
+  luckPerms    LuckPermsSourceConfig?
+  snapshots    MinecraftServerSnapshot[]
+  identities   ServerPlayerIdentity[]
+  sessions     ServerPlayerSession[]
+}
+
+model PortalBridgeConfig {
+  id                  String                      @id @default(cuid())
+  minecraftServerId   String                      @unique
+  minecraftServer     MinecraftServer             @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  bridgeId            String
+  module              String                      @default("portalbridge-core")
+  wsUrl               String
+  encryptedSecret     String?
+  enabled             Boolean                     @default(false)
+  requestedTopics     String[]                    @default([])
+  allowedTopics       String[]                    @default([])
+  resumeFromSeq       BigInt                      @default(0)
+  lastConnectionState PortalBridgeConnectionState @default(DISCONNECTED)
+  lastConnectedAt     DateTime?
+  lastDisconnectedAt  DateTime?
+  lastError           String?
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+
+  receipts PortalBridgeMessageReceipt[]
+  commands PortalBridgeCommand[]
+
+  @@unique([bridgeId, module])
+  @@index([enabled])
+  @@index([lastConnectionState])
+}
+
+model AuthMeSourceConfig {
+  id                String          @id @default(cuid())
+  minecraftServerId String          @unique
+  minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  host              String
+  port              Int             @default(3306)
+  database          String
+  username          String
+  encryptedPassword String?
+  enabled           Boolean         @default(false)
+  lastSyncAt        DateTime?
+  lastError         String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([enabled])
+}
+
+model LuckPermsSourceConfig {
+  id                String          @id @default(cuid())
+  minecraftServerId String          @unique
+  minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  host              String
+  port              Int             @default(3306)
+  database          String
+  username          String
+  encryptedPassword String?
+  enabled           Boolean         @default(false)
+  lastSyncAt        DateTime?
+  lastError         String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([enabled])
+}
+
+model MinecraftServerSnapshot {
+  id         String                      @id @default(cuid())
+  serverId   String
+  server     MinecraftServer             @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  kind       MinecraftServerSnapshotKind
+  observedAt DateTime
+  payload    Json
+  createdAt  DateTime                    @default(now())
+
+  @@index([serverId])
+  @@index([kind])
+  @@index([observedAt])
+}
+
+model ServerPlayerIdentity {
+  id                 String                            @id @default(cuid())
+  serverId           String
+  server             MinecraftServer                   @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  uuid               String
+  username           String?
+  normalizedUsername String?
+  uuidSource         String?
+  firstSeenAt        DateTime?
+  lastSeenAt         DateTime?
+  evidenceCount      Int                               @default(0)
+  conflictState      ServerPlayerIdentityConflictState @default(NONE)
+  createdAt          DateTime                          @default(now())
+  updatedAt          DateTime                          @updatedAt
+
+  @@unique([serverId, uuid])
+  @@index([normalizedUsername])
+  @@index([conflictState])
+}
+
+model ServerPlayerIdentityEvidence {
+  id                 String                             @id @default(cuid())
+  source             ServerPlayerIdentityEvidenceSource
+  sourceMessageId    String?
+  serverId           String
+  uuid               String?
+  username           String?
+  normalizedUsername String?
+  uuidSource         String?
+  observedAt         DateTime
+  payload            Json?
+  createdAt          DateTime                           @default(now())
+
+  @@unique([source, sourceMessageId])
+  @@index([serverId, uuid])
+  @@index([normalizedUsername])
+  @@index([observedAt])
+}
+
+model ServerPlayerSession {
+  id                 String          @id @default(cuid())
+  serverId           String
+  server             MinecraftServer @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  sessionId          String?
+  uuid               String
+  username           String?
+  normalizedUsername String?
+  openedAt           DateTime
+  closedAt           DateTime?
+  closeReason        String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@unique([serverId, sessionId])
+  @@index([serverId, uuid])
+  @@index([openedAt])
+  @@index([closedAt])
+}
+
+model PortalBridgeMessageReceipt {
+  id             String             @id @default(cuid())
+  bridgeConfigId String
+  bridgeConfig   PortalBridgeConfig @relation(fields: [bridgeConfigId], references: [id], onDelete: Cascade)
+  messageId      String
+  seq            BigInt?
+  topic          String
+  receivedAt     DateTime           @default(now())
+  ackedAt        DateTime?
+  payload        Json?
+
+  @@unique([messageId])
+  @@unique([bridgeConfigId, seq])
+  @@index([topic])
+  @@index([receivedAt])
+}
+
+model PortalBridgeCommand {
+  id             String                    @id @default(cuid())
+  bridgeConfigId String
+  bridgeConfig   PortalBridgeConfig        @relation(fields: [bridgeConfigId], references: [id], onDelete: Cascade)
+  commandId      String                    @unique
+  action         String
+  status         PortalBridgeCommandStatus @default(PENDING)
+  payload        Json?
+  sentAt         DateTime?
+  completedAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  @@index([bridgeConfigId])
+  @@index([action])
+  @@index([status])
+}
+
+model AuthMeAccountSnapshot {
+  id                 String    @id @default(cuid())
+  authmeId           Int       @unique
+  username           String
+  normalizedUsername String    @unique
+  realname           String?
+  email              String?
+  registeredAt       DateTime?
+  lastLoginAt        DateTime?
+  hasTotp            Boolean   @default(false)
+  rawRegdate         BigInt?
+  rawLastlogin       BigInt?
+  syncedAt           DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([username])
+  @@index([realname])
+  @@index([lastLoginAt])
+}
+
+model LuckPermsPlayerSnapshot {
+  id                 String   @id @default(cuid())
+  uuid               String   @unique
+  username           String
+  normalizedUsername String
+  primaryGroup       String
+  syncedAt           DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([username])
+  @@index([normalizedUsername])
+  @@index([primaryGroup])
+}
+
+model LuckPermsGroupSnapshot {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LuckPermsUserPermissionSnapshot {
+  id         String    @id @default(cuid())
+  sourceId   Int       @unique
+  uuid       String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  rawExpiry  BigInt
+  expiresAt  DateTime?
+  contexts   String
+  syncedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([uuid])
+  @@index([permission])
+  @@index([server])
+  @@index([world])
+}
+
+model LuckPermsGroupPermissionSnapshot {
+  id         String    @id @default(cuid())
+  sourceId   Int       @unique
+  groupName  String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  rawExpiry  BigInt
+  expiresAt  DateTime?
+  contexts   String
+  syncedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([groupName])
+  @@index([permission])
+  @@index([server])
+  @@index([world])
+}
+
+model LuckPermsTrackSnapshot {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  rawGroups String
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  USER
+  MEMBER
+  ADMIN
+  OWNER
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+  BANNED
+}
+
+enum MinecraftServerSnapshotKind {
+  SERVER_INFO
+  SERVER_STATUS
+  WORLDS
+  ONLINE_PLAYERS
+  METRICS
+  HEARTBEAT
+  PLAYER_SNAPSHOT
+  PLAYERDATA_SCAN
+  STATS_SNAPSHOT
+  ADVANCEMENTS_SNAPSHOT
+  COMMAND_RESULT
+}
+
+enum ServerPlayerIdentityConflictState {
+  NONE
+  USERNAME_CONFLICT
+  UUID_CONFLICT
+  SOURCE_CONFLICT
+}
+
+enum ServerPlayerIdentityEvidenceSource {
+  PORTAL_BRIDGE
+  PLAYERDATA_SCAN
+  MANUAL
+  TEST
+}
+
+enum PortalBridgeConnectionState {
+  DISCONNECTED
+  CONNECTING
+  CONNECTED
+  REJECTED
+  ERROR
+}
+
+enum PortalBridgeCommandStatus {
+  PENDING
+  SENT
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  FAILED
+}
+
+enum MinecraftAccountStatus {
+  PENDING
+  VERIFIED
+  IMPORTED
+  UNLINKED
+  CONFLICTED
+}
+
+enum MinecraftAccountSource {
+  PORTAL
+  AUTHME
+  MANUAL
+  MIGRATION
+  OTHER
+}
+
+enum ExternalProvider {
+  GITHUB
+  MICROSOFT
+  QQ
+  DISCORD
+  CUSTOM
+}
+
+enum ExternalSyncSource {
+  AUTHME
+  LUCKPERMS
+}
+
+enum ExternalSyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}

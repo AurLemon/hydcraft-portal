@@ -1,7 +1,7 @@
 <template>
 	<Transition name="home-hero-video" mode="out-in" appear>
 		<div
-			v-if="isHomePage"
+			v-if="isHeroVideoPage"
 			class="home-hero-video pointer-events-none absolute top-0 left-0 right-0 z-0 h-screen min-h-180 overflow-hidden select-none mask-[linear-gradient(to_bottom,#000_0%,#000_40%,rgba(0,0,0,0.98)_52%,rgba(0,0,0,0.9)_58%,rgba(0,0,0,0.76)_64%,rgba(0,0,0,0.56)_70%,rgba(0,0,0,0.34)_77%,rgba(0,0,0,0.14)_84%,transparent_90%)]"
 			aria-hidden="true"
 		>
@@ -20,13 +20,11 @@
 
 <script setup lang="ts">
 import backgroundVideo from '~/assets/resources/homepage/promotional_video.webm'
+import { hasHeroVideoBackground } from '~/utils/layout/hero-video'
 
 const route = useRoute()
 
-const isHomePage = computed(() => {
-	const routeName = String(route.name ?? '')
-	return routeName === 'index' || routeName.startsWith('index___')
-})
+const isHeroVideoPage = computed(() => hasHeroVideoBackground(route))
 </script>
 
 <style scoped>

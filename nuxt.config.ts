@@ -54,6 +54,7 @@ export default defineNuxtConfig({
 		clientBundle: {
 			icons: [
 				'lucide:chevron-right',
+				'lucide:chevron-down',
 				'lucide:external-link',
 				'lucide:history',
 				'lucide:sun',
@@ -66,6 +67,22 @@ export default defineNuxtConfig({
 				'lucide:map',
 				'lucide:server',
 				'lucide:users',
+				'lucide:plus',
+				'lucide:save',
+				'lucide:radio-tower',
+				'lucide:database',
+				'lucide:shield-check',
+				'lucide:circle-alert',
+				'lucide:circle-check',
+				'lucide:clock-3',
+				'lucide:loader-circle',
+				'lucide:log-in',
+				'lucide:user-plus',
+				'lucide:mail',
+				'lucide:key-round',
+				'lucide:eye',
+				'lucide:eye-off',
+				'lucide:arrow-left',
 			],
 		},
 		serverBundle: {
@@ -109,6 +126,11 @@ export default defineNuxtConfig({
 	content: {
 		experimental: {
 			sqliteConnector: 'native',
+		},
+	},
+	nitro: {
+		experimental: {
+			tasks: true,
 		},
 	},
 	css: [

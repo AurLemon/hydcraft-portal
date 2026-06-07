@@ -13,6 +13,7 @@ type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 const props = defineProps<{
 	activeNavItemClass: string
 	fallbackNavItemClass: string
+	hidden?: boolean
 	inactiveNavItemClass: string
 }>()
 
@@ -87,12 +88,19 @@ const currentFallback = computed<MenuItem | null>(() => {
 		'/about': 'routes.about',
 		'/links': 'routes.links',
 		'/partners': 'routes.partners',
+		'/admin': 'routes.admin',
+		'/admin/servers': 'routes.adminServers',
+		'/admin/users': 'routes.adminUsers',
+		'/profile': 'routes.profile',
+		'/minecraft-accounts': 'routes.minecraftAccounts',
+		'/login': 'routes.login',
+		'/register': 'routes.register',
+		'/forgot-password': 'routes.forgotPassword',
+		'/reset-password': 'routes.resetPassword',
 	}
 
 	const normalizedPath = normalizePath(route.path)
-	const fallbackLabel = t(
-		routeToLabelKey[normalizedPath] || 'header.nav.currentPage',
-	)
+	const fallbackLabel = t(routeToLabelKey[normalizedPath] || 'routes.admin')
 
 	return {
 		key: route.fullPath || route.path,
@@ -169,6 +177,12 @@ const menuShellStyle = computed(() => {
 
 const resolveNavItemClass = (item: MenuItem): string =>
 	isPathActive(item) ? props.activeNavItemClass : props.inactiveNavItemClass
+
+const hiddenMenuClass = computed(() =>
+	props.hidden
+		? 'pointer-events-none translate-y-1 opacity-0 select-none'
+		: 'translate-y-0 opacity-100',
+)
 
 const closeMobileMenu = (): void => {
 	mobileMenuOpen.value = false
@@ -316,6 +330,15 @@ watch(mobileMenuOpen, (open) => {
 	void syncMobileMenuAnchor()
 })
 
+watch(
+	() => props.hidden,
+	(hidden) => {
+		if (hidden) {
+			closeMobileMenu()
+		}
+	},
+)
+
 onMounted(() => {
 	syncViewportWidth()
 	void syncShellWidth()
@@ -354,7 +377,8 @@ onBeforeUnmount(() => {
 	</div>
 
 	<nav
-		class="absolute left-1/2 hidden max-w-[calc(100vw-1.5rem)] min-w-0 -translate-x-1/2 justify-center md:flex"
+		class="absolute left-1/2 hidden max-w-[calc(100vw-1.5rem)] min-w-0 -translate-x-1/2 justify-center transition duration-[220ms] ease-out md:flex"
+		:class="hiddenMenuClass"
 	>
 		<div
 			class="max-w-full overflow-hidden rounded-full px-2 transition-[width] duration-500 ease-out"
@@ -367,7 +391,7 @@ onBeforeUnmount(() => {
 		>
 			<div
 				ref="menuInner"
-				class="inline-flex w-max flex-none flex-nowrap items-center justify-center gap-1"
+				class="inline-flex w-max flex-none flex-nowrap items-center justify-center gap-2"
 			>
 				<NuxtLink
 					v-for="item in baseNavItems"
@@ -420,7 +444,11 @@ onBeforeUnmount(() => {
 		</div>
 	</nav>
 
-	<div ref="mobileActiveButton" class="absolute top-12 left-6 z-10 md:hidden">
+	<div
+		ref="mobileActiveButton"
+		class="absolute top-12 left-6 z-10 transition duration-[220ms] ease-out md:hidden"
+		:class="hiddenMenuClass"
+	>
 		<UButton
 			type="button"
 			color="neutral"

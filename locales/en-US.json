@@ -5,7 +5,16 @@
 		"overview": "Overview",
 		"about": "About",
 		"links": "Friend Links",
-		"partners": "Community Partners"
+		"partners": "Community Partners",
+		"admin": "Manage",
+		"adminServers": "Server Management",
+		"adminUsers": "User Management",
+		"profile": "Profile",
+		"minecraftAccounts": "Minecraft Accounts",
+		"login": "Log In",
+		"register": "Register",
+		"forgotPassword": "Forgot Password",
+		"resetPassword": "Reset Password"
 	},
 	"pages": {
 		"about": {
@@ -34,6 +43,285 @@
 		},
 		"language": {
 			"switch": "Switch language"
+		},
+		"auth": {
+			"login": "Log In"
+		},
+		"userMenu": {
+			"open": "Open user menu",
+			"profile": "Profile",
+			"minecraftAccounts": "Minecraft Accounts",
+			"admin": "Admin",
+			"logout": "Log Out",
+			"logoutSuccessTitle": "Logged out"
+		}
+	},
+	"auth": {
+		"tabs": {
+			"login": "Log In",
+			"register": "Register"
+		},
+		"actions": {
+			"togglePassword": "Toggle password visibility"
+		},
+		"providers": {
+			"divider": "or",
+			"placeholder": "Hydroline ID / Minecraft binding login will be supported later."
+		}
+	},
+	"login": {
+		"title": "Log in to HydCraft",
+		"description": "Use Hydroline ID to sign in",
+		"fields": {
+			"handleOrEmail": "Handle or email",
+			"password": "Password",
+			"rememberMe": "Remember me"
+		},
+		"placeholders": {
+			"handleOrEmail": "Enter handle or email",
+			"password": "Enter password"
+		},
+		"actions": {
+			"submit": "Log In",
+			"forgotPassword": "Forgot password?"
+		},
+		"registerPrompt": {
+			"text": "No Hydroline ID yet?",
+			"action": "Create Hydroline ID"
+		},
+		"notifications": {
+			"successTitle": "Logged in",
+			"failedTitle": "Login failed",
+			"failedDescription": "Check the Hydroline ID, password, or user status."
+		}
+	},
+	"register": {
+		"title": "Create a Hydroline ID",
+		"description": "Register a Hydroline ID to enter HydCraft and bind Minecraft profiles later.",
+		"fields": {
+			"handle": "Handle",
+			"email": "Email",
+			"displayName": "Display name",
+			"password": "Password"
+		},
+		"placeholders": {
+			"handle": "3-32 lowercase letters, numbers, underscores, or hyphens",
+			"email": "Enter email address",
+			"displayName": "Optional",
+			"password": "At least 8 characters"
+		},
+		"actions": {
+			"submit": "Register"
+		},
+		"loginPrompt": {
+			"text": "Already have a Hydroline ID?",
+			"action": "Log in"
+		},
+		"notifications": {
+			"successTitle": "Registered",
+			"successDescription": "You are now signed in with Hydroline ID.",
+			"failedTitle": "Registration failed",
+			"failedDescription": "Check the handle, email, or password requirements."
+		}
+	},
+	"forgotPassword": {
+		"title": "Recover password",
+		"description": "Enter your Hydroline ID email. Follow-up steps will be sent after the reset channel is configured.",
+		"fields": {
+			"email": "Email"
+		},
+		"placeholders": {
+			"email": "Enter email address"
+		},
+		"actions": {
+			"submit": "Send reset email",
+			"backToLogin": "Back to login"
+		},
+		"notifications": {
+			"successTitle": "Request accepted",
+			"successDescription": "If the email exists, the reset flow will be processed.",
+			"failedTitle": "Request failed",
+			"failedDescription": "Check the email format or try again later."
+		}
+	},
+	"resetPassword": {
+		"title": "Reset password",
+		"description": "Enter the reset token and a new password to update your Hydroline ID password.",
+		"fields": {
+			"token": "Reset token",
+			"password": "New password"
+		},
+		"placeholders": {
+			"token": "Enter the reset token from email",
+			"password": "At least 8 characters"
+		},
+		"actions": {
+			"submit": "Reset password",
+			"backToLogin": "Back to login"
+		},
+		"notifications": {
+			"successTitle": "Password reset",
+			"successDescription": "Use the new password to log in.",
+			"failedTitle": "Reset failed",
+			"failedDescription": "Check the token, password, or reset channel configuration."
+		}
+	},
+	"profile": {
+		"title": "Profile",
+		"fields": {
+			"handle": "Handle",
+			"displayName": "Display name",
+			"avatarUrl": "Avatar URL",
+			"bio": "Bio"
+		},
+		"actions": {
+			"save": "Save Profile"
+		},
+		"notifications": {
+			"saved": "Profile saved",
+			"savedDescription": "The Header user state has been updated.",
+			"saveFailed": "Failed to save profile",
+			"saveFailedDescription": "Check your login status and fields."
+		}
+	},
+	"minecraftAccounts": {
+		"title": "Minecraft Accounts",
+		"badges": {
+			"primary": "Primary"
+		},
+		"fields": {
+			"note": "Note",
+			"primary": "Set as primary account",
+			"noUuid": "No UUID yet"
+		},
+		"actions": {
+			"save": "Save Account"
+		},
+		"empty": {
+			"title": "No linked Minecraft accounts",
+			"description": "Linked or imported server accounts will appear here.",
+			"loadFailed": "Failed to load Minecraft accounts"
+		},
+		"notifications": {
+			"saved": "Minecraft account saved",
+			"savedDescription": "The note and primary account state have been updated.",
+			"saveFailed": "Failed to save Minecraft account",
+			"saveFailedDescription": "Check your login status and account ownership."
+		}
+	},
+	"admin": {
+		"overview": {
+			"title": "Portal Overview",
+			"description": "Welcome back. Here is the current system status.",
+			"loading": "Loading Portal configuration...",
+			"metrics": {
+				"servers": "Servers",
+				"users": "Users",
+				"uptimeDays": "Uptime days",
+				"userDelta": "Since yesterday {count}",
+				"runningSince": "Running since {date}",
+				"runningSinceUnavailable": "Start date not recorded",
+				"unavailable": "Not wired"
+			},
+			"status": {
+				"normal": "All normal",
+				"error": "Error",
+				"inactive": "Disabled / not configured"
+			},
+			"sections": {
+				"serviceStatus": "Service Status",
+				"recentActivity": "Recent Activity",
+				"quickActions": "Quick Actions"
+			},
+			"actions": {
+				"viewAll": "View all",
+				"viewAllActivities": "View all activities"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL Database",
+					"description": "Portal primary database"
+				},
+				"authme": {
+					"label": "AuthMe Database",
+					"description": "Enabled {enabled} / configured {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms Database",
+					"description": "Enabled {enabled} / configured {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "Enabled {enabled} / configured {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "Not implemented",
+				"placeholderDescription": "Recent activity will appear after audit logs are wired."
+			},
+			"quickActions": {
+				"servers": "Go to servers",
+				"serversDescription": "Manage server access and data sources",
+				"users": "All users",
+				"usersDescription": "View and manage Portal users"
+			}
+		},
+		"servers": {
+			"title": "Server Management",
+			"create": "New Server",
+			"loading": "Loading server configuration...",
+			"empty": {
+				"title": "No server configuration yet",
+				"description": "Create a server before configuring PortalBridge, AuthMe, and LuckPerms."
+			}
+		},
+		"users": {
+			"title": "User Management",
+			"description": "Portal user management entry.",
+			"placeholder": "User management is not implemented yet."
+		},
+		"serverConfig": {
+			"createEyebrow": "New Server",
+			"title": "Server Access Configuration",
+			"sections": {
+				"basic": "Server Basic Info"
+			},
+			"fields": {
+				"serverId": "Server ID",
+				"code": "Code",
+				"name": "Name",
+				"sortOrder": "Sort order",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "Description",
+				"enabled": "Enable this server",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "Enable Bridge connection"
+			},
+			"placeholders": {
+				"keepSecret": "Leave blank to keep unchanged"
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"save": "Save Configuration"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "Enable data source"
+		},
+		"notifications": {
+			"overviewLoadFailed": "Failed to load overview",
+			"serversLoadFailed": "Failed to load server configuration",
+			"serverSaved": "Server configuration saved",
+			"serverSavedDescription": "The server list has been refreshed.",
+			"serverSaveFailed": "Failed to save configuration",
+			"serverSaveFailedDescription": "Check your login status and fields."
 		}
 	},
 	"home": {

@@ -5,7 +5,16 @@
 		"overview": "概覽",
 		"about": "關於",
 		"links": "友情連結",
-		"partners": "社群夥伴"
+		"partners": "社群夥伴",
+		"admin": "管理",
+		"adminServers": "伺服器管理",
+		"adminUsers": "使用者管理",
+		"profile": "個人資料",
+		"minecraftAccounts": "Minecraft 档案",
+		"login": "登入",
+		"register": "註冊",
+		"forgotPassword": "忘記密碼",
+		"resetPassword": "重設密碼"
 	},
 	"pages": {
 		"about": {
@@ -34,6 +43,285 @@
 		},
 		"language": {
 			"switch": "切換語言"
+		},
+		"auth": {
+			"login": "登入"
+		},
+		"userMenu": {
+			"open": "開啟使用者選單",
+			"profile": "個人資料",
+			"minecraftAccounts": "Minecraft 档案",
+			"admin": "後台管理",
+			"logout": "登出",
+			"logoutSuccessTitle": "登出成功"
+		}
+	},
+	"auth": {
+		"tabs": {
+			"login": "登入",
+			"register": "註冊"
+		},
+		"actions": {
+			"togglePassword": "切換密碼可見性"
+		},
+		"providers": {
+			"divider": "或",
+			"placeholder": "稍後將支援 Hydroline ID / Minecraft 綁定登入，敬請期待更多登入方式。"
+		}
+	},
+	"login": {
+		"title": "登入 HydCraft",
+		"description": "使用 Hydroline ID 登入",
+		"fields": {
+			"handleOrEmail": "使用者名稱或信箱",
+			"password": "密碼",
+			"rememberMe": "記住我"
+		},
+		"placeholders": {
+			"handleOrEmail": "請輸入使用者名稱或信箱",
+			"password": "請輸入密碼"
+		},
+		"actions": {
+			"submit": "登入",
+			"forgotPassword": "忘記密碼?"
+		},
+		"registerPrompt": {
+			"text": "還沒有 Hydroline ID?",
+			"action": "建立 Hydroline ID"
+		},
+		"notifications": {
+			"successTitle": "登入成功",
+			"failedTitle": "登入失敗",
+			"failedDescription": "請檢查 Hydroline ID、密碼或使用者狀態。"
+		}
+	},
+	"register": {
+		"title": "建立 Hydroline ID",
+		"description": "註冊 Hydroline ID 後即可進入 HydCraft，並在後續綁定 Minecraft 檔案。",
+		"fields": {
+			"handle": "使用者名稱",
+			"email": "信箱",
+			"displayName": "顯示名稱",
+			"password": "密碼"
+		},
+		"placeholders": {
+			"handle": "3-32 位小寫字母、數字、底線或連字符",
+			"email": "請輸入信箱地址",
+			"displayName": "可選",
+			"password": "至少 8 位"
+		},
+		"actions": {
+			"submit": "註冊"
+		},
+		"loginPrompt": {
+			"text": "已經有 Hydroline ID?",
+			"action": "直接登入"
+		},
+		"notifications": {
+			"successTitle": "註冊成功",
+			"successDescription": "已為你登入 Hydroline ID。",
+			"failedTitle": "註冊失敗",
+			"failedDescription": "請檢查使用者名稱、信箱或密碼是否符合要求。"
+		}
+	},
+	"forgotPassword": {
+		"title": "找回密碼",
+		"description": "輸入你的 Hydroline ID 信箱，系統會在重設通道配置後傳送後續步驟。",
+		"fields": {
+			"email": "信箱"
+		},
+		"placeholders": {
+			"email": "請輸入信箱地址"
+		},
+		"actions": {
+			"submit": "傳送重設郵件",
+			"backToLogin": "返回登入"
+		},
+		"notifications": {
+			"successTitle": "請求已接收",
+			"successDescription": "如果信箱存在，系統會處理對應的重設流程。",
+			"failedTitle": "請求失敗",
+			"failedDescription": "請檢查信箱格式或稍後再試。"
+		}
+	},
+	"resetPassword": {
+		"title": "重設密碼",
+		"description": "輸入重設令牌和新密碼，完成 Hydroline ID 密碼更新。",
+		"fields": {
+			"token": "重設令牌",
+			"password": "新密碼"
+		},
+		"placeholders": {
+			"token": "請輸入郵件中的重設令牌",
+			"password": "至少 8 位"
+		},
+		"actions": {
+			"submit": "重設密碼",
+			"backToLogin": "返回登入"
+		},
+		"notifications": {
+			"successTitle": "密碼已重設",
+			"successDescription": "請使用新密碼登入。",
+			"failedTitle": "重設失敗",
+			"failedDescription": "請檢查令牌、密碼或重設通道配置。"
+		}
+	},
+	"profile": {
+		"title": "個人資料",
+		"fields": {
+			"handle": "使用者名稱",
+			"displayName": "顯示名稱",
+			"avatarUrl": "頭像 URL",
+			"bio": "個人簡介"
+		},
+		"actions": {
+			"save": "儲存資料"
+		},
+		"notifications": {
+			"saved": "資料已儲存",
+			"savedDescription": "Header 使用者資訊已同步更新。",
+			"saveFailed": "儲存資料失敗",
+			"saveFailedDescription": "請檢查登入狀態與輸入內容。"
+		}
+	},
+	"minecraftAccounts": {
+		"title": "遊戲檔案",
+		"badges": {
+			"primary": "主帳號"
+		},
+		"fields": {
+			"note": "備註",
+			"primary": "設為主帳號",
+			"noUuid": "暫無 UUID"
+		},
+		"actions": {
+			"save": "儲存檔案"
+		},
+		"empty": {
+			"title": "尚未綁定 Minecraft 帳號",
+			"description": "完成綁定或從伺服器資料源匯入後，帳號會顯示在這裡。",
+			"loadFailed": "讀取遊戲檔案失敗"
+		},
+		"notifications": {
+			"saved": "遊戲檔案已儲存",
+			"savedDescription": "帳號備註與主帳號狀態已更新。",
+			"saveFailed": "儲存遊戲檔案失敗",
+			"saveFailedDescription": "請檢查登入狀態與帳號歸屬。"
+		}
+	},
+	"admin": {
+		"overview": {
+			"title": "Portal 總覽",
+			"description": "歡迎回來，以下是目前系統運行狀態。",
+			"loading": "正在讀取 Portal 設定...",
+			"metrics": {
+				"servers": "伺服器",
+				"users": "使用者",
+				"uptimeDays": "運行天數",
+				"userDelta": "較昨日 {count}",
+				"runningSince": "自 {date} 運行至今",
+				"runningSinceUnavailable": "暫未記錄起始時間",
+				"unavailable": "暫未接入"
+			},
+			"status": {
+				"normal": "全部正常",
+				"error": "錯誤",
+				"inactive": "未啟用/未設定"
+			},
+			"sections": {
+				"serviceStatus": "服務狀態",
+				"recentActivity": "最近活動",
+				"quickActions": "快速操作"
+			},
+			"actions": {
+				"viewAll": "查看全部",
+				"viewAllActivities": "查看全部活動"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL 資料庫",
+					"description": "Portal 主資料庫"
+				},
+				"authme": {
+					"label": "AuthMe 資料庫",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms 資料庫",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "暫未完成",
+				"placeholderDescription": "Audit 日誌接入後會顯示最近活動。"
+			},
+			"quickActions": {
+				"servers": "切換到伺服器頁面",
+				"serversDescription": "管理伺服器接入與資料源設定",
+				"users": "所有使用者管理頁面",
+				"usersDescription": "查看和管理 Portal 使用者"
+			}
+		},
+		"servers": {
+			"title": "伺服器管理",
+			"create": "新增伺服器",
+			"loading": "正在讀取伺服器設定...",
+			"empty": {
+				"title": "還沒有伺服器設定",
+				"description": "新增一個伺服器後，再設定 PortalBridge、AuthMe 和 LuckPerms。"
+			}
+		},
+		"users": {
+			"title": "使用者管理",
+			"description": "Portal 使用者管理入口。",
+			"placeholder": "使用者管理頁面暫未完成。"
+		},
+		"serverConfig": {
+			"createEyebrow": "新增伺服器",
+			"title": "伺服器接入設定",
+			"sections": {
+				"basic": "伺服器基礎資訊"
+			},
+			"fields": {
+				"serverId": "伺服器 ID",
+				"code": "代號",
+				"name": "名稱",
+				"sortOrder": "排序",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "描述",
+				"enabled": "啟用該伺服器",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "啟用 Bridge 連線"
+			},
+			"placeholders": {
+				"keepSecret": "留空則保持不變"
+			},
+			"actions": {
+				"cancel": "取消",
+				"save": "儲存設定"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "啟用資料來源"
+		},
+		"notifications": {
+			"overviewLoadFailed": "讀取總覽失敗",
+			"serversLoadFailed": "讀取伺服器設定失敗",
+			"serverSaved": "伺服器設定已儲存",
+			"serverSavedDescription": "伺服器列表已重新整理。",
+			"serverSaveFailed": "儲存設定失敗",
+			"serverSaveFailedDescription": "請檢查登入狀態與欄位。"
 		}
 	},
 	"home": {

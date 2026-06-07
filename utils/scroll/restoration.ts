@@ -26,12 +26,24 @@ const LOCALE_PREFIX_RE = /^\/(?:zh-CN|zh-TW|ja-JP|en-US)(?=\/|$)/
 const FALLBACK_RESTORE_INTERVAL_MS = 120
 const FALLBACK_RESTORE_TIMEOUT_MS = 2000
 const SESSION_STORAGE_KEY = 'hydcraft:scroll-snapshots'
+const SCROLL_INTENT_KEYS = new Set([
+	' ',
+	'ArrowDown',
+	'ArrowLeft',
+	'ArrowRight',
+	'ArrowUp',
+	'End',
+	'Home',
+	'PageDown',
+	'PageUp',
+])
 
 const scrollSnapshots = new Map<string, ScrollSnapshot>()
 
 let pendingRestore: PendingScrollRestore | null = null
 let pendingRestoreTimer: ReturnType<typeof setTimeout> | null = null
 let pendingRestoreExpiresAt = 0
+let userScrollIntentListenerActive = false
 let persistenceInitialized = false
 
 const stripHash = (fullPath: string | undefined): string =>
@@ -179,6 +191,68 @@ const settlePendingRestore = (): void => {
 	clearPendingRestoreTimer()
 	pendingRestore = null
 	pendingRestoreExpiresAt = 0
+	stopUserScrollIntentListeners()
+}
+
+const isEditableTarget = (target: EventTarget | null): boolean => {
+	if (!(target instanceof HTMLElement)) {
+		return false
+	}
+
+	return (
+		target.isContentEditable ||
+		target instanceof HTMLInputElement ||
+		target instanceof HTMLTextAreaElement ||
+		target instanceof HTMLSelectElement
+	)
+}
+
+const cancelPendingRestoreForUserIntent = (): void => {
+	if (!pendingRestore) {
+		return
+	}
+
+	settlePendingRestore()
+}
+
+const handleUserScrollKeydown = (event: KeyboardEvent): void => {
+	if (event.defaultPrevented || isEditableTarget(event.target)) {
+		return
+	}
+
+	if (SCROLL_INTENT_KEYS.has(event.key)) {
+		cancelPendingRestoreForUserIntent()
+	}
+}
+
+const startUserScrollIntentListeners = (): void => {
+	if (!import.meta.client || userScrollIntentListenerActive) {
+		return
+	}
+
+	userScrollIntentListenerActive = true
+	window.addEventListener('wheel', cancelPendingRestoreForUserIntent, {
+		passive: true,
+	})
+	window.addEventListener('touchmove', cancelPendingRestoreForUserIntent, {
+		passive: true,
+	})
+	window.addEventListener('pointerdown', cancelPendingRestoreForUserIntent, {
+		passive: true,
+	})
+	window.addEventListener('keydown', handleUserScrollKeydown)
+}
+
+const stopUserScrollIntentListeners = (): void => {
+	if (!import.meta.client || !userScrollIntentListenerActive) {
+		return
+	}
+
+	userScrollIntentListenerActive = false
+	window.removeEventListener('wheel', cancelPendingRestoreForUserIntent)
+	window.removeEventListener('touchmove', cancelPendingRestoreForUserIntent)
+	window.removeEventListener('pointerdown', cancelPendingRestoreForUserIntent)
+	window.removeEventListener('keydown', handleUserScrollKeydown)
 }
 
 const schedulePendingRestoreFallback = (): void => {
@@ -220,6 +294,7 @@ export const queueAbsoluteScrollRestore = (
 		top,
 	}
 	pendingRestoreExpiresAt = Date.now() + FALLBACK_RESTORE_TIMEOUT_MS
+	startUserScrollIntentListeners()
 	schedulePendingRestoreFallback()
 }
 
@@ -239,6 +314,7 @@ export const queueProgressScrollRestore = (
 		progress,
 	}
 	pendingRestoreExpiresAt = Date.now() + FALLBACK_RESTORE_TIMEOUT_MS
+	startUserScrollIntentListeners()
 	schedulePendingRestoreFallback()
 }
 
