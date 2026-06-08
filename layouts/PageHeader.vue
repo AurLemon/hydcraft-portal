@@ -382,7 +382,7 @@ if (import.meta.client && !resolved.value) {
 									</div>
 
 									<UButton
-										:to="localePath('/profile')"
+										:to="localePath('/me/profile')"
 										color="neutral"
 										variant="ghost"
 										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -395,7 +395,7 @@ if (import.meta.client && !resolved.value) {
 									</UButton>
 
 									<UButton
-										:to="localePath('/minecraft-accounts')"
+										:to="localePath('/me/minecraft')"
 										color="neutral"
 										variant="ghost"
 										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -407,6 +407,35 @@ if (import.meta.client && !resolved.value) {
 										}}</span>
 									</UButton>
 
+									<UButton
+										:to="localePath('/me/security')"
+										color="neutral"
+										variant="ghost"
+										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+										@click="userMenuOpen = false"
+									>
+										<UIcon
+											name="i-lucide-shield-check"
+											class="h-4.5 w-4.5 shrink-0"
+										/>
+										<span class="leading-[normal] min-w-0 truncate">{{
+											t('header.userMenu.security')
+										}}</span>
+									</UButton>
+
+									<UButton
+										:to="localePath('/me/connections')"
+										color="neutral"
+										variant="ghost"
+										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+										@click="userMenuOpen = false"
+									>
+										<UIcon name="i-lucide-link" class="h-4.5 w-4.5 shrink-0" />
+										<span class="leading-[normal] min-w-0 truncate">{{
+											t('header.userMenu.connections')
+										}}</span>
+									</UButton>
+
 									<div
 										v-if="isAdmin"
 										class="my-1 border-t border-slate-200 dark:border-slate-700"
@@ -414,7 +443,7 @@ if (import.meta.client && !resolved.value) {
 
 									<UButton
 										v-if="isAdmin"
-										:to="localePath('/admin')"
+										:to="localePath('/admin/overview')"
 										color="neutral"
 										variant="ghost"
 										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"

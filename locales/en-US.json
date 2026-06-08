@@ -7,14 +7,17 @@
 		"links": "Friend Links",
 		"partners": "Community Partners",
 		"admin": "Manage",
+		"adminOverview": "Overview",
 		"adminServers": "Server Management",
 		"adminUsers": "User Management",
-		"profile": "Profile",
-		"minecraftAccounts": "Minecraft Accounts",
 		"login": "Log In",
 		"register": "Register",
 		"forgotPassword": "Forgot Password",
-		"resetPassword": "Reset Password"
+		"resetPassword": "Reset Password",
+		"meProfile": "Profile",
+		"meMinecraft": "Minecraft Profiles",
+		"meSecurity": "Security",
+		"meConnections": "Connections"
 	},
 	"main": {
 		"contentFooter": {
@@ -25,7 +28,11 @@
 	"header": {
 		"nav": {
 			"currentPage": "Current Page",
-			"errorPage": "Error Page"
+			"errorPage": "Error Page",
+			"back": "Back to parent menu",
+			"backToParent": "Back to parent menu",
+			"close": "Close menu",
+			"currentGroup": "Current group"
 		},
 		"theme": {
 			"switch": "Switch theme mode",
@@ -43,6 +50,8 @@
 			"open": "Open user menu",
 			"profile": "Profile",
 			"minecraftAccounts": "Minecraft Accounts",
+			"security": "Security",
+			"connections": "Connections",
 			"admin": "Admin",
 			"logout": "Log Out",
 			"logoutSuccessTitle": "Logged out"
@@ -381,6 +390,20 @@
 			"openPreview": "Open image preview: {alt}",
 			"scrollLeft": "Scroll images left",
 			"scrollRight": "Scroll images right"
+		}
+	},
+	"security": {
+		"title": "Security",
+		"empty": {
+			"title": "Security settings are not available yet",
+			"description": "Passwords, signed-in devices, and verification settings will be managed here later."
+		}
+	},
+	"connections": {
+		"title": "Connections",
+		"empty": {
+			"title": "Connections are not available yet",
+			"description": "Third-party accounts, authorized apps, and linked identities will be managed here later."
 		}
 	}
 }

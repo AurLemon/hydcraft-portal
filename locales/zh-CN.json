@@ -7,14 +7,17 @@
 		"links": "友情链接",
 		"partners": "社区伙伴",
 		"admin": "管理",
+		"adminOverview": "管理概览",
 		"adminServers": "服务器管理",
 		"adminUsers": "用户管理",
-		"profile": "个人资料",
-		"minecraftAccounts": "Minecraft 档案",
 		"login": "登录",
 		"register": "注册",
 		"forgotPassword": "忘记密码",
-		"resetPassword": "重置密码"
+		"resetPassword": "重置密码",
+		"meProfile": "个人资料",
+		"meMinecraft": "Minecraft 档案",
+		"meSecurity": "账号安全",
+		"meConnections": "连接与授权"
 	},
 	"main": {
 		"contentFooter": {
@@ -25,7 +28,11 @@
 	"header": {
 		"nav": {
 			"currentPage": "当前页",
-			"errorPage": "异常页"
+			"errorPage": "异常页",
+			"back": "返回上级菜单",
+			"backToParent": "返回上级菜单",
+			"close": "关闭菜单",
+			"currentGroup": "当前分组"
 		},
 		"theme": {
 			"switch": "切换主题模式",
@@ -43,6 +50,8 @@
 			"open": "打开用户菜单",
 			"profile": "个人资料",
 			"minecraftAccounts": "Minecraft 档案",
+			"security": "账号安全",
+			"connections": "连接与授权",
 			"admin": "后台管理",
 			"logout": "退出登录",
 			"logoutSuccessTitle": "退出成功"
@@ -381,6 +390,20 @@
 			"openPreview": "打开图片预览：{alt}",
 			"scrollLeft": "向左滚动图片",
 			"scrollRight": "向右滚动图片"
+		}
+	},
+	"security": {
+		"title": "账号安全",
+		"empty": {
+			"title": "账号安全设置暂未开放",
+			"description": "后续会在这里管理密码、登录设备与安全验证。"
+		}
+	},
+	"connections": {
+		"title": "连接与授权",
+		"empty": {
+			"title": "连接与授权暂未开放",
+			"description": "后续会在这里管理第三方账号、授权应用与绑定关系。"
 		}
 	}
 }

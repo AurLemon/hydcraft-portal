@@ -7,14 +7,17 @@
 		"links": "相互リンク",
 		"partners": "コミュニティパートナー",
 		"admin": "管理",
+		"adminOverview": "概要",
 		"adminServers": "サーバー管理",
 		"adminUsers": "ユーザー管理",
-		"profile": "プロフィール",
-		"minecraftAccounts": "ゲームプロフィール",
 		"login": "ログイン",
 		"register": "登録",
 		"forgotPassword": "パスワードを忘れた",
-		"resetPassword": "パスワード再設定"
+		"resetPassword": "パスワード再設定",
+		"meProfile": "プロフィール",
+		"meMinecraft": "ゲームプロフィール",
+		"meSecurity": "セキュリティ",
+		"meConnections": "連携と認可"
 	},
 	"main": {
 		"contentFooter": {
@@ -25,7 +28,11 @@
 	"header": {
 		"nav": {
 			"currentPage": "現在のページ",
-			"errorPage": "異常ページ"
+			"errorPage": "異常ページ",
+			"back": "上位メニューに戻る",
+			"backToParent": "上位メニューに戻る",
+			"close": "メニューを閉じる",
+			"currentGroup": "現在のグループ"
 		},
 		"theme": {
 			"switch": "テーマを切り替える",
@@ -43,6 +50,8 @@
 			"open": "ユーザーメニューを開く",
 			"profile": "プロフィール",
 			"minecraftAccounts": "ゲームプロフィール",
+			"security": "セキュリティ",
+			"connections": "連携と認可",
 			"admin": "管理画面",
 			"logout": "ログアウト",
 			"logoutSuccessTitle": "ログアウトしました"
@@ -381,6 +390,20 @@
 			"openPreview": "画像プレビューを開く: {alt}",
 			"scrollLeft": "画像を左へスクロール",
 			"scrollRight": "画像を右へスクロール"
+		}
+	},
+	"security": {
+		"title": "セキュリティ",
+		"empty": {
+			"title": "セキュリティ設定はまだ利用できません",
+			"description": "パスワード、ログイン端末、認証設定は今後ここで管理できます。"
+		}
+	},
+	"connections": {
+		"title": "連携と認可",
+		"empty": {
+			"title": "連携と認可はまだ利用できません",
+			"description": "外部アカウント、認可済みアプリ、連携 ID は今後ここで管理できます。"
 		}
 	}
 }

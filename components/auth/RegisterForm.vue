@@ -132,7 +132,7 @@ const loginRoute = computed(() => ({
 
 const getRedirectPath = (): string => {
 	return normalizePortalRedirectPath(route.query.redirect, {
-		fallbackPath: localePath('/profile'),
+		fallbackPath: localePath('/me/profile'),
 		loginPath: localePath('/login'),
 	})
 }
