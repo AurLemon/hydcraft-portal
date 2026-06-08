@@ -20,6 +20,7 @@ jobs:
       NUXT_SITE_URL: https://hydcraft.example
       JWT_SECRET: ci-demo-jwt-secret
       CONFIG_ENCRYPTION_KEY: ci-demo-config-encryption-key
+      HYDCRAFT_DISABLE_PORTAL_BRIDGE: '1'
     steps:
       - uses: actions/checkout@v4
 
