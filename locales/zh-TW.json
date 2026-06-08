@@ -16,14 +16,6 @@
 		"forgotPassword": "忘記密碼",
 		"resetPassword": "重設密碼"
 	},
-	"pages": {
-		"about": {
-			"title": "我們是什麼?"
-		},
-		"timeline": {
-			"title": "氫氣是怎麼走到現在的?"
-		}
-	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "更新于 {date}",
@@ -379,6 +371,12 @@
 		"fallbackDetail": "未知錯誤"
 	},
 	"content": {
+		"about": {
+			"title": "我們是什麼?"
+		},
+		"timeline": {
+			"title": "氫氣是怎麼走到現在的?"
+		},
 		"imageCarousel": {
 			"openPreview": "打開圖片預覽：{alt}",
 			"scrollLeft": "向左捲動圖片",

@@ -17,7 +17,7 @@
 						<div
 							class="text-4xl text-center font-arkpixel tracking-wider uppercase text-slate-950 dark:text-slate-50"
 						>
-							{{ t('pages.about.title') }}
+							{{ t('content.about.title') }}
 						</div>
 						<ContentReadingStats :doc="doc" />
 					</div>

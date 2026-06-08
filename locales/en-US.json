@@ -16,14 +16,6 @@
 		"forgotPassword": "Forgot Password",
 		"resetPassword": "Reset Password"
 	},
-	"pages": {
-		"about": {
-			"title": "Who Are We?"
-		},
-		"timeline": {
-			"title": "How HydCraft Got Here?"
-		}
-	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "Updated at {date}",
@@ -379,6 +371,12 @@
 		"fallbackDetail": "Unknown error"
 	},
 	"content": {
+		"about": {
+			"title": "Who Are We?"
+		},
+		"timeline": {
+			"title": "How HydCraft Got Here?"
+		},
 		"imageCarousel": {
 			"openPreview": "Open image preview: {alt}",
 			"scrollLeft": "Scroll images left",

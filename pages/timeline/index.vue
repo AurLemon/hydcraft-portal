@@ -17,7 +17,7 @@
 						<div
 							class="text-4xl text-center font-arkpixel tracking-wider uppercase text-slate-950 dark:text-slate-50"
 						>
-							{{ t('pages.timeline.title') }}
+							{{ t('content.timeline.title') }}
 						</div>
 						<ContentReadingStats :doc="doc" />
 					</div>

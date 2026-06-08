@@ -16,14 +16,6 @@
 		"forgotPassword": "忘记密码",
 		"resetPassword": "重置密码"
 	},
-	"pages": {
-		"about": {
-			"title": "我们是什么?"
-		},
-		"timeline": {
-			"title": "氢气是怎么走到现在的?"
-		}
-	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "更新于 {date}",
@@ -379,6 +371,12 @@
 		"fallbackDetail": "未知错误"
 	},
 	"content": {
+		"about": {
+			"title": "我们是什么?"
+		},
+		"timeline": {
+			"title": "氢气是怎么走到现在的?"
+		},
 		"imageCarousel": {
 			"openPreview": "打开图片预览：{alt}",
 			"scrollLeft": "向左滚动图片",

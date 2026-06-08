@@ -16,14 +16,6 @@
 		"forgotPassword": "パスワードを忘れた",
 		"resetPassword": "パスワード再設定"
 	},
-	"pages": {
-		"about": {
-			"title": "私たちは何者か?"
-		},
-		"timeline": {
-			"title": "HydCraft はどうやってここまで来たのか?"
-		}
-	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "{date} 更新",
@@ -379,6 +371,12 @@
 		"fallbackDetail": "不明なエラー"
 	},
 	"content": {
+		"about": {
+			"title": "私たちは何者か?"
+		},
+		"timeline": {
+			"title": "HydCraft はどうやってここまで来たのか?"
+		},
 		"imageCarousel": {
 			"openPreview": "画像プレビューを開く: {alt}",
 			"scrollLeft": "画像を左へスクロール",
