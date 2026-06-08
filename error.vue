@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import PageFooter from '~/layouts/PageFooter.vue'
-import PageHeader from '~/layouts/PageHeader.vue'
+import PageFooter from '~/components/layout/PageFooter.vue'
+import PageHeader from '~/components/layout/PageHeader.vue'
 
 interface NuxtErrorLike {
 	statusCode?: number

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useToast } from '@nuxt/ui/composables'
-import PageFooter from '~/layouts/PageFooter.vue'
-import PageContainer from '~/layouts/PageContainer.vue'
-import PageHeader from '~/layouts/PageHeader.vue'
-import PageStatusBar from '~/layouts/PageStatusBar.vue'
+import PageFooter from '~/components/layout/PageFooter.vue'
+import PageContainer from '~/components/layout/PageContainer.vue'
+import PageHeader from '~/components/layout/PageHeader.vue'
+import PageStatusBar from '~/components/layout/PageStatusBar.vue'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'
