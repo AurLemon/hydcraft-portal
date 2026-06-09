@@ -1,12 +1,20 @@
 export type PortalUserRole = 'USER' | 'MEMBER' | 'ADMIN' | 'OWNER'
 export type PortalUserStatus = 'PENDING' | 'ACTIVE' | 'DISABLED' | 'BANNED'
+export type PortalProfileLanguage = 'ZH_CN' | 'ZH_TW' | 'EN_US' | 'JA_JP'
+
+export interface PortalUserPreferencesSummary {
+	language: PortalProfileLanguage
+}
 
 export interface PortalUserSummary {
 	id: string
 	handle: string
+	username: string
+	hydrolineId: string
 	displayName: string | null
 	email: string | null
 	avatarUrl: string | null
+	coverUrl: string | null
 	bio: string | null
 	role: PortalUserRole
 	status: PortalUserStatus
@@ -14,6 +22,7 @@ export interface PortalUserSummary {
 	lastLoginAt: string | null
 	createdAt: string
 	updatedAt: string
+	preferences: PortalUserPreferencesSummary | null
 }
 
 interface PortalAuthMeResponse {

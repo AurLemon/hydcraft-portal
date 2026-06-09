@@ -12,9 +12,16 @@ const prisma = new PrismaClient({
 
 const defaultOwner = {
 	handle: 'aurlemon',
+	username: 'aurlemon',
+	hydrolineId: 'H-202600128',
 	displayName: 'AurLemon',
 	role: 'OWNER' as const,
-	title: 'Owner',
+	title: '建筑师',
+	bio: 'HydCraft 社区的建筑与红石爱好者，热爱红石与建筑设计，喜欢在服务器上与大家一起创造有趣的故事。',
+	location: '上海，中国',
+	countryOrRegion: '中国内地',
+	avatarUrl: null,
+	coverUrl: null,
 }
 
 const defaultServer = {
@@ -32,13 +39,38 @@ async function main() {
 		},
 		create: {
 			handle: defaultOwner.handle,
+			username: defaultOwner.username,
+			hydrolineId: defaultOwner.hydrolineId,
 			displayName: defaultOwner.displayName,
 			role: defaultOwner.role,
 			title: defaultOwner.title,
+			bio: defaultOwner.bio,
+			location: defaultOwner.location,
+			countryOrRegion: defaultOwner.countryOrRegion,
+			avatarUrl: defaultOwner.avatarUrl,
+			coverUrl: defaultOwner.coverUrl,
+			verified: true,
+			verifiedTextZhCn: 'HydCraft 官方认证账号',
+			verifiedTextZhTw: 'HydCraft 官方認證帳號',
+			verifiedTextEnUs: 'Verified HydCraft account',
+			verifiedTextJaJp: 'HydCraft 認証済みアカウント',
 		},
 		update: {
+			username: defaultOwner.username,
+			hydrolineId: defaultOwner.hydrolineId,
+			displayName: defaultOwner.displayName,
 			role: defaultOwner.role,
 			title: defaultOwner.title,
+			bio: defaultOwner.bio,
+			location: defaultOwner.location,
+			countryOrRegion: defaultOwner.countryOrRegion,
+			avatarUrl: defaultOwner.avatarUrl,
+			coverUrl: defaultOwner.coverUrl,
+			verified: true,
+			verifiedTextZhCn: 'HydCraft 官方认证账号',
+			verifiedTextZhTw: 'HydCraft 官方認證帳號',
+			verifiedTextEnUs: 'Verified HydCraft account',
+			verifiedTextJaJp: 'HydCraft 認証済みアカウント',
 		},
 	})
 
@@ -80,6 +112,158 @@ async function main() {
 	})
 
 	console.log(`Seed minecraft server ensured: ${defaultServer.serverId}`)
+
+	await prisma.userProfile.upsert({
+		where: {
+			userId: owner.id,
+		},
+		create: {
+			userId: owner.id,
+			h2wikiPageName: 'aurlemon',
+			githubUsername: 'AurLemon',
+			websiteUrl: 'https://aurlemon.dev/',
+			bilibiliUrl: 'https://space.bilibili.com/12345678',
+			publicEmail: 'hello@aurlemon.dev',
+		},
+		update: {
+			h2wikiPageName: 'aurlemon',
+			githubUsername: 'AurLemon',
+			websiteUrl: 'https://aurlemon.dev/',
+			bilibiliUrl: 'https://space.bilibili.com/12345678',
+			publicEmail: 'hello@aurlemon.dev',
+		},
+	})
+
+	await prisma.userProfilePreferences.upsert({
+		where: {
+			userId: owner.id,
+		},
+		create: {
+			userId: owner.id,
+			language: 'ZH_CN',
+			timezoneMode: 'AUTO',
+			timezone: 'Asia/Shanghai',
+		},
+		update: {
+			language: 'ZH_CN',
+			timezoneMode: 'AUTO',
+			timezone: 'Asia/Shanghai',
+		},
+	})
+
+	await prisma.userProfilePrivacy.upsert({
+		where: {
+			userId: owner.id,
+		},
+		create: {
+			userId: owner.id,
+			publicProfile: true,
+			showHydrolineId: true,
+			showJoinedAt: true,
+			showLocation: true,
+			showCountryOrRegion: true,
+			showBirthday: false,
+			showBadges: true,
+			showBio: true,
+			showMinecraftProfileLink: true,
+			showSocialLinks: true,
+			showActivityStatus: true,
+			searchableInUserDirectory: true,
+			allowMinecraftProfileDiscovery: true,
+		},
+		update: {
+			publicProfile: true,
+			showHydrolineId: true,
+			showJoinedAt: true,
+			showLocation: true,
+			showCountryOrRegion: true,
+			showBirthday: false,
+			showBadges: true,
+			showBio: true,
+			showMinecraftProfileLink: true,
+			showSocialLinks: true,
+			showActivityStatus: true,
+			searchableInUserDirectory: true,
+			allowMinecraftProfileDiscovery: true,
+		},
+	})
+
+	const senateBadge = await prisma.profileBadge.upsert({
+		where: {
+			key: 'senate-member',
+		},
+		create: {
+			key: 'senate-member',
+			labelZhCn: '元老院成员',
+			labelZhTw: '元老院成員',
+			labelEnUs: 'Senate Member',
+			labelJaJp: '元老院メンバー',
+			color: 'amber',
+			icon: 'i-lucide-star',
+			description: 'HydCraft early core community member badge.',
+			enabled: true,
+			sortOrder: 0,
+		},
+		update: {
+			labelZhCn: '元老院成员',
+			labelZhTw: '元老院成員',
+			labelEnUs: 'Senate Member',
+			labelJaJp: '元老院メンバー',
+			color: 'amber',
+			icon: 'i-lucide-star',
+			description: 'HydCraft early core community member badge.',
+			enabled: true,
+			sortOrder: 0,
+		},
+	})
+
+	await prisma.userProfileBadge.upsert({
+		where: {
+			userId_badgeId: {
+				userId: owner.id,
+				badgeId: senateBadge.id,
+			},
+		},
+		create: {
+			userId: owner.id,
+			badgeId: senateBadge.id,
+			sortOrder: 0,
+		},
+		update: {
+			label: null,
+			color: null,
+			sortOrder: 0,
+		},
+	})
+
+	await prisma.minecraftAccount.upsert({
+		where: {
+			normalizedUsername: 'aurlemon',
+		},
+		create: {
+			userId: owner.id,
+			username: 'AurLemon',
+			normalizedUsername: 'aurlemon',
+			uuid: '00000000-0000-4000-8000-000000000128',
+			status: 'VERIFIED',
+			source: 'MANUAL',
+			isPrimary: true,
+			verifiedAt: new Date(),
+			lastSeenAt: new Date(),
+		},
+		update: {
+			userId: owner.id,
+			username: 'AurLemon',
+			uuid: '00000000-0000-4000-8000-000000000128',
+			status: 'VERIFIED',
+			source: 'MANUAL',
+			isPrimary: true,
+			verifiedAt: new Date(),
+			lastSeenAt: new Date(),
+		},
+	})
+
+	console.log(`Seed profile ensured: ${defaultOwner.username}`)
 }
 
 try {

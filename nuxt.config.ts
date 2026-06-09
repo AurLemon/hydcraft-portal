@@ -55,8 +55,13 @@ export default defineNuxtConfig({
 			icons: [
 				'lucide:chevron-right',
 				'lucide:chevron-down',
+				'lucide:chevron-left',
+				'lucide:chevrons-left',
+				'lucide:chevrons-right',
 				'lucide:external-link',
 				'lucide:history',
+				'lucide:search',
+				'lucide:rotate-ccw',
 				'lucide:sun',
 				'lucide:moon',
 				'lucide:monitor',
@@ -88,6 +93,14 @@ export default defineNuxtConfig({
 				'lucide:eye',
 				'lucide:eye-off',
 				'lucide:arrow-left',
+				'lucide:arrow-right',
+				'lucide:camera',
+				'lucide:copy',
+				'lucide:image',
+				'lucide:pencil',
+				'lucide:trash-2',
+				'lucide:calendar',
+				'lucide:files',
 			],
 		},
 		serverBundle: {
@@ -127,6 +140,18 @@ export default defineNuxtConfig({
 		description:
 			'氢气工艺 HydCraft 是一个 Minecraft 服务器社区，连接交通、科技、建筑与开发爱好者。',
 		defaultLocale: 'zh-CN',
+	},
+	runtimeConfig: {
+		cos: {
+			secretId: process.env.COS_SECRET_ID ?? '',
+			secretKey: process.env.COS_SECRET_KEY ?? '',
+			region: process.env.COS_REGION ?? '',
+			attachmentsBucket: process.env.COS_ATTACHMENTS_BUCKET ?? '',
+			publicBaseUrl: process.env.COS_PUBLIC_BASE_URL ?? '',
+		},
+		public: {
+			siteUrl: process.env.NUXT_SITE_URL ?? '',
+		},
 	},
 	content: {
 		experimental: {

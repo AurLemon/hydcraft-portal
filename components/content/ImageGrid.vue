@@ -18,6 +18,7 @@
 					<DeferredSkeletonImage
 						:src="image.src"
 						:alt="image.alt"
+						root-margin="180px 0px"
 						class="h-full w-full"
 						image-class="block h-full w-full object-cover"
 					/>

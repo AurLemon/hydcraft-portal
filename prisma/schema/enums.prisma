@@ -1,0 +1,105 @@
+enum UserRole {
+  USER
+  MEMBER
+  ADMIN
+  OWNER
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+  BANNED
+}
+
+enum UserProfileLanguage {
+  ZH_CN
+  ZH_TW
+  EN_US
+  JA_JP
+}
+
+enum TimezoneMode {
+  AUTO
+  MANUAL
+}
+
+enum MinecraftServerSnapshotKind {
+  SERVER_INFO
+  SERVER_STATUS
+  WORLDS
+  ONLINE_PLAYERS
+  METRICS
+  HEARTBEAT
+  PLAYER_SNAPSHOT
+  PLAYERDATA_SCAN
+  STATS_SNAPSHOT
+  ADVANCEMENTS_SNAPSHOT
+  COMMAND_RESULT
+}
+
+enum ServerPlayerIdentityConflictState {
+  NONE
+  USERNAME_CONFLICT
+  UUID_CONFLICT
+  SOURCE_CONFLICT
+}
+
+enum ServerPlayerIdentityEvidenceSource {
+  PORTAL_BRIDGE
+  PLAYERDATA_SCAN
+  MANUAL
+  TEST
+}
+
+enum PortalBridgeConnectionState {
+  DISCONNECTED
+  CONNECTING
+  CONNECTED
+  REJECTED
+  ERROR
+}
+
+enum PortalBridgeCommandStatus {
+  PENDING
+  SENT
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  FAILED
+}
+
+enum MinecraftAccountStatus {
+  PENDING
+  VERIFIED
+  IMPORTED
+  UNLINKED
+  CONFLICTED
+}
+
+enum MinecraftAccountSource {
+  PORTAL
+  AUTHME
+  MANUAL
+  MIGRATION
+  OTHER
+}
+
+enum ExternalProvider {
+  GITHUB
+  MICROSOFT
+  QQ
+  DISCORD
+  CUSTOM
+}
+
+enum ExternalSyncSource {
+  AUTHME
+  LUCKPERMS
+}
+
+enum ExternalSyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}

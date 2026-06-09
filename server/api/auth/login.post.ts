@@ -46,6 +46,13 @@ export default defineEventHandler(async (event) => {
 		data: {
 			lastLoginAt: new Date(),
 		},
+		include: {
+			preferences: {
+				select: {
+					language: true,
+				},
+			},
+		},
 	})
 	const token = await issueAuthCookies(event, updatedUser)
 

@@ -1,0 +1,165 @@
+model User {
+  id                 String     @id @default(cuid())
+  handle             String     @unique
+  username           String     @unique
+  usernameChangedAt  DateTime?
+  hydrolineId        String     @unique
+  displayName        String?
+  email              String?    @unique
+  emailVerifiedAt    DateTime?
+  avatarUrl          String?
+  coverUrl           String?
+  avatarAttachmentId String?
+  coverAttachmentId  String?
+  bio                String?
+  location           String?
+  countryOrRegion    String?
+  birthday           DateTime?
+  role               UserRole   @default(USER)
+  status             UserStatus @default(ACTIVE)
+  statusReason       String?
+  title              String?
+  verified           Boolean    @default(false)
+  verifiedTextZhCn   String?
+  verifiedTextZhTw   String?
+  verifiedTextEnUs   String?
+  verifiedTextJaJp   String?
+  lastLoginAt        DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  minecraftAccounts  MinecraftAccount[]
+  externalAccounts   ExternalAccount[]
+  credential         UserCredential?
+  refreshTokens      RefreshToken[]
+  profile            UserProfile?
+  preferences        UserProfilePreferences?
+  privacy            UserProfilePrivacy?
+  badges             UserProfileBadge[]
+  createdAttachments Attachment[]            @relation("AttachmentCreatedBy")
+}
+
+model UserProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  h2wikiPageName String?
+  githubUsername String?
+  websiteUrl     String?
+  bilibiliUrl    String?
+  publicEmail    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model UserProfilePreferences {
+  id           String              @id @default(cuid())
+  userId       String              @unique
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language     UserProfileLanguage @default(ZH_CN)
+  timezoneMode TimezoneMode        @default(AUTO)
+  timezone     String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+}
+
+model UserProfilePrivacy {
+  id                             String   @id @default(cuid())
+  userId                         String   @unique
+  user                           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicProfile                  Boolean  @default(true)
+  showHydrolineId                Boolean  @default(true)
+  showJoinedAt                   Boolean  @default(true)
+  showLocation                   Boolean  @default(true)
+  showCountryOrRegion            Boolean  @default(true)
+  showBirthday                   Boolean  @default(false)
+  showBadges                     Boolean  @default(true)
+  showBio                        Boolean  @default(true)
+  showMinecraftProfileLink       Boolean  @default(true)
+  showSocialLinks                Boolean  @default(true)
+  showActivityStatus             Boolean  @default(true)
+  searchableInUserDirectory      Boolean  @default(true)
+  allowMinecraftProfileDiscovery Boolean  @default(true)
+  createdAt                      DateTime @default(now())
+  updatedAt                      DateTime @updatedAt
+}
+
+model UserProfileBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String?
+  badge     ProfileBadge? @relation(fields: [badgeId], references: [id], onDelete: SetNull)
+  label     String?
+  color     String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([badgeId])
+  @@index([userId, sortOrder])
+  @@unique([userId, badgeId])
+}
+
+model ProfileBadge {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  labelZhCn   String
+  labelZhTw   String
+  labelEnUs   String
+  labelJaJp   String
+  color       String
+  icon        String?
+  description String?
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignments UserProfileBadge[]
+
+  @@index([enabled, sortOrder])
+}
+
+model UserCredential {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+model ExternalAccount {
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          ExternalProvider
+  providerAccountId String
+  providerUsername  String?
+  providerEmail     String?
+  avatarUrl         String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}

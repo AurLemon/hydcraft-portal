@@ -9,6 +9,32 @@ interface EventMap {
 		uuidSource?: string | null
 		observedAt: Date
 	}
+	'user.profile.updated': {
+		userId: string
+		changedFields: string[]
+		updatedAt: Date
+	}
+	'user.profile.avatar-updated': {
+		userId: string
+		avatarUrl: string | null
+		updatedAt: Date
+	}
+	'user.profile.cover-updated': {
+		userId: string
+		coverUrl: string | null
+		updatedAt: Date
+	}
+	'user.profile.username-changed': {
+		userId: string
+		previousUsername: string
+		nextUsername: string
+		updatedAt: Date
+	}
+	'user.profile.privacy-updated': {
+		userId: string
+		changedFields: string[]
+		updatedAt: Date
+	}
 }
 
 const handlers = new Map<

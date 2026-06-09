@@ -1,5 +1,5 @@
 <template>
-	<div class="site-shell mx-auto -mt-2 px-6 pb-16">
+	<div class="site-shell mx-auto -mt-2 pb-16">
 		<section>
 			<h1 class="text-3xl font-semibold text-slate-950 dark:text-white">
 				{{ t('minecraftAccounts.title') }}

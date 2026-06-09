@@ -1,91 +1,360 @@
 <template>
-	<div class="site-shell mx-auto -mt-2 px-6 pb-16">
-		<section class="max-w-2xl">
-			<h1 class="text-3xl font-semibold text-slate-950 dark:text-white">
-				{{ t('profile.title') }}
-			</h1>
+	<div class="mx-auto -mt-2 flex w-full flex-col items-center pb-16">
+		<div v-if="pending" class="grid w-full gap-5">
+			<USkeleton class="h-72 rounded-lg" />
+			<USkeleton v-for="index in 4" :key="index" class="h-56 rounded-lg" />
+		</div>
 
-			<form class="mt-6 flex flex-col gap-4" @submit.prevent="submit">
-				<label class="flex flex-col gap-1.5 text-sm font-medium">
-					<span>{{ t('profile.fields.handle') }}</span>
-					<UInput :model-value="user?.handle ?? ''" disabled />
-				</label>
-				<label class="flex flex-col gap-1.5 text-sm font-medium">
-					<span>{{ t('profile.fields.displayName') }}</span>
-					<UInput v-model="form.displayName" />
-				</label>
-				<label class="flex flex-col gap-1.5 text-sm font-medium">
-					<span>{{ t('profile.fields.avatarUrl') }}</span>
-					<UInput v-model="form.avatarUrl" type="url" />
-				</label>
-				<label class="flex flex-col gap-1.5 text-sm font-medium">
-					<span>{{ t('profile.fields.bio') }}</span>
-					<UTextarea v-model="form.bio" :rows="5" />
-				</label>
+		<UAlert
+			v-else-if="error"
+			color="error"
+			icon="i-lucide-circle-alert"
+			:title="t('profile.empty.loadFailed')"
+		/>
 
-				<div class="flex justify-end">
-					<UButton type="submit" icon="i-lucide-save" :loading="submitting">
-						{{ t('profile.actions.save') }}
-					</UButton>
-				</div>
+		<div v-else-if="profile" class="grid w-full gap-5">
+			<div class="site-shell mx-auto w-full">
+				<ProfileEditHero
+					:cover-image="coverImage"
+					:form="form"
+					:profile="profile"
+					@avatar-uploaded="handleAvatarUploaded"
+					@cover-uploaded="handleCoverUploaded"
+				/>
+			</div>
+
+			<form class="mx-auto mt-16 grid w-full max-w-3xl gap-16" @submit.prevent>
+				<ProfileUsernameSection
+					v-model:form="form"
+					:public-profile-url="publicProfileUrl"
+					:submitting="submittingSection === 'username'"
+					@submit="submitUsername"
+				/>
+				<ProfileBasicSection
+					:joined-at="profile.joinedAt"
+					:hydroline-id="profile.hydrolineId"
+					:submitting="submittingSection === 'basic'"
+					v-model:form="form"
+					@copy-hydroline-id="copyHydrolineId"
+					@submit="submitBasicProfile"
+				/>
+				<ProfilePreferenceSection v-model:form="form" />
+				<ProfileSocialSection
+					v-model:form="form"
+					:submitting="submittingSection === 'social'"
+					@submit="submitSocialProfile"
+				/>
+				<ProfilePrivacySection v-model:form="form" />
 			</form>
-		</section>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { useToast } from '@nuxt/ui/composables'
+import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
+import {
+	assignProfileForm,
+	buildProfilePatchPayload,
+	createEmptyProfileForm,
+	type EditableProfile,
+	type ProfileResponse,
+} from '~/utils/profile-edit'
+
 definePageMeta({
 	headerVariant: 'solid',
 	middleware: 'portal-auth',
 })
 
-interface ProfileForm {
-	displayName: string
-	avatarUrl: string
-	bio: string
-}
+const toast = useToast()
+const { t } = useI18n()
+const runtimeConfig = useRuntimeConfig()
+const { user: currentUser } = usePortalAuth()
+const { notifyError } = useAdminToast()
+type ProfileSubmitSection = 'username' | 'basic' | 'social'
+const submittingSection = ref<ProfileSubmitSection | null>(null)
+const originalProfile = ref<EditableProfile | null>(null)
+const preferencesSnapshot = ref('')
+const privacySnapshot = ref('')
+const form = reactive(createEmptyProfileForm())
+const { data, pending, error, refresh } = await useFetch<ProfileResponse>(
+	'/api/users/me/profile',
+)
 
-const { user, fetchCurrentUser } = usePortalAuth()
-const { notifyError, notifySuccess } = useAdminToast()
-const submitting = ref(false)
-const form = reactive<ProfileForm>({
-	displayName: '',
-	avatarUrl: '',
-	bio: '',
+const profile = computed(() => data.value?.profile ?? null)
+const coverImage = computed(() => profile.value?.coverUrl ?? '')
+const publicProfileUrl = computed(() => {
+	const siteUrl = runtimeConfig.public.siteUrl.replace(/\/$/, '')
+	return `${siteUrl}/u/${form.username}`
 })
 
 watch(
-	user,
+	profile,
 	(value) => {
-		form.displayName = value?.displayName ?? ''
-		form.avatarUrl = value?.avatarUrl ?? ''
-		form.bio = value?.bio ?? ''
+		if (!value) {
+			return
+		}
+
+		originalProfile.value = value
+		assignProfileForm(form, value)
+		preferencesSnapshot.value = JSON.stringify(form.preferences)
+		privacySnapshot.value = JSON.stringify(form.privacy)
 	},
 	{
 		immediate: true,
 	},
 )
 
-const submit = async (): Promise<void> => {
-	submitting.value = true
+const copyHydrolineId = async (): Promise<void> => {
+	if (!profile.value) {
+		return
+	}
 
-	try {
-		await $fetch('/api/users/me', {
-			method: 'PATCH',
-			body: form,
-		})
-		await fetchCurrentUser()
-		notifySuccess({
-			title: t('profile.notifications.saved'),
-			description: t('profile.notifications.savedDescription'),
-		})
-	} catch (error) {
-		notifyError(error, {
-			title: t('profile.notifications.saveFailed'),
-			description: t('profile.notifications.saveFailedDescription'),
-		})
-	} finally {
-		submitting.value = false
+	await navigator.clipboard.writeText(profile.value.hydrolineId)
+	toast.add({
+		title: t('profile.notifications.copied'),
+		color: 'success',
+		icon: 'i-lucide-check',
+	})
+}
+
+const pickPayload = (
+	payload: Record<string, unknown>,
+	keys: string[],
+): Record<string, unknown> =>
+	Object.fromEntries(
+		keys.flatMap((key) => (key in payload ? [[key, payload[key]]] : [])),
+	)
+
+const applyProfileResponse = (response: ProfileResponse): void => {
+	data.value = response
+
+	if (currentUser.value) {
+		currentUser.value = {
+			...currentUser.value,
+			username: response.profile.username,
+			displayName: response.profile.displayName,
+			avatarUrl: response.profile.avatarUrl,
+			coverUrl: response.profile.coverUrl,
+			bio: response.profile.bio,
+			preferences: {
+				language: response.profile.preferences.language,
+			},
+		}
 	}
 }
+
+const patchProfile = async (
+	payload: Record<string, unknown>,
+): Promise<ProfileResponse> =>
+	await $fetch<ProfileResponse>('/api/users/me/profile', {
+		method: 'PATCH',
+		body: payload,
+	})
+
+const submitProfileSection = async (
+	section: ProfileSubmitSection,
+	keys: string[],
+): Promise<void> => {
+	const payload = pickPayload(
+		buildProfilePatchPayload(form, originalProfile.value),
+		keys,
+	)
+
+	if (!Object.keys(payload).length) {
+		toast.add({
+			title: t('profile.notifications.noChanges'),
+			color: 'neutral',
+		})
+		return
+	}
+
+	submittingSection.value = section
+
+	try {
+		applyProfileResponse(await patchProfile(payload))
+		toast.add({
+			title: t('profile.notifications.saved'),
+			color: 'success',
+			icon: 'i-lucide-check',
+		})
+	} catch (saveError) {
+		notifyError(saveError, {
+			title: t('profile.notifications.saveFailed'),
+		})
+	} finally {
+		submittingSection.value = null
+	}
+}
+
+const submitUsername = async (): Promise<void> => {
+	await submitProfileSection('username', ['username'])
+}
+
+const submitBasicProfile = async (): Promise<void> => {
+	await submitProfileSection('basic', [
+		'displayName',
+		'bio',
+		'location',
+		'countryOrRegion',
+		'birthday',
+	])
+}
+
+const submitSocialProfile = async (): Promise<void> => {
+	await submitProfileSection('social', ['social'])
+}
+
+const patchProfileAttachment = async (
+	payload: Record<string, string>,
+	title: string,
+): Promise<void> => {
+	try {
+		applyProfileResponse(await patchProfile(payload))
+		toast.add({
+			title,
+			color: 'success',
+			icon: 'i-lucide-check',
+		})
+	} catch (saveError) {
+		notifyError(saveError, {
+			title: t('profile.notifications.imageSaveFailed'),
+		})
+	}
+}
+
+const handleAvatarUploaded = async (
+	result: AttachmentUploadResult,
+): Promise<void> => {
+	await patchProfileAttachment(
+		{
+			avatarAttachmentId: result.id,
+		},
+		t('profile.notifications.avatarUpdated'),
+	)
+}
+
+const handleCoverUploaded = async (
+	result: AttachmentUploadResult,
+): Promise<void> => {
+	await patchProfileAttachment(
+		{
+			coverAttachmentId: result.id,
+		},
+		t('profile.notifications.coverUpdated'),
+	)
+}
+
+let preferencesSaveTimer: ReturnType<typeof setTimeout> | null = null
+let privacySaveTimer: ReturnType<typeof setTimeout> | null = null
+
+const savePreferencesLater = (): void => {
+	if (preferencesSaveTimer) {
+		clearTimeout(preferencesSaveTimer)
+	}
+
+	preferencesSaveTimer = setTimeout(() => {
+		preferencesSaveTimer = null
+		const payload = pickPayload(
+			buildProfilePatchPayload(form, originalProfile.value),
+			['preferences'],
+		)
+
+		if (!Object.keys(payload).length) {
+			return
+		}
+
+		void patchProfile(payload)
+			.then((response) => {
+				applyProfileResponse(response)
+				toast.add({
+					title: t('profile.notifications.preferencesSaved'),
+					color: 'success',
+					icon: 'i-lucide-check',
+				})
+			})
+			.catch((saveError) => {
+				notifyError(saveError, {
+					title: t('profile.notifications.preferencesSaveFailed'),
+				})
+			})
+	}, 500)
+}
+
+const savePrivacyLater = (): void => {
+	if (privacySaveTimer) {
+		clearTimeout(privacySaveTimer)
+	}
+
+	privacySaveTimer = setTimeout(() => {
+		privacySaveTimer = null
+		const payload = pickPayload(
+			buildProfilePatchPayload(form, originalProfile.value),
+			['privacy'],
+		)
+
+		if (!Object.keys(payload).length) {
+			return
+		}
+
+		void patchProfile(payload)
+			.then((response) => {
+				applyProfileResponse(response)
+				toast.add({
+					title: t('profile.notifications.privacySaved'),
+					color: 'success',
+					icon: 'i-lucide-check',
+				})
+			})
+			.catch((saveError) => {
+				notifyError(saveError, {
+					title: t('profile.notifications.privacySaveFailed'),
+				})
+			})
+	}, 500)
+}
+
+onBeforeUnmount(() => {
+	if (preferencesSaveTimer) {
+		clearTimeout(preferencesSaveTimer)
+	}
+
+	if (privacySaveTimer) {
+		clearTimeout(privacySaveTimer)
+	}
+})
+
+watch(
+	() => form.preferences,
+	() => {
+		const nextSnapshot = JSON.stringify(form.preferences)
+		if (!preferencesSnapshot.value) {
+			preferencesSnapshot.value = nextSnapshot
+			return
+		}
+
+		if (nextSnapshot !== preferencesSnapshot.value) {
+			preferencesSnapshot.value = nextSnapshot
+			savePreferencesLater()
+		}
+	},
+	{ deep: true },
+)
+
+watch(
+	() => form.privacy,
+	() => {
+		const nextSnapshot = JSON.stringify(form.privacy)
+		if (!privacySnapshot.value) {
+			privacySnapshot.value = nextSnapshot
+			return
+		}
+
+		if (nextSnapshot !== privacySnapshot.value) {
+			privacySnapshot.value = nextSnapshot
+			savePrivacyLater()
+		}
+	},
+	{ deep: true },
+)
 </script>

@@ -1,0 +1,111 @@
+model ExternalSyncRun {
+  id           String             @id @default(cuid())
+  source       ExternalSyncSource
+  status       ExternalSyncStatus @default(RUNNING)
+  startedAt    DateTime           @default(now())
+  finishedAt   DateTime?
+  rowsRead     Int                @default(0)
+  rowsUpserted Int                @default(0)
+  errorMessage String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([source])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model AuthMeAccountSnapshot {
+  id                 String    @id @default(cuid())
+  authmeId           Int       @unique
+  username           String
+  normalizedUsername String    @unique
+  realname           String?
+  email              String?
+  registeredAt       DateTime?
+  lastLoginAt        DateTime?
+  hasTotp            Boolean   @default(false)
+  rawRegdate         BigInt?
+  rawLastlogin       BigInt?
+  syncedAt           DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([username])
+  @@index([realname])
+  @@index([lastLoginAt])
+}
+
+model LuckPermsPlayerSnapshot {
+  id                 String   @id @default(cuid())
+  uuid               String   @unique
+  username           String
+  normalizedUsername String
+  primaryGroup       String
+  syncedAt           DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([username])
+  @@index([normalizedUsername])
+  @@index([primaryGroup])
+}
+
+model LuckPermsGroupSnapshot {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LuckPermsUserPermissionSnapshot {
+  id         String    @id @default(cuid())
+  sourceId   Int       @unique
+  uuid       String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  rawExpiry  BigInt
+  expiresAt  DateTime?
+  contexts   String
+  syncedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([uuid])
+  @@index([permission])
+  @@index([server])
+  @@index([world])
+}
+
+model LuckPermsGroupPermissionSnapshot {
+  id         String    @id @default(cuid())
+  sourceId   Int       @unique
+  groupName  String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  rawExpiry  BigInt
+  expiresAt  DateTime?
+  contexts   String
+  syncedAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([groupName])
+  @@index([permission])
+  @@index([server])
+  @@index([world])
+}
+
+model LuckPermsTrackSnapshot {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  rawGroups String
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

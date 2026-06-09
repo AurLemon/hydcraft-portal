@@ -7,15 +7,12 @@
 				<h1 class="text-3xl font-semibold text-slate-950 dark:text-white">
 					{{ t('admin.overview.title') }}
 				</h1>
-				<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-					{{ t('admin.overview.description') }}
-				</p>
 			</div>
 		</div>
 
 		<section class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<p
 					class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
@@ -45,7 +42,7 @@
 			</div>
 
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<p
 					class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
@@ -70,7 +67,7 @@
 			</div>
 
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<p
 					class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
@@ -99,7 +96,7 @@
 
 		<section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<div class="flex items-center justify-between gap-4">
 					<h2 class="text-base font-semibold text-slate-950 dark:text-white">
@@ -153,7 +150,7 @@
 			</div>
 
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<div class="flex items-center justify-between gap-4">
 					<h2 class="text-base font-semibold text-slate-950 dark:text-white">
@@ -187,7 +184,7 @@
 			</div>
 
 			<div
-				class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+				class="rounded-lg border border-slate-300/80 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
 			>
 				<h2 class="text-base font-semibold text-slate-950 dark:text-white">
 					{{ t('admin.overview.sections.quickActions') }}
@@ -228,6 +225,26 @@
 								class="block truncate text-xs text-slate-500 dark:text-slate-400"
 							>
 								{{ t('admin.overview.quickActions.usersDescription') }}
+							</span>
+						</span>
+						<UIcon name="i-lucide-chevron-right" class="h-4 w-4 shrink-0" />
+					</UButton>
+
+					<UButton
+						:to="localePath('/admin/attachments')"
+						color="neutral"
+						variant="ghost"
+						class="w-full justify-start gap-3 rounded-lg px-3 py-3 text-left"
+					>
+						<UIcon name="i-lucide-paperclip" class="h-5 w-5 text-primary" />
+						<span class="min-w-0 flex-1">
+							<span class="block text-sm font-medium">
+								{{ t('admin.overview.quickActions.attachments') }}
+							</span>
+							<span
+								class="block truncate text-xs text-slate-500 dark:text-slate-400"
+							>
+								{{ t('admin.overview.quickActions.attachmentsDescription') }}
 							</span>
 						</span>
 						<UIcon name="i-lucide-chevron-right" class="h-4 w-4 shrink-0" />

@@ -1,0 +1,61 @@
+enum AttachmentStatus {
+  PENDING
+  UPLOADED
+  PROCESSING
+  READY
+  FAILED
+  DELETED
+  EXPIRED
+}
+
+enum AttachmentVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+model Attachment {
+  id            String               @id @default(cuid())
+  app           String
+  category      String?
+  purpose       String
+  ownerType     String
+  ownerId       String?
+  visibility    AttachmentVisibility
+  status        AttachmentStatus     @default(PENDING)
+  bucketProfile String
+  objectKey     String?
+  originalKey   String?
+  contentType   String?
+  sizeBytes     Int?
+  width         Int?
+  height        Int?
+  sha256        String?
+  createdById   String?
+  createdBy     User?                @relation("AttachmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  expiresAt     DateTime?
+  variants      AttachmentVariant[]
+
+  @@index([app, purpose])
+  @@index([app, category])
+  @@index([ownerType, ownerId])
+  @@index([status])
+  @@index([createdById])
+}
+
+model AttachmentVariant {
+  id           String     @id @default(cuid())
+  attachmentId String
+  name         String
+  objectKey    String
+  width        Int
+  height       Int
+  contentType  String
+  sizeBytes    Int?
+  createdAt    DateTime   @default(now())
+  attachment   Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
+
+  @@unique([attachmentId, name])
+  @@index([attachmentId])
+}

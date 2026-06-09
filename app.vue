@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { useToast } from '@nuxt/ui/composables'
+import { en, ja, zh_cn, zh_tw } from '@nuxt/ui/locale'
 import PageFooter from '~/components/layout/PageFooter.vue'
 import PageContainer from '~/components/layout/PageContainer.vue'
 import PageHeader from '~/components/layout/PageHeader.vue'
 import PageStatusBar from '~/components/layout/PageStatusBar.vue'
+import {
+	profileLanguageToLocaleCode,
+	type ProfileLanguage,
+} from '~/utils/profile-edit'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'
@@ -15,7 +20,14 @@ interface NuxtI18nApi {
 
 const toast = useToast()
 const nuxtApp = useNuxtApp()
+const route = useRoute()
+const switchLocalePath = useSwitchLocalePath()
 const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
+const { user, resolved } = usePortalAuth()
+const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
+const MANUAL_LOCALE_SWITCH_GRACE_MS = 1500
+const DEFAULT_LOCALE: LocaleCode = 'zh-CN'
+const prefixedLocaleRoutePattern = /^\/(?:zh-TW|ja-JP|en-US)(?:\/|$)/
 
 const CHINESE_PRIMARY_LOCALES = new Set([
 	'zh',
@@ -97,6 +109,22 @@ const toLocaleNameKey = (localeCode: LocaleCode): LocaleNameKey => {
 	return 'zhCN'
 }
 
+const nuxtUiLocale = computed(() => {
+	if (locale.value === 'zh-TW') {
+		return zh_tw
+	}
+
+	if (locale.value === 'en-US') {
+		return en
+	}
+
+	if (locale.value === 'ja-JP') {
+		return ja
+	}
+
+	return zh_cn
+})
+
 const i18nApi = nuxtApp.$i18n as NuxtI18nApi
 
 const setAppLocale = async (nextLocale: LocaleCode): Promise<void> => {
@@ -111,6 +139,67 @@ const setAppLocale = async (nextLocale: LocaleCode): Promise<void> => {
 
 	locale.value = nextLocale
 }
+
+const isDefaultLocaleRoute = (path: string): boolean =>
+	!prefixedLocaleRoutePattern.test(path)
+
+const isFreshManualLocaleSwitch = (): boolean => {
+	if (!import.meta.client) {
+		return false
+	}
+
+	const switchedAt = Number(
+		window.sessionStorage.getItem(MANUAL_LOCALE_SWITCH_STORAGE_KEY) ?? 0,
+	)
+
+	return Date.now() - switchedAt < MANUAL_LOCALE_SWITCH_GRACE_MS
+}
+
+const getPreferredLocale = (): LocaleCode | null => {
+	const language = user.value?.preferences?.language as
+		| ProfileLanguage
+		| undefined
+
+	return language ? profileLanguageToLocaleCode[language] : null
+}
+
+const maybeRedirectDefaultRouteToPreferredLocale = async (): Promise<void> => {
+	if (
+		!import.meta.client ||
+		!resolved.value ||
+		!user.value ||
+		!isDefaultLocaleRoute(route.path) ||
+		isFreshManualLocaleSwitch()
+	) {
+		return
+	}
+
+	const preferredLocale = getPreferredLocale()
+
+	if (!preferredLocale || preferredLocale === DEFAULT_LOCALE) {
+		return
+	}
+
+	const targetPath = switchLocalePath(preferredLocale)
+
+	if (!targetPath || targetPath === route.fullPath) {
+		return
+	}
+
+	await navigateTo(targetPath, { replace: true })
+}
+
+watch(
+	[
+		() => resolved.value,
+		() => user.value?.preferences?.language,
+		() => route.fullPath,
+	],
+	() => {
+		void maybeRedirectDefaultRouteToPreferredLocale()
+	},
+	{ immediate: true },
+)
 
 const translateLocaleNotice = (
 	key: string,
@@ -221,6 +310,7 @@ useHead(() => ({
 
 <template>
 	<UApp
+		:locale="nuxtUiLocale"
 		:toaster="{
 			position: 'top-right',
 			ui: {

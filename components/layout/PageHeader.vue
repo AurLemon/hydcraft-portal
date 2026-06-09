@@ -72,6 +72,7 @@ const themeButtonIcon = computed(() =>
 const selectedLocale = computed(() => locale.value as LocaleCode)
 const userMenuOpen = ref(false)
 const popoverContentClass = 'z-[40000]'
+const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const loginRoute = computed(() => ({
 	path: localePath('/login'),
 	query: getPortalRedirectQuery(route.fullPath, {
@@ -148,6 +149,13 @@ const selectTheme = (mode: ThemeMode): void => {
 const selectLocale = async (value: LocaleCode): Promise<void> => {
 	if (!value || value === locale.value) {
 		return
+	}
+
+	if (import.meta.client) {
+		window.sessionStorage.setItem(
+			MANUAL_LOCALE_SWITCH_STORAGE_KEY,
+			String(Date.now()),
+		)
 	}
 
 	const setLocale = (

@@ -70,6 +70,16 @@ export const headerMenuGroups: HeaderMenuGroup[] = [
 				to: '/admin/servers',
 			},
 			{ key: 'users', labelKey: 'routes.adminUsers', to: '/admin/users' },
+			{
+				key: 'achievements',
+				labelKey: 'routes.adminAchievements',
+				to: '/admin/achievements',
+			},
+			{
+				key: 'attachments',
+				labelKey: 'routes.adminAttachments',
+				to: '/admin/attachments',
+			},
 		],
 	},
 ]
@@ -86,6 +96,8 @@ export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/admin/overview': 'routes.adminOverview',
 	'/admin/servers': 'routes.adminServers',
 	'/admin/users': 'routes.adminUsers',
+	'/admin/achievements': 'routes.adminAchievements',
+	'/admin/attachments': 'routes.adminAttachments',
 	'/me/profile': 'routes.meProfile',
 	'/me/minecraft': 'routes.meMinecraft',
 	'/me/security': 'routes.meSecurity',

@@ -8,16 +8,24 @@ import {
 	type H3Event,
 } from 'h3'
 import { createHash, randomBytes } from 'node:crypto'
-import type { User, UserRole, UserStatus } from '~/generated/prisma/client'
+import type {
+	User,
+	UserProfileLanguage,
+	UserRole,
+	UserStatus,
+} from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { signAuthToken, verifyAuthToken } from './jwt'
 
 export interface UserSummary {
 	id: string
 	handle: string
+	username: string
+	hydrolineId: string
 	displayName: string | null
 	email: string | null
 	avatarUrl: string | null
+	coverUrl: string | null
 	bio: string | null
 	role: UserRole
 	status: UserStatus
@@ -25,6 +33,15 @@ export interface UserSummary {
 	lastLoginAt: Date | null
 	createdAt: Date
 	updatedAt: Date
+	preferences: {
+		language: UserProfileLanguage
+	} | null
+}
+
+type UserForSummary = User & {
+	preferences?: {
+		language: UserProfileLanguage
+	} | null
 }
 
 export const AUTH_COOKIE_NAME = 'hydcraft_auth'
@@ -39,12 +56,15 @@ const REFRESH_TOKEN_MAX_AGE_SECONDS = Number(
 	process.env.REFRESH_TOKEN_EXPIRES_IN_SECONDS ?? 2592000,
 )
 
-export const toUserSummary = (user: User): UserSummary => ({
+export const toUserSummary = (user: UserForSummary): UserSummary => ({
 	id: user.id,
 	handle: user.handle,
+	username: user.username,
+	hydrolineId: user.hydrolineId,
 	displayName: user.displayName,
 	email: user.email,
 	avatarUrl: user.avatarUrl,
+	coverUrl: user.coverUrl,
 	bio: user.bio,
 	role: user.role,
 	status: user.status,
@@ -52,6 +72,11 @@ export const toUserSummary = (user: User): UserSummary => ({
 	lastLoginAt: user.lastLoginAt,
 	createdAt: user.createdAt,
 	updatedAt: user.updatedAt,
+	preferences: user.preferences
+		? {
+				language: user.preferences.language,
+			}
+		: null,
 })
 
 export const issueAuthToken = (user: User): string =>
@@ -185,7 +210,15 @@ export const rotateRefreshToken = async (
 			tokenHash: hashRefreshToken(refreshToken),
 		},
 		include: {
-			user: true,
+			user: {
+				include: {
+					preferences: {
+						select: {
+							language: true,
+						},
+					},
+				},
+			},
 		},
 	})
 
@@ -219,7 +252,9 @@ export const rotateRefreshToken = async (
 	}
 }
 
-export const requireCurrentUser = async (event: H3Event): Promise<User> => {
+export const requireCurrentUser = async (
+	event: H3Event,
+): Promise<UserForSummary> => {
 	const token = getAuthTokenFromEvent(event)
 
 	if (!token) {
@@ -233,6 +268,13 @@ export const requireCurrentUser = async (event: H3Event): Promise<User> => {
 	const user = await prisma.user.findUnique({
 		where: {
 			id: payload.sub,
+		},
+		include: {
+			preferences: {
+				select: {
+					language: true,
+				},
+			},
 		},
 	})
 

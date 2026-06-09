@@ -8,8 +8,9 @@
 		"partners": "コミュニティパートナー",
 		"admin": "管理",
 		"adminOverview": "概要",
-		"adminServers": "サーバー管理",
-		"adminUsers": "ユーザー管理",
+		"adminServers": "サーバー",
+		"adminUsers": "ユーザー",
+		"adminAttachments": "添付ファイル",
 		"login": "ログイン",
 		"register": "登録",
 		"forgotPassword": "パスワードを忘れた",
@@ -17,13 +18,17 @@
 		"meProfile": "プロフィール",
 		"meMinecraft": "ゲームプロフィール",
 		"meSecurity": "セキュリティ",
-		"meConnections": "連携と認可"
+		"meConnections": "連携と認可",
+		"adminAchievements": "実績"
 	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "{date} 更新",
 			"stats": "{count} 字 / {minutes} 分"
 		}
+	},
+	"common": {
+		"cancel": "キャンセル"
 	},
 	"header": {
 		"nav": {
@@ -169,20 +174,165 @@
 	},
 	"profile": {
 		"title": "プロフィール",
+		"empty": {
+			"loadFailed": "プロフィールの読み込みに失敗しました"
+		},
 		"fields": {
 			"handle": "ユーザー名",
+			"username": "ユーザー名",
 			"displayName": "表示名",
 			"avatarUrl": "アバター URL",
-			"bio": "自己紹介"
+			"bio": "自己紹介",
+			"joinedAt": "参加日",
+			"location": "所在地",
+			"countryOrRegion": "国 / 地域",
+			"birthday": "誕生日",
+			"language": "言語",
+			"timezone": "タイムゾーン",
+			"autoTimezone": "タイムゾーンを自動検出",
+			"h2wikiPageName": "HydCraft Wiki 個人ページ",
+			"website": "個人サイト",
+			"publicEmail": "公開メール"
 		},
 		"actions": {
-			"save": "保存"
+			"save": "保存",
+			"viewPublicProfile": "公開プロフィールを見る",
+			"editPublicProfile": "公開プロフィールを編集",
+			"editCover": "カバーを編集"
+		},
+		"edit": {
+			"sections": {
+				"username": "ユーザー名",
+				"basic": "基本情報",
+				"preferences": "設定",
+				"social": "ソーシャルリンク",
+				"privacy": "公開情報"
+			},
+			"actions": {
+				"updateUsername": "ユーザー名を更新",
+				"updateProfile": "プロフィールを更新",
+				"copyHydrolineId": "Hydroline ID をコピー"
+			},
+			"hints": {
+				"usernameCooldown": "ユーザー名は 30 日に 1 回だけ変更できます。変更後、古いリンクは無効になるかリダイレクトされる場合があります。",
+				"languagePreference": "既定言語ルートに入ったとき、この設定を素早い切り替え先として使います。",
+				"publicEmail": "公開すると、このメールアドレスは他の人に見える可能性があります。"
+			}
+		},
+		"public": {
+			"sections": {
+				"about": "自己紹介",
+				"social": "ソーシャルリンク",
+				"minecraft": "Minecraft プロフィール"
+			},
+			"fields": {
+				"location": "所在地",
+				"joinedAt": "参加日",
+				"timezone": "タイムゾーン",
+				"minecraftName": "ゲーム名",
+				"currentServer": "現在のサーバー",
+				"onlineStatus": "オンライン状態"
+			},
+			"values": {
+				"defaultTimezone": "UTC+8（北京時間）"
+			},
+			"actions": {
+				"viewMinecraftProfile": "Minecraft プロフィールを見る"
+			},
+			"empty": {
+				"unavailable": "このプロフィールにはアクセスできません",
+				"bio": "このユーザーはまだ自己紹介を書いていません。",
+				"social": "公開ソーシャルリンクはまだありません。",
+				"minecraft": "公開 Minecraft プロフィールはまだありません。"
+			},
+			"social": {
+				"website": "個人サイト",
+				"publicEmail": "公開メール"
+			}
+		},
+		"badges": {
+			"joinedDays": "{days} 日前に参加",
+			"serverMember": "サーバーメンバー"
+		},
+		"media": {
+			"coverAlt": "{name} のカバー"
+		},
+		"status": {
+			"online": "オンライン",
+			"recentlyActive": "最近アクティブ",
+			"recentlyActiveWithDate": "最近アクティブ: {date}",
+			"offline": "オフライン"
+		},
+		"dateParts": {
+			"year": "年",
+			"month": "月",
+			"day": "日"
+		},
+		"options": {
+			"language": {
+				"ZH_CN": "简体中文",
+				"ZH_TW": "繁體中文",
+				"EN_US": "English",
+				"JA_JP": "日本語"
+			},
+			"country": {
+				"中国内地": "中国内地",
+				"中国香港": "中国香港",
+				"中国台湾": "中国台湾",
+				"中国澳门": "中国マカオ",
+				"海外地区": "海外地域"
+			}
+		},
+		"privacy": {
+			"publicProfile": "公開プロフィール",
+			"showHydrolineId": "Hydroline ID を表示",
+			"showJoinedAt": "参加日を表示",
+			"showLocation": "所在地を表示",
+			"showCountryOrRegion": "国 / 地域を表示",
+			"showBirthday": "誕生日を表示",
+			"showBadges": "バッジを表示",
+			"showBio": "自己紹介を表示",
+			"showMinecraftProfileLink": "Minecraft プロフィール入口を表示",
+			"showSocialLinks": "ソーシャルリンクを表示",
+			"showActivityStatus": "最近のアクティビティを表示",
+			"searchableInUserDirectory": "ユーザーディレクトリで検索可能にする",
+			"allowMinecraftProfileDiscovery": "Minecraft プロフィールからユーザーページを見つけられるようにする"
 		},
 		"notifications": {
 			"saved": "プロフィールを保存しました",
 			"savedDescription": "Header のユーザー情報を更新しました。",
 			"saveFailed": "プロフィールの保存に失敗しました",
-			"saveFailedDescription": "ログイン状態と入力内容を確認してください。"
+			"saveFailedDescription": "ログイン状態と入力内容を確認してください。",
+			"copied": "コピーしました",
+			"noChanges": "保存する変更はありません",
+			"imageSaveFailed": "プロフィール画像の保存に失敗しました",
+			"avatarUpdated": "アバターを更新しました",
+			"coverUpdated": "カバーを更新しました",
+			"preferencesSaved": "設定を保存しました",
+			"preferencesSaveFailed": "設定の保存に失敗しました",
+			"privacySaved": "公開情報を保存しました",
+			"privacySaveFailed": "公開情報の保存に失敗しました"
+		},
+		"verified": {
+			"text": "HydCraft 認証済みアカウント"
+		}
+	},
+	"attachments": {
+		"upload": {
+			"button": "画像をアップロード",
+			"invalidType": "対応していないファイル形式です",
+			"fileTooLarge": "ファイルサイズが上限を超えています",
+			"cropRequired": "先に画像を切り抜いてください",
+			"policyUnavailable": "アップロード設定を取得できません",
+			"uploaded": "画像をアップロードしました",
+			"failed": "アップロードに失敗しました"
+		},
+		"crop": {
+			"title": "画像を切り抜く",
+			"avatarTitle": "アバターを切り抜く",
+			"coverTitle": "カバーを切り抜く",
+			"cancel": "切り抜きをキャンセル",
+			"confirm": "切り抜きを確定"
 		}
 	},
 	"minecraftAccounts": {
@@ -211,9 +361,26 @@
 		}
 	},
 	"admin": {
+		"actions": {
+			"reset": "フィルターをリセット",
+			"cancel": "キャンセル",
+			"save": "保存",
+			"copyUrl": "URL をコピー",
+			"delete": "削除"
+		},
+		"filters": {
+			"all": "すべて"
+		},
+		"pagination": {
+			"summary": "{page} / {pageCount} ページ、全 {total} 件",
+			"first": "最初のページ",
+			"previous": "前のページ",
+			"next": "次のページ",
+			"last": "最後のページ",
+			"pageSize": "{size} / ページ"
+		},
 		"overview": {
 			"title": "Portal 概要",
-			"description": "おかえりなさい。現在のシステム稼働状態です。",
 			"loading": "Portal 設定を読み込んでいます...",
 			"metrics": {
 				"servers": "サーバー",
@@ -263,12 +430,14 @@
 			"quickActions": {
 				"servers": "サーバーページへ移動",
 				"serversDescription": "サーバー接続とデータソース設定を管理",
-				"users": "全ユーザー管理ページ",
-				"usersDescription": "Portal ユーザーを表示・管理"
+				"users": "ユーザーを開く",
+				"usersDescription": "Portal ユーザーを表示・管理",
+				"attachments": "添付ファイルを開く",
+				"attachmentsDescription": "アバターとカバー画像を確認"
 			}
 		},
 		"servers": {
-			"title": "サーバー管理",
+			"title": "サーバー",
 			"create": "サーバーを追加",
 			"loading": "サーバー設定を読み込んでいます...",
 			"empty": {
@@ -277,9 +446,98 @@
 			}
 		},
 		"users": {
-			"title": "ユーザー管理",
-			"description": "Portal ユーザー管理入口です。",
-			"placeholder": "ユーザー管理ページは未実装です。"
+			"title": "ユーザー",
+			"filters": {
+				"search": "ユーザー名、メール、Hydroline ID を検索"
+			},
+			"sections": {
+				"identity": "識別情報と状態",
+				"profile": "プロフィール",
+				"attachments": "アバターとカバー",
+				"preferences": "設定",
+				"social": "ソーシャルリンク",
+				"privacy": "公開情報",
+				"achievements": "実績と認証"
+			},
+			"fields": {
+				"user": "ユーザー",
+				"username": "ユーザー名",
+				"displayName": "表示名",
+				"role": "ロール",
+				"status": "状態",
+				"statusReason": "状態メモ",
+				"title": "称号",
+				"bio": "自己紹介",
+				"location": "所在地",
+				"countryOrRegion": "国 / 地域",
+				"birthday": "誕生日",
+				"language": "言語",
+				"timezoneMode": "タイムゾーンモード",
+				"timezone": "タイムゾーン",
+				"websiteUrl": "Web サイト",
+				"publicEmail": "公開メール",
+				"avatarAttachmentId": "アバター添付 ID",
+				"coverAttachmentId": "カバー添付 ID",
+				"avatarUrl": "アバター URL",
+				"coverUrl": "カバー URL",
+				"createdAt": "作成日時",
+				"verified": "認証済み",
+				"badges": "Badge"
+			},
+			"notifications": {
+				"saved": "ユーザー情報を保存しました",
+				"saveFailed": "ユーザー情報の保存に失敗しました"
+			},
+			"actions": {
+				"resetAvatar": "アバターをリセット",
+				"resetCover": "カバーをリセット"
+			},
+			"media": {
+				"avatarEmpty": "アバター URL はありません",
+				"coverEmpty": "カバー URL はありません",
+				"avatarReset": "保存後にアバターをリセットします",
+				"coverReset": "保存後にカバーをリセットします"
+			}
+		},
+		"attachments": {
+			"title": "添付ファイル",
+			"filters": {
+				"search": "添付 ID、Owner、Object Key を検索",
+				"app": "アプリ",
+				"category": "カテゴリ",
+				"purpose": "用途",
+				"status": "状態",
+				"visibility": "公開範囲"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "アプリ",
+				"category": "カテゴリ",
+				"purpose": "用途",
+				"status": "状態",
+				"visibility": "公開範囲",
+				"owner": "所有者",
+				"ownerType": "所有者タイプ",
+				"ownerId": "所有者 ID",
+				"contentType": "Content Type",
+				"sizeBytes": "サイズ",
+				"createdById": "作成者 ID",
+				"objectKey": "Object Key",
+				"createdAt": "作成日時"
+			},
+			"modal": {
+				"title": "添付ファイル詳細",
+				"variants": "画像バリエーション",
+				"privateUrlHidden": "Private 添付の公開 URL は表示しません"
+			},
+			"deleteConfirm": {
+				"title": "添付ファイルを削除",
+				"description": "添付ファイルを削除済みにし、オブジェクトストレージ上の画像バリエーション削除を試みます。"
+			},
+			"notifications": {
+				"deleted": "添付ファイルを削除済みにしました",
+				"deleteFailed": "添付ファイルの削除に失敗しました"
+			}
 		},
 		"serverConfig": {
 			"createEyebrow": "サーバーを追加",
@@ -322,7 +580,60 @@
 			"serverSaved": "サーバー設定を保存しました",
 			"serverSavedDescription": "サーバー一覧を更新しました。",
 			"serverSaveFailed": "設定の保存に失敗しました",
-			"serverSaveFailedDescription": "ログイン状態と入力欄を確認してください。"
+			"serverSaveFailedDescription": "ログイン状態と入力欄を確認してください。",
+			"copied": "コピーしました"
+		},
+		"achievements": {
+			"title": "実績",
+			"sections": {
+				"badges": "Badge 一覧",
+				"createBadge": "Badge 作成",
+				"assign": "Badge 付与",
+				"verified": "認証設定"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "配色",
+				"assignmentCount": "付与数",
+				"enabled": "有効",
+				"description": "説明",
+				"users": "ユーザー",
+				"badges": "Badge",
+				"labels": "多言語名",
+				"sortOrder": "並び順"
+			},
+			"actions": {
+				"createBadge": "Badge 作成",
+				"assignBadges": "Badge 付与",
+				"saveVerified": "認証を付与",
+				"removeVerified": "認証を解除"
+			},
+			"notifications": {
+				"badgeCreated": "Badge を作成しました",
+				"badgeCreateFailed": "Badge の作成に失敗しました",
+				"badgesAssigned": "Badge を付与しました",
+				"badgesAssignFailed": "Badge の付与に失敗しました",
+				"verifiedSaved": "認証設定を保存しました",
+				"verifiedSaveFailed": "認証設定の保存に失敗しました",
+				"badgeSaved": "Badge を保存しました",
+				"badgeSaveFailed": "Badge の保存に失敗しました"
+			},
+			"modal": {
+				"createBadge": "Badge 作成",
+				"editBadge": "Badge 編集",
+				"assignBadges": "Badge 付与"
+			}
+		},
+		"sort": {
+			"field": "並び替え項目",
+			"direction": "並び順",
+			"asc": "昇順",
+			"desc": "降順",
+			"fields": {
+				"createdAt": "作成日時",
+				"updatedAt": "更新日時"
+			}
 		}
 	},
 	"home": {

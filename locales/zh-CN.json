@@ -7,9 +7,10 @@
 		"links": "友情链接",
 		"partners": "社区伙伴",
 		"admin": "管理",
-		"adminOverview": "管理概览",
-		"adminServers": "服务器管理",
-		"adminUsers": "用户管理",
+		"adminOverview": "概览",
+		"adminServers": "服务器",
+		"adminUsers": "用户",
+		"adminAttachments": "附件",
 		"login": "登录",
 		"register": "注册",
 		"forgotPassword": "忘记密码",
@@ -17,13 +18,17 @@
 		"meProfile": "个人资料",
 		"meMinecraft": "Minecraft 档案",
 		"meSecurity": "账号安全",
-		"meConnections": "连接与授权"
+		"meConnections": "连接与授权",
+		"adminAchievements": "成就"
 	},
 	"main": {
 		"contentFooter": {
 			"updatedAt": "更新于 {date}",
 			"stats": "{count} 字 / {minutes} 分钟"
 		}
+	},
+	"common": {
+		"cancel": "取消"
 	},
 	"header": {
 		"nav": {
@@ -169,20 +174,165 @@
 	},
 	"profile": {
 		"title": "个人资料",
+		"empty": {
+			"loadFailed": "个人资料加载失败"
+		},
 		"fields": {
 			"handle": "用户名",
+			"username": "用户名",
 			"displayName": "显示名称",
 			"avatarUrl": "头像 URL",
-			"bio": "个人简介"
+			"bio": "个人简介",
+			"joinedAt": "加入时间",
+			"location": "现居地",
+			"countryOrRegion": "国家 / 地区",
+			"birthday": "生日",
+			"language": "语言",
+			"timezone": "时区",
+			"autoTimezone": "自动识别时区",
+			"h2wikiPageName": "HydCraft Wiki 个人页面",
+			"website": "个人网站",
+			"publicEmail": "公开邮箱"
 		},
 		"actions": {
-			"save": "保存资料"
+			"save": "保存资料",
+			"viewPublicProfile": "查看公开主页",
+			"editPublicProfile": "编辑公开资料",
+			"editCover": "编辑封面"
+		},
+		"edit": {
+			"sections": {
+				"username": "用户名",
+				"basic": "基础信息",
+				"preferences": "偏好",
+				"social": "社交链接",
+				"privacy": "公开信息"
+			},
+			"actions": {
+				"updateUsername": "更新用户名",
+				"updateProfile": "更新档案",
+				"copyHydrolineId": "复制 Hydroline ID"
+			},
+			"hints": {
+				"usernameCooldown": "用户名每 30 天只能修改一次，修改后旧链接可能失效或跳转。",
+				"languagePreference": "偏好语言会作为访问默认语言路由时的快速切换目标。",
+				"publicEmail": "开启展示后，公开邮箱可能被其他人看到。"
+			}
+		},
+		"public": {
+			"sections": {
+				"about": "个人简介",
+				"social": "社交链接",
+				"minecraft": "Minecraft 档案"
+			},
+			"fields": {
+				"location": "所在地",
+				"joinedAt": "加入时间",
+				"timezone": "时区",
+				"minecraftName": "游戏名称",
+				"currentServer": "当前服务器",
+				"onlineStatus": "在线状态"
+			},
+			"values": {
+				"defaultTimezone": "UTC+8（北京时间）"
+			},
+			"actions": {
+				"viewMinecraftProfile": "查看 Minecraft 档案"
+			},
+			"empty": {
+				"unavailable": "个人主页不可访问",
+				"bio": "这个用户还没有填写个人简介。",
+				"social": "暂无公开社交链接。",
+				"minecraft": "暂无公开 Minecraft 档案。"
+			},
+			"social": {
+				"website": "个人网站",
+				"publicEmail": "公开邮箱"
+			}
+		},
+		"badges": {
+			"joinedDays": "已加入 {days} 天",
+			"serverMember": "服务器成员"
+		},
+		"media": {
+			"coverAlt": "{name} 封面"
+		},
+		"status": {
+			"online": "在线",
+			"recentlyActive": "最近活跃",
+			"recentlyActiveWithDate": "最近活跃：{date}",
+			"offline": "离线"
+		},
+		"dateParts": {
+			"year": "年",
+			"month": "月",
+			"day": "日"
+		},
+		"options": {
+			"language": {
+				"ZH_CN": "简体中文",
+				"ZH_TW": "繁體中文",
+				"EN_US": "English",
+				"JA_JP": "日本語"
+			},
+			"country": {
+				"中国内地": "中国内地",
+				"中国香港": "中国香港",
+				"中国台湾": "中国台湾",
+				"中国澳门": "中国澳门",
+				"海外地区": "海外地区"
+			}
+		},
+		"privacy": {
+			"publicProfile": "公开个人主页",
+			"showHydrolineId": "展示 Hydroline ID",
+			"showJoinedAt": "展示加入时间",
+			"showLocation": "展示现居地",
+			"showCountryOrRegion": "展示国家 / 地区",
+			"showBirthday": "展示生日",
+			"showBadges": "展示徽章",
+			"showBio": "展示个人简介",
+			"showMinecraftProfileLink": "展示 Minecraft 档案入口",
+			"showSocialLinks": "展示社交链接",
+			"showActivityStatus": "展示最近活跃状态",
+			"searchableInUserDirectory": "允许在用户目录中搜索到",
+			"allowMinecraftProfileDiscovery": "允许从 Minecraft 档案查询用户主页"
 		},
 		"notifications": {
 			"saved": "资料已保存",
 			"savedDescription": "Header 用户信息已经同步更新。",
 			"saveFailed": "保存资料失败",
-			"saveFailedDescription": "请检查登录状态与输入内容。"
+			"saveFailedDescription": "请检查登录状态与输入内容。",
+			"copied": "已复制",
+			"noChanges": "没有需要保存的更改",
+			"imageSaveFailed": "资料图片保存失败",
+			"avatarUpdated": "头像已更新",
+			"coverUpdated": "封面已更新",
+			"preferencesSaved": "偏好已保存",
+			"preferencesSaveFailed": "偏好保存失败",
+			"privacySaved": "公开信息已保存",
+			"privacySaveFailed": "公开信息保存失败"
+		},
+		"verified": {
+			"text": "HydCraft 官方认证账号"
+		}
+	},
+	"attachments": {
+		"upload": {
+			"button": "上传图片",
+			"invalidType": "不支持的文件类型",
+			"fileTooLarge": "文件超过大小限制",
+			"cropRequired": "需要先裁剪图片",
+			"policyUnavailable": "上传规则暂不可用",
+			"uploaded": "图片已上传",
+			"failed": "上传失败"
+		},
+		"crop": {
+			"title": "裁剪图片",
+			"avatarTitle": "裁剪头像",
+			"coverTitle": "裁剪封面",
+			"cancel": "取消裁剪",
+			"confirm": "确认裁剪"
 		}
 	},
 	"minecraftAccounts": {
@@ -211,9 +361,26 @@
 		}
 	},
 	"admin": {
+		"actions": {
+			"reset": "重置筛选",
+			"cancel": "取消",
+			"save": "保存",
+			"copyUrl": "复制 URL",
+			"delete": "删除"
+		},
+		"filters": {
+			"all": "全部"
+		},
+		"pagination": {
+			"summary": "第 {page} / {pageCount} 页，共 {total} 条",
+			"first": "第一页",
+			"previous": "上一页",
+			"next": "下一页",
+			"last": "最后一页",
+			"pageSize": "{size} / 页"
+		},
 		"overview": {
 			"title": "Portal 总览",
-			"description": "欢迎回来，以下是当前系统运行状态。",
 			"loading": "正在读取 Portal 配置...",
 			"metrics": {
 				"servers": "服务器",
@@ -263,12 +430,14 @@
 			"quickActions": {
 				"servers": "切换到服务器页面",
 				"serversDescription": "管理服务器接入与数据源配置",
-				"users": "所有用户管理页面",
-				"usersDescription": "查看和管理 Portal 用户"
+				"users": "切换到用户页面",
+				"usersDescription": "查看和管理 Portal 用户",
+				"attachments": "切换到附件页面",
+				"attachmentsDescription": "查看头像与封面附件"
 			}
 		},
 		"servers": {
-			"title": "服务器管理",
+			"title": "服务器",
 			"create": "新增服务器",
 			"loading": "正在读取服务器配置...",
 			"empty": {
@@ -277,9 +446,98 @@
 			}
 		},
 		"users": {
-			"title": "用户管理",
-			"description": "Portal 用户管理入口。",
-			"placeholder": "用户管理页面暂未完成。"
+			"title": "用户",
+			"filters": {
+				"search": "搜索用户名、邮箱或 Hydroline ID"
+			},
+			"sections": {
+				"identity": "身份与状态",
+				"profile": "个人资料",
+				"attachments": "头像与封面",
+				"preferences": "偏好",
+				"social": "社交链接",
+				"privacy": "公开信息",
+				"achievements": "成就与认证"
+			},
+			"fields": {
+				"user": "用户",
+				"username": "用户名",
+				"displayName": "显示名称",
+				"role": "角色",
+				"status": "状态",
+				"statusReason": "状态备注",
+				"title": "称号",
+				"bio": "个人简介",
+				"location": "现居地",
+				"countryOrRegion": "国家 / 地区",
+				"birthday": "生日",
+				"language": "语言",
+				"timezoneMode": "时区模式",
+				"timezone": "时区",
+				"websiteUrl": "个人网站",
+				"publicEmail": "公开邮箱",
+				"avatarAttachmentId": "头像附件 ID",
+				"coverAttachmentId": "封面附件 ID",
+				"avatarUrl": "头像 URL",
+				"coverUrl": "封面 URL",
+				"createdAt": "创建时间",
+				"verified": "认证",
+				"badges": "Badge"
+			},
+			"notifications": {
+				"saved": "用户资料已保存",
+				"saveFailed": "保存用户资料失败"
+			},
+			"actions": {
+				"resetAvatar": "重置头像",
+				"resetCover": "重置封面"
+			},
+			"media": {
+				"avatarEmpty": "暂无头像 URL",
+				"coverEmpty": "暂无封面 URL",
+				"avatarReset": "保存后将重置头像",
+				"coverReset": "保存后将重置封面"
+			}
+		},
+		"attachments": {
+			"title": "附件",
+			"filters": {
+				"search": "搜索附件 ID、Owner 或 Object Key",
+				"app": "应用",
+				"category": "分类",
+				"purpose": "用途",
+				"status": "状态",
+				"visibility": "可见性"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "应用",
+				"category": "分类",
+				"purpose": "用途",
+				"status": "状态",
+				"visibility": "可见性",
+				"owner": "归属",
+				"ownerType": "归属类型",
+				"ownerId": "归属 ID",
+				"contentType": "Content Type",
+				"sizeBytes": "大小",
+				"createdById": "创建者 ID",
+				"objectKey": "Object Key",
+				"createdAt": "创建时间"
+			},
+			"modal": {
+				"title": "附件详情",
+				"variants": "图片版本",
+				"privateUrlHidden": "Private 附件不展示公开 URL"
+			},
+			"deleteConfirm": {
+				"title": "删除附件",
+				"description": "确认后会将附件标记为已删除，并尝试删除对象存储中的图片版本。"
+			},
+			"notifications": {
+				"deleted": "附件已标记删除",
+				"deleteFailed": "删除附件失败"
+			}
 		},
 		"serverConfig": {
 			"createEyebrow": "新增服务器",
@@ -322,7 +580,60 @@
 			"serverSaved": "服务器配置已保存",
 			"serverSavedDescription": "服务器列表已经刷新。",
 			"serverSaveFailed": "保存配置失败",
-			"serverSaveFailedDescription": "请检查登录状态与字段。"
+			"serverSaveFailedDescription": "请检查登录状态与字段。",
+			"copied": "已复制"
+		},
+		"achievements": {
+			"title": "成就",
+			"sections": {
+				"badges": "Badge 列表",
+				"createBadge": "新建 Badge",
+				"assign": "授予 Badge",
+				"verified": "认证配置"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "配色",
+				"assignmentCount": "授予数量",
+				"enabled": "启用",
+				"description": "描述",
+				"users": "用户",
+				"badges": "Badge",
+				"labels": "多语言名称",
+				"sortOrder": "排序"
+			},
+			"actions": {
+				"createBadge": "新建 Badge",
+				"assignBadges": "授予 Badge",
+				"saveVerified": "授予认证",
+				"removeVerified": "移除认证"
+			},
+			"notifications": {
+				"badgeCreated": "Badge 已创建",
+				"badgeCreateFailed": "创建 Badge 失败",
+				"badgesAssigned": "Badge 已授予",
+				"badgesAssignFailed": "授予 Badge 失败",
+				"verifiedSaved": "认证配置已保存",
+				"verifiedSaveFailed": "保存认证配置失败",
+				"badgeSaved": "Badge 已保存",
+				"badgeSaveFailed": "保存 Badge 失败"
+			},
+			"modal": {
+				"createBadge": "新建 Badge",
+				"editBadge": "编辑 Badge",
+				"assignBadges": "授予 Badge"
+			}
+		},
+		"sort": {
+			"field": "排序字段",
+			"direction": "排序方向",
+			"asc": "升序",
+			"desc": "降序",
+			"fields": {
+				"createdAt": "创建时间",
+				"updatedAt": "更新时间"
+			}
 		}
 	},
 	"home": {
