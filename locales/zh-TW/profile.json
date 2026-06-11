@@ -10,6 +10,7 @@
 			"displayName": "顯示名稱",
 			"avatarUrl": "頭像 URL",
 			"bio": "個人簡介",
+			"createdAt": "註冊時間",
 			"joinedAt": "加入時間",
 			"location": "現居地",
 			"countryOrRegion": "國家 / 地區",
@@ -139,6 +140,164 @@
 			"preferencesSaveFailed": "偏好儲存失敗",
 			"privacySaved": "公開資訊已儲存",
 			"privacySaveFailed": "公開資訊儲存失敗"
+		},
+		"connections": {
+			"empty": { "loadFailed": "連線與授權資訊載入失敗" },
+			"sections": {
+				"oauth": "第三方登入",
+				"minecraft": "Minecraft 檔案"
+			},
+			"status": {
+				"connected": "已綁定",
+				"disconnected": "未綁定",
+				"unavailable": "暫不可用"
+			},
+			"values": {
+				"connectedAccount": "已連線帳號",
+				"lastUsedAt": "最後使用 {date}"
+			},
+			"minecraft": { "boundAccounts": "已綁定 {count} 個伺服器帳號" },
+			"actions": {
+				"link": "綁定",
+				"unlink": "解除綁定",
+				"openMinecraftProfile": "開啟 Minecraft 檔案"
+			},
+			"notifications": {
+				"unlinked": "{provider} 已解除綁定",
+				"unlinkFailed": "{provider} 解除綁定失敗"
+			}
+		},
+		"security": {
+			"title": "帳號安全",
+			"sections": {
+				"overview": "安全概覽",
+				"emails": "信箱管理",
+				"sessions": "登入裝置",
+				"events": "最近安全事件"
+			},
+			"fields": {
+				"accountStatus": "帳號狀態",
+				"credentialType": "憑證類型",
+				"currentRole": "目前身分",
+				"lastLogin": "上次登入",
+				"primaryEmail": "主信箱",
+				"switchPrimaryEmail": "切換主信箱",
+				"receiverEmail": "接收信箱",
+				"emailAddress": "信箱地址",
+				"verificationCode": "驗證碼"
+			},
+			"actions": {
+				"resetPassword": "重設密碼",
+				"addEmail": "新增信箱",
+				"deleteEmail": "刪除信箱",
+				"verify": "驗證",
+				"switch": "切換",
+				"revokeOtherSessions": "撤銷其他會話",
+				"logout": "登出",
+				"revoke": "撤銷",
+				"close": "關閉",
+				"cancel": "取消",
+				"sendResetEmail": "傳送重設郵件",
+				"confirmLogout": "確認登出",
+				"confirmRevoke": "確認撤銷",
+				"sendVerificationEmail": "傳送驗證郵件",
+				"sendCode": "傳送驗證碼",
+				"resendAfter": "{seconds}s 後可重寄",
+				"confirmVerify": "確認驗證"
+			},
+			"empty": {
+				"profileLoadFailed": "帳號安全資訊載入失敗",
+				"sessionsLoadFailed": "會話清單載入失敗",
+				"securityEvents": "暫無安全事件記錄。",
+				"emailNotSet": "未設定信箱",
+				"noRecord": "暫無記錄"
+			},
+			"status": { "verified": "已驗證", "unverified": "未驗證" },
+			"placeholders": { "selectEmail": "選擇信箱" },
+			"sessions": { "activeCount": "{count} 個活躍", "current": "目前會話" },
+			"values": { "unknownIp": "未知 IP" },
+			"roles": {
+				"OWNER": "站點所有者",
+				"ADMIN": "管理員",
+				"MEMBER": "成員",
+				"USER": "一般使用者",
+				"UNKNOWN": "未知角色"
+			},
+			"accountStatus": {
+				"ACTIVE": "正常",
+				"PENDING": "待啟用",
+				"DISABLED": "已停用",
+				"BANNED": "已封鎖",
+				"UNKNOWN": "未知狀態"
+			},
+			"credentials": {
+				"password": "密碼登入",
+				"passwordNotSet": "未設定密碼"
+			},
+			"emailTags": { "primary": "主信箱", "unverified": "未驗證" },
+			"devices": { "unknown": "未知裝置" },
+			"events": {
+				"LOGIN_SUCCESS": "登入成功",
+				"LOGIN_FAILED": "登入失敗",
+				"LOGOUT": "登出",
+				"SESSION_REVOKED": "會話已撤銷",
+				"SESSIONS_REVOKED": "批次撤銷會話",
+				"EMAIL_VERIFICATION_SENT": "已傳送信箱驗證",
+				"EMAIL_VERIFIED": "信箱已驗證",
+				"PRIMARY_EMAIL_CHANGED": "主信箱已變更",
+				"SECONDARY_EMAIL_ADDED": "已新增輔助信箱",
+				"SECONDARY_EMAIL_REMOVED": "已移除輔助信箱",
+				"PASSWORD_CHANGED": "密碼已變更",
+				"OAUTH_LINKED": "已綁定外部授權",
+				"OAUTH_UNLINKED": "已解除外部授權"
+			},
+			"modals": {
+				"passwordReset": {
+					"title": "重設密碼",
+					"description": "系統會向你的登入信箱傳送重設連結，完成後舊密碼將不再可用。"
+				},
+				"logout": {
+					"title": "登出目前會話？",
+					"description": "登出後需要重新登入才能繼續存取個人中心。"
+				},
+				"revokeSessions": {
+					"title": "撤銷其他會話？",
+					"description": "其他裝置需要重新登入。目前裝置會保留登入狀態。"
+				},
+				"addEmail": {
+					"title": "新增信箱",
+					"description": "新增後需要驗證信箱才能設為主信箱。"
+				},
+				"verifyEmail": {
+					"title": "驗證信箱",
+					"descriptionPrefix": "向 ",
+					"descriptionSuffix": " 傳送驗證碼，輸入收到的 6 位驗證碼完成驗證。"
+				}
+			},
+			"notifications": {
+				"primaryEmailChanged": "主信箱已切換",
+				"primaryEmailChangeFailed": "切換主信箱失敗",
+				"emailDeleted": "信箱已刪除",
+				"emailDeleteFailed": "刪除信箱失敗",
+				"verificationEmailSent": "驗證郵件已傳送",
+				"verificationEmailSentDescription": "請檢查信箱並完成驗證。",
+				"verificationEmailSendFailed": "傳送驗證郵件失敗",
+				"codeSent": "驗證碼已傳送",
+				"codeSentDescription": "請檢查信箱並輸入驗證碼。",
+				"codeSendFailed": "傳送驗證碼失敗",
+				"emailVerified": "信箱已驗證",
+				"emailVerifyFailed": "驗證失敗",
+				"emailVerifyFailedDescription": "驗證碼無效或已過期，請重新傳送。",
+				"resetEmailSent": "重設郵件已傳送",
+				"resetEmailSentDescription": "如果信箱符合有效帳號，你將收到下一步操作連結。",
+				"resetEmailSendFailed": "重設郵件傳送失敗",
+				"logoutFailed": "登出失敗",
+				"sessionRevoked": "會話已撤銷",
+				"sessionRevokeFailed": "撤銷會話失敗",
+				"otherSessionsRevoked": "其他會話已撤銷",
+				"otherSessionsRevokedDescription": "已撤銷 {count} 個會話。",
+				"otherSessionsRevokeFailed": "撤銷其他會話失敗"
+			}
 		},
 		"verified": {
 			"text": "HydCraft 官方認證帳號"

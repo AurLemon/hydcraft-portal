@@ -52,6 +52,7 @@ interface ForgotPasswordFormState {
 }
 
 const localePath = useLocalePath()
+const { locale } = useI18n()
 const { requestPasswordReset } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
 const submitting = ref(false)
@@ -65,6 +66,7 @@ const submit = async (): Promise<void> => {
 	try {
 		await requestPasswordReset({
 			email: form.email,
+			locale: locale.value,
 		})
 		notifySuccess({
 			title: t('forgotPassword.notifications.successTitle'),

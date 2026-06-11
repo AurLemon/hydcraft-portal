@@ -145,6 +145,7 @@ export default defineNuxtConfig({
 				'lucide:shield',
 				'lucide:link',
 				'lucide:mail',
+				'lucide:mail-plus',
 				'lucide:key-round',
 				'lucide:eye',
 				'lucide:eye-off',
@@ -157,6 +158,9 @@ export default defineNuxtConfig({
 				'lucide:trash-2',
 				'lucide:calendar',
 				'lucide:files',
+				'lucide:monitor-smartphone',
+				'lucide:smartphone',
+				'lucide:tablet-smartphone',
 			],
 		},
 		serverBundle: {

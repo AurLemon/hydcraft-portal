@@ -10,6 +10,7 @@ import {
 	createUniqueHydrolineId,
 	ensureUserProfileDefaults,
 } from '../../utils/profile/defaults'
+import { recordSecurityEvent } from '../../utils/security/security-events'
 
 interface RegisterBody {
 	handle: string
@@ -40,10 +41,25 @@ export default defineEventHandler(async (event) => {
 					passwordHash,
 				},
 			},
+			emails: email
+				? {
+						create: {
+							email,
+							kind: 'PRIMARY',
+							verifiedAt: null,
+						},
+					}
+				: undefined,
 		},
 	})
 	await ensureUserProfileDefaults(user.id)
 	const token = await issueAuthCookies(event, user)
+	await recordSecurityEvent({
+		event,
+		userId: user.id,
+		type: 'LOGIN_SUCCESS',
+		title: '注册并登录成功',
+	})
 	const userWithPreferences = await prisma.user.findUniqueOrThrow({
 		where: {
 			id: user.id,

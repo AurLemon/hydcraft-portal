@@ -80,6 +80,7 @@ export interface EditableUserProfile {
 	coverUrl: string | null
 	avatarAttachmentId: string | null
 	coverAttachmentId: string | null
+	createdAt: Date
 	joinedAt: Date
 	badges: UserProfileBadgeSummary[]
 	roleBadge: UserProfileBadgeSummary | null

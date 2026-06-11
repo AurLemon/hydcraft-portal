@@ -134,8 +134,14 @@ export const getAuthTokenFromEvent = (event: H3Event): string | null => {
 export const getRefreshTokenFromEvent = (event: H3Event): string | null =>
 	getCookie(event, REFRESH_COOKIE_NAME) ?? null
 
-const hashRefreshToken = (token: string): string =>
+export const hashRefreshToken = (token: string): string =>
 	createHash('sha256').update(token).digest('hex')
+
+export const getRefreshTokenHashFromEvent = (event: H3Event): string | null => {
+	const token = getRefreshTokenFromEvent(event)
+
+	return token ? hashRefreshToken(token) : null
+}
 
 const createRefreshTokenValue = (): string =>
 	randomBytes(48).toString('base64url')
@@ -187,6 +193,20 @@ export const revokeRefreshToken = async (
 		},
 		data: {
 			revokedAt: new Date(),
+		},
+	})
+}
+
+export const findCurrentRefreshSession = async (event: H3Event) => {
+	const token = getRefreshTokenFromEvent(event)
+
+	if (!token) {
+		return null
+	}
+
+	return await prisma.refreshToken.findUnique({
+		where: {
+			tokenHash: hashRefreshToken(token),
 		},
 	})
 }

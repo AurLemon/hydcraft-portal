@@ -10,6 +10,7 @@
 			"displayName": "表示名",
 			"avatarUrl": "アバター URL",
 			"bio": "自己紹介",
+			"createdAt": "登録日",
 			"joinedAt": "参加日",
 			"location": "所在地",
 			"countryOrRegion": "国 / 地域",
@@ -139,6 +140,169 @@
 			"preferencesSaveFailed": "設定の保存に失敗しました",
 			"privacySaved": "公開情報を保存しました",
 			"privacySaveFailed": "公開情報の保存に失敗しました"
+		},
+		"connections": {
+			"empty": { "loadFailed": "連携と認可情報の読み込みに失敗しました" },
+			"sections": {
+				"oauth": "外部ログイン",
+				"minecraft": "Minecraft プロフィール"
+			},
+			"status": {
+				"connected": "連携済み",
+				"disconnected": "未連携",
+				"unavailable": "利用不可"
+			},
+			"values": {
+				"connectedAccount": "連携済みアカウント",
+				"lastUsedAt": "最終使用 {date}"
+			},
+			"minecraft": {
+				"boundAccounts": "{count} 件のサーバーアカウントを連携済み"
+			},
+			"actions": {
+				"link": "連携",
+				"unlink": "解除",
+				"openMinecraftProfile": "Minecraft プロフィールを開く"
+			},
+			"notifications": {
+				"unlinked": "{provider} の連携を解除しました",
+				"unlinkFailed": "{provider} の連携解除に失敗しました"
+			}
+		},
+		"security": {
+			"title": "アカウントセキュリティ",
+			"sections": {
+				"overview": "セキュリティ概要",
+				"emails": "メール管理",
+				"sessions": "ログイン端末",
+				"events": "最近のセキュリティイベント"
+			},
+			"fields": {
+				"accountStatus": "アカウント状態",
+				"credentialType": "認証情報の種類",
+				"currentRole": "現在のロール",
+				"lastLogin": "最終ログイン",
+				"primaryEmail": "メインメール",
+				"switchPrimaryEmail": "メインメールを切り替え",
+				"receiverEmail": "受信メール",
+				"emailAddress": "メールアドレス",
+				"verificationCode": "認証コード"
+			},
+			"actions": {
+				"resetPassword": "パスワードをリセット",
+				"addEmail": "メールを追加",
+				"deleteEmail": "メールを削除",
+				"verify": "認証",
+				"switch": "切り替え",
+				"revokeOtherSessions": "他のセッションを無効化",
+				"logout": "ログアウト",
+				"revoke": "無効化",
+				"close": "閉じる",
+				"cancel": "キャンセル",
+				"sendResetEmail": "リセットメールを送信",
+				"confirmLogout": "ログアウトを確認",
+				"confirmRevoke": "無効化を確認",
+				"sendVerificationEmail": "認証メールを送信",
+				"sendCode": "コードを送信",
+				"resendAfter": "{seconds}s 後に再送信可能",
+				"confirmVerify": "認証を確定"
+			},
+			"empty": {
+				"profileLoadFailed": "アカウントセキュリティ情報の読み込みに失敗しました",
+				"sessionsLoadFailed": "セッション一覧の読み込みに失敗しました",
+				"securityEvents": "セキュリティイベントはまだありません。",
+				"emailNotSet": "メール未設定",
+				"noRecord": "記録なし"
+			},
+			"status": { "verified": "認証済み", "unverified": "未認証" },
+			"placeholders": { "selectEmail": "メールを選択" },
+			"sessions": {
+				"activeCount": "{count} 件が有効",
+				"current": "現在のセッション"
+			},
+			"values": { "unknownIp": "不明な IP" },
+			"roles": {
+				"OWNER": "サイト所有者",
+				"ADMIN": "管理者",
+				"MEMBER": "メンバー",
+				"USER": "一般ユーザー",
+				"UNKNOWN": "不明なロール"
+			},
+			"accountStatus": {
+				"ACTIVE": "正常",
+				"PENDING": "有効化待ち",
+				"DISABLED": "無効",
+				"BANNED": "停止中",
+				"UNKNOWN": "不明な状態"
+			},
+			"credentials": {
+				"password": "パスワードログイン",
+				"passwordNotSet": "パスワード未設定"
+			},
+			"emailTags": { "primary": "メイン", "unverified": "未認証" },
+			"devices": { "unknown": "不明な端末" },
+			"events": {
+				"LOGIN_SUCCESS": "ログイン成功",
+				"LOGIN_FAILED": "ログイン失敗",
+				"LOGOUT": "ログアウト",
+				"SESSION_REVOKED": "セッションを無効化しました",
+				"SESSIONS_REVOKED": "複数セッションを無効化しました",
+				"EMAIL_VERIFICATION_SENT": "メール認証を送信しました",
+				"EMAIL_VERIFIED": "メールを認証しました",
+				"PRIMARY_EMAIL_CHANGED": "メインメールを変更しました",
+				"SECONDARY_EMAIL_ADDED": "予備メールを追加しました",
+				"SECONDARY_EMAIL_REMOVED": "予備メールを削除しました",
+				"PASSWORD_CHANGED": "パスワードを変更しました",
+				"OAUTH_LINKED": "外部アカウントを連携しました",
+				"OAUTH_UNLINKED": "外部アカウントの連携を解除しました"
+			},
+			"modals": {
+				"passwordReset": {
+					"title": "パスワードをリセット",
+					"description": "ログイン用メールにリセットリンクを送信します。完了後、古いパスワードは使えなくなります。"
+				},
+				"logout": {
+					"title": "現在のセッションからログアウトしますか？",
+					"description": "ログアウト後、アカウントセンターにアクセスするには再ログインが必要です。"
+				},
+				"revokeSessions": {
+					"title": "他のセッションを無効化しますか？",
+					"description": "他の端末では再ログインが必要になります。現在の端末はログイン状態を維持します。"
+				},
+				"addEmail": {
+					"title": "メールを追加",
+					"description": "追加後、メインメールに設定するにはメール認証が必要です。"
+				},
+				"verifyEmail": {
+					"title": "メールを認証",
+					"descriptionPrefix": "",
+					"descriptionSuffix": " にコードを送信し、受け取った 6 桁のコードを入力して認証します。"
+				}
+			},
+			"notifications": {
+				"primaryEmailChanged": "メインメールを切り替えました",
+				"primaryEmailChangeFailed": "メインメールの切り替えに失敗しました",
+				"emailDeleted": "メールを削除しました",
+				"emailDeleteFailed": "メールの削除に失敗しました",
+				"verificationEmailSent": "認証メールを送信しました",
+				"verificationEmailSentDescription": "受信箱を確認して認証を完了してください。",
+				"verificationEmailSendFailed": "認証メールの送信に失敗しました",
+				"codeSent": "コードを送信しました",
+				"codeSentDescription": "受信箱を確認してコードを入力してください。",
+				"codeSendFailed": "コードの送信に失敗しました",
+				"emailVerified": "メールを認証しました",
+				"emailVerifyFailed": "認証に失敗しました",
+				"emailVerifyFailedDescription": "コードが無効または期限切れです。再送信してもう一度お試しください。",
+				"resetEmailSent": "リセットメールを送信しました",
+				"resetEmailSentDescription": "メールが有効なアカウントに一致する場合、次の手順のリンクが届きます。",
+				"resetEmailSendFailed": "リセットメールの送信に失敗しました",
+				"logoutFailed": "ログアウトに失敗しました",
+				"sessionRevoked": "セッションを無効化しました",
+				"sessionRevokeFailed": "セッションの無効化に失敗しました",
+				"otherSessionsRevoked": "他のセッションを無効化しました",
+				"otherSessionsRevokedDescription": "{count} 件のセッションを無効化しました。",
+				"otherSessionsRevokeFailed": "他のセッションの無効化に失敗しました"
+			}
 		},
 		"verified": {
 			"text": "HydCraft 認証済みアカウント"

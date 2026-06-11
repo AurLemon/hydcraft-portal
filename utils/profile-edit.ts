@@ -51,6 +51,7 @@ export interface EditableProfile {
 	coverUrl: string | null
 	avatarAttachmentId: string | null
 	coverAttachmentId: string | null
+	createdAt: string
 	joinedAt: string
 	badges: ProfileBadge[]
 	roleBadge: ProfileBadge | null

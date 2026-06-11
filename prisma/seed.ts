@@ -16,12 +16,14 @@ const defaultOwner = {
 	hydrolineId: 'H-2601280B23HS',
 	displayName: 'AurLemon',
 	role: 'OWNER' as const,
+	joinedAt: new Date('2018-09-01T00:00:00.000Z'),
 	createdAt: new Date('2026-01-28T00:00:00.000Z'),
 	bio: 'HydCraft 社区的建筑与红石爱好者，热爱红石与建筑设计，喜欢在服务器上与大家一起创造有趣的故事。',
 	location: '上海，中国',
 	countryOrRegion: '中国内地',
 	avatarUrl: null,
 	coverUrl: null,
+	email: 'example@mail.com',
 }
 
 const defaultServer = {
@@ -43,12 +45,15 @@ async function main() {
 			hydrolineId: defaultOwner.hydrolineId,
 			displayName: defaultOwner.displayName,
 			role: defaultOwner.role,
+			joinedAt: defaultOwner.joinedAt,
 			createdAt: defaultOwner.createdAt,
 			bio: defaultOwner.bio,
 			location: defaultOwner.location,
 			countryOrRegion: defaultOwner.countryOrRegion,
 			avatarUrl: defaultOwner.avatarUrl,
 			coverUrl: defaultOwner.coverUrl,
+			email: defaultOwner.email,
+			emailVerifiedAt: null,
 			verified: true,
 			verifiedTextZhCn: 'HydCraft 官方认证账号',
 			verifiedTextZhTw: 'HydCraft 官方認證帳號',
@@ -60,12 +65,15 @@ async function main() {
 			hydrolineId: defaultOwner.hydrolineId,
 			displayName: defaultOwner.displayName,
 			role: defaultOwner.role,
+			joinedAt: defaultOwner.joinedAt,
 			createdAt: defaultOwner.createdAt,
 			bio: defaultOwner.bio,
 			location: defaultOwner.location,
 			countryOrRegion: defaultOwner.countryOrRegion,
 			avatarUrl: defaultOwner.avatarUrl,
 			coverUrl: defaultOwner.coverUrl,
+			email: defaultOwner.email,
+			emailVerifiedAt: null,
 			verified: true,
 			verifiedTextZhCn: 'HydCraft 官方认证账号',
 			verifiedTextZhTw: 'HydCraft 官方認證帳號',
@@ -75,6 +83,25 @@ async function main() {
 	})
 
 	console.log(`Seed owner ensured: ${defaultOwner.handle}`)
+
+	await prisma.userEmail.upsert({
+		where: {
+			email: defaultOwner.email,
+		},
+		create: {
+			userId: owner.id,
+			email: defaultOwner.email,
+			kind: 'PRIMARY',
+			verifiedAt: null,
+		},
+		update: {
+			userId: owner.id,
+			kind: 'PRIMARY',
+			verifiedAt: null,
+		},
+	})
+
+	console.log(`Seed owner primary email ensured: ${defaultOwner.email}`)
 
 	if (process.env.DEFAULT_OWNER_PASSWORD) {
 		await prisma.userCredential.upsert({

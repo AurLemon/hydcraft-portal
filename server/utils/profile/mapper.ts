@@ -135,7 +135,8 @@ export const toEditableProfile = (user: ProfileUser): EditableUserProfile => ({
 	coverUrl: user.coverUrl,
 	avatarAttachmentId: user.avatarAttachmentId,
 	coverAttachmentId: user.coverAttachmentId,
-	joinedAt: user.createdAt,
+	createdAt: user.createdAt,
+	joinedAt: user.joinedAt,
 	badges: user.badges.map(toBadgeSummary),
 	roleBadge: toRoleBadgeSummary(user),
 	verified: toVerifiedSummary(user),
@@ -171,7 +172,7 @@ export const toPublicProfile = (
 		profile.hydrolineId = user.hydrolineId
 	}
 	if (privacy.showJoinedAt) {
-		profile.joinedAt = user.createdAt
+		profile.joinedAt = user.joinedAt
 	}
 	if (privacy.showBadges) {
 		profile.badges = user.badges.map(toBadgeSummary)

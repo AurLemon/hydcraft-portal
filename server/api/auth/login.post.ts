@@ -3,6 +3,7 @@ import { verifyPassword } from '../../utils/auth/password'
 import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
 import { normalizeEmail, normalizeHandle } from '../../utils/auth/validation'
 import { createApiError } from '../../utils/errors'
+import { recordSecurityEvent } from '../../utils/security/security-events'
 
 interface LoginBody {
 	handleOrEmail: string
@@ -56,6 +57,12 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 	const token = await issueAuthCookies(event, updatedUser)
+	await recordSecurityEvent({
+		event,
+		userId: updatedUser.id,
+		type: 'LOGIN_SUCCESS',
+		title: '登录成功',
+	})
 
 	return {
 		token,

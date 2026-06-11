@@ -6,8 +6,14 @@ export interface ApiErrorInput {
 	data?: Record<string, unknown>
 }
 
-export const createApiError = (input: ApiErrorInput) =>
-	createError({
+const API_ERROR_CODE_PATTERN = /^[A-Z0-9_]+$/
+
+export const createApiError = (input: ApiErrorInput) => {
+	if (!API_ERROR_CODE_PATTERN.test(input.code)) {
+		throw new Error(`Invalid API error code: ${input.code}`)
+	}
+
+	return createError({
 		statusCode: input.statusCode,
 		statusMessage: input.code,
 		message: input.code,
@@ -16,6 +22,7 @@ export const createApiError = (input: ApiErrorInput) =>
 			...(input.data ?? {}),
 		},
 	})
+}
 
 export const createBadRequestError = (
 	code: string,

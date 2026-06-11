@@ -45,6 +45,13 @@
 					</div>
 				</div>
 			</ProfileField>
+			<ProfileField :label="t('profile.fields.createdAt')">
+				<div
+					class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200"
+				>
+					{{ formatProfileDateTime(createdAt) }}
+				</div>
+			</ProfileField>
 			<ProfileField :label="t('profile.fields.joinedAt')">
 				<div
 					class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200"
@@ -84,6 +91,7 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import ProfileBirthdayField from '~/components/profile/edit/ProfileBirthdayField.vue'
 import {
 	countryItems,
@@ -95,6 +103,7 @@ import {
 
 interface ProfileBasicSectionProps {
 	hydrolineId: string
+	createdAt: string
 	joinedAt: string
 	submitting: boolean
 }
@@ -113,4 +122,7 @@ const localizedCountryItems = computed(() =>
 		label: t(`profile.options.country.${item.value}`),
 	})),
 )
+
+const formatProfileDateTime = (value: string): string =>
+	dayjs(value).format('YYYY-M-D HH:mm:ss')
 </script>

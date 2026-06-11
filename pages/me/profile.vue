@@ -31,6 +31,7 @@
 					@submit="submitUsername"
 				/>
 				<ProfileBasicSection
+					:created-at="profile.createdAt"
 					:joined-at="profile.joinedAt"
 					:hydroline-id="profile.hydrolineId"
 					:submitting="submittingSection === 'basic'"

@@ -10,6 +10,7 @@
 			"displayName": "显示名称",
 			"avatarUrl": "头像 URL",
 			"bio": "个人简介",
+			"createdAt": "注册时间",
 			"joinedAt": "加入时间",
 			"location": "现居地",
 			"countryOrRegion": "国家 / 地区",
@@ -139,6 +140,183 @@
 			"preferencesSaveFailed": "偏好保存失败",
 			"privacySaved": "公开信息已保存",
 			"privacySaveFailed": "公开信息保存失败"
+		},
+		"connections": {
+			"empty": {
+				"loadFailed": "连接与授权信息加载失败"
+			},
+			"sections": {
+				"oauth": "第三方登录",
+				"minecraft": "Minecraft 档案"
+			},
+			"status": {
+				"connected": "已绑定",
+				"disconnected": "未绑定",
+				"unavailable": "暂不可用"
+			},
+			"values": {
+				"connectedAccount": "已连接账号",
+				"lastUsedAt": "最后使用 {date}"
+			},
+			"minecraft": {
+				"boundAccounts": "已绑定 {count} 个服务器账号"
+			},
+			"actions": {
+				"link": "绑定",
+				"unlink": "解绑",
+				"openMinecraftProfile": "打开 Minecraft 档案"
+			},
+			"notifications": {
+				"unlinked": "{provider} 已解绑",
+				"unlinkFailed": "{provider} 解绑失败"
+			}
+		},
+		"security": {
+			"title": "账号安全",
+			"sections": {
+				"overview": "安全概览",
+				"emails": "邮箱管理",
+				"sessions": "登录设备",
+				"events": "最近安全事件"
+			},
+			"fields": {
+				"accountStatus": "账号状态",
+				"credentialType": "凭据类型",
+				"currentRole": "当前身份",
+				"lastLogin": "上次登录",
+				"primaryEmail": "主邮箱",
+				"switchPrimaryEmail": "切换主邮箱",
+				"receiverEmail": "接收邮箱",
+				"emailAddress": "邮箱地址",
+				"verificationCode": "验证码"
+			},
+			"actions": {
+				"resetPassword": "重置密码",
+				"addEmail": "添加邮箱",
+				"deleteEmail": "删除邮箱",
+				"verify": "验证",
+				"switch": "切换",
+				"revokeOtherSessions": "撤销其他会话",
+				"logout": "退出登录",
+				"revoke": "撤销",
+				"close": "关闭",
+				"cancel": "取消",
+				"sendResetEmail": "发送重置邮件",
+				"confirmLogout": "确认退出",
+				"confirmRevoke": "确认撤销",
+				"sendVerificationEmail": "发送验证邮件",
+				"sendCode": "发送验证码",
+				"resendAfter": "{seconds}s 后可重发",
+				"confirmVerify": "确认验证"
+			},
+			"empty": {
+				"profileLoadFailed": "账号安全信息加载失败",
+				"sessionsLoadFailed": "会话列表加载失败",
+				"securityEvents": "暂无安全事件记录。",
+				"emailNotSet": "未设置邮箱",
+				"noRecord": "暂无记录"
+			},
+			"status": {
+				"verified": "已验证",
+				"unverified": "未验证"
+			},
+			"placeholders": {
+				"selectEmail": "选择邮箱"
+			},
+			"sessions": {
+				"activeCount": "{count} 个活跃",
+				"current": "当前会话"
+			},
+			"values": {
+				"unknownIp": "未知 IP"
+			},
+			"roles": {
+				"OWNER": "站点所有者",
+				"ADMIN": "管理员",
+				"MEMBER": "成员",
+				"USER": "普通用户",
+				"UNKNOWN": "未知角色"
+			},
+			"accountStatus": {
+				"ACTIVE": "正常",
+				"PENDING": "待激活",
+				"DISABLED": "已禁用",
+				"BANNED": "已封禁",
+				"UNKNOWN": "未知状态"
+			},
+			"credentials": {
+				"password": "密码登录",
+				"passwordNotSet": "未设置密码"
+			},
+			"emailTags": {
+				"primary": "主邮箱",
+				"unverified": "未验证"
+			},
+			"devices": {
+				"unknown": "未知设备"
+			},
+			"events": {
+				"LOGIN_SUCCESS": "登录成功",
+				"LOGIN_FAILED": "登录失败",
+				"LOGOUT": "退出登录",
+				"SESSION_REVOKED": "会话已撤销",
+				"SESSIONS_REVOKED": "批量撤销会话",
+				"EMAIL_VERIFICATION_SENT": "已发送邮箱验证",
+				"EMAIL_VERIFIED": "邮箱已验证",
+				"PRIMARY_EMAIL_CHANGED": "主邮箱已变更",
+				"SECONDARY_EMAIL_ADDED": "已添加辅助邮箱",
+				"SECONDARY_EMAIL_REMOVED": "已移除辅助邮箱",
+				"PASSWORD_CHANGED": "密码已变更",
+				"OAUTH_LINKED": "已绑定外部授权",
+				"OAUTH_UNLINKED": "已解绑外部授权"
+			},
+			"modals": {
+				"passwordReset": {
+					"title": "重置密码",
+					"description": "系统会向你的登录邮箱发送重置链接，完成后旧密码将不再可用。"
+				},
+				"logout": {
+					"title": "退出当前登录？",
+					"description": "退出后需要重新登录才能继续访问个人中心。"
+				},
+				"revokeSessions": {
+					"title": "撤销其他会话？",
+					"description": "其他设备需要重新登录。当前设备会保留登录状态。"
+				},
+				"addEmail": {
+					"title": "添加邮箱",
+					"description": "添加后需要验证邮箱才能设为主邮箱。"
+				},
+				"verifyEmail": {
+					"title": "验证邮箱",
+					"descriptionPrefix": "向 ",
+					"descriptionSuffix": " 发送验证码，输入收到的 6 位验证码完成验证。"
+				}
+			},
+			"notifications": {
+				"primaryEmailChanged": "主邮箱已切换",
+				"primaryEmailChangeFailed": "切换主邮箱失败",
+				"emailDeleted": "邮箱已删除",
+				"emailDeleteFailed": "删除邮箱失败",
+				"verificationEmailSent": "验证邮件已发送",
+				"verificationEmailSentDescription": "请检查邮箱并完成验证。",
+				"verificationEmailSendFailed": "发送验证邮件失败",
+				"codeSent": "验证码已发送",
+				"codeSentDescription": "请检查邮箱并输入验证码。",
+				"codeSendFailed": "发送验证码失败",
+				"emailVerified": "邮箱已验证",
+				"emailVerifyFailed": "验证失败",
+				"emailVerifyFailedDescription": "验证码无效或已过期，请重新发送。",
+				"resetEmailSent": "重置邮件已发送",
+				"resetEmailSentDescription": "如果邮箱匹配有效账号，你将收到下一步操作链接。",
+				"resetEmailSendFailed": "重置邮件发送失败",
+				"logoutFailed": "退出登录失败",
+				"sessionRevoked": "会话已撤销",
+				"sessionRevokeFailed": "撤销会话失败",
+				"otherSessionsRevoked": "其他会话已撤销",
+				"otherSessionsRevokedDescription": "已撤销 {count} 个会话。",
+				"otherSessionsRevokeFailed": "撤销其他会话失败"
+			}
 		},
 		"verified": {
 			"text": "HydCraft 官方认证账号"

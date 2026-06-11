@@ -366,6 +366,7 @@ export const serializeAdminUser = (user: AdminUserEntity) => ({
 	verifiedTextEnUs: user.verifiedTextEnUs,
 	verifiedTextJaJp: user.verifiedTextJaJp,
 	lastLoginAt: user.lastLoginAt,
+	joinedAt: user.joinedAt,
 	createdAt: user.createdAt,
 	updatedAt: user.updatedAt,
 	profile: user.profile,
@@ -458,6 +459,7 @@ export const getAdminUser = async (userId: string) => {
 interface AdminUserUpdateBody {
 	username?: unknown
 	displayName?: unknown
+	joinedAt?: unknown
 	createdAt?: unknown
 	bio?: unknown
 	location?: unknown
@@ -494,6 +496,7 @@ export const updateAdminUser = async (
 		select: {
 			id: true,
 			role: true,
+			joinedAt: true,
 			createdAt: true,
 		},
 	})
@@ -508,6 +511,7 @@ export const updateAdminUser = async (
 	await ensureUserProfileDefaults(userId)
 	const username = normalizeUsername(body.username)
 	const displayName = normalizeDisplayName(body.displayName)
+	const joinedAt = normalizeJoinedAt(body.joinedAt)
 	const createdAt = normalizeJoinedAt(body.createdAt)
 	const bio = normalizeBio(body.bio)
 	const location = normalizeOptionalText(body.location, 80, 'location')
@@ -571,7 +575,7 @@ export const updateAdminUser = async (
 	}
 
 	const generatedHydrolineId = regenerateHydrolineId
-		? await generateUniqueHydrolineId(userId, createdAt ?? targetUser.createdAt)
+		? await generateUniqueHydrolineId(userId, joinedAt ?? targetUser.joinedAt)
 		: undefined
 	const avatarUrl = resetAvatar
 		? null
@@ -586,6 +590,7 @@ export const updateAdminUser = async (
 			? { hydrolineId: generatedHydrolineId }
 			: {}),
 		...(displayName !== undefined ? { displayName } : {}),
+		...(joinedAt !== undefined ? { joinedAt } : {}),
 		...(createdAt !== undefined ? { createdAt } : {}),
 		...(bio !== undefined ? { bio } : {}),
 		...(location !== undefined ? { location } : {}),

@@ -41,6 +41,40 @@ interface EventMap {
 		changedFields: string[]
 		updatedAt: Date
 	}
+	'user.security-event.created': {
+		userId: string
+		type: string
+		createdAt: Date
+	}
+	'user.email.verification-requested': {
+		userId: string
+		email: string
+		purpose: string
+		code?: string
+		token?: string
+		locale: string
+		expiresAt?: Date
+		createdAt: Date
+	}
+	'auth.password-reset.requested': {
+		userId: string
+		email: string
+		displayName: string | null
+		handle: string
+		locale: string | null
+		requestedAt: Date
+	}
+	'user.oauth.linked': {
+		userId: string
+		provider: string
+		providerAccountId: string
+		updatedAt: Date
+	}
+	'user.oauth.unlinked': {
+		userId: string
+		provider: string
+		updatedAt: Date
+	}
 }
 
 const handlers = new Map<

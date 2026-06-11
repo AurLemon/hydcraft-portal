@@ -10,6 +10,7 @@
 			"displayName": "Display name",
 			"avatarUrl": "Avatar URL",
 			"bio": "Bio",
+			"createdAt": "Registered at",
 			"joinedAt": "Joined at",
 			"location": "Location",
 			"countryOrRegion": "Country / Region",
@@ -139,6 +140,175 @@
 			"preferencesSaveFailed": "Failed to save preferences",
 			"privacySaved": "Visibility saved",
 			"privacySaveFailed": "Failed to save visibility"
+		},
+		"connections": {
+			"empty": { "loadFailed": "Failed to load connections" },
+			"sections": {
+				"oauth": "Third-party sign-in",
+				"minecraft": "Minecraft profile"
+			},
+			"status": {
+				"connected": "Linked",
+				"disconnected": "Not linked",
+				"unavailable": "Unavailable"
+			},
+			"values": {
+				"connectedAccount": "Connected account",
+				"lastUsedAt": "Last used {date}"
+			},
+			"minecraft": {
+				"boundAccounts": "{count} server account(s) linked"
+			},
+			"actions": {
+				"link": "Link",
+				"unlink": "Unlink",
+				"openMinecraftProfile": "Open Minecraft profile"
+			},
+			"notifications": {
+				"unlinked": "{provider} unlinked",
+				"unlinkFailed": "Failed to unlink {provider}"
+			}
+		},
+		"security": {
+			"title": "Account security",
+			"sections": {
+				"overview": "Security overview",
+				"emails": "Email management",
+				"sessions": "Login devices",
+				"events": "Recent security events"
+			},
+			"fields": {
+				"accountStatus": "Account status",
+				"credentialType": "Credential type",
+				"currentRole": "Current role",
+				"lastLogin": "Last login",
+				"primaryEmail": "Primary email",
+				"switchPrimaryEmail": "Switch primary email",
+				"receiverEmail": "Receiver email",
+				"emailAddress": "Email address",
+				"verificationCode": "Verification code"
+			},
+			"actions": {
+				"resetPassword": "Reset password",
+				"addEmail": "Add email",
+				"deleteEmail": "Delete email",
+				"verify": "Verify",
+				"switch": "Switch",
+				"revokeOtherSessions": "Revoke other sessions",
+				"logout": "Log out",
+				"revoke": "Revoke",
+				"close": "Close",
+				"cancel": "Cancel",
+				"sendResetEmail": "Send reset email",
+				"confirmLogout": "Confirm logout",
+				"confirmRevoke": "Confirm revoke",
+				"sendVerificationEmail": "Send verification email",
+				"sendCode": "Send code",
+				"resendAfter": "Resend in {seconds}s",
+				"confirmVerify": "Confirm verification"
+			},
+			"empty": {
+				"profileLoadFailed": "Failed to load account security",
+				"sessionsLoadFailed": "Failed to load sessions",
+				"securityEvents": "No security events yet.",
+				"emailNotSet": "No email set",
+				"noRecord": "No record"
+			},
+			"status": {
+				"verified": "Verified",
+				"unverified": "Unverified"
+			},
+			"placeholders": { "selectEmail": "Select email" },
+			"sessions": {
+				"activeCount": "{count} active",
+				"current": "Current session"
+			},
+			"values": { "unknownIp": "Unknown IP" },
+			"roles": {
+				"OWNER": "Site owner",
+				"ADMIN": "Admin",
+				"MEMBER": "Member",
+				"USER": "User",
+				"UNKNOWN": "Unknown role"
+			},
+			"accountStatus": {
+				"ACTIVE": "Active",
+				"PENDING": "Pending",
+				"DISABLED": "Disabled",
+				"BANNED": "Banned",
+				"UNKNOWN": "Unknown status"
+			},
+			"credentials": {
+				"password": "Password sign-in",
+				"passwordNotSet": "Password not set"
+			},
+			"emailTags": {
+				"primary": "Primary",
+				"unverified": "Unverified"
+			},
+			"devices": { "unknown": "Unknown device" },
+			"events": {
+				"LOGIN_SUCCESS": "Login succeeded",
+				"LOGIN_FAILED": "Login failed",
+				"LOGOUT": "Logged out",
+				"SESSION_REVOKED": "Session revoked",
+				"SESSIONS_REVOKED": "Sessions revoked",
+				"EMAIL_VERIFICATION_SENT": "Email verification sent",
+				"EMAIL_VERIFIED": "Email verified",
+				"PRIMARY_EMAIL_CHANGED": "Primary email changed",
+				"SECONDARY_EMAIL_ADDED": "Secondary email added",
+				"SECONDARY_EMAIL_REMOVED": "Secondary email removed",
+				"PASSWORD_CHANGED": "Password changed",
+				"OAUTH_LINKED": "External account linked",
+				"OAUTH_UNLINKED": "External account unlinked"
+			},
+			"modals": {
+				"passwordReset": {
+					"title": "Reset password",
+					"description": "A reset link will be sent to your login email. Your old password will stop working after the reset."
+				},
+				"logout": {
+					"title": "Log out of this session?",
+					"description": "You will need to sign in again before accessing your account center."
+				},
+				"revokeSessions": {
+					"title": "Revoke other sessions?",
+					"description": "Other devices will need to sign in again. This device will stay signed in."
+				},
+				"addEmail": {
+					"title": "Add email",
+					"description": "The email must be verified before it can become your primary email."
+				},
+				"verifyEmail": {
+					"title": "Verify email",
+					"descriptionPrefix": "Send a code to ",
+					"descriptionSuffix": " and enter the 6-digit code to verify it."
+				}
+			},
+			"notifications": {
+				"primaryEmailChanged": "Primary email switched",
+				"primaryEmailChangeFailed": "Failed to switch primary email",
+				"emailDeleted": "Email deleted",
+				"emailDeleteFailed": "Failed to delete email",
+				"verificationEmailSent": "Verification email sent",
+				"verificationEmailSentDescription": "Check your inbox and finish verification.",
+				"verificationEmailSendFailed": "Failed to send verification email",
+				"codeSent": "Code sent",
+				"codeSentDescription": "Check your inbox and enter the code.",
+				"codeSendFailed": "Failed to send code",
+				"emailVerified": "Email verified",
+				"emailVerifyFailed": "Verification failed",
+				"emailVerifyFailedDescription": "The code is invalid or expired. Send a new one and try again.",
+				"resetEmailSent": "Reset email sent",
+				"resetEmailSentDescription": "If the email belongs to a valid account, you will receive the next-step link.",
+				"resetEmailSendFailed": "Failed to send reset email",
+				"logoutFailed": "Failed to log out",
+				"sessionRevoked": "Session revoked",
+				"sessionRevokeFailed": "Failed to revoke session",
+				"otherSessionsRevoked": "Other sessions revoked",
+				"otherSessionsRevokedDescription": "Revoked {count} session(s).",
+				"otherSessionsRevokeFailed": "Failed to revoke other sessions"
+			}
 		},
 		"verified": {
 			"text": "Verified HydCraft account"

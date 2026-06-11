@@ -24,13 +24,18 @@ model User {
   verifiedTextEnUs   String?
   verifiedTextJaJp   String?
   lastLoginAt        DateTime?
+  joinedAt           DateTime   @default(now())
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
   minecraftAccounts  MinecraftAccount[]
   externalAccounts   ExternalAccount[]
+  emails             UserEmail[]
   credential         UserCredential?
   refreshTokens      RefreshToken[]
+  emailTokens        EmailVerificationToken[]
+  oauthStateTokens   OAuthStateToken[]
+  securityEvents     SecurityEvent[]
   profile            UserProfile?
   preferences        UserProfilePreferences?
   privacy            UserProfilePrivacy?
@@ -156,9 +161,82 @@ model ExternalAccount {
   providerUsername  String?
   providerEmail     String?
   avatarUrl         String?
+  scope             String?
+  rawProfile        Json?
+  connectedAt       DateTime         @default(now())
+  lastUsedAt        DateTime?
+  disconnectedAt    DateTime?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
   @@unique([provider, providerAccountId])
   @@index([userId])
+  @@index([userId, provider])
+  @@index([disconnectedAt])
+}
+
+model UserEmail {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email          String        @unique
+  kind           UserEmailKind
+  verifiedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([userId, kind])
+}
+
+model EmailVerificationToken {
+  id           String                   @id @default(cuid())
+  userId       String
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email        String
+  codeHash     String
+  purpose      EmailVerificationPurpose
+  locale       UserProfileLanguage      @default(ZH_CN)
+  expiresAt    DateTime
+  consumedAt   DateTime?
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([userId, email, purpose])
+  @@index([expiresAt])
+  @@index([consumedAt])
+}
+
+model OAuthStateToken {
+  id          String           @id @default(cuid())
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    ExternalProvider
+  stateHash   String           @unique
+  redirectTo  String?
+  locale      UserProfileLanguage @default(ZH_CN)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([provider])
+  @@index([expiresAt])
+}
+
+model SecurityEvent {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        SecurityEventType
+  title       String
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime          @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
 }

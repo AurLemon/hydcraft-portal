@@ -1,6 +1,6 @@
 <template>
 	<footer
-		class="site-shell mx-auto w-full px-6 pb-6 text-[13px] text-slate-400/80 transition-colors duration-250 dark:text-slate-700"
+		class="max-w-5xl mx-auto w-full px-6 pb-6 text-[13px] text-slate-400/80 transition-colors duration-250 dark:text-slate-700"
 	>
 		<div class="flex flex-col items-center text-center">
 			<div

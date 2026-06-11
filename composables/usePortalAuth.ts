@@ -42,6 +42,7 @@ interface PortalRegisterBody {
 
 interface PortalPasswordResetRequestBody {
 	email: string
+	locale?: string
 }
 
 interface PortalPasswordResetBody {

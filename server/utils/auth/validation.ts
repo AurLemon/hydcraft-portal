@@ -28,3 +28,13 @@ export const normalizeEmail = (
 
 	return normalized || null
 }
+
+export const assertEmail = (email: string | null | undefined): string => {
+	const normalized = normalizeEmail(email)
+
+	if (!normalized || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+		throw createBadRequestError('EMAIL_INVALID')
+	}
+
+	return normalized
+}
