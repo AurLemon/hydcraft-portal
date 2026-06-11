@@ -108,7 +108,7 @@
 				>
 					<div
 						v-if="profile.verified?.enabled"
-						class="flex min-w-0 justify-center gap-2 text-sm font-medium text-sky-100 md:justify-start"
+						class="flex min-w-0 justify-center gap-2 text-sm lg:text-base font-medium text-sky-100 md:justify-start"
 					>
 						<UIcon
 							name="i-lucide-check-circle-2"
@@ -118,7 +118,7 @@
 					</div>
 					<div class="flex flex-wrap justify-center gap-2 md:justify-end">
 						<UBadge
-							v-for="badge in displayBadges"
+							v-for="badge in profile.badges ?? []"
 							:key="badge.id"
 							color="neutral"
 							variant="subtle"
@@ -131,6 +131,20 @@
 								:class="getProfileBadgeStyle(badge.color).iconClass"
 							/>
 							{{ badgeLabel(badge) }}
+						</UBadge>
+						<UBadge
+							v-if="profile.roleBadge"
+							color="neutral"
+							variant="subtle"
+							class="gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold shadow-[0_10px_26px_rgba(0,0,0,0.26)] backdrop-blur-md"
+							:class="getProfileBadgeStyle(profile.roleBadge.color).class"
+						>
+							<UIcon
+								:name="getProfileBadgeStyle(profile.roleBadge.color).icon"
+								class="h-4 w-4"
+								:class="getProfileBadgeStyle(profile.roleBadge.color).iconClass"
+							/>
+							{{ badgeLabel(profile.roleBadge) }}
 						</UBadge>
 						<UBadge
 							v-if="joinedDays !== null"
@@ -158,6 +172,10 @@ interface PublicProfileBadge {
 	badgeId: string | null
 	key: string | null
 	label: string
+	labelZhCn: string
+	labelZhTw: string
+	labelEnUs: string
+	labelJaJp: string
 	color: string | null
 	sortOrder: number
 }
@@ -214,10 +232,6 @@ const joinedDays = computed(() => {
 
 	return Math.max(dayjs().diff(dayjs(props.profile.joinedAt), 'day'), 0)
 })
-const displayBadges = computed(() => [
-	...(props.profile.roleBadge ? [props.profile.roleBadge] : []),
-	...(props.profile.badges ?? []),
-])
 const verifiedText = computed(() => {
 	const verified = props.profile.verified
 
@@ -239,8 +253,25 @@ const verifiedText = computed(() => {
 
 	return verified.textZhCn || t('profile.verified.text')
 })
-const badgeLabel = (badge: PublicProfileBadge): string =>
-	badge.key === 'server-member' ? t('profile.badges.serverMember') : badge.label
+const badgeLabel = (badge: PublicProfileBadge): string => {
+	if (badge.key === 'server-member') {
+		return t('profile.badges.serverMember')
+	}
+
+	if (locale.value === 'zh-TW') {
+		return badge.labelZhTw || badge.labelZhCn || badge.label
+	}
+
+	if (locale.value === 'en-US') {
+		return badge.labelEnUs || badge.labelZhCn || badge.label
+	}
+
+	if (locale.value === 'ja-JP') {
+		return badge.labelJaJp || badge.labelZhCn || badge.label
+	}
+
+	return badge.labelZhCn || badge.label
+}
 const activityText = computed(() => {
 	const activity = props.profile.activityStatus
 

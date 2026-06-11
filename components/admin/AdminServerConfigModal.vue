@@ -28,13 +28,19 @@
 				</div>
 
 				<div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-					<section class="admin-section">
-						<div class="admin-section-title">
+					<section
+						class="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900"
+					>
+						<div
+							class="flex items-center gap-2 text-base font-semibold text-slate-950 dark:text-white"
+						>
 							<UIcon name="i-lucide-server" />
 							<span>{{ t('admin.serverConfig.sections.basic') }}</span>
 						</div>
 						<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.serverId') }}</span>
 								<input
 									v-model="form.serverId"
@@ -42,23 +48,33 @@
 									required
 								/>
 							</label>
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.code') }}</span>
 								<input v-model="form.code" required />
 							</label>
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.name') }}</span>
 								<input v-model="form.name" required />
 							</label>
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.sortOrder') }}</span>
 								<input v-model.number="form.sortOrder" type="number" />
 							</label>
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.mcHost') }}</span>
 								<input v-model="form.host" required />
 							</label>
-							<label class="admin-field">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.mcPort') }}</span>
 								<input
 									v-model.number="form.port"
@@ -67,35 +83,51 @@
 									max="65535"
 								/>
 							</label>
-							<label class="admin-field md:col-span-2">
+							<label
+								class="grid gap-1.5 text-sm font-medium text-slate-700 md:col-span-2 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+							>
 								<span>{{ t('admin.serverConfig.fields.description') }}</span>
 								<textarea v-model="form.description" rows="3" />
 							</label>
 						</div>
-						<label class="admin-check">
+						<label
+							class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200 [&>input]:h-4 [&>input]:w-4 [&>input]:accent-sky-500"
+						>
 							<input v-model="form.enabled" type="checkbox" />
 							<span>{{ t('admin.serverConfig.fields.enabled') }}</span>
 						</label>
 					</section>
 
-					<section class="admin-section">
-						<div class="admin-section-title">
+					<section
+						class="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900"
+					>
+						<div
+							class="flex items-center gap-2 text-base font-semibold text-slate-950 dark:text-white"
+						>
 							<UIcon name="i-lucide-radio-tower" />
 							<span>PortalBridge</span>
 						</div>
-						<label class="admin-field">
+						<label
+							class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+						>
 							<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
 							<input v-model="form.portalBridge.bridgeId" />
 						</label>
-						<label class="admin-field">
+						<label
+							class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+						>
 							<span>Module</span>
 							<input v-model="form.portalBridge.module" />
 						</label>
-						<label class="admin-field">
+						<label
+							class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+						>
 							<span>WebSocket URL</span>
 							<input v-model="form.portalBridge.wsUrl" />
 						</label>
-						<label class="admin-field">
+						<label
+							class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+						>
 							<span>{{ t('admin.serverConfig.fields.secret') }}</span>
 							<input
 								v-model="form.portalBridge.secret"
@@ -107,14 +139,20 @@
 								"
 							/>
 						</label>
-						<label class="admin-check">
+						<label
+							class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200 [&>input]:h-4 [&>input]:w-4 [&>input]:accent-sky-500"
+						>
 							<input v-model="form.portalBridge.enabled" type="checkbox" />
 							<span>{{ t('admin.serverConfig.fields.bridgeEnabled') }}</span>
 						</label>
 					</section>
 
-					<section class="admin-section">
-						<div class="admin-section-title">
+					<section
+						class="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900"
+					>
+						<div
+							class="flex items-center gap-2 text-base font-semibold text-slate-950 dark:text-white"
+						>
 							<UIcon name="i-lucide-database" />
 							<span>AuthMe MySQL</span>
 						</div>
@@ -129,8 +167,12 @@
 						/>
 					</section>
 
-					<section class="admin-section">
-						<div class="admin-section-title">
+					<section
+						class="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900"
+					>
+						<div
+							class="flex items-center gap-2 text-base font-semibold text-slate-950 dark:text-white"
+						>
 							<UIcon name="i-lucide-shield-check" />
 							<span>LuckPerms MySQL</span>
 						</div>
@@ -367,90 +409,3 @@ const submit = async (): Promise<void> => {
 	}
 }
 </script>
-
-<style scoped>
-.admin-field {
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
-	font-size: 0.875rem;
-	font-weight: 500;
-	color: rgb(51 65 85);
-}
-
-.dark .admin-field {
-	color: rgb(226 232 240);
-}
-
-.admin-field input,
-.admin-field textarea {
-	border-radius: 0.5rem;
-	border: 1px solid rgb(203 213 225);
-	background: rgb(255 255 255 / 0.88);
-	padding: 0.625rem 0.75rem;
-	font-size: 0.875rem;
-	font-weight: 400;
-	color: rgb(15 23 42);
-	outline: none;
-}
-
-.dark .admin-field input,
-.dark .admin-field textarea {
-	border-color: rgb(51 65 85);
-	background: rgb(15 23 42 / 0.8);
-	color: white;
-}
-
-.admin-field input:focus,
-.admin-field textarea:focus {
-	border-color: rgb(14 165 233);
-	box-shadow: 0 0 0 3px rgb(14 165 233 / 0.16);
-}
-
-.admin-section {
-	display: flex;
-	flex-direction: column;
-	gap: 0.875rem;
-	border: 1px solid rgb(203 213 225);
-	border-radius: 0.5rem;
-	background: rgb(241 245 249 / 0.92);
-	padding: 1rem;
-}
-
-.dark .admin-section {
-	border-color: rgb(51 65 85);
-	background: rgb(15 23 42 / 0.92);
-}
-
-.admin-section-title {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.95rem;
-	font-weight: 700;
-	color: rgb(15 23 42);
-}
-
-.dark .admin-section-title {
-	color: white;
-}
-
-.admin-check {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.875rem;
-	font-weight: 500;
-	color: rgb(51 65 85);
-}
-
-.dark .admin-check {
-	color: rgb(226 232 240);
-}
-
-.admin-check input {
-	height: 1rem;
-	width: 1rem;
-	accent-color: rgb(14 165 233);
-}
-</style>

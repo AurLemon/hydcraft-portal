@@ -1,0 +1,27 @@
+{
+	"minecraftAccounts": {
+		"title": "游戏档案",
+		"badges": {
+			"primary": "主账号"
+		},
+		"fields": {
+			"note": "备注",
+			"primary": "设为主账号",
+			"noUuid": "暂无 UUID"
+		},
+		"actions": {
+			"save": "保存档案"
+		},
+		"empty": {
+			"title": "还没有绑定的 Minecraft 账号",
+			"description": "当账号完成绑定或从服务器数据源导入后，会显示在这里。",
+			"loadFailed": "读取游戏档案失败"
+		},
+		"notifications": {
+			"saved": "游戏档案已保存",
+			"savedDescription": "账号备注与主账号状态已经更新。",
+			"saveFailed": "保存游戏档案失败",
+			"saveFailedDescription": "请检查登录状态与账号归属。"
+		}
+	}
+}

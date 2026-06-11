@@ -1,4 +1,5 @@
 import { prisma } from '../../../utils/db/prisma'
+import { createApiError } from '../../../utils/errors'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
 
 export default defineEventHandler(async (event) => {
@@ -15,9 +16,9 @@ export default defineEventHandler(async (event) => {
 	})
 
 	if (!server) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Minecraft server not found',
+			code: 'MINECRAFT_SERVER_NOT_FOUND',
 		})
 	}
 

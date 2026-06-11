@@ -9,6 +9,10 @@ export interface UserProfileBadgeSummary {
 	badgeId: string | null
 	key: string | null
 	label: string
+	labelZhCn: string
+	labelZhTw: string
+	labelEnUs: string
+	labelJaJp: string
 	color: string | null
 	sortOrder: number
 }

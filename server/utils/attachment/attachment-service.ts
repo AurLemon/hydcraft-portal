@@ -1,4 +1,3 @@
-import { createError } from 'h3'
 import type {
 	Attachment,
 	AttachmentVariant,
@@ -7,6 +6,7 @@ import type {
 	User,
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createApiError, createBadRequestError } from '../errors'
 import { buildFinalObjectKey } from './key-builder'
 import { getAttachmentPolicy } from './policies'
 import type { StorageAdapter } from './storage-adapter'
@@ -48,21 +48,17 @@ interface UploadAttachmentInput {
 	contentType: string
 	buffer: Buffer
 	purpose: AttachmentPurpose
+	ownerId?: string
 }
 
-const badRequest = (statusMessage: string, message: string) =>
-	createError({
-		statusCode: 400,
-		statusMessage,
-		message,
-	})
+const badRequest = (code: string) => createBadRequestError(code)
 
 const isString = (value: unknown): value is string =>
 	typeof value === 'string' && value.trim().length > 0
 
 const parseString = (value: unknown, fieldName: string): string => {
 	if (!isString(value)) {
-		throw badRequest('INVALID_ATTACHMENT_INPUT', `${fieldName} 无效`)
+		throw badRequest('INVALID_ATTACHMENT_INPUT')
 	}
 
 	return value.trim()
@@ -70,7 +66,7 @@ const parseString = (value: unknown, fieldName: string): string => {
 
 const parseSizeBytes = (value: unknown): number => {
 	if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
-		throw badRequest('FILE_TOO_LARGE', '文件大小无效')
+		throw badRequest('INVALID_FILE_SIZE')
 	}
 
 	return value
@@ -93,18 +89,16 @@ const requireOwnedAttachment = async (
 	})
 
 	if (!attachment) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'ATTACHMENT_NOT_FOUND',
-			message: '附件不存在',
+			code: 'ATTACHMENT_NOT_FOUND',
 		})
 	}
 
 	if (attachment.createdById !== user.id) {
-		throw createError({
+		throw createApiError({
 			statusCode: 403,
-			statusMessage: 'ATTACHMENT_NOT_OWNED',
-			message: '无权操作该附件',
+			code: 'ATTACHMENT_NOT_OWNED',
 		})
 	}
 
@@ -113,6 +107,7 @@ const requireOwnedAttachment = async (
 
 const resolveUploadContext = (
 	user: User,
+	ownerId?: string,
 ): {
 	app: AttachmentApp
 	category: AttachmentCategory
@@ -123,7 +118,7 @@ const resolveUploadContext = (
 	app: 'portal',
 	category: 'profile',
 	ownerType: 'user',
-	ownerId: user.id,
+	ownerId: ownerId ?? user.id,
 	visibility: 'PUBLIC',
 })
 
@@ -219,16 +214,16 @@ export class AttachmentService {
 	): Promise<AttachmentPublicSummary> {
 		const purpose = normalizePurpose(input.purpose)
 		const policy = getAttachmentPolicy(purpose)
-		const uploadContext = resolveUploadContext(user)
+		const uploadContext = resolveUploadContext(user, input.ownerId)
 		const contentType = parseString(input.contentType, 'contentType')
 		const sizeBytes = parseSizeBytes(input.buffer.byteLength)
 
 		if (!policy.allowedContentTypes.includes(contentType)) {
-			throw badRequest('INVALID_CONTENT_TYPE', '不支持的文件类型')
+			throw badRequest('INVALID_CONTENT_TYPE')
 		}
 
 		if (sizeBytes > policy.maxSizeBytes) {
-			throw badRequest('FILE_TOO_LARGE', '文件超过大小限制')
+			throw badRequest('FILE_TOO_LARGE')
 		}
 
 		const attachment = await prisma.attachment.create({
@@ -384,6 +379,61 @@ export class AttachmentService {
 		}
 	}
 
+	async deleteProfileAttachmentsExcept(input: {
+		userId: string
+		purpose: 'user-avatar' | 'user-cover'
+		activeAttachmentId: string | null
+	}): Promise<void> {
+		const attachments = await prisma.attachment.findMany({
+			where: {
+				ownerType: 'user',
+				ownerId: input.userId,
+				purpose: input.purpose,
+				status: {
+					notIn: ['DELETED', 'EXPIRED'],
+				},
+				...(input.activeAttachmentId
+					? {
+							id: {
+								not: input.activeAttachmentId,
+							},
+						}
+					: {}),
+			},
+			include: {
+				variants: true,
+			},
+		})
+
+		if (!attachments.length) {
+			return
+		}
+
+		await prisma.attachment.updateMany({
+			where: {
+				id: {
+					in: attachments.map((attachment) => attachment.id),
+				},
+			},
+			data: {
+				status: 'DELETED',
+			},
+		})
+
+		for (const attachment of attachments) {
+			for (const variant of attachment.variants) {
+				void this.storage
+					.deleteObject({
+						profile: 'publicAssets',
+						objectKey: variant.objectKey,
+					})
+					.catch((error) => {
+						console.error('Failed to delete replaced attachment object', error)
+					})
+			}
+		}
+	}
+
 	async listAdminAttachments(input: {
 		page: number
 		pageSize: number
@@ -471,10 +521,9 @@ export class AttachmentService {
 		})
 
 		if (!attachment) {
-			throw createError({
+			throw createApiError({
 				statusCode: 404,
-				statusMessage: 'ATTACHMENT_NOT_FOUND',
-				message: '附件不存在',
+				code: 'ATTACHMENT_NOT_FOUND',
 			})
 		}
 
@@ -492,10 +541,9 @@ export class AttachmentService {
 		})
 
 		if (!attachment) {
-			throw createError({
+			throw createApiError({
 				statusCode: 404,
-				statusMessage: 'ATTACHMENT_NOT_FOUND',
-				message: '附件不存在',
+				code: 'ATTACHMENT_NOT_FOUND',
 			})
 		}
 

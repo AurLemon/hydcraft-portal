@@ -1,5 +1,6 @@
 import { requireAdminUser } from '../../utils/auth/session'
 import { prisma } from '../../utils/db/prisma'
+import { getPortalRuntimeStartedAt } from '../../utils/runtime/portal-runtime'
 
 type OverviewStatus = 'normal' | 'error' | 'inactive'
 
@@ -26,10 +27,8 @@ export default defineEventHandler(async (event) => {
 		serverCount,
 		enabledServerCount,
 		serverErrorCount,
-		firstServer,
 		userCount,
 		usersCreatedToday,
-		firstUser,
 		authMeCount,
 		enabledAuthMeCount,
 		authMeErrorCount,
@@ -66,28 +65,12 @@ export default defineEventHandler(async (event) => {
 				],
 			},
 		}),
-		prisma.minecraftServer.findFirst({
-			orderBy: {
-				createdAt: 'asc',
-			},
-			select: {
-				createdAt: true,
-			},
-		}),
 		prisma.user.count(),
 		prisma.user.count({
 			where: {
 				createdAt: {
 					gte: todayStart,
 				},
-			},
-		}),
-		prisma.user.findFirst({
-			orderBy: {
-				createdAt: 'asc',
-			},
-			select: {
-				createdAt: true,
 			},
 		}),
 		prisma.authMeSourceConfig.count(),
@@ -143,9 +126,7 @@ export default defineEventHandler(async (event) => {
 		}),
 	])
 
-	const runningSince = [firstServer?.createdAt, firstUser?.createdAt]
-		.filter((value): value is Date => Boolean(value))
-		.sort((a, b) => a.getTime() - b.getTime())[0]
+	const runningSince = getPortalRuntimeStartedAt()
 	const serverStatus: OverviewStatus =
 		serverErrorCount > 0
 			? 'error'

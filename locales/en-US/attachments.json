@@ -1,0 +1,20 @@
+{
+	"attachments": {
+		"upload": {
+			"button": "Upload image",
+			"invalidType": "Unsupported file type",
+			"fileTooLarge": "File is too large",
+			"cropRequired": "Crop the image first",
+			"policyUnavailable": "Upload policy is unavailable",
+			"uploaded": "Image uploaded",
+			"failed": "Upload failed"
+		},
+		"crop": {
+			"title": "Crop image",
+			"avatarTitle": "Crop avatar",
+			"coverTitle": "Crop cover",
+			"cancel": "Cancel crop",
+			"confirm": "Confirm crop"
+		}
+	}
+}

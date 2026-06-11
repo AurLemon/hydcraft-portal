@@ -1,14 +1,10 @@
-import { createError, readMultipartFormData } from 'h3'
-import { requireCurrentUser } from '../../utils/auth/session'
+import { readMultipartFormData } from 'h3'
+import { requireAdminUser, requireCurrentUser } from '../../utils/auth/session'
 import { getAttachmentService } from '../../utils/attachment/runtime'
 import type { AttachmentPurpose } from '../../utils/attachment/types'
+import { createBadRequestError } from '../../utils/errors'
 
-const badRequest = (statusMessage: string, message: string) =>
-	createError({
-		statusCode: 400,
-		statusMessage,
-		message,
-	})
+const badRequest = (code: string) => createBadRequestError(code)
 
 const readField = (
 	fields: Map<string, Buffer>,
@@ -23,7 +19,7 @@ export default defineEventHandler(async (event) => {
 	const form = await readMultipartFormData(event)
 
 	if (!form) {
-		throw badRequest('INVALID_MULTIPART_BODY', '需要 multipart/form-data')
+		throw badRequest('INVALID_MULTIPART_BODY')
 	}
 
 	const fields = new Map<string, Buffer>()
@@ -36,18 +32,25 @@ export default defineEventHandler(async (event) => {
 	}
 
 	if (!file) {
-		throw badRequest('FILE_REQUIRED', '缺少上传文件')
+		throw badRequest('FILE_REQUIRED')
 	}
 
 	const purpose = readField(fields, 'purpose') as AttachmentPurpose | undefined
+	const ownerType = readField(fields, 'ownerType')
+	const ownerId = readField(fields, 'ownerId')
 
 	if (!purpose) {
-		throw badRequest('INVALID_ATTACHMENT_INPUT', 'purpose 无效')
+		throw badRequest('INVALID_ATTACHMENT_INPUT')
+	}
+
+	if (ownerId && (ownerType !== 'user' || ownerId !== user.id)) {
+		await requireAdminUser(event)
 	}
 
 	return await getAttachmentService().uploadAttachment(user, {
 		purpose,
 		contentType: file.type ?? '',
 		buffer: file.data,
+		ownerId,
 	})
 })

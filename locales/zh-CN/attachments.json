@@ -1,0 +1,20 @@
+{
+	"attachments": {
+		"upload": {
+			"button": "上传图片",
+			"invalidType": "不支持的文件类型",
+			"fileTooLarge": "文件超过大小限制",
+			"cropRequired": "需要先裁剪图片",
+			"policyUnavailable": "上传规则暂不可用",
+			"uploaded": "图片已上传",
+			"failed": "上传失败"
+		},
+		"crop": {
+			"title": "裁剪图片",
+			"avatarTitle": "裁剪头像",
+			"coverTitle": "裁剪封面",
+			"cancel": "取消裁剪",
+			"confirm": "确认裁剪"
+		}
+	}
+}

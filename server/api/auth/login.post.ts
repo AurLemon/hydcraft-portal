@@ -2,6 +2,7 @@ import { prisma } from '../../utils/db/prisma'
 import { verifyPassword } from '../../utils/auth/password'
 import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
 import { normalizeEmail, normalizeHandle } from '../../utils/auth/validation'
+import { createApiError } from '../../utils/errors'
 
 interface LoginBody {
 	handleOrEmail: string
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
 		user.status !== 'ACTIVE' ||
 		!(await verifyPassword(body.password ?? '', user.credential.passwordHash))
 	) {
-		throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
+		throw createApiError({ statusCode: 401, code: 'INVALID_CREDENTIALS' })
 	}
 
 	const updatedUser = await prisma.user.update({

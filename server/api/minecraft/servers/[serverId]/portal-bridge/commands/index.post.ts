@@ -1,5 +1,9 @@
 import { prisma } from '../../../../../../utils/db/prisma'
 import { requireAdminUser } from '../../../../../../utils/auth/session'
+import {
+	createApiError,
+	createBadRequestError,
+} from '../../../../../../utils/errors'
 import { portalBridgeManager } from '../../../../../../utils/portal-bridge/client'
 import { isPortalBridgeCommandAction } from '../../../../../../utils/portal-bridge/protocol'
 
@@ -14,10 +18,7 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<SendPortalBridgeCommandBody>(event)
 
 	if (!isPortalBridgeCommandAction(body.action)) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'Unsupported PortalBridge command action',
-		})
+		throw createBadRequestError('PORTAL_BRIDGE_COMMAND_ACTION_UNSUPPORTED')
 	}
 
 	const bridgeConfig = await prisma.portalBridgeConfig.findFirst({
@@ -29,9 +30,9 @@ export default defineEventHandler(async (event) => {
 	})
 
 	if (!bridgeConfig) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'PortalBridge config not found',
+			code: 'PORTAL_BRIDGE_CONFIG_NOT_FOUND',
 		})
 	}
 

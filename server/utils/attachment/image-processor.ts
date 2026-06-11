@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
-import { createError } from 'h3'
 import sharp from 'sharp'
+import { createBadRequestError } from '../errors'
 import type { AttachmentPolicy } from './types'
 
 interface ProcessedImageVariant {
@@ -27,12 +27,7 @@ interface ProcessImageAttachmentResult {
 const CROP_ASPECT_RATIO_TOLERANCE = 0.03
 const SUPPORTED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp'])
 
-const badRequest = (statusMessage: string, message: string) =>
-	createError({
-		statusCode: 400,
-		statusMessage,
-		message,
-	})
+const badRequest = (code: string) => createBadRequestError(code)
 
 const validateCropAspectRatio = (
 	cropRegion: {
@@ -47,7 +42,7 @@ const validateCropAspectRatio = (
 
 	const actualRatio = cropRegion.width / cropRegion.height
 	if (Math.abs(actualRatio - expectedRatio) > CROP_ASPECT_RATIO_TOLERANCE) {
-		throw badRequest('INVALID_CROP', '裁剪比例无效')
+		throw badRequest('INVALID_CROP')
 	}
 }
 
@@ -66,11 +61,11 @@ export const processImageAttachment = async (
 	const metadata = await baseImage.metadata()
 
 	if (!metadata.format || !SUPPORTED_IMAGE_FORMATS.has(metadata.format)) {
-		throw badRequest('INVALID_CONTENT_TYPE', '不支持的图片格式')
+		throw badRequest('INVALID_CONTENT_TYPE')
 	}
 
 	if (!metadata.width || !metadata.height) {
-		throw badRequest('IMAGE_PROCESSING_FAILED', '无法读取图片尺寸')
+		throw badRequest('IMAGE_PROCESSING_FAILED')
 	}
 
 	const sourceWidth = metadata.width

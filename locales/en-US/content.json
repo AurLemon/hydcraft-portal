@@ -1,0 +1,18 @@
+{
+	"content": {
+		"about": {
+			"title": "Who Are We?"
+		},
+		"timeline": {
+			"title": "How HydCraft Got Here?"
+		},
+		"charter": {
+			"title": "Server Charter"
+		},
+		"imageCarousel": {
+			"openPreview": "Open image preview: {alt}",
+			"scrollLeft": "Scroll images left",
+			"scrollRight": "Scroll images right"
+		}
+	}
+}

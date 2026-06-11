@@ -1,5 +1,6 @@
 import { prisma } from '../../../utils/db/prisma'
 import { requireAdminUser } from '../../../utils/auth/session'
+import { createApiError } from '../../../utils/errors'
 import { encryptConfigValue } from '../../../utils/security/encryption'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
 
@@ -63,9 +64,9 @@ export default defineEventHandler(async (event) => {
 	})
 
 	if (!existing) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Minecraft server not found',
+			code: 'MINECRAFT_SERVER_NOT_FOUND',
 		})
 	}
 

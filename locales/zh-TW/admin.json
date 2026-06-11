@@ -1,0 +1,281 @@
+{
+	"admin": {
+		"actions": {
+			"reset": "重設篩選",
+			"cancel": "取消",
+			"save": "儲存",
+			"copyUrl": "複製 URL",
+			"delete": "刪除"
+		},
+		"filters": {
+			"all": "全部"
+		},
+		"pagination": {
+			"summary": "第 {page} / {pageCount} 頁，共 {total} 筆",
+			"first": "第一頁",
+			"previous": "上一頁",
+			"next": "下一頁",
+			"last": "最後一頁",
+			"pageSize": "{size} / 頁"
+		},
+		"overview": {
+			"title": "Portal 總覽",
+			"loading": "正在讀取 Portal 設定...",
+			"metrics": {
+				"servers": "伺服器",
+				"users": "使用者",
+				"uptimeDays": "運行天數",
+				"userDelta": "較昨日 {count}",
+				"runningSince": "自 {date} 運行至今",
+				"runningSinceUnavailable": "暫未記錄起始時間",
+				"unavailable": "暫未接入"
+			},
+			"status": {
+				"normal": "全部正常",
+				"error": "錯誤",
+				"inactive": "未啟用/未設定"
+			},
+			"sections": {
+				"serviceStatus": "服務狀態",
+				"recentActivity": "最近活動",
+				"quickActions": "快速操作"
+			},
+			"actions": {
+				"viewAll": "查看全部",
+				"viewAllActivities": "查看全部活動"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL 資料庫",
+					"description": "Portal 主資料庫"
+				},
+				"authme": {
+					"label": "AuthMe 資料庫",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms 資料庫",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "已啟用 {enabled} / 已設定 {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "暫未完成",
+				"placeholderDescription": "Audit 日誌接入後會顯示最近活動。"
+			},
+			"quickActions": {
+				"servers": "切換到伺服器頁面",
+				"serversDescription": "管理伺服器接入與資料源設定",
+				"users": "切換到使用者頁面",
+				"usersDescription": "查看和管理 Portal 使用者",
+				"attachments": "切換到附件頁面",
+				"attachmentsDescription": "查看頭像與封面附件"
+			}
+		},
+		"servers": {
+			"title": "伺服器",
+			"create": "新增伺服器",
+			"loading": "正在讀取伺服器設定...",
+			"empty": {
+				"title": "還沒有伺服器設定",
+				"description": "新增一個伺服器後，再設定 PortalBridge、AuthMe 和 LuckPerms。"
+			}
+		},
+		"users": {
+			"title": "使用者",
+			"filters": {
+				"search": "搜尋使用者名稱、信箱或 Hydroline ID"
+			},
+			"sections": {
+				"identity": "身份與狀態",
+				"profile": "個人資料",
+				"attachments": "頭像與封面",
+				"preferences": "偏好",
+				"social": "社交連結",
+				"privacy": "公開資訊",
+				"achievements": "成就與認證"
+			},
+			"fields": {
+				"user": "使用者",
+				"username": "使用者名稱",
+				"displayName": "顯示名稱",
+				"hydrolineId": "Hydroline ID",
+				"role": "角色",
+				"status": "狀態",
+				"statusReason": "狀態備註",
+				"bio": "個人簡介",
+				"location": "現居地",
+				"countryOrRegion": "國家 / 地區",
+				"birthday": "生日",
+				"language": "語言",
+				"timezoneMode": "時區模式",
+				"timezone": "時區",
+				"websiteUrl": "個人網站",
+				"publicEmail": "公開信箱",
+				"avatarAttachmentId": "頭像附件 ID",
+				"coverAttachmentId": "封面附件 ID",
+				"avatarUrl": "頭像 URL",
+				"coverUrl": "封面 URL",
+				"createdAt": "加入時間",
+				"verified": "認證",
+				"badges": "Badge"
+			},
+			"notifications": {
+				"saved": "使用者資料已儲存",
+				"saveFailed": "儲存使用者資料失敗"
+			},
+			"actions": {
+				"resetAvatar": "重置頭像",
+				"resetCover": "重置封面",
+				"uploadAvatar": "上傳頭像",
+				"uploadCover": "上傳封面",
+				"regenerateHydrolineId": "重新產生"
+			},
+			"media": {
+				"avatarEmpty": "暫無頭像 URL",
+				"coverEmpty": "暫無封面 URL",
+				"avatarReset": "儲存後將重置頭像",
+				"coverReset": "儲存後將重置封面"
+			}
+		},
+		"attachments": {
+			"title": "附件",
+			"filters": {
+				"search": "搜尋附件 ID、Owner 或 Object Key",
+				"app": "應用",
+				"category": "分類",
+				"purpose": "用途",
+				"status": "狀態",
+				"visibility": "可見性"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "應用",
+				"category": "分類",
+				"purpose": "用途",
+				"status": "狀態",
+				"visibility": "可見性",
+				"owner": "歸屬",
+				"ownerType": "歸屬類型",
+				"ownerId": "歸屬 ID",
+				"contentType": "Content Type",
+				"sizeBytes": "大小",
+				"createdById": "建立者 ID",
+				"objectKey": "Object Key",
+				"createdAt": "建立時間"
+			},
+			"modal": {
+				"title": "附件詳情",
+				"variants": "圖片版本",
+				"privateUrlHidden": "Private 附件不顯示公開 URL"
+			},
+			"deleteConfirm": {
+				"title": "刪除附件",
+				"description": "確認後會將附件標記為已刪除，並嘗試刪除物件儲存中的圖片版本。"
+			},
+			"notifications": {
+				"deleted": "附件已標記刪除",
+				"deleteFailed": "刪除附件失敗"
+			}
+		},
+		"serverConfig": {
+			"createEyebrow": "新增伺服器",
+			"title": "伺服器接入設定",
+			"sections": {
+				"basic": "伺服器基礎資訊"
+			},
+			"fields": {
+				"serverId": "伺服器 ID",
+				"code": "代號",
+				"name": "名稱",
+				"sortOrder": "排序",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "描述",
+				"enabled": "啟用該伺服器",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "啟用 Bridge 連線"
+			},
+			"placeholders": {
+				"keepSecret": "留空則保持不變"
+			},
+			"actions": {
+				"cancel": "取消",
+				"save": "儲存設定"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "啟用資料來源"
+		},
+		"notifications": {
+			"overviewLoadFailed": "讀取總覽失敗",
+			"serversLoadFailed": "讀取伺服器設定失敗",
+			"serverSaved": "伺服器設定已儲存",
+			"serverSavedDescription": "伺服器列表已重新整理。",
+			"serverSaveFailed": "儲存設定失敗",
+			"serverSaveFailedDescription": "請檢查登入狀態與欄位。",
+			"copied": "已複製"
+		},
+		"achievements": {
+			"title": "成就",
+			"sections": {
+				"badges": "Badge 列表",
+				"createBadge": "新增 Badge",
+				"assign": "授予 Badge",
+				"verified": "認證設定"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "配色",
+				"assignmentCount": "授予數量",
+				"enabled": "啟用",
+				"description": "描述",
+				"users": "使用者",
+				"badges": "Badge",
+				"labels": "多語言名稱",
+				"sortOrder": "排序"
+			},
+			"actions": {
+				"createBadge": "新增 Badge",
+				"assignBadges": "授予 Badge",
+				"saveVerified": "授予認證",
+				"removeVerified": "移除認證"
+			},
+			"notifications": {
+				"badgeCreated": "Badge 已建立",
+				"badgeCreateFailed": "建立 Badge 失敗",
+				"badgesAssigned": "Badge 已授予",
+				"badgesAssignFailed": "授予 Badge 失敗",
+				"verifiedSaved": "認證設定已儲存",
+				"verifiedSaveFailed": "儲存認證設定失敗",
+				"badgeSaved": "Badge 已儲存",
+				"badgeSaveFailed": "儲存 Badge 失敗"
+			},
+			"modal": {
+				"createBadge": "新增 Badge",
+				"editBadge": "編輯 Badge",
+				"assignBadges": "授予 Badge"
+			}
+		},
+		"sort": {
+			"field": "排序欄位",
+			"direction": "排序方向",
+			"asc": "升冪",
+			"desc": "降冪",
+			"fields": {
+				"createdAt": "建立時間",
+				"updatedAt": "更新時間"
+			}
+		}
+	}
+}

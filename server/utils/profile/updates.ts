@@ -1,7 +1,8 @@
 import { useRuntimeConfig } from '#imports'
-import { createError, setResponseHeader, type H3Event } from 'h3'
+import { setResponseHeader, type H3Event } from 'h3'
 import type { User } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from './defaults'
 import { USERNAME_CHANGE_COOLDOWN_DAYS } from './mapper'
@@ -160,10 +161,9 @@ const resolveReadyAttachmentUrl = async (
 		attachment.purpose !== purpose ||
 		attachment.status !== 'READY'
 	) {
-		throw createError({
+		throw createApiError({
 			statusCode: 400,
-			statusMessage: 'ATTACHMENT_NOT_FOUND',
-			message: '附件不存在或不可用于当前资料',
+			code: 'ATTACHMENT_NOT_FOUND',
 		})
 	}
 
@@ -173,10 +173,9 @@ const resolveReadyAttachmentUrl = async (
 		attachment.variants[0]
 
 	if (!primaryVariant) {
-		throw createError({
+		throw createApiError({
 			statusCode: 400,
-			statusMessage: 'ATTACHMENT_NOT_FOUND',
-			message: '附件缺少可用图片版本',
+			code: 'ATTACHMENT_VARIANT_NOT_FOUND',
 		})
 	}
 
@@ -184,10 +183,9 @@ const resolveReadyAttachmentUrl = async (
 	const publicBaseUrl = String(config.cos.publicBaseUrl).replace(/\/$/, '')
 
 	if (!publicBaseUrl) {
-		throw createError({
+		throw createApiError({
 			statusCode: 500,
-			statusMessage: 'COS_PUBLIC_BASE_URL_MISSING',
-			message: '缺少 COS 公开访问地址',
+			code: 'COS_PUBLIC_BASE_URL_MISSING',
 		})
 	}
 
@@ -212,9 +210,9 @@ const assertUsernameCanChange = (user: User): void => {
 		return
 	}
 
-	throw createError({
+	throw createApiError({
 		statusCode: 429,
-		statusMessage: '用户名每 30 天只能修改一次',
+		code: 'USERNAME_CHANGE_COOLDOWN',
 		data: {
 			canChangeUsernameAt: canChangeAt.toISOString(),
 			usernameChangeCooldownDays: USERNAME_CHANGE_COOLDOWN_DAYS,
@@ -286,9 +284,9 @@ export const updateEditableUserProfile = async (
 		const availability = await checkUsernameAvailability(username, user.id)
 
 		if (!availability.available) {
-			throw createError({
+			throw createApiError({
 				statusCode: 409,
-				statusMessage: '该用户名已被使用',
+				code: 'USERNAME_TAKEN',
 			})
 		}
 	}
@@ -381,6 +379,25 @@ export const updateEditableUserProfile = async (
 
 	const updatedAt = new Date()
 	await emitProfileUpdateEvents(user, username, changedFields, updatedAt)
+
+	if (avatarAttachmentId !== undefined) {
+		await emitEvent('user.profile.attachment-replaced', {
+			userId: user.id,
+			purpose: 'user-avatar',
+			activeAttachmentId: avatarAttachmentId,
+			updatedAt,
+		})
+	}
+
+	if (coverAttachmentId !== undefined) {
+		await emitEvent('user.profile.attachment-replaced', {
+			userId: user.id,
+			purpose: 'user-cover',
+			activeAttachmentId: coverAttachmentId,
+			updatedAt,
+		})
+	}
+
 	setResponseHeader(event, 'x-profile-changed-fields', changedFields.join(','))
 
 	return await getEditableUserProfile(user.id)

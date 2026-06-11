@@ -1,4 +1,5 @@
 import { assertPassword } from '../../../utils/auth/validation'
+import { createApiError, createBadRequestError } from '../../../utils/errors'
 
 interface PasswordResetConfirmBody {
 	token: string
@@ -11,14 +12,11 @@ export default defineEventHandler(async (event) => {
 	assertPassword(body.password ?? '')
 
 	if (!token) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'reset token is required',
-		})
+		throw createBadRequestError('RESET_TOKEN_REQUIRED')
 	}
 
-	throw createError({
+	throw createApiError({
 		statusCode: 501,
-		statusMessage: 'password reset token confirmation is not configured',
+		code: 'PASSWORD_RESET_CONFIRM_NOT_CONFIGURED',
 	})
 })

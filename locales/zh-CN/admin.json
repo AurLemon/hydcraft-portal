@@ -1,0 +1,281 @@
+{
+	"admin": {
+		"actions": {
+			"reset": "重置筛选",
+			"cancel": "取消",
+			"save": "保存",
+			"copyUrl": "复制 URL",
+			"delete": "删除"
+		},
+		"filters": {
+			"all": "全部"
+		},
+		"pagination": {
+			"summary": "第 {page} / {pageCount} 页，共 {total} 条",
+			"first": "第一页",
+			"previous": "上一页",
+			"next": "下一页",
+			"last": "最后一页",
+			"pageSize": "{size} / 页"
+		},
+		"overview": {
+			"title": "Portal 总览",
+			"loading": "正在读取 Portal 配置...",
+			"metrics": {
+				"servers": "服务器",
+				"users": "用户",
+				"uptimeDays": "运行天数",
+				"userDelta": "较昨日 {count}",
+				"runningSince": "自 {date} 运行至今",
+				"runningSinceUnavailable": "暂未记录起始时间",
+				"unavailable": "暂未接入"
+			},
+			"status": {
+				"normal": "全部正常",
+				"error": "错误",
+				"inactive": "未启用/未配置"
+			},
+			"sections": {
+				"serviceStatus": "服务状态",
+				"recentActivity": "最近活动",
+				"quickActions": "快速操作"
+			},
+			"actions": {
+				"viewAll": "查看全部",
+				"viewAllActivities": "查看全部活动"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL 数据库",
+					"description": "Portal 主数据库"
+				},
+				"authme": {
+					"label": "AuthMe 数据库",
+					"description": "已启用 {enabled} / 已配置 {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms 数据库",
+					"description": "已启用 {enabled} / 已配置 {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "已启用 {enabled} / 已配置 {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "暂未完成",
+				"placeholderDescription": "Audit 日志接入后会显示最近活动。"
+			},
+			"quickActions": {
+				"servers": "切换到服务器页面",
+				"serversDescription": "管理服务器接入与数据源配置",
+				"users": "切换到用户页面",
+				"usersDescription": "查看和管理 Portal 用户",
+				"attachments": "切换到附件页面",
+				"attachmentsDescription": "查看头像与封面附件"
+			}
+		},
+		"servers": {
+			"title": "服务器",
+			"create": "新增服务器",
+			"loading": "正在读取服务器配置...",
+			"empty": {
+				"title": "还没有服务器配置",
+				"description": "新增一个服务器后，再配置 PortalBridge、AuthMe 和 LuckPerms。"
+			}
+		},
+		"users": {
+			"title": "用户",
+			"filters": {
+				"search": "搜索用户名、邮箱或 Hydroline ID"
+			},
+			"sections": {
+				"identity": "身份与状态",
+				"profile": "个人资料",
+				"attachments": "头像与封面",
+				"preferences": "偏好",
+				"social": "社交链接",
+				"privacy": "公开信息",
+				"achievements": "成就与认证"
+			},
+			"fields": {
+				"user": "用户",
+				"username": "用户名",
+				"displayName": "显示名称",
+				"hydrolineId": "Hydroline ID",
+				"role": "角色",
+				"status": "状态",
+				"statusReason": "状态备注",
+				"bio": "个人简介",
+				"location": "现居地",
+				"countryOrRegion": "国家 / 地区",
+				"birthday": "生日",
+				"language": "语言",
+				"timezoneMode": "时区模式",
+				"timezone": "时区",
+				"websiteUrl": "个人网站",
+				"publicEmail": "公开邮箱",
+				"avatarAttachmentId": "头像附件 ID",
+				"coverAttachmentId": "封面附件 ID",
+				"avatarUrl": "头像 URL",
+				"coverUrl": "封面 URL",
+				"createdAt": "加入时间",
+				"verified": "认证",
+				"badges": "Badge"
+			},
+			"notifications": {
+				"saved": "用户资料已保存",
+				"saveFailed": "保存用户资料失败"
+			},
+			"actions": {
+				"resetAvatar": "重置头像",
+				"resetCover": "重置封面",
+				"uploadAvatar": "上传头像",
+				"uploadCover": "上传封面",
+				"regenerateHydrolineId": "重新生成"
+			},
+			"media": {
+				"avatarEmpty": "暂无头像 URL",
+				"coverEmpty": "暂无封面 URL",
+				"avatarReset": "保存后将重置头像",
+				"coverReset": "保存后将重置封面"
+			}
+		},
+		"attachments": {
+			"title": "附件",
+			"filters": {
+				"search": "搜索附件 ID、Owner 或 Object Key",
+				"app": "应用",
+				"category": "分类",
+				"purpose": "用途",
+				"status": "状态",
+				"visibility": "可见性"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "应用",
+				"category": "分类",
+				"purpose": "用途",
+				"status": "状态",
+				"visibility": "可见性",
+				"owner": "归属",
+				"ownerType": "归属类型",
+				"ownerId": "归属 ID",
+				"contentType": "Content Type",
+				"sizeBytes": "大小",
+				"createdById": "创建者 ID",
+				"objectKey": "Object Key",
+				"createdAt": "创建时间"
+			},
+			"modal": {
+				"title": "附件详情",
+				"variants": "图片版本",
+				"privateUrlHidden": "Private 附件不展示公开 URL"
+			},
+			"deleteConfirm": {
+				"title": "删除附件",
+				"description": "确认后会将附件标记为已删除，并尝试删除对象存储中的图片版本。"
+			},
+			"notifications": {
+				"deleted": "附件已标记删除",
+				"deleteFailed": "删除附件失败"
+			}
+		},
+		"serverConfig": {
+			"createEyebrow": "新增服务器",
+			"title": "服务器接入配置",
+			"sections": {
+				"basic": "服务器基础信息"
+			},
+			"fields": {
+				"serverId": "服务器 ID",
+				"code": "代号",
+				"name": "名称",
+				"sortOrder": "排序",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "描述",
+				"enabled": "启用该服务器",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "启用 Bridge 连接"
+			},
+			"placeholders": {
+				"keepSecret": "留空则保持不变"
+			},
+			"actions": {
+				"cancel": "取消",
+				"save": "保存配置"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "启用数据源"
+		},
+		"notifications": {
+			"overviewLoadFailed": "读取总览失败",
+			"serversLoadFailed": "读取服务器配置失败",
+			"serverSaved": "服务器配置已保存",
+			"serverSavedDescription": "服务器列表已经刷新。",
+			"serverSaveFailed": "保存配置失败",
+			"serverSaveFailedDescription": "请检查登录状态与字段。",
+			"copied": "已复制"
+		},
+		"achievements": {
+			"title": "成就",
+			"sections": {
+				"badges": "Badge 列表",
+				"createBadge": "新建 Badge",
+				"assign": "授予 Badge",
+				"verified": "认证配置"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "配色",
+				"assignmentCount": "授予数量",
+				"enabled": "启用",
+				"description": "描述",
+				"users": "用户",
+				"badges": "Badge",
+				"labels": "多语言名称",
+				"sortOrder": "排序"
+			},
+			"actions": {
+				"createBadge": "新建 Badge",
+				"assignBadges": "授予 Badge",
+				"saveVerified": "授予认证",
+				"removeVerified": "移除认证"
+			},
+			"notifications": {
+				"badgeCreated": "Badge 已创建",
+				"badgeCreateFailed": "创建 Badge 失败",
+				"badgesAssigned": "Badge 已授予",
+				"badgesAssignFailed": "授予 Badge 失败",
+				"verifiedSaved": "认证配置已保存",
+				"verifiedSaveFailed": "保存认证配置失败",
+				"badgeSaved": "Badge 已保存",
+				"badgeSaveFailed": "保存 Badge 失败"
+			},
+			"modal": {
+				"createBadge": "新建 Badge",
+				"editBadge": "编辑 Badge",
+				"assignBadges": "授予 Badge"
+			}
+		},
+		"sort": {
+			"field": "排序字段",
+			"direction": "排序方向",
+			"asc": "升序",
+			"desc": "降序",
+			"fields": {
+				"createdAt": "创建时间",
+				"updatedAt": "更新时间"
+			}
+		}
+	}
+}

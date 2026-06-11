@@ -1,5 +1,5 @@
-import { createError } from 'h3'
 import { prisma } from '../db/prisma'
+import { createApiError, createBadRequestError } from '../errors'
 import { ensureUserProfileDefaults } from './defaults'
 import {
 	toEditableProfile,
@@ -23,9 +23,9 @@ export const getEditableUserProfile = async (
 	const user = await findUserProfileById(userId)
 
 	if (!user) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'User not found',
+			code: 'USER_NOT_FOUND',
 		})
 	}
 
@@ -39,18 +39,18 @@ export const getPublicUserProfile = async (
 	const user = await findUserProfileByUsername(username.toLowerCase())
 
 	if (!user) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Profile not found',
+			code: 'PROFILE_NOT_FOUND',
 		})
 	}
 
 	const privacy = toPrivacySummary(user)
 
 	if (!privacy.publicProfile) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Profile not public',
+			code: 'PROFILE_NOT_PUBLIC',
 		})
 	}
 
@@ -63,27 +63,27 @@ export const getPublicMinecraftSummary = async (
 	const user = await findUserProfileByUsername(username.toLowerCase())
 
 	if (!user) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Profile not found',
+			code: 'PROFILE_NOT_FOUND',
 		})
 	}
 
 	const privacy = toPrivacySummary(user)
 
 	if (!privacy.publicProfile || !privacy.showMinecraftProfileLink) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Minecraft profile not public',
+			code: 'MINECRAFT_PROFILE_NOT_PUBLIC',
 		})
 	}
 
 	const summary = toMinecraftSummary(user)
 
 	if (!summary) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Minecraft profile not found',
+			code: 'MINECRAFT_PROFILE_NOT_FOUND',
 		})
 	}
 
@@ -97,10 +97,7 @@ export const checkUsernameAvailability = async (
 	const username = normalizeUsername(usernameInput)
 
 	if (!username) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'username is required',
-		})
+		throw createBadRequestError('USERNAME_REQUIRED')
 	}
 
 	const user = await prisma.user.findUnique({

@@ -1,0 +1,119 @@
+{
+	"routes": {
+		"entry": "门户",
+		"intro": "簡介",
+		"server": "服況",
+		"serverOverview": "服況",
+		"serverCharter": "伺服器章程",
+		"timeline": "歷程",
+		"overview": "概覽",
+		"about": "關於",
+		"links": "友情連結",
+		"partners": "社群夥伴",
+		"admin": "管理",
+		"adminOverview": "概覽",
+		"adminServers": "伺服器",
+		"adminUsers": "使用者",
+		"adminAttachments": "附件",
+		"login": "登入",
+		"register": "註冊",
+		"forgotPassword": "忘記密碼",
+		"resetPassword": "重設密碼",
+		"meProfile": "個人資料",
+		"meMinecraft": "Minecraft 档案",
+		"meSecurity": "帳號安全",
+		"meConnections": "連接與授權",
+		"adminAchievements": "成就"
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "更新于 {date}",
+			"stats": "{count} 字 / {minutes} 分鐘"
+		}
+	},
+	"common": {
+		"cancel": "取消"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "目前頁面",
+			"errorPage": "異常頁",
+			"back": "返回上級選單",
+			"backToParent": "返回上級選單",
+			"close": "關閉選單",
+			"currentGroup": "目前分組"
+		},
+		"theme": {
+			"switch": "切換主題模式",
+			"light": "淺色",
+			"dark": "深色",
+			"system": "跟隨系統"
+		},
+		"language": {
+			"switch": "切換語言"
+		},
+		"auth": {
+			"login": "登入"
+		},
+		"userMenu": {
+			"open": "開啟使用者選單",
+			"profile": "個人資料",
+			"minecraftAccounts": "Minecraft 档案",
+			"security": "帳號安全",
+			"connections": "連接與授權",
+			"admin": "後台管理",
+			"logout": "登出",
+			"logoutSuccessTitle": "登出成功"
+		}
+	},
+	"footer": {
+		"links": {
+			"wiki": "知識庫",
+			"docs": "文件庫",
+			"status": "狀態監控",
+			"friendLinks": "友情連結",
+			"communityPartners": "社群夥伴"
+		},
+		"records": {
+			"icp": "閩ICP備2023007345號-1",
+			"police": "閩公網安備35010202001677號"
+		},
+		"disclaimers": {
+			"trademark": "Minecraft 是 Mojang Studios 的註冊商標，氫氣工藝與 Mojang Studios、網易公司沒有從屬、授權或合作關係。",
+			"community": "Minecraft 是一款沙盒遊戲，氫氣工藝是面向該遊戲玩家的社群與遊戲伺服器，非化工、管線或工業工程專案。氫氣工藝不從事氫氣管線建設、化工生產相關服務。",
+			"fictionalNotice": "站內提及的城市、地區、組織、品牌及相關設定，除特別說明外，均為虛構內容，不指向任何現實機構或商業實體。"
+		},
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
+	},
+	"localeNotice": {
+		"title": "偵測到你的系統語言偏好為 {targetLanguage}",
+		"description": "目前頁面語言是 {currentLanguage}。要切換到 {targetLanguage} 嗎？",
+		"switchAction": "切換到 {targetLanguage}",
+		"keepAction": "暫不切換",
+		"localeNames": {
+			"zhCN": "简体中文",
+			"zhTW": "繁體中文",
+			"jaJP": "日本語",
+			"enUS": "English"
+		}
+	},
+	"error": {
+		"pageTitle": "錯誤頁面",
+		"headline": "頁面暫時無法訪問",
+		"fallbackDetail": "未知錯誤"
+	},
+	"security": {
+		"title": "帳號安全",
+		"empty": {
+			"title": "帳號安全設定暫未開放",
+			"description": "後續會在這裡管理密碼、登入裝置與安全驗證。"
+		}
+	},
+	"connections": {
+		"title": "連接與授權",
+		"empty": {
+			"title": "連接與授權暫未開放",
+			"description": "後續會在這裡管理第三方帳號、授權應用與綁定關係。"
+		}
+	}
+}

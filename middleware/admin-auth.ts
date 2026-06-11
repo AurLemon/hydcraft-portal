@@ -19,7 +19,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		return abortNavigation(
 			createError({
 				statusCode: 403,
-				statusMessage: 'Admin role required',
+				statusMessage: 'ADMIN_ROLE_REQUIRED',
+				message: 'ADMIN_ROLE_REQUIRED',
 			}),
 		)
 	}

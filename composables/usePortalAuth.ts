@@ -18,7 +18,6 @@ export interface PortalUserSummary {
 	bio: string | null
 	role: PortalUserRole
 	status: PortalUserStatus
-	title: string | null
 	lastLoginAt: string | null
 	createdAt: string
 	updatedAt: string

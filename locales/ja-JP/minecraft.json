@@ -1,0 +1,27 @@
+{
+	"minecraftAccounts": {
+		"title": "ゲームプロフィール",
+		"badges": {
+			"primary": "メイン"
+		},
+		"fields": {
+			"note": "メモ",
+			"primary": "メインアカウントにする",
+			"noUuid": "UUID はまだありません"
+		},
+		"actions": {
+			"save": "保存"
+		},
+		"empty": {
+			"title": "連携済み Minecraft アカウントはありません",
+			"description": "連携またはサーバーデータソースからインポートされたアカウントがここに表示されます。",
+			"loadFailed": "ゲームプロフィールの読み込みに失敗しました"
+		},
+		"notifications": {
+			"saved": "ゲームプロフィールを保存しました",
+			"savedDescription": "メモとメインアカウント状態を更新しました。",
+			"saveFailed": "ゲームプロフィールの保存に失敗しました",
+			"saveFailedDescription": "ログイン状態とアカウントの所有関係を確認してください。"
+		}
+	}
+}

@@ -1,0 +1,147 @@
+{
+	"profile": {
+		"title": "プロフィール",
+		"empty": {
+			"loadFailed": "プロフィールの読み込みに失敗しました"
+		},
+		"fields": {
+			"handle": "ユーザー名",
+			"username": "ユーザー名",
+			"displayName": "表示名",
+			"avatarUrl": "アバター URL",
+			"bio": "自己紹介",
+			"joinedAt": "参加日",
+			"location": "所在地",
+			"countryOrRegion": "国 / 地域",
+			"birthday": "誕生日",
+			"language": "言語",
+			"timezone": "タイムゾーン",
+			"autoTimezone": "タイムゾーンを自動検出",
+			"h2wikiPageName": "HydCraft Wiki 個人ページ",
+			"website": "個人サイト",
+			"publicEmail": "公開メール"
+		},
+		"actions": {
+			"save": "保存",
+			"viewPublicProfile": "公開プロフィールを見る",
+			"editPublicProfile": "公開プロフィールを編集",
+			"editCover": "カバーを編集"
+		},
+		"edit": {
+			"sections": {
+				"username": "ユーザー名",
+				"basic": "基本情報",
+				"preferences": "設定",
+				"social": "ソーシャルリンク",
+				"privacy": "公開情報"
+			},
+			"actions": {
+				"updateUsername": "ユーザー名を更新",
+				"updateProfile": "プロフィールを更新",
+				"copyHydrolineId": "Hydroline ID をコピー"
+			},
+			"hints": {
+				"usernameCooldown": "ユーザー名は 30 日に 1 回だけ変更できます。変更後、古いリンクは無効になるかリダイレクトされる場合があります。",
+				"languagePreference": "既定言語ルートに入ったとき、この設定を素早い切り替え先として使います。",
+				"publicEmail": "公開すると、このメールアドレスは他の人に見える可能性があります。"
+			}
+		},
+		"public": {
+			"sections": {
+				"about": "自己紹介",
+				"social": "ソーシャルリンク",
+				"minecraft": "Minecraft プロフィール"
+			},
+			"fields": {
+				"location": "所在地",
+				"joinedAt": "参加日",
+				"timezone": "タイムゾーン",
+				"minecraftName": "ゲーム名",
+				"currentServer": "現在のサーバー",
+				"onlineStatus": "オンライン状態"
+			},
+			"values": {
+				"defaultTimezone": "UTC+8（北京時間）"
+			},
+			"actions": {
+				"viewMinecraftProfile": "Minecraft プロフィールを見る"
+			},
+			"empty": {
+				"unavailable": "このプロフィールにはアクセスできません",
+				"bio": "このユーザーはまだ自己紹介を書いていません。",
+				"social": "公開ソーシャルリンクはまだありません。",
+				"minecraft": "公開 Minecraft プロフィールはまだありません。"
+			},
+			"social": {
+				"website": "個人サイト",
+				"publicEmail": "公開メール"
+			}
+		},
+		"badges": {
+			"joinedDays": "{days} 日前に参加",
+			"serverMember": "サーバーメンバー"
+		},
+		"media": {
+			"coverAlt": "{name} のカバー"
+		},
+		"status": {
+			"online": "オンライン",
+			"recentlyActive": "最近アクティブ",
+			"recentlyActiveWithDate": "最近アクティブ: {date}",
+			"offline": "オフライン"
+		},
+		"dateParts": {
+			"year": "年",
+			"month": "月",
+			"day": "日"
+		},
+		"options": {
+			"language": {
+				"ZH_CN": "简体中文",
+				"ZH_TW": "繁體中文",
+				"EN_US": "English",
+				"JA_JP": "日本語"
+			},
+			"country": {
+				"中国内地": "中国内地",
+				"中国香港": "中国香港",
+				"中国台湾": "中国台湾",
+				"中国澳门": "中国マカオ",
+				"海外地区": "海外地域"
+			}
+		},
+		"privacy": {
+			"publicProfile": "公開プロフィール",
+			"showHydrolineId": "Hydroline ID を表示",
+			"showJoinedAt": "参加日を表示",
+			"showLocation": "所在地を表示",
+			"showCountryOrRegion": "国 / 地域を表示",
+			"showBirthday": "誕生日を表示",
+			"showBadges": "バッジを表示",
+			"showBio": "自己紹介を表示",
+			"showMinecraftProfileLink": "Minecraft プロフィール入口を表示",
+			"showSocialLinks": "ソーシャルリンクを表示",
+			"showActivityStatus": "最近のアクティビティを表示",
+			"searchableInUserDirectory": "ユーザーディレクトリで検索可能にする",
+			"allowMinecraftProfileDiscovery": "Minecraft プロフィールからユーザーページを見つけられるようにする"
+		},
+		"notifications": {
+			"saved": "プロフィールを保存しました",
+			"savedDescription": "Header のユーザー情報を更新しました。",
+			"saveFailed": "プロフィールの保存に失敗しました",
+			"saveFailedDescription": "ログイン状態と入力内容を確認してください。",
+			"copied": "コピーしました",
+			"noChanges": "保存する変更はありません",
+			"imageSaveFailed": "プロフィール画像の保存に失敗しました",
+			"avatarUpdated": "アバターを更新しました",
+			"coverUpdated": "カバーを更新しました",
+			"preferencesSaved": "設定を保存しました",
+			"preferencesSaveFailed": "設定の保存に失敗しました",
+			"privacySaved": "公開情報を保存しました",
+			"privacySaveFailed": "公開情報の保存に失敗しました"
+		},
+		"verified": {
+			"text": "HydCraft 認証済みアカウント"
+		}
+	}
+}

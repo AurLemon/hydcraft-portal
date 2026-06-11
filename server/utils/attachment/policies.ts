@@ -1,4 +1,4 @@
-import { createError } from 'h3'
+import { createBadRequestError } from '../errors'
 import type { AttachmentPolicy, AttachmentPurpose } from './types'
 
 const IMAGE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -42,11 +42,7 @@ export const getAttachmentPolicy = (purpose: string): AttachmentPolicy => {
 	const policy = attachmentPolicies[purpose as AttachmentPurpose]
 
 	if (!policy) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'INVALID_CONTENT_TYPE',
-			message: '不支持的附件用途',
-		})
+		throw createBadRequestError('INVALID_ATTACHMENT_PURPOSE')
 	}
 
 	return policy

@@ -1,8 +1,8 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { createError } from 'h3'
 import type { PortalBridgeConfig, Prisma } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createApiError } from '../errors'
 import { decryptConfigValue } from '../security/encryption'
 import { ingestPortalBridgeEnvelope } from './ingestion'
 import {
@@ -49,9 +49,9 @@ class PortalBridgeConnection {
 		args?: Record<string, unknown>,
 	): string {
 		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-			throw createError({
+			throw createApiError({
 				statusCode: 409,
-				statusMessage: 'PortalBridge is not connected',
+				code: 'PORTAL_BRIDGE_NOT_CONNECTED',
 			})
 		}
 
@@ -289,9 +289,9 @@ class PortalBridgeManager {
 		const connection = this.connections.get(configId)
 
 		if (!connection) {
-			throw createError({
+			throw createApiError({
 				statusCode: 409,
-				statusMessage: 'PortalBridge is not running',
+				code: 'PORTAL_BRIDGE_NOT_RUNNING',
 			})
 		}
 

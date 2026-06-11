@@ -1,5 +1,6 @@
 import { prisma } from '../../../../utils/db/prisma'
 import { requireCurrentUser } from '../../../../utils/auth/session'
+import { createApiError, createBadRequestError } from '../../../../utils/errors'
 
 interface UpdateMinecraftAccountBody {
 	note?: string | null
@@ -24,10 +25,7 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<UpdateMinecraftAccountBody>(event)
 
 	if (!accountId) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'Minecraft account id is required',
-		})
+		throw createBadRequestError('MINECRAFT_ACCOUNT_ID_REQUIRED')
 	}
 
 	const account = await prisma.minecraftAccount.findFirst({
@@ -39,9 +37,9 @@ export default defineEventHandler(async (event) => {
 	})
 
 	if (!account) {
-		throw createError({
+		throw createApiError({
 			statusCode: 404,
-			statusMessage: 'Minecraft account not found',
+			code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
 		})
 	}
 

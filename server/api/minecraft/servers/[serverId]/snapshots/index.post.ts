@@ -1,6 +1,7 @@
 import type { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../../../../../utils/db/prisma'
 import { requireAdminUser } from '../../../../../utils/auth/session'
+import { createBadRequestError } from '../../../../../utils/errors'
 
 interface CreateServerSnapshotBody {
 	kind: string
@@ -28,10 +29,7 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<CreateServerSnapshotBody>(event)
 
 	if (!snapshotKinds.has(body.kind)) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'Invalid snapshot kind',
-		})
+		throw createBadRequestError('SNAPSHOT_KIND_INVALID')
 	}
 
 	const snapshot = await prisma.minecraftServerSnapshot.create({

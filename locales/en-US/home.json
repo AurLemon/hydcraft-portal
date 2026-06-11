@@ -1,0 +1,20 @@
+{
+	"home": {
+		"lead": "Build towers, lay rails, shape cities, and settle down. Why name a Minecraft server after chemistry? I have no idea either.",
+		"cards": {
+			"backgroundAlt": "{title} background",
+			"nitrogen": {
+				"description": "Current server season (1.20.1)"
+			},
+			"railway": {
+				"description": "Railway systems and transport networks"
+			},
+			"culture": {
+				"description": "Landmarks, events, and shared memories"
+			},
+			"cities": {
+				"description": "City planning and building clusters"
+			}
+		}
+	}
+}

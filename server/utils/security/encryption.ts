@@ -5,6 +5,7 @@ import {
 	randomBytes,
 	scryptSync,
 } from 'node:crypto'
+import { createApiError } from '../errors'
 
 const ALGORITHM = 'aes-256-gcm'
 const IV_BYTES = 12
@@ -14,10 +15,9 @@ const getEncryptionKey = (): ReturnType<typeof createSecretKey> => {
 	const secret = process.env.CONFIG_ENCRYPTION_KEY
 
 	if (!secret) {
-		throw createError({
+		throw createApiError({
 			statusCode: 500,
-			statusMessage:
-				'CONFIG_ENCRYPTION_KEY is required for encrypted config fields',
+			code: 'CONFIG_ENCRYPTION_KEY_MISSING',
 		})
 	}
 
@@ -55,9 +55,9 @@ export const decryptConfigValue = (
 	const [ivText, tagText, ciphertextText] = encrypted.split('.')
 
 	if (!ivText || !tagText || !ciphertextText) {
-		throw createError({
+		throw createApiError({
 			statusCode: 500,
-			statusMessage: 'Encrypted config value is malformed',
+			code: 'ENCRYPTED_CONFIG_MALFORMED',
 		})
 	}
 

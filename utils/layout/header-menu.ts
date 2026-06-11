@@ -28,6 +28,8 @@ export const mainHeaderMenuGroup: HeaderMenuGroup = {
 	parentKey: null,
 	items: [
 		{ key: 'entry', labelKey: 'routes.entry', to: '/' },
+		{ key: 'intro', labelKey: 'routes.intro', to: '/intro' },
+		{ key: 'server', labelKey: 'routes.server', to: '/server' },
 		{ key: 'timeline', labelKey: 'routes.timeline', to: '/timeline' },
 		{ key: 'about', labelKey: 'routes.about', to: '/about' },
 	],
@@ -86,6 +88,10 @@ export const headerMenuGroups: HeaderMenuGroup[] = [
 
 export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/': 'routes.entry',
+	'/intro': 'routes.intro',
+	'/server': 'routes.server',
+	'/server/overview': 'routes.serverOverview',
+	'/server/charter': 'routes.serverCharter',
 	'/timeline': 'routes.timeline',
 	'/story': 'routes.timeline',
 	'/overview': 'routes.overview',

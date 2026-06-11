@@ -1,0 +1,18 @@
+{
+	"content": {
+		"about": {
+			"title": "我们是什么?"
+		},
+		"timeline": {
+			"title": "氢气是怎么走到现在的?"
+		},
+		"charter": {
+			"title": "服务器章程"
+		},
+		"imageCarousel": {
+			"openPreview": "打开图片预览：{alt}",
+			"scrollLeft": "向左滚动图片",
+			"scrollRight": "向右滚动图片"
+		}
+	}
+}

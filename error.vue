@@ -16,13 +16,13 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const localePath = useLocalePath()
+const { getErrorMessage } = useApiError()
 
 const statusCode = computed(
 	() => props.error.statusCode ?? props.error.status ?? 500,
 )
 const statusDetail = computed(
-	() =>
-		props.error.statusText ?? props.error.message ?? t('error.fallbackDetail'),
+	() => getErrorMessage(props.error) || t('error.fallbackDetail'),
 )
 
 const handleBackHome = (): void => {

@@ -1,0 +1,18 @@
+{
+	"content": {
+		"about": {
+			"title": "我們是什麼?"
+		},
+		"timeline": {
+			"title": "氫氣是怎麼走到現在的?"
+		},
+		"charter": {
+			"title": "伺服器章程"
+		},
+		"imageCarousel": {
+			"openPreview": "打開圖片預覽：{alt}",
+			"scrollLeft": "向左捲動圖片",
+			"scrollRight": "向右捲動圖片"
+		}
+	}
+}

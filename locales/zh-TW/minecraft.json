@@ -1,0 +1,27 @@
+{
+	"minecraftAccounts": {
+		"title": "遊戲檔案",
+		"badges": {
+			"primary": "主帳號"
+		},
+		"fields": {
+			"note": "備註",
+			"primary": "設為主帳號",
+			"noUuid": "暫無 UUID"
+		},
+		"actions": {
+			"save": "儲存檔案"
+		},
+		"empty": {
+			"title": "尚未綁定 Minecraft 帳號",
+			"description": "完成綁定或從伺服器資料源匯入後，帳號會顯示在這裡。",
+			"loadFailed": "讀取遊戲檔案失敗"
+		},
+		"notifications": {
+			"saved": "遊戲檔案已儲存",
+			"savedDescription": "帳號備註與主帳號狀態已更新。",
+			"saveFailed": "儲存遊戲檔案失敗",
+			"saveFailedDescription": "請檢查登入狀態與帳號歸屬。"
+		}
+	}
+}

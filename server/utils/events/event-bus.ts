@@ -24,6 +24,12 @@ interface EventMap {
 		coverUrl: string | null
 		updatedAt: Date
 	}
+	'user.profile.attachment-replaced': {
+		userId: string
+		purpose: 'user-avatar' | 'user-cover'
+		activeAttachmentId: string | null
+		updatedAt: Date
+	}
 	'user.profile.username-changed': {
 		userId: string
 		previousUsername: string

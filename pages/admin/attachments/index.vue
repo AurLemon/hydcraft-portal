@@ -167,59 +167,85 @@
 					</div>
 
 					<div class="mt-6 grid gap-4 md:grid-cols-2">
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.id') }}</span>
 							<strong class="break-all font-mono text-xs">{{
 								selectedAttachment.id
 							}}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.app') }}</span>
 							<strong>{{ selectedAttachment.app }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.category') }}</span>
 							<strong>{{ selectedAttachment.category || '-' }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.purpose') }}</span>
 							<strong>{{ selectedAttachment.purpose }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.status') }}</span>
 							<strong>{{ selectedAttachment.status }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.visibility') }}</span>
 							<strong>{{ selectedAttachment.visibility }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.ownerType') }}</span>
 							<strong>{{ selectedAttachment.ownerType }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.ownerId') }}</span>
 							<strong>{{ selectedAttachment.ownerId || '-' }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.contentType') }}</span>
 							<strong>{{ selectedAttachment.contentType || '-' }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.sizeBytes') }}</span>
 							<strong>{{ selectedAttachment.sizeBytes ?? '-' }}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.createdById') }}</span>
 							<strong class="break-all font-mono text-xs">{{
 								selectedAttachment.createdById || '-'
 							}}</strong>
 						</div>
-						<div class="admin-detail">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.createdAt') }}</span>
 							<strong>{{ formatDate(selectedAttachment.createdAt) }}</strong>
 						</div>
-						<div class="admin-detail md:col-span-2">
+						<div
+							class="grid gap-1 rounded-lg border border-slate-200 p-3 md:col-span-2 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
+						>
 							<span>{{ t('admin.attachments.fields.objectKey') }}</span>
 							<strong class="break-all font-mono text-xs">{{
 								selectedAttachment.objectKey || '-'
@@ -541,31 +567,3 @@ const confirmDeleteAttachment = async (): Promise<void> => {
 	}
 }
 </script>
-
-<style scoped>
-.admin-detail {
-	display: grid;
-	gap: 0.25rem;
-	border-radius: 0.5rem;
-	border: 1px solid rgb(226 232 240);
-	padding: 0.75rem;
-}
-
-.admin-detail span {
-	font-size: 0.75rem;
-	color: rgb(100 116 139);
-}
-
-.admin-detail strong {
-	font-size: 0.875rem;
-	color: rgb(15 23 42);
-}
-
-:global(.dark) .admin-detail {
-	border-color: rgb(30 41 59);
-}
-
-:global(.dark) .admin-detail strong {
-	color: white;
-}
-</style>

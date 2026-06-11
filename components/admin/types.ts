@@ -1,3 +1,9 @@
+import type {
+	PrivacyKey,
+	ProfileLanguage,
+	TimezoneMode,
+} from '~/utils/profile-edit'
+
 export interface PortalBridgeSummary {
 	id: string
 	bridgeId: string
@@ -49,4 +55,72 @@ export interface MinecraftServersResponse {
 
 export interface MinecraftServerResponse {
 	server: MinecraftServerSummary
+}
+
+export type AdminUserRole = 'USER' | 'MEMBER' | 'ADMIN' | 'OWNER'
+export type AdminUserStatus = 'PENDING' | 'ACTIVE' | 'DISABLED' | 'BANNED'
+
+export interface AdminUser {
+	id: string
+	username: string
+	hydrolineId: string
+	displayName: string | null
+	email: string | null
+	avatarUrl: string | null
+	coverUrl: string | null
+	avatarAttachmentId: string | null
+	coverAttachmentId: string | null
+	bio: string | null
+	location: string | null
+	countryOrRegion: string | null
+	birthday: string | null
+	role: AdminUserRole
+	status: AdminUserStatus
+	statusReason: string | null
+	verified: boolean
+	verifiedTextZhCn: string | null
+	verifiedTextZhTw: string | null
+	verifiedTextEnUs: string | null
+	verifiedTextJaJp: string | null
+	createdAt: string
+	updatedAt: string
+	profile: {
+		h2wikiPageName: string | null
+		githubUsername: string | null
+		websiteUrl: string | null
+		bilibiliUrl: string | null
+		publicEmail: string | null
+	} | null
+	preferences: {
+		language: ProfileLanguage
+		timezoneMode: TimezoneMode
+		timezone: string | null
+	} | null
+	privacy: Record<PrivacyKey, boolean> | null
+	badges: Array<{
+		id: string
+		badgeId: string | null
+		label: string | null
+		color: string | null
+		sortOrder: number
+	}>
+}
+
+export interface AdminUsersResponse {
+	items: AdminUser[]
+	page: number
+	pageSize: number
+	total: number
+	pageCount: number
+}
+
+export interface AdminBadge {
+	id: string
+	labelZhCn: string
+	color: string
+	enabled: boolean
+}
+
+export interface AdminAchievementsResponse {
+	badges: AdminBadge[]
 }

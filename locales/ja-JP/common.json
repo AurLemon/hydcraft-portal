@@ -1,0 +1,119 @@
+{
+	"routes": {
+		"entry": "ポータル",
+		"intro": "紹介",
+		"server": "サーバー",
+		"serverOverview": "サーバー",
+		"serverCharter": "サーバー規約",
+		"timeline": "歩み",
+		"overview": "概要",
+		"about": "私たちについて",
+		"links": "リンク",
+		"partners": "パートナー",
+		"admin": "管理",
+		"adminOverview": "概要",
+		"adminServers": "サーバー",
+		"adminUsers": "ユーザー",
+		"adminAttachments": "添付ファイル",
+		"login": "ログイン",
+		"register": "登録",
+		"forgotPassword": "パスワードを忘れた",
+		"resetPassword": "パスワード再設定",
+		"meProfile": "プロフィール",
+		"meMinecraft": "ゲームプロフィール",
+		"meSecurity": "セキュリティ",
+		"meConnections": "連携と認可",
+		"adminAchievements": "実績"
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "{date} 更新",
+			"stats": "{count} 字 / {minutes} 分"
+		}
+	},
+	"common": {
+		"cancel": "キャンセル"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "現在のページ",
+			"errorPage": "異常ページ",
+			"back": "上位メニューに戻る",
+			"backToParent": "上位メニューに戻る",
+			"close": "メニューを閉じる",
+			"currentGroup": "現在のグループ"
+		},
+		"theme": {
+			"switch": "テーマを切り替える",
+			"light": "ライト",
+			"dark": "ダーク",
+			"system": "システム"
+		},
+		"language": {
+			"switch": "言語を切り替える"
+		},
+		"auth": {
+			"login": "ログイン"
+		},
+		"userMenu": {
+			"open": "ユーザーメニューを開く",
+			"profile": "プロフィール",
+			"minecraftAccounts": "ゲームプロフィール",
+			"security": "セキュリティ",
+			"connections": "連携と認可",
+			"admin": "管理画面",
+			"logout": "ログアウト",
+			"logoutSuccessTitle": "ログアウトしました"
+		}
+	},
+	"footer": {
+		"links": {
+			"wiki": "Wiki",
+			"docs": "Docs",
+			"status": "ステータス",
+			"friendLinks": "リンク",
+			"communityPartners": "パートナー"
+		},
+		"records": {
+			"icp": "閩ICP備2023007345號-1",
+			"police": "閩公網安備35010202001677號"
+		},
+		"disclaimers": {
+			"trademark": "Minecraft は Mojang Studios の登録商標です。HydCraft は Mojang Studios および NetEase と提携・認可・協力関係にありません。",
+			"community": "Minecraft はサンドボックスゲームです。HydCraft はそのプレイヤー向けのコミュニティ兼ゲームサーバーであり、化学工業、パイプライン、工業エンジニアリングのプロジェクトではありません。HydCraft は水素パイプライン建設や化学生産に関するサービスを提供していません。",
+			"fictionalNotice": "サイト内に登場する都市、地域、組織、ブランドおよび関連設定は、特記がない限りすべて架空のものであり、現実の機関や商業主体を指すものではありません。"
+		},
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
+	},
+	"localeNotice": {
+		"title": "お使いのシステム言語は {targetLanguage} のようです",
+		"description": "現在のページ言語は {currentLanguage} です。{targetLanguage} に切り替えますか？",
+		"switchAction": "{targetLanguage} に切り替える",
+		"keepAction": "このままにする",
+		"localeNames": {
+			"zhCN": "简体中文",
+			"zhTW": "繁體中文",
+			"jaJP": "日本語",
+			"enUS": "English"
+		}
+	},
+	"error": {
+		"pageTitle": "エラーページ",
+		"headline": "このページは一時的にアクセスできません",
+		"fallbackDetail": "不明なエラー"
+	},
+	"security": {
+		"title": "セキュリティ",
+		"empty": {
+			"title": "セキュリティ設定はまだ利用できません",
+			"description": "パスワード、ログイン端末、認証設定は今後ここで管理できます。"
+		}
+	},
+	"connections": {
+		"title": "連携と認可",
+		"empty": {
+			"title": "連携と認可はまだ利用できません",
+			"description": "外部アカウント、認可済みアプリ、連携 ID は今後ここで管理できます。"
+		}
+	}
+}

@@ -1,0 +1,147 @@
+{
+	"profile": {
+		"title": "Profile",
+		"empty": {
+			"loadFailed": "Failed to load profile"
+		},
+		"fields": {
+			"handle": "Handle",
+			"username": "Username",
+			"displayName": "Display name",
+			"avatarUrl": "Avatar URL",
+			"bio": "Bio",
+			"joinedAt": "Joined at",
+			"location": "Location",
+			"countryOrRegion": "Country / Region",
+			"birthday": "Birthday",
+			"language": "Language",
+			"timezone": "Timezone",
+			"autoTimezone": "Detect timezone automatically",
+			"h2wikiPageName": "HydCraft Wiki profile page",
+			"website": "Website",
+			"publicEmail": "Public email"
+		},
+		"actions": {
+			"save": "Save Profile",
+			"viewPublicProfile": "View public profile",
+			"editPublicProfile": "Edit public profile",
+			"editCover": "Edit cover"
+		},
+		"edit": {
+			"sections": {
+				"username": "Username",
+				"basic": "Basic info",
+				"preferences": "Preferences",
+				"social": "Social links",
+				"privacy": "Public info"
+			},
+			"actions": {
+				"updateUsername": "Update username",
+				"updateProfile": "Update profile",
+				"copyHydrolineId": "Copy Hydroline ID"
+			},
+			"hints": {
+				"usernameCooldown": "You can change your username once every 30 days. Old links may stop working or redirect after the change.",
+				"languagePreference": "Your preferred language is used as the quick target when you enter a default-language route.",
+				"publicEmail": "If shown publicly, this email may be visible to other people."
+			}
+		},
+		"public": {
+			"sections": {
+				"about": "Bio",
+				"social": "Social links",
+				"minecraft": "Minecraft profile"
+			},
+			"fields": {
+				"location": "Location",
+				"joinedAt": "Joined at",
+				"timezone": "Timezone",
+				"minecraftName": "Game name",
+				"currentServer": "Current server",
+				"onlineStatus": "Online status"
+			},
+			"values": {
+				"defaultTimezone": "UTC+8 (Beijing Time)"
+			},
+			"actions": {
+				"viewMinecraftProfile": "View Minecraft profile"
+			},
+			"empty": {
+				"unavailable": "This profile is not accessible",
+				"bio": "This user has not added a bio yet.",
+				"social": "No public social links yet.",
+				"minecraft": "No public Minecraft profile yet."
+			},
+			"social": {
+				"website": "Website",
+				"publicEmail": "Public email"
+			}
+		},
+		"badges": {
+			"joinedDays": "Joined for {days} days",
+			"serverMember": "Server Member"
+		},
+		"media": {
+			"coverAlt": "{name}'s cover"
+		},
+		"status": {
+			"online": "Online",
+			"recentlyActive": "Recently active",
+			"recentlyActiveWithDate": "Recently active: {date}",
+			"offline": "Offline"
+		},
+		"dateParts": {
+			"year": "Year",
+			"month": "Month",
+			"day": "Day"
+		},
+		"options": {
+			"language": {
+				"ZH_CN": "简体中文",
+				"ZH_TW": "繁體中文",
+				"EN_US": "English",
+				"JA_JP": "日本語"
+			},
+			"country": {
+				"中国内地": "Mainland China",
+				"中国香港": "Hong Kong, China",
+				"中国台湾": "Taiwan, China",
+				"中国澳门": "Macau, China",
+				"海外地区": "Overseas regions"
+			}
+		},
+		"privacy": {
+			"publicProfile": "Public profile",
+			"showHydrolineId": "Show Hydroline ID",
+			"showJoinedAt": "Show joined date",
+			"showLocation": "Show location",
+			"showCountryOrRegion": "Show country / region",
+			"showBirthday": "Show birthday",
+			"showBadges": "Show badges",
+			"showBio": "Show bio",
+			"showMinecraftProfileLink": "Show Minecraft profile entry",
+			"showSocialLinks": "Show social links",
+			"showActivityStatus": "Show recent activity",
+			"searchableInUserDirectory": "Allow search in user directory",
+			"allowMinecraftProfileDiscovery": "Allow finding this profile from Minecraft profiles"
+		},
+		"notifications": {
+			"saved": "Profile saved",
+			"savedDescription": "The Header user state has been updated.",
+			"saveFailed": "Failed to save profile",
+			"saveFailedDescription": "Check your login status and fields.",
+			"copied": "Copied",
+			"noChanges": "No changes to save",
+			"imageSaveFailed": "Failed to save profile image",
+			"avatarUpdated": "Avatar updated",
+			"coverUpdated": "Cover updated",
+			"preferencesSaved": "Preferences saved",
+			"preferencesSaveFailed": "Failed to save preferences",
+			"privacySaved": "Visibility saved",
+			"privacySaveFailed": "Failed to save visibility"
+		},
+		"verified": {
+			"text": "Verified HydCraft account"
+		}
+	}
+}

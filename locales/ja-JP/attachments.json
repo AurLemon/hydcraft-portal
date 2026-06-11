@@ -1,0 +1,20 @@
+{
+	"attachments": {
+		"upload": {
+			"button": "画像をアップロード",
+			"invalidType": "対応していないファイル形式です",
+			"fileTooLarge": "ファイルサイズが上限を超えています",
+			"cropRequired": "先に画像を切り抜いてください",
+			"policyUnavailable": "アップロード設定を取得できません",
+			"uploaded": "画像をアップロードしました",
+			"failed": "アップロードに失敗しました"
+		},
+		"crop": {
+			"title": "画像を切り抜く",
+			"avatarTitle": "アバターを切り抜く",
+			"coverTitle": "カバーを切り抜く",
+			"cancel": "切り抜きをキャンセル",
+			"confirm": "切り抜きを確定"
+		}
+	}
+}

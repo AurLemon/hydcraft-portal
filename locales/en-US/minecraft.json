@@ -1,0 +1,27 @@
+{
+	"minecraftAccounts": {
+		"title": "Minecraft Accounts",
+		"badges": {
+			"primary": "Primary"
+		},
+		"fields": {
+			"note": "Note",
+			"primary": "Set as primary account",
+			"noUuid": "No UUID yet"
+		},
+		"actions": {
+			"save": "Save Account"
+		},
+		"empty": {
+			"title": "No linked Minecraft accounts",
+			"description": "Linked or imported server accounts will appear here.",
+			"loadFailed": "Failed to load Minecraft accounts"
+		},
+		"notifications": {
+			"saved": "Minecraft account saved",
+			"savedDescription": "The note and primary account state have been updated.",
+			"saveFailed": "Failed to save Minecraft account",
+			"saveFailedDescription": "Check your login status and account ownership."
+		}
+	}
+}

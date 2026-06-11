@@ -1,0 +1,281 @@
+{
+	"admin": {
+		"actions": {
+			"reset": "Reset filters",
+			"cancel": "Cancel",
+			"save": "Save",
+			"copyUrl": "Copy URL",
+			"delete": "Delete"
+		},
+		"filters": {
+			"all": "All"
+		},
+		"pagination": {
+			"summary": "Page {page} / {pageCount}, {total} items",
+			"first": "First page",
+			"previous": "Previous page",
+			"next": "Next page",
+			"last": "Last page",
+			"pageSize": "{size} / page"
+		},
+		"overview": {
+			"title": "Portal Overview",
+			"loading": "Loading Portal configuration...",
+			"metrics": {
+				"servers": "Servers",
+				"users": "Users",
+				"uptimeDays": "Uptime days",
+				"userDelta": "Since yesterday {count}",
+				"runningSince": "Running since {date}",
+				"runningSinceUnavailable": "Start date not recorded",
+				"unavailable": "Not wired"
+			},
+			"status": {
+				"normal": "All normal",
+				"error": "Error",
+				"inactive": "Disabled / not configured"
+			},
+			"sections": {
+				"serviceStatus": "Service Status",
+				"recentActivity": "Recent Activity",
+				"quickActions": "Quick Actions"
+			},
+			"actions": {
+				"viewAll": "View all",
+				"viewAllActivities": "View all activities"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL Database",
+					"description": "Portal primary database"
+				},
+				"authme": {
+					"label": "AuthMe Database",
+					"description": "Enabled {enabled} / configured {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms Database",
+					"description": "Enabled {enabled} / configured {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "Enabled {enabled} / configured {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "Not implemented",
+				"placeholderDescription": "Recent activity will appear after audit logs are wired."
+			},
+			"quickActions": {
+				"servers": "Go to servers",
+				"serversDescription": "Manage server access and data sources",
+				"users": "Open users",
+				"usersDescription": "View and manage Portal users",
+				"attachments": "Open attachments",
+				"attachmentsDescription": "Review avatar and cover assets"
+			}
+		},
+		"servers": {
+			"title": "Servers",
+			"create": "New Server",
+			"loading": "Loading server configuration...",
+			"empty": {
+				"title": "No server configuration yet",
+				"description": "Create a server before configuring PortalBridge, AuthMe, and LuckPerms."
+			}
+		},
+		"users": {
+			"title": "Users",
+			"filters": {
+				"search": "Search username, email, or Hydroline ID"
+			},
+			"sections": {
+				"identity": "Identity & Status",
+				"profile": "Profile",
+				"attachments": "Avatar & Cover",
+				"preferences": "Preferences",
+				"social": "Social Links",
+				"privacy": "Visibility",
+				"achievements": "Achievements and verification"
+			},
+			"fields": {
+				"user": "User",
+				"username": "Username",
+				"displayName": "Display name",
+				"hydrolineId": "Hydroline ID",
+				"role": "Role",
+				"status": "Status",
+				"statusReason": "Status note",
+				"bio": "Bio",
+				"location": "Location",
+				"countryOrRegion": "Country / Region",
+				"birthday": "Birthday",
+				"language": "Language",
+				"timezoneMode": "Timezone mode",
+				"timezone": "Timezone",
+				"websiteUrl": "Website",
+				"publicEmail": "Public email",
+				"avatarAttachmentId": "Avatar attachment ID",
+				"coverAttachmentId": "Cover attachment ID",
+				"avatarUrl": "Avatar URL",
+				"coverUrl": "Cover URL",
+				"createdAt": "Joined at",
+				"verified": "Verified",
+				"badges": "Badges"
+			},
+			"notifications": {
+				"saved": "User profile saved",
+				"saveFailed": "Failed to save user profile"
+			},
+			"actions": {
+				"resetAvatar": "Reset avatar",
+				"resetCover": "Reset cover",
+				"uploadAvatar": "Upload avatar",
+				"uploadCover": "Upload cover",
+				"regenerateHydrolineId": "Regenerate"
+			},
+			"media": {
+				"avatarEmpty": "No avatar URL",
+				"coverEmpty": "No cover URL",
+				"avatarReset": "Avatar will reset after saving",
+				"coverReset": "Cover will reset after saving"
+			}
+		},
+		"attachments": {
+			"title": "Attachments",
+			"filters": {
+				"search": "Search attachment ID, owner, or object key",
+				"app": "App",
+				"category": "Category",
+				"purpose": "Purpose",
+				"status": "Status",
+				"visibility": "Visibility"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "App",
+				"category": "Category",
+				"purpose": "Purpose",
+				"status": "Status",
+				"visibility": "Visibility",
+				"owner": "Owner",
+				"ownerType": "Owner type",
+				"ownerId": "Owner ID",
+				"contentType": "Content Type",
+				"sizeBytes": "Size",
+				"createdById": "Created by ID",
+				"objectKey": "Object Key",
+				"createdAt": "Created at"
+			},
+			"modal": {
+				"title": "Attachment Details",
+				"variants": "Variants",
+				"privateUrlHidden": "Public URL hidden for private attachments"
+			},
+			"deleteConfirm": {
+				"title": "Delete attachment",
+				"description": "This marks the attachment as deleted and will try to delete image variants from object storage."
+			},
+			"notifications": {
+				"deleted": "Attachment marked as deleted",
+				"deleteFailed": "Failed to delete attachment"
+			}
+		},
+		"serverConfig": {
+			"createEyebrow": "New Server",
+			"title": "Server Access Configuration",
+			"sections": {
+				"basic": "Server Basic Info"
+			},
+			"fields": {
+				"serverId": "Server ID",
+				"code": "Code",
+				"name": "Name",
+				"sortOrder": "Sort order",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "Description",
+				"enabled": "Enable this server",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "Enable Bridge connection"
+			},
+			"placeholders": {
+				"keepSecret": "Leave blank to keep unchanged"
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"save": "Save Configuration"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "Enable data source"
+		},
+		"notifications": {
+			"overviewLoadFailed": "Failed to load overview",
+			"serversLoadFailed": "Failed to load server configuration",
+			"serverSaved": "Server configuration saved",
+			"serverSavedDescription": "The server list has been refreshed.",
+			"serverSaveFailed": "Failed to save configuration",
+			"serverSaveFailedDescription": "Check your login status and fields.",
+			"copied": "Copied"
+		},
+		"achievements": {
+			"title": "Achievements",
+			"sections": {
+				"badges": "Badges",
+				"createBadge": "Create badge",
+				"assign": "Grant badges",
+				"verified": "Verification"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "Color",
+				"assignmentCount": "Granted",
+				"enabled": "Enabled",
+				"description": "Description",
+				"users": "Users",
+				"badges": "Badges",
+				"labels": "Localized names",
+				"sortOrder": "Order"
+			},
+			"actions": {
+				"createBadge": "Create badge",
+				"assignBadges": "Grant badges",
+				"saveVerified": "Grant verified",
+				"removeVerified": "Remove verified"
+			},
+			"notifications": {
+				"badgeCreated": "Badge created",
+				"badgeCreateFailed": "Failed to create badge",
+				"badgesAssigned": "Badges granted",
+				"badgesAssignFailed": "Failed to grant badges",
+				"verifiedSaved": "Verification saved",
+				"verifiedSaveFailed": "Failed to save verification",
+				"badgeSaved": "Badge saved",
+				"badgeSaveFailed": "Failed to save badge"
+			},
+			"modal": {
+				"createBadge": "Create badge",
+				"editBadge": "Edit badge",
+				"assignBadges": "Grant badges"
+			}
+		},
+		"sort": {
+			"field": "Sort field",
+			"direction": "Direction",
+			"asc": "Ascending",
+			"desc": "Descending",
+			"fields": {
+				"createdAt": "Created at",
+				"updatedAt": "Updated at"
+			}
+		}
+	}
+}

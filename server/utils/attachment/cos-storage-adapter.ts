@@ -1,5 +1,5 @@
 import COS from 'cos-nodejs-sdk-v5'
-import { createError } from 'h3'
+import { createApiError } from '../errors'
 import type { StorageAdapter } from './storage-adapter'
 import type { StorageProfileName, StorageProfiles } from './types'
 
@@ -12,10 +12,12 @@ interface CosStorageAdapterOptions {
 
 const requireConfig = (value: string, key: string): string => {
 	if (!value) {
-		throw createError({
+		throw createApiError({
 			statusCode: 500,
-			statusMessage: 'COS_CONFIG_MISSING',
-			message: `缺少 COS 配置：${key}`,
+			code: 'COS_CONFIG_MISSING',
+			data: {
+				key,
+			},
 		})
 	}
 
@@ -86,10 +88,9 @@ export class CosStorageAdapter implements StorageAdapter {
 		const storageProfile = this.getProfile(input.profile)
 
 		if (!storageProfile.publicBaseUrl) {
-			throw createError({
+			throw createApiError({
 				statusCode: 500,
-				statusMessage: 'COS_PUBLIC_BASE_URL_MISSING',
-				message: '当前存储 profile 没有公开访问 URL',
+				code: 'COS_PUBLIC_BASE_URL_MISSING',
 			})
 		}
 

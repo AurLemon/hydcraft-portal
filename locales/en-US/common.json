@@ -1,0 +1,119 @@
+{
+	"routes": {
+		"entry": "Portal",
+		"intro": "Intro",
+		"server": "Server",
+		"serverOverview": "Server",
+		"serverCharter": "Server Charter",
+		"timeline": "Timeline",
+		"overview": "Overview",
+		"about": "About",
+		"links": "Links",
+		"partners": "Partners",
+		"admin": "Manage",
+		"adminOverview": "Overview",
+		"adminServers": "Servers",
+		"adminUsers": "Users",
+		"adminAttachments": "Attachments",
+		"login": "Log In",
+		"register": "Register",
+		"forgotPassword": "Forgot Password",
+		"resetPassword": "Reset Password",
+		"meProfile": "Profile",
+		"meMinecraft": "Minecraft Profiles",
+		"meSecurity": "Security",
+		"meConnections": "Connections",
+		"adminAchievements": "Achievements"
+	},
+	"main": {
+		"contentFooter": {
+			"updatedAt": "Updated at {date}",
+			"stats": "{count} words / {minutes} min"
+		}
+	},
+	"common": {
+		"cancel": "Cancel"
+	},
+	"header": {
+		"nav": {
+			"currentPage": "Current Page",
+			"errorPage": "Error Page",
+			"back": "Back to parent menu",
+			"backToParent": "Back to parent menu",
+			"close": "Close menu",
+			"currentGroup": "Current group"
+		},
+		"theme": {
+			"switch": "Switch theme mode",
+			"light": "Light",
+			"dark": "Dark",
+			"system": "System"
+		},
+		"language": {
+			"switch": "Switch language"
+		},
+		"auth": {
+			"login": "Log In"
+		},
+		"userMenu": {
+			"open": "Open user menu",
+			"profile": "Profile",
+			"minecraftAccounts": "Minecraft Accounts",
+			"security": "Security",
+			"connections": "Connections",
+			"admin": "Admin",
+			"logout": "Log Out",
+			"logoutSuccessTitle": "Logged out"
+		}
+	},
+	"footer": {
+		"links": {
+			"wiki": "Wiki",
+			"docs": "Docs",
+			"status": "Status",
+			"friendLinks": "Links",
+			"communityPartners": "Partners"
+		},
+		"records": {
+			"icp": "ICP License",
+			"police": "PSB License"
+		},
+		"disclaimers": {
+			"trademark": "Minecraft is a registered trademark of Mojang Studios. HydCraft is not affiliated, authorized, or partnered with Mojang Studios or NetEase.",
+			"community": "Minecraft is a sandbox game. HydCraft is a community and game server for Minecraft players, not a chemical, pipeline, or industrial engineering project. HydCraft does not provide hydrogen pipeline construction, chemical production, or related services.",
+			"fictionalNotice": "Cities, regions, organizations, brands, and related settings mentioned on the site are fictional unless otherwise stated, and do not refer to any real-world institution or commercial entity."
+		},
+		"copyright": "Copyright © 2018 — {year} HydCraft. All Rights Reserved."
+	},
+	"localeNotice": {
+		"title": "Your system language looks like {targetLanguage}",
+		"description": "This page is currently in {currentLanguage}. Switch to {targetLanguage}?",
+		"switchAction": "Switch to {targetLanguage}",
+		"keepAction": "Keep current language",
+		"localeNames": {
+			"zhCN": "Simplified Chinese",
+			"zhTW": "Traditional Chinese",
+			"jaJP": "Japanese",
+			"enUS": "English"
+		}
+	},
+	"error": {
+		"pageTitle": "Error Page",
+		"headline": "This page is temporarily unavailable",
+		"fallbackDetail": "Unknown error"
+	},
+	"security": {
+		"title": "Security",
+		"empty": {
+			"title": "Security settings are not available yet",
+			"description": "Passwords, signed-in devices, and verification settings will be managed here later."
+		}
+	},
+	"connections": {
+		"title": "Connections",
+		"empty": {
+			"title": "Connections are not available yet",
+			"description": "Third-party accounts, authorized apps, and linked identities will be managed here later."
+		}
+	}
+}

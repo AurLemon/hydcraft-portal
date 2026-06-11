@@ -3,6 +3,7 @@ import type {
 	ServerPlayerIdentityEvidenceSource,
 } from '~/generated/prisma/client'
 import { requireAdminUser } from '../../../../../utils/auth/session'
+import { createBadRequestError } from '../../../../../utils/errors'
 import { createServerPlayerIdentityEvidence } from '../../../../../utils/minecraft/identity-evidence'
 
 interface CreateIdentityEvidenceBody {
@@ -28,10 +29,7 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<CreateIdentityEvidenceBody>(event)
 
 	if (!evidenceSources.has(body.source)) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: 'Invalid evidence source',
-		})
+		throw createBadRequestError('IDENTITY_EVIDENCE_SOURCE_INVALID')
 	}
 
 	const evidence = await createServerPlayerIdentityEvidence({

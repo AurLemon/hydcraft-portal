@@ -18,7 +18,6 @@ model User {
   role               UserRole   @default(USER)
   status             UserStatus @default(ACTIVE)
   statusReason       String?
-  title              String?
   verified           Boolean    @default(false)
   verifiedTextZhCn   String?
   verifiedTextZhTw   String?

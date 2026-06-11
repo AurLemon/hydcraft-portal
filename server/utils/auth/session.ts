@@ -1,5 +1,4 @@
 import {
-	createError,
 	deleteCookie,
 	getCookie,
 	getHeader,
@@ -15,6 +14,7 @@ import type {
 	UserStatus,
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createApiError } from '../errors'
 import { signAuthToken, verifyAuthToken } from './jwt'
 
 export interface UserSummary {
@@ -29,7 +29,6 @@ export interface UserSummary {
 	bio: string | null
 	role: UserRole
 	status: UserStatus
-	title: string | null
 	lastLoginAt: Date | null
 	createdAt: Date
 	updatedAt: Date
@@ -68,7 +67,6 @@ export const toUserSummary = (user: UserForSummary): UserSummary => ({
 	bio: user.bio,
 	role: user.role,
 	status: user.status,
-	title: user.title,
 	lastLoginAt: user.lastLoginAt,
 	createdAt: user.createdAt,
 	updatedAt: user.updatedAt,
@@ -199,9 +197,9 @@ export const rotateRefreshToken = async (
 	const refreshToken = getRefreshTokenFromEvent(event)
 
 	if (!refreshToken) {
-		throw createError({
+		throw createApiError({
 			statusCode: 401,
-			statusMessage: 'Refresh token required',
+			code: 'REFRESH_TOKEN_REQUIRED',
 		})
 	}
 
@@ -229,9 +227,9 @@ export const rotateRefreshToken = async (
 		session.user.status !== 'ACTIVE'
 	) {
 		clearAuthCookies(event)
-		throw createError({
+		throw createApiError({
 			statusCode: 401,
-			statusMessage: 'Refresh token expired',
+			code: 'REFRESH_TOKEN_EXPIRED',
 		})
 	}
 
@@ -258,9 +256,9 @@ export const requireCurrentUser = async (
 	const token = getAuthTokenFromEvent(event)
 
 	if (!token) {
-		throw createError({
+		throw createApiError({
 			statusCode: 401,
-			statusMessage: 'Authentication required',
+			code: 'AUTHENTICATION_REQUIRED',
 		})
 	}
 
@@ -279,9 +277,9 @@ export const requireCurrentUser = async (
 	})
 
 	if (!user || user.status !== 'ACTIVE') {
-		throw createError({
+		throw createApiError({
 			statusCode: 401,
-			statusMessage: 'Authentication required',
+			code: 'AUTHENTICATION_REQUIRED',
 		})
 	}
 
@@ -292,7 +290,7 @@ export const requireAdminUser = async (event: H3Event): Promise<User> => {
 	const user = await requireCurrentUser(event)
 
 	if (user.role !== 'ADMIN' && user.role !== 'OWNER') {
-		throw createError({ statusCode: 403, statusMessage: 'Admin role required' })
+		throw createApiError({ statusCode: 403, code: 'ADMIN_ROLE_REQUIRED' })
 	}
 
 	return user

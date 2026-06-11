@@ -1,5 +1,5 @@
-import { createError } from 'h3'
 import { prisma } from '../db/prisma'
+import { createApiError } from '../errors'
 import type { UserProfilePrivacySummary } from './types'
 
 export const defaultProfilePrivacy: UserProfilePrivacySummary = {
@@ -43,9 +43,9 @@ export const createUniqueHydrolineId = async (): Promise<string> => {
 		}
 	}
 
-	throw createError({
+	throw createApiError({
 		statusCode: 500,
-		statusMessage: 'Unable to create Hydroline ID',
+		code: 'HYDROLINE_ID_CREATE_FAILED',
 	})
 }
 

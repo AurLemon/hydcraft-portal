@@ -1,0 +1,281 @@
+{
+	"admin": {
+		"actions": {
+			"reset": "フィルターをリセット",
+			"cancel": "キャンセル",
+			"save": "保存",
+			"copyUrl": "URL をコピー",
+			"delete": "削除"
+		},
+		"filters": {
+			"all": "すべて"
+		},
+		"pagination": {
+			"summary": "{page} / {pageCount} ページ、全 {total} 件",
+			"first": "最初のページ",
+			"previous": "前のページ",
+			"next": "次のページ",
+			"last": "最後のページ",
+			"pageSize": "{size} / ページ"
+		},
+		"overview": {
+			"title": "Portal 概要",
+			"loading": "Portal 設定を読み込んでいます...",
+			"metrics": {
+				"servers": "サーバー",
+				"users": "ユーザー",
+				"uptimeDays": "稼働日数",
+				"userDelta": "昨日比 {count}",
+				"runningSince": "{date} から稼働中",
+				"runningSinceUnavailable": "開始日は未記録です",
+				"unavailable": "未接続"
+			},
+			"status": {
+				"normal": "すべて正常",
+				"error": "エラー",
+				"inactive": "無効 / 未設定"
+			},
+			"sections": {
+				"serviceStatus": "サービス状態",
+				"recentActivity": "最近の活動",
+				"quickActions": "クイック操作"
+			},
+			"actions": {
+				"viewAll": "すべて表示",
+				"viewAllActivities": "すべての活動を表示"
+			},
+			"services": {
+				"postgresql": {
+					"label": "PostgreSQL データベース",
+					"description": "Portal メインデータベース"
+				},
+				"authme": {
+					"label": "AuthMe データベース",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				},
+				"luckperms": {
+					"label": "LuckPerms データベース",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				},
+				"portalBridge": {
+					"label": "PortalBridge",
+					"description": "有効 {enabled} / 設定済み {configured}"
+				}
+			},
+			"audit": {
+				"placeholderTitle": "未実装",
+				"placeholderDescription": "Audit ログ接続後に最近の活動を表示します。"
+			},
+			"quickActions": {
+				"servers": "サーバーページへ移動",
+				"serversDescription": "サーバー接続とデータソース設定を管理",
+				"users": "ユーザーを開く",
+				"usersDescription": "Portal ユーザーを表示・管理",
+				"attachments": "添付ファイルを開く",
+				"attachmentsDescription": "アバターとカバー画像を確認"
+			}
+		},
+		"servers": {
+			"title": "サーバー",
+			"create": "サーバーを追加",
+			"loading": "サーバー設定を読み込んでいます...",
+			"empty": {
+				"title": "サーバー設定はまだありません",
+				"description": "サーバーを追加してから PortalBridge、AuthMe、LuckPerms を設定します。"
+			}
+		},
+		"users": {
+			"title": "ユーザー",
+			"filters": {
+				"search": "ユーザー名、メール、Hydroline ID を検索"
+			},
+			"sections": {
+				"identity": "識別情報と状態",
+				"profile": "プロフィール",
+				"attachments": "アバターとカバー",
+				"preferences": "設定",
+				"social": "ソーシャルリンク",
+				"privacy": "公開情報",
+				"achievements": "実績と認証"
+			},
+			"fields": {
+				"user": "ユーザー",
+				"username": "ユーザー名",
+				"displayName": "表示名",
+				"hydrolineId": "Hydroline ID",
+				"role": "ロール",
+				"status": "状態",
+				"statusReason": "状態メモ",
+				"bio": "自己紹介",
+				"location": "所在地",
+				"countryOrRegion": "国 / 地域",
+				"birthday": "誕生日",
+				"language": "言語",
+				"timezoneMode": "タイムゾーンモード",
+				"timezone": "タイムゾーン",
+				"websiteUrl": "Web サイト",
+				"publicEmail": "公開メール",
+				"avatarAttachmentId": "アバター添付 ID",
+				"coverAttachmentId": "カバー添付 ID",
+				"avatarUrl": "アバター URL",
+				"coverUrl": "カバー URL",
+				"createdAt": "参加日時",
+				"verified": "認証済み",
+				"badges": "Badge"
+			},
+			"notifications": {
+				"saved": "ユーザー情報を保存しました",
+				"saveFailed": "ユーザー情報の保存に失敗しました"
+			},
+			"actions": {
+				"resetAvatar": "アバターをリセット",
+				"resetCover": "カバーをリセット",
+				"uploadAvatar": "アバターをアップロード",
+				"uploadCover": "カバーをアップロード",
+				"regenerateHydrolineId": "再生成"
+			},
+			"media": {
+				"avatarEmpty": "アバター URL はありません",
+				"coverEmpty": "カバー URL はありません",
+				"avatarReset": "保存後にアバターをリセットします",
+				"coverReset": "保存後にカバーをリセットします"
+			}
+		},
+		"attachments": {
+			"title": "添付ファイル",
+			"filters": {
+				"search": "添付 ID、Owner、Object Key を検索",
+				"app": "アプリ",
+				"category": "カテゴリ",
+				"purpose": "用途",
+				"status": "状態",
+				"visibility": "公開範囲"
+			},
+			"fields": {
+				"id": "ID",
+				"app": "アプリ",
+				"category": "カテゴリ",
+				"purpose": "用途",
+				"status": "状態",
+				"visibility": "公開範囲",
+				"owner": "所有者",
+				"ownerType": "所有者タイプ",
+				"ownerId": "所有者 ID",
+				"contentType": "Content Type",
+				"sizeBytes": "サイズ",
+				"createdById": "作成者 ID",
+				"objectKey": "Object Key",
+				"createdAt": "作成日時"
+			},
+			"modal": {
+				"title": "添付ファイル詳細",
+				"variants": "画像バリエーション",
+				"privateUrlHidden": "Private 添付の公開 URL は表示しません"
+			},
+			"deleteConfirm": {
+				"title": "添付ファイルを削除",
+				"description": "添付ファイルを削除済みにし、オブジェクトストレージ上の画像バリエーション削除を試みます。"
+			},
+			"notifications": {
+				"deleted": "添付ファイルを削除済みにしました",
+				"deleteFailed": "添付ファイルの削除に失敗しました"
+			}
+		},
+		"serverConfig": {
+			"createEyebrow": "サーバーを追加",
+			"title": "サーバー接続設定",
+			"sections": {
+				"basic": "サーバー基本情報"
+			},
+			"fields": {
+				"serverId": "サーバー ID",
+				"code": "コード",
+				"name": "名前",
+				"sortOrder": "並び順",
+				"mcHost": "MC Host",
+				"mcPort": "MC Port",
+				"description": "説明",
+				"enabled": "このサーバーを有効化",
+				"bridgeId": "Bridge ID",
+				"secret": "Secret",
+				"bridgeEnabled": "Bridge 接続を有効化"
+			},
+			"placeholders": {
+				"keepSecret": "空欄なら変更しません"
+			},
+			"actions": {
+				"cancel": "キャンセル",
+				"save": "設定を保存"
+			}
+		},
+		"mysqlFields": {
+			"host": "Host",
+			"port": "Port",
+			"database": "Database",
+			"username": "Username",
+			"password": "Password",
+			"enabled": "データソースを有効化"
+		},
+		"notifications": {
+			"overviewLoadFailed": "概要の読み込みに失敗しました",
+			"serversLoadFailed": "サーバー設定の読み込みに失敗しました",
+			"serverSaved": "サーバー設定を保存しました",
+			"serverSavedDescription": "サーバー一覧を更新しました。",
+			"serverSaveFailed": "設定の保存に失敗しました",
+			"serverSaveFailedDescription": "ログイン状態と入力欄を確認してください。",
+			"copied": "コピーしました"
+		},
+		"achievements": {
+			"title": "実績",
+			"sections": {
+				"badges": "Badge 一覧",
+				"createBadge": "Badge 作成",
+				"assign": "Badge 付与",
+				"verified": "認証設定"
+			},
+			"fields": {
+				"badge": "Badge",
+				"key": "Key",
+				"color": "配色",
+				"assignmentCount": "付与数",
+				"enabled": "有効",
+				"description": "説明",
+				"users": "ユーザー",
+				"badges": "Badge",
+				"labels": "多言語名",
+				"sortOrder": "並び順"
+			},
+			"actions": {
+				"createBadge": "Badge 作成",
+				"assignBadges": "Badge 付与",
+				"saveVerified": "認証を付与",
+				"removeVerified": "認証を解除"
+			},
+			"notifications": {
+				"badgeCreated": "Badge を作成しました",
+				"badgeCreateFailed": "Badge の作成に失敗しました",
+				"badgesAssigned": "Badge を付与しました",
+				"badgesAssignFailed": "Badge の付与に失敗しました",
+				"verifiedSaved": "認証設定を保存しました",
+				"verifiedSaveFailed": "認証設定の保存に失敗しました",
+				"badgeSaved": "Badge を保存しました",
+				"badgeSaveFailed": "Badge の保存に失敗しました"
+			},
+			"modal": {
+				"createBadge": "Badge 作成",
+				"editBadge": "Badge 編集",
+				"assignBadges": "Badge 付与"
+			}
+		},
+		"sort": {
+			"field": "並び替え項目",
+			"direction": "並び順",
+			"asc": "昇順",
+			"desc": "降順",
+			"fields": {
+				"createdAt": "作成日時",
+				"updatedAt": "更新日時"
+			}
+		}
+	}
+}

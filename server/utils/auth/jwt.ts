@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import type { UserRole, UserStatus } from '~/generated/prisma/enums'
+import { createApiError } from '../errors'
 
 export interface AuthTokenPayload {
 	sub: string
@@ -13,9 +14,9 @@ const getJwtSecret = (): string => {
 	const secret = process.env.JWT_SECRET
 
 	if (!secret) {
-		throw createError({
+		throw createApiError({
 			statusCode: 500,
-			statusMessage: 'JWT_SECRET is required',
+			code: 'JWT_SECRET_MISSING',
 		})
 	}
 
@@ -46,7 +47,7 @@ export const verifyAuthToken = (token: string): AuthTokenPayload => {
 	const [header, body, signature] = token.split('.')
 
 	if (!header || !body || !signature) {
-		throw createError({ statusCode: 401, statusMessage: 'Invalid auth token' })
+		throw createApiError({ statusCode: 401, code: 'INVALID_AUTH_TOKEN' })
 	}
 
 	const expected = Uint8Array.from(
@@ -55,7 +56,7 @@ export const verifyAuthToken = (token: string): AuthTokenPayload => {
 	const actual = Uint8Array.from(Buffer.from(signature, 'base64url'))
 
 	if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) {
-		throw createError({ statusCode: 401, statusMessage: 'Invalid auth token' })
+		throw createApiError({ statusCode: 401, code: 'INVALID_AUTH_TOKEN' })
 	}
 
 	const payload = JSON.parse(
@@ -64,11 +65,11 @@ export const verifyAuthToken = (token: string): AuthTokenPayload => {
 	const now = Math.floor(Date.now() / 1000)
 
 	if (!payload.sub || !payload.role || !payload.status) {
-		throw createError({ statusCode: 401, statusMessage: 'Invalid auth token' })
+		throw createApiError({ statusCode: 401, code: 'INVALID_AUTH_TOKEN' })
 	}
 
 	if (payload.exp && payload.exp <= now) {
-		throw createError({ statusCode: 401, statusMessage: 'Auth token expired' })
+		throw createApiError({ statusCode: 401, code: 'AUTH_TOKEN_EXPIRED' })
 	}
 
 	return payload

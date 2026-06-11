@@ -1,13 +1,9 @@
-import { createError } from 'h3'
 import type { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createBadRequestError } from '../errors'
 import { normalizeBoolean, normalizeOptionalText } from '../profile/validation'
 
-const badRequest = (message: string) =>
-	createError({
-		statusCode: 400,
-		statusMessage: message,
-	})
+const badRequest = (code: string) => createBadRequestError(code)
 
 const BADGE_SORT_FIELDS = new Set([
 	'key',
@@ -30,7 +26,7 @@ const normalizeRequiredText = (
 	const normalized = normalizeOptionalText(value, maxLength, field)
 
 	if (!normalized) {
-		throw badRequest(`${field} is required`)
+		throw badRequest('FIELD_REQUIRED')
 	}
 
 	return normalized
@@ -40,7 +36,7 @@ const normalizeBadgeKey = (value: unknown): string => {
 	const key = normalizeRequiredText(value, 64, 'key')
 
 	if (!/^[a-z0-9][a-z0-9-]*$/.test(key)) {
-		throw badRequest('key is invalid')
+		throw badRequest('BADGE_KEY_INVALID')
 	}
 
 	return key
@@ -57,7 +53,7 @@ const normalizeSortOrder = (value: unknown): number | undefined => {
 	const numberValue = Number(value)
 
 	if (!Number.isInteger(numberValue)) {
-		throw badRequest('sortOrder is invalid')
+		throw badRequest('SORT_ORDER_INVALID')
 	}
 
 	return numberValue
@@ -65,7 +61,7 @@ const normalizeSortOrder = (value: unknown): number | undefined => {
 
 const normalizeStringArray = (value: unknown, field: string): string[] => {
 	if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
-		throw badRequest(`${field} is invalid`)
+		throw badRequest('INVALID_FIELD_TYPE')
 	}
 
 	return [...new Set(value.map((item) => item.trim()).filter(Boolean))]

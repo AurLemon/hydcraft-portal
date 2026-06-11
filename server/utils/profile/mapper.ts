@@ -28,14 +28,22 @@ const getCanChangeUsernameAt = (
 
 export const toBadgeSummary = (
 	badge: ProfileUser['badges'][number],
-): UserProfileBadgeSummary => ({
-	id: badge.id,
-	badgeId: badge.badgeId,
-	key: badge.badge?.key ?? null,
-	label: badge.label ?? badge.badge?.labelZhCn ?? '',
-	color: badge.color ?? badge.badge?.color ?? null,
-	sortOrder: badge.sortOrder,
-})
+): UserProfileBadgeSummary => {
+	const fallbackLabel = badge.label ?? badge.badge?.labelZhCn ?? ''
+
+	return {
+		id: badge.id,
+		badgeId: badge.badgeId,
+		key: badge.badge?.key ?? null,
+		label: fallbackLabel,
+		labelZhCn: badge.label ?? badge.badge?.labelZhCn ?? fallbackLabel,
+		labelZhTw: badge.label ?? badge.badge?.labelZhTw ?? fallbackLabel,
+		labelEnUs: badge.label ?? badge.badge?.labelEnUs ?? fallbackLabel,
+		labelJaJp: badge.label ?? badge.badge?.labelJaJp ?? fallbackLabel,
+		color: badge.color ?? badge.badge?.color ?? null,
+		sortOrder: badge.sortOrder,
+	}
+}
 
 const toRoleBadgeSummary = (
 	user: ProfileUser,
@@ -46,6 +54,10 @@ const toRoleBadgeSummary = (
 				badgeId: null,
 				key: 'server-member',
 				label: '服务器成员',
+				labelZhCn: '服务器成员',
+				labelZhTw: '伺服器成員',
+				labelEnUs: 'Server Member',
+				labelJaJp: 'サーバーメンバー',
 				color: 'sky',
 				sortOrder: -100,
 			}
@@ -105,7 +117,7 @@ export const toMinecraftSummary = (
 				? 'RECENTLY_ACTIVE'
 				: 'OFFLINE',
 		lastActiveAt,
-		minecraftRoles: user.title ? [user.title] : [],
+		minecraftRoles: [],
 		profileUrl: '/me/minecraft',
 		status: account.status,
 	}

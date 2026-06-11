@@ -1,8 +1,8 @@
-import { createError } from 'h3'
 import type {
 	TimezoneMode,
 	UserProfileLanguage,
 } from '~/generated/prisma/client'
+import { createBadRequestError } from '../errors'
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9_-]+$/
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -27,11 +27,7 @@ const SUPPORTED_COUNTRIES_OR_REGIONS = new Set([
 	'海外地区',
 ])
 
-const badRequest = (message: string) =>
-	createError({
-		statusCode: 400,
-		statusMessage: message,
-	})
+const badRequest = (code: string) => createBadRequestError(code)
 
 export const normalizeOptionalText = (
 	value: unknown,
@@ -47,7 +43,7 @@ export const normalizeOptionalText = (
 	}
 
 	if (typeof value !== 'string') {
-		throw badRequest(`${fieldName} must be a string`)
+		throw badRequest('INVALID_FIELD_TYPE')
 	}
 
 	const normalized = value.trim()
@@ -57,7 +53,7 @@ export const normalizeOptionalText = (
 	}
 
 	if (normalized.length > maxLength) {
-		throw badRequest(`${fieldName} is too long`)
+		throw badRequest('FIELD_TOO_LONG')
 	}
 
 	return normalized
@@ -73,17 +69,17 @@ export const normalizeRequiredText = (
 	}
 
 	if (typeof value !== 'string') {
-		throw badRequest(`${fieldName} must be a string`)
+		throw badRequest('INVALID_FIELD_TYPE')
 	}
 
 	const normalized = value.trim()
 
 	if (!normalized) {
-		throw badRequest(`${fieldName} is required`)
+		throw badRequest('FIELD_REQUIRED')
 	}
 
 	if (normalized.length > maxLength) {
-		throw badRequest(`${fieldName} is too long`)
+		throw badRequest('FIELD_TOO_LONG')
 	}
 
 	return normalized
@@ -97,11 +93,11 @@ export const normalizeUsername = (value: unknown): string | undefined => {
 	}
 
 	if (username.length < 3) {
-		throw badRequest('username is too short')
+		throw badRequest('USERNAME_TOO_SHORT')
 	}
 
 	if (!USERNAME_PATTERN.test(username)) {
-		throw badRequest('username contains invalid characters')
+		throw badRequest('USERNAME_INVALID_CHARACTERS')
 	}
 
 	return username.toLowerCase()
@@ -119,7 +115,7 @@ export const normalizeCountryOrRegion = (
 	const countryOrRegion = normalizeOptionalText(value, 80, 'countryOrRegion')
 
 	if (countryOrRegion && !SUPPORTED_COUNTRIES_OR_REGIONS.has(countryOrRegion)) {
-		throw badRequest('countryOrRegion is invalid')
+		throw badRequest('COUNTRY_OR_REGION_INVALID')
 	}
 
 	return countryOrRegion
@@ -135,13 +131,13 @@ export const normalizeBirthday = (value: unknown): Date | null | undefined => {
 	}
 
 	if (typeof value !== 'string') {
-		throw badRequest('birthday must be a date string')
+		throw badRequest('BIRTHDAY_INVALID')
 	}
 
 	const date = new Date(`${value.slice(0, 10)}T00:00:00.000Z`)
 
 	if (Number.isNaN(date.getTime())) {
-		throw badRequest('birthday is invalid')
+		throw badRequest('BIRTHDAY_INVALID')
 	}
 
 	return date
@@ -158,7 +154,7 @@ export const normalizeLanguage = (
 		typeof value !== 'string' ||
 		!SUPPORTED_LANGUAGES.has(value as UserProfileLanguage)
 	) {
-		throw badRequest('language is invalid')
+		throw badRequest('LANGUAGE_INVALID')
 	}
 
 	return value as UserProfileLanguage
@@ -175,7 +171,7 @@ export const normalizeTimezoneMode = (
 		typeof value !== 'string' ||
 		!SUPPORTED_TIMEZONE_MODES.has(value as TimezoneMode)
 	) {
-		throw badRequest('timezoneMode is invalid')
+		throw badRequest('TIMEZONE_MODE_INVALID')
 	}
 
 	return value as TimezoneMode
@@ -187,7 +183,7 @@ export const normalizeTimezone = (
 	const timezone = normalizeOptionalText(value, 64, 'timezone')
 
 	if (timezone && !SUPPORTED_TIMEZONES.has(timezone)) {
-		throw badRequest('timezone is invalid')
+		throw badRequest('TIMEZONE_INVALID')
 	}
 
 	return timezone
@@ -209,11 +205,11 @@ export const normalizeUrl = (
 	try {
 		url = new URL(normalized)
 	} catch {
-		throw badRequest('请输入有效链接')
+		throw badRequest('URL_INVALID')
 	}
 
 	if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-		throw badRequest('请输入有效链接')
+		throw badRequest('URL_INVALID')
 	}
 
 	if (
@@ -222,7 +218,7 @@ export const normalizeUrl = (
 			(host) => url.hostname === host || url.hostname.endsWith(`.${host}`),
 		)
 	) {
-		throw badRequest('请输入有效链接')
+		throw badRequest('URL_INVALID')
 	}
 
 	return url.toString()
@@ -234,7 +230,7 @@ export const normalizePublicEmail = (
 	const email = normalizeOptionalText(value, 254, 'publicEmail')
 
 	if (email && !EMAIL_PATTERN.test(email)) {
-		throw badRequest('请输入有效邮箱地址')
+		throw badRequest('EMAIL_INVALID')
 	}
 
 	return email
@@ -249,7 +245,7 @@ export const normalizeBoolean = (
 	}
 
 	if (typeof value !== 'boolean') {
-		throw badRequest(`${fieldName} must be a boolean`)
+		throw badRequest('INVALID_FIELD_TYPE')
 	}
 
 	return value

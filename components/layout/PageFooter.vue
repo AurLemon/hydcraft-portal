@@ -12,7 +12,7 @@
 					:key="link.labelKey"
 				>
 					<NuxtLink
-						:to="link.to"
+						:to="resolveFooterLinkTo(link)"
 						:external="link.external"
 						:target="link.external ? '_blank' : undefined"
 						:rel="link.external ? 'noopener noreferrer' : undefined"
@@ -35,7 +35,7 @@
 					:key="link.labelKey"
 				>
 					<NuxtLink
-						:to="link.to"
+						:to="resolveFooterLinkTo(link)"
 						:external="link.external"
 						:target="link.external ? '_blank' : undefined"
 						:rel="link.external ? 'noopener noreferrer' : undefined"
@@ -127,6 +127,10 @@ const footerLinkGroups: FooterLinkGroups = {
 const hoveredInfoLink = ref<number | null>(null)
 const hoveredRecordLink = ref<number | null>(null)
 const currentCopyrightYear = dayjs().utcOffset(8).year()
+const localePath = useLocalePath()
+
+const resolveFooterLinkTo = (link: FooterLink): string =>
+	link.external ? link.to : localePath(link.to)
 
 const linkClass = (index: number, hoveredIndex: number | null) => [
 	'transition-colors duration-200',
