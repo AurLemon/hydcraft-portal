@@ -28,7 +28,7 @@
 							size="sm"
 							variant="link"
 							icon="i-lucide-key-round"
-							@click="passwordModalOpen = true"
+							@click="openPasswordModal"
 						>
 							{{ t('profile.security.actions.resetPassword') }}
 						</UButton>
@@ -326,12 +326,17 @@
 		<UModal
 			:open="passwordModalOpen"
 			:ui="{ content: 'max-w-lg', body: 'p-0' }"
-			@update:open="passwordModalOpen = $event"
+			@update:open="handlePasswordModalOpenChange"
 		>
 			<template #content>
 				<form class="p-5 sm:p-6" @submit.prevent="submitPasswordReset">
-					<div class="flex items-start justify-between gap-4">
-						<div>
+					<div class="flex items-start gap-3">
+						<div
+							class="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300"
+						>
+							<UIcon name="i-lucide-key-round" class="size-5" />
+						</div>
+						<div class="min-w-0">
 							<h2 class="text-xl font-semibold text-slate-950 dark:text-white">
 								{{ t('profile.security.modals.passwordReset.title') }}
 							</h2>
@@ -339,14 +344,6 @@
 								{{ t('profile.security.modals.passwordReset.description') }}
 							</p>
 						</div>
-						<UButton
-							type="button"
-							color="neutral"
-							variant="ghost"
-							icon="i-lucide-x"
-							:aria-label="t('profile.security.actions.close')"
-							@click="passwordModalOpen = false"
-						/>
 					</div>
 
 					<div class="mt-6 grid gap-1.5 text-sm font-medium">
@@ -356,6 +353,13 @@
 						</div>
 					</div>
 
+					<div class="mt-6">
+						<CapWidget
+							ref="passwordResetCaptchaWidgetRef"
+							v-model="passwordResetCaptcha.token.value"
+						/>
+					</div>
+
 					<div
 						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
 					>
@@ -363,7 +367,7 @@
 							type="button"
 							color="neutral"
 							variant="soft"
-							@click="passwordModalOpen = false"
+							@click="handlePasswordModalOpenChange(false)"
 						>
 							{{ t('profile.security.actions.cancel') }}
 						</UButton>
@@ -371,7 +375,11 @@
 							type="submit"
 							icon="i-lucide-mail"
 							:loading="passwordResetSubmitting"
-							:disabled="!passwordResetReceiverEmail"
+							:disabled="
+								!passwordResetReceiverEmail ||
+								!passwordResetCaptcha.token.value ||
+								passwordResetSubmitting
+							"
 						>
 							{{ t('profile.security.actions.sendResetEmail') }}
 						</UButton>
@@ -523,6 +531,12 @@
 							required
 						/>
 					</label>
+					<div v-if="addEmailStep === 'email'" class="mt-4">
+						<CapWidget
+							ref="addEmailCaptchaWidgetRef"
+							v-model="addEmailCaptcha.token.value"
+						/>
+					</div>
 
 					<div
 						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
@@ -543,6 +557,12 @@
 									: 'i-lucide-mail-plus'
 							"
 							:loading="addEmailSubmitting || addEmailVerifying"
+							:disabled="
+								addEmailStep === 'email' &&
+								(!addEmailForm.email ||
+									!addEmailCaptcha.token.value ||
+									addEmailSubmitting)
+							"
 						>
 							{{
 								addEmailStep === 'code'
@@ -641,6 +661,12 @@
 							required
 						/>
 					</label>
+					<div class="mt-4">
+						<CapWidget
+							ref="verifyEmailCaptchaWidgetRef"
+							v-model="verifyEmailCaptcha.token.value"
+						/>
+					</div>
 
 					<div
 						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
@@ -658,7 +684,11 @@
 							variant="soft"
 							icon="i-lucide-send"
 							:loading="verifyEmailSending"
-							:disabled="verifyEmailCooldown > 0"
+							:disabled="
+								verifyEmailCooldown > 0 ||
+								verifyEmailSending ||
+								!verifyEmailCaptcha.token.value
+							"
 							@click="sendVerifyEmailCode"
 						>
 							{{
@@ -820,6 +850,12 @@ const verifyEmailCooldown = ref(0)
 const verifyEmailForm = reactive<{ code: string }>({ code: '' })
 const verifyEmailTarget = ref<AccountSecurityEmail | null>(null)
 let verifyEmailCooldownTimer: ReturnType<typeof setInterval> | null = null
+const passwordResetCaptcha = useCap(true)
+const passwordResetCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const addEmailCaptcha = useCap(true)
+const addEmailCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const verifyEmailCaptcha = useCap(true)
+const verifyEmailCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 
 const readonlyFieldClass =
 	'w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200'
@@ -1007,6 +1043,33 @@ const getSecurityEventLabel = (type: SecurityEventType): string =>
 const getSecurityEventIcon = (type: SecurityEventType): string =>
 	securityEventDisplayMap[type].icon
 
+const resetPasswordCaptcha = (): void => {
+	passwordResetCaptcha.reset(true)
+	passwordResetCaptchaWidgetRef.value?.reset()
+}
+
+const resetAddEmailCaptcha = (): void => {
+	addEmailCaptcha.reset(true)
+	addEmailCaptchaWidgetRef.value?.reset()
+}
+
+const resetVerifyEmailCaptcha = (): void => {
+	verifyEmailCaptcha.reset(true)
+	verifyEmailCaptchaWidgetRef.value?.reset()
+}
+
+const openPasswordModal = (): void => {
+	resetPasswordCaptcha()
+	passwordModalOpen.value = true
+}
+
+const handlePasswordModalOpenChange = (open: boolean): void => {
+	passwordModalOpen.value = open
+	if (!open) {
+		resetPasswordCaptcha()
+	}
+}
+
 const getEmailFieldLabel = (
 	email: AccountSecurityEmail,
 	index: number,
@@ -1084,6 +1147,7 @@ const resetAddEmailForm = (): void => {
 	addEmailStep.value = 'email'
 	addEmailForm.email = ''
 	addEmailForm.code = ''
+	resetAddEmailCaptcha()
 }
 
 const openAddEmailModal = (): void => {
@@ -1108,15 +1172,24 @@ const submitAddEmail = async (): Promise<void> => {
 		return
 	}
 
+	if (!addEmailCaptcha.token.value || addEmailSubmitting.value) {
+		return
+	}
+
 	addEmailSubmitting.value = true
 
 	try {
 		await $fetch('/api/auth/emails/verification/request', {
 			method: 'POST',
-			body: { email: addEmailForm.email, purpose: 'ADD_SECONDARY_EMAIL' },
+			body: {
+				email: addEmailForm.email,
+				purpose: 'ADD_SECONDARY_EMAIL',
+				captchaToken: addEmailCaptcha.consumeToken(),
+			},
 		})
 		addEmailStep.value = 'code'
 		addEmailForm.code = ''
+		resetAddEmailCaptcha()
 		notifySuccess({
 			title: t('profile.security.notifications.verificationEmailSent'),
 			description: t(
@@ -1124,6 +1197,7 @@ const submitAddEmail = async (): Promise<void> => {
 			),
 		})
 	} catch (submitError) {
+		resetAddEmailCaptcha()
 		notifyError(submitError, {
 			title: t('profile.security.notifications.verificationEmailSendFailed'),
 		})
@@ -1183,11 +1257,17 @@ const openVerifyEmailModal = (email: AccountSecurityEmail): void => {
 	verifyEmailTarget.value = email
 	verifyEmailForm.code = ''
 	verifyEmailCooldown.value = 0
+	resetVerifyEmailCaptcha()
 	verifyEmailModalOpen.value = true
 }
 
 const sendVerifyEmailCode = async (): Promise<void> => {
-	if (!verifyEmailTarget.value) {
+	if (
+		!verifyEmailTarget.value ||
+		!verifyEmailCaptcha.token.value ||
+		verifyEmailSending.value ||
+		verifyEmailCooldown.value > 0
+	) {
 		return
 	}
 
@@ -1199,14 +1279,17 @@ const sendVerifyEmailCode = async (): Promise<void> => {
 			body: {
 				email: verifyEmailTarget.value.email,
 				purpose: 'VERIFY_EMAIL',
+				captchaToken: verifyEmailCaptcha.consumeToken(),
 			},
 		})
+		resetVerifyEmailCaptcha()
 		startVerifyEmailCooldown()
 		notifySuccess({
 			title: t('profile.security.notifications.codeSent'),
 			description: t('profile.security.notifications.codeSentDescription'),
 		})
 	} catch (submitError) {
+		resetVerifyEmailCaptcha()
 		notifyError(submitError, {
 			title: t('profile.security.notifications.codeSendFailed'),
 		})
@@ -1250,13 +1333,21 @@ const submitVerifyEmailCode = async (): Promise<void> => {
 }
 
 const submitPasswordReset = async (): Promise<void> => {
+	if (!passwordResetReceiverEmail.value || !passwordResetCaptcha.token.value) {
+		return
+	}
+
 	passwordResetSubmitting.value = true
 
 	try {
 		await $fetch('/api/users/me/security/password-reset', {
 			method: 'POST',
+			body: {
+				captchaToken: passwordResetCaptcha.consumeToken(),
+			},
 		})
 		passwordModalOpen.value = false
+		resetPasswordCaptcha()
 		notifySuccess({
 			title: t('profile.security.notifications.resetEmailSent'),
 			description: t(
@@ -1265,6 +1356,7 @@ const submitPasswordReset = async (): Promise<void> => {
 		})
 		await refreshSecurity()
 	} catch (submitError) {
+		resetPasswordCaptcha()
 		notifyError(submitError, {
 			title: t('profile.security.notifications.resetEmailSendFailed'),
 		})

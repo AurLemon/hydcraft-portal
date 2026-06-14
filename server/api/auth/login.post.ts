@@ -4,10 +4,16 @@ import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
 import { normalizeEmail, normalizeHandle } from '../../utils/auth/validation'
 import { createApiError } from '../../utils/errors'
 import { recordSecurityEvent } from '../../utils/security/security-events'
+import { validateCapToken } from '../../utils/security/cap'
+import {
+	recordLoginFailure,
+	shouldRequireLoginCaptcha,
+} from '../../utils/security/login-captcha'
 
 interface LoginBody {
 	handleOrEmail: string
 	password: string
+	captchaToken?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -32,12 +38,22 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 
+	if (user && (await shouldRequireLoginCaptcha(event, user.id))) {
+		await validateCapToken({
+			token: body.captchaToken,
+		})
+	}
+
 	if (
 		!user ||
 		!user.credential ||
 		user.status !== 'ACTIVE' ||
 		!(await verifyPassword(body.password ?? '', user.credential.passwordHash))
 	) {
+		if (user) {
+			await recordLoginFailure(event, user.id, login)
+		}
+
 		throw createApiError({ statusCode: 401, code: 'INVALID_CREDENTIALS' })
 	}
 

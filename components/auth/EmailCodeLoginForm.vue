@@ -1,15 +1,11 @@
 <template>
 	<form class="space-y-5" @submit.prevent="submit">
-		<Transition
-			name="auth-height"
-			mode="out-in"
-			@before-enter="beforeEnter"
-			@enter="enter"
-			@after-enter="afterEnter"
-			@before-leave="beforeLeave"
-			@leave="leave"
-		>
-			<div v-if="step === 'email'" key="email" class="overflow-hidden">
+		<Transition name="auth-height" mode="out-in">
+			<div
+				v-if="step === 'email'"
+				key="email"
+				class="space-y-4 overflow-hidden"
+			>
 				<label
 					class="flex flex-col gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100"
 				>
@@ -24,6 +20,7 @@
 						variant="outline"
 					/>
 				</label>
+				<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
 			</div>
 			<div v-else key="code" class="overflow-hidden">
 				<div class="space-y-2">
@@ -62,7 +59,12 @@
 							:icon="
 								resendCountdown > 0 ? 'i-lucide-clock-3' : 'i-lucide-refresh-cw'
 							"
-							:disabled="resendCountdown > 0 || submitting"
+							:disabled="
+								resendCountdown > 0 ||
+								submitting ||
+								!normalizedEmail ||
+								!captcha.token.value
+							"
 							@click="resendCode"
 						>
 							{{ resendLabel }}
@@ -76,6 +78,7 @@
 			type="submit"
 			:icon="step === 'code' ? 'i-lucide-log-in' : 'i-lucide-mail'"
 			:loading="submitting"
+			:disabled="submitDisabled"
 			size="lg"
 			class="w-full justify-center"
 		>
@@ -113,6 +116,8 @@ const submitting = ref(false)
 const resendCountdown = ref(0)
 let resendTimer: number | null = null
 const step = ref<'email' | 'code'>('email')
+const captcha = useCap(true)
+const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive<EmailCodeLoginFormState>({
 	email: '',
 	code: '',
@@ -131,6 +136,19 @@ const resendLabel = computed(() =>
 			})
 		: t('emailCodeLogin.actions.resendCode'),
 )
+const sendCodeDisabled = computed(
+	() =>
+		step.value === 'email' &&
+		(!normalizedEmail.value || !captcha.token.value || submitting.value),
+)
+const confirmCodeDisabled = computed(
+	() =>
+		step.value === 'code' &&
+		(!normalizedEmail.value || !form.code || submitting.value),
+)
+const submitDisabled = computed(
+	() => sendCodeDisabled.value || confirmCodeDisabled.value,
+)
 
 const getRedirectPath = (): string =>
 	normalizePortalRedirectPath(route.query.redirect, {
@@ -139,9 +157,15 @@ const getRedirectPath = (): string =>
 		loginPath: localePath('/login'),
 	})
 
+const resetCaptcha = (): void => {
+	captcha.reset(true)
+	captchaWidgetRef.value?.reset()
+}
+
 const resetCodeStep = (): void => {
 	form.code = ''
 	stopResendCountdown()
+	resetCaptcha()
 	step.value = 'email'
 }
 
@@ -167,6 +191,10 @@ const startResendCountdown = (): void => {
 }
 
 const submit = async (): Promise<void> => {
+	if (submitDisabled.value) {
+		return
+	}
+
 	if (step.value === 'email') {
 		await sendCode()
 		return
@@ -176,7 +204,7 @@ const submit = async (): Promise<void> => {
 }
 
 const sendCode = async (): Promise<void> => {
-	if (!normalizedEmail.value) {
+	if (!normalizedEmail.value || !captcha.token.value || submitting.value) {
 		return
 	}
 
@@ -187,14 +215,17 @@ const sendCode = async (): Promise<void> => {
 			email: normalizedEmail.value,
 			intent: props.intent,
 			locale: locale.value,
+			captchaToken: captcha.consumeToken(),
 		})
 		step.value = 'code'
+		resetCaptcha()
 		startResendCountdown()
 		notifySuccess({
 			title: t('emailCodeLogin.notifications.codeSentTitle'),
 			description: t('emailCodeLogin.notifications.codeSentDescription'),
 		})
 	} catch (error) {
+		resetCaptcha()
 		notifyError(error)
 	} finally {
 		submitting.value = false
@@ -202,7 +233,12 @@ const sendCode = async (): Promise<void> => {
 }
 
 const resendCode = async (): Promise<void> => {
-	if (resendCountdown.value > 0 || submitting.value) {
+	if (
+		resendCountdown.value > 0 ||
+		submitting.value ||
+		!normalizedEmail.value ||
+		!captcha.token.value
+	) {
 		return
 	}
 
@@ -239,40 +275,6 @@ const confirmCode = async (): Promise<void> => {
 	}
 }
 
-const beforeEnter = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = '0'
-	htmlElement.style.opacity = '0'
-}
-
-const enter = (element: Element, done: () => void): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = `${htmlElement.scrollHeight}px`
-	htmlElement.style.opacity = '1'
-	window.setTimeout(done, 220)
-}
-
-const afterEnter = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = 'auto'
-	htmlElement.style.opacity = ''
-}
-
-const beforeLeave = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = `${htmlElement.scrollHeight}px`
-	htmlElement.style.opacity = '1'
-}
-
-const leave = (element: Element, done: () => void): void => {
-	const htmlElement = element as HTMLElement
-	requestAnimationFrame(() => {
-		htmlElement.style.height = '0'
-		htmlElement.style.opacity = '0'
-	})
-	window.setTimeout(done, 220)
-}
-
 onBeforeUnmount(() => {
 	stopResendCountdown()
 })
@@ -282,7 +284,29 @@ onBeforeUnmount(() => {
 .auth-height-enter-active,
 .auth-height-leave-active {
 	transition:
-		height 220ms ease,
-		opacity 180ms ease;
+		grid-template-rows 360ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 240ms ease,
+		transform 320ms ease;
+	display: grid;
+	overflow: hidden;
+}
+
+.auth-height-enter-active > *,
+.auth-height-leave-active > * {
+	min-height: 0;
+}
+
+.auth-height-enter-from,
+.auth-height-leave-to {
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transform: translateY(-6px);
+}
+
+.auth-height-enter-to,
+.auth-height-leave-from {
+	grid-template-rows: 1fr;
+	opacity: 1;
+	transform: translateY(0);
 }
 </style>

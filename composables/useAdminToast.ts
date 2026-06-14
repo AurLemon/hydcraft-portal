@@ -7,21 +7,25 @@ interface AdminToastOptions {
 
 export const useAdminToast = () => {
 	const toast = useToast()
-	const { getErrorMessage } = useApiError()
+	const { getErrorCode, getErrorMessage } = useApiError()
 
 	const notifyError = (
 		error: unknown,
 		options: AdminToastOptions = {},
 	): void => {
+		const code = getErrorCode(error)
 		const message = getErrorMessage(error)
+		const isCaptchaError = code.startsWith('CAPTCHA_')
 
 		toast.add({
-			title: options.title ?? message,
-			description: options.description
-				? `${options.description} ${message}`
-				: options.title
-					? message
-					: undefined,
+			title: isCaptchaError ? message : (options.title ?? message),
+			description: isCaptchaError
+				? undefined
+				: options.description
+					? `${options.description} ${message}`
+					: options.title
+						? message
+						: undefined,
 			color: 'error',
 			icon: 'i-lucide-circle-alert',
 		})

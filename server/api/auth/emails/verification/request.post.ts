@@ -4,10 +4,12 @@ import { assertEmail } from '../../../../utils/auth/validation'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError } from '../../../../utils/errors'
 import { sendEmailVerificationCode } from '../../../../utils/security/account-security'
+import { validateCapToken } from '../../../../utils/security/cap'
 
 interface RequestEmailVerificationBody {
 	email: string
 	purpose?: EmailVerificationPurpose
+	captchaToken?: string
 }
 
 const resolvePurpose = (
@@ -25,6 +27,10 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<RequestEmailVerificationBody>(event)
 	const email = assertEmail(body.email)
 	const purpose = resolvePurpose(body.purpose)
+
+	await validateCapToken({
+		token: body.captchaToken,
+	})
 
 	if (!EMAIL_PURPOSES.includes(purpose)) {
 		throw createApiError({

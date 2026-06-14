@@ -214,8 +214,9 @@ if (import.meta.client && !resolved.value) {
 		<div
 			class="site-shell relative z-40 mx-auto flex items-center justify-between px-6 lg:px-0"
 		>
-			<div
-				class="flex h-10 w-10 items-center justify-center select-none"
+			<NuxtLink
+				:to="localePath('/')"
+				class="flex h-10 w-10 items-center justify-center select-none opacity-80 transition hover:opacity-100"
 				aria-label="HydCraft"
 			>
 				<img
@@ -223,7 +224,7 @@ if (import.meta.client && !resolved.value) {
 					alt="HydCraft"
 					class="h-7 w-7 object-contain"
 				/>
-			</div>
+			</NuxtLink>
 
 			<HeaderMenu
 				:active-nav-item-class="activeNavItemClass"

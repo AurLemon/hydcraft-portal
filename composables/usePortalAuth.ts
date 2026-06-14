@@ -31,6 +31,7 @@ interface PortalAuthMeResponse {
 interface PortalLoginBody {
 	handleOrEmail: string
 	password: string
+	captchaToken?: string
 }
 
 interface PortalRegisterBody {
@@ -38,11 +39,13 @@ interface PortalRegisterBody {
 	password: string
 	email: string
 	code: string
+	captchaToken?: string
 }
 
 interface PortalPasswordResetRequestBody {
 	email: string
 	locale?: string
+	captchaToken?: string
 }
 
 interface PortalPasswordResetBody {
@@ -58,6 +61,7 @@ interface PortalEmailCodeLoginRequestBody {
 	email: string
 	intent: 'LOGIN' | 'REGISTER'
 	locale?: string
+	captchaToken?: string
 }
 
 interface PortalEmailCodeLoginBody {

@@ -210,6 +210,9 @@ export default defineNuxtConfig({
 		defaultLocale: 'zh-CN',
 	},
 	runtimeConfig: {
+		cap: {
+			baseUrl: process.env.CAP_BASE_URL ?? '',
+		},
 		cos: {
 			secretId: process.env.COS_SECRET_ID ?? '',
 			secretKey: process.env.COS_SECRET_KEY ?? '',
@@ -219,6 +222,7 @@ export default defineNuxtConfig({
 		},
 		public: {
 			siteUrl: process.env.NUXT_SITE_URL ?? '',
+			capBaseUrl: process.env.CAP_BASE_URL ?? '',
 		},
 	},
 	content: {
@@ -238,6 +242,13 @@ export default defineNuxtConfig({
 	],
 	vite: {
 		plugins: [tailwindcss()],
+		vue: {
+			template: {
+				compilerOptions: {
+					isCustomElement: (tag) => tag === 'cap-widget',
+				},
+			},
+		},
 	},
 	app: {
 		head: {

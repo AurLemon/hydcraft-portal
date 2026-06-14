@@ -13,16 +13,21 @@ import {
 } from '../../utils/profile/defaults'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
+import { validateCapToken } from '../../utils/security/cap'
 
 interface RegisterBody {
 	handle: string
 	password: string
 	email: string
 	code: string
+	captchaToken?: string
 }
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<RegisterBody>(event)
+	await validateCapToken({
+		token: body.captchaToken,
+	})
 	const handle = assertHandle(body.handle ?? '')
 	const password = assertPassword(body.password ?? '')
 	const email = assertEmail(body.email)

@@ -3,11 +3,13 @@ import { assertEmail } from '../../../utils/auth/validation'
 import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
 import { sendAuthEmailCode } from '../../../utils/auth/email-code'
+import { validateCapToken } from '../../../utils/security/cap'
 
 interface RequestEmailCodeLoginBody {
 	email: string
 	intent: 'LOGIN' | 'REGISTER'
 	locale?: string
+	captchaToken?: string
 }
 
 const findActiveUserByEmail = async (email: string) => {
@@ -51,6 +53,10 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<RequestEmailCodeLoginBody>(event)
 	const email = assertEmail(body.email)
 	const locale = normalizeMailLocale(body.locale)
+
+	await validateCapToken({
+		token: body.captchaToken,
+	})
 
 	if (body.intent !== 'LOGIN' && body.intent !== 'REGISTER') {
 		throw createApiError({

@@ -1,22 +1,16 @@
 <template>
 	<div class="space-y-5">
-		<Transition
-			name="auth-back"
-			@before-enter="beforeEnter"
-			@enter="enter"
-			@after-enter="afterEnter"
-			@before-leave="beforeLeave"
-			@leave="leave"
-		>
-			<button
-				v-if="authMode === 'email'"
-				type="button"
-				class="inline-flex w-fit items-center gap-2 overflow-hidden text-sm font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
-				@click="authMode = 'password'"
-			>
-				<UIcon name="i-lucide-arrow-left" class="size-4" />
-				{{ t('emailCodeLogin.actions.back') }}
-			</button>
+		<Transition name="auth-back">
+			<div v-if="authMode !== 'password'" class="auth-back-wrap">
+				<button
+					type="button"
+					class="inline-flex w-fit items-center gap-2 text-sm font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+					@click="authMode = 'password'"
+				>
+					<UIcon name="i-lucide-arrow-left" class="size-4" />
+					{{ t('emailCodeLogin.actions.back') }}
+				</button>
+			</div>
 		</Transition>
 
 		<div>
@@ -34,15 +28,7 @@
 			</Transition>
 		</div>
 
-		<Transition
-			name="auth-panel"
-			mode="out-in"
-			@before-enter="beforeEnter"
-			@enter="enter"
-			@after-enter="afterEnter"
-			@before-leave="beforeLeave"
-			@leave="leave"
-		>
+		<Transition name="auth-panel" mode="out-in">
 			<form
 				v-if="authMode === 'password'"
 				key="password"
@@ -104,19 +90,27 @@
 						>
 							{{ t('login.actions.emailCodeLogin') }}
 						</button>
-						<NuxtLink
-							:to="localePath('/forgot-password')"
+						<button
+							type="button"
 							class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+							@click="authMode = 'forgotPassword'"
 						>
 							{{ t('login.actions.forgotPassword') }}
-						</NuxtLink>
+						</button>
 					</div>
 				</div>
+
+				<CapWidget
+					v-if="captcha.required.value"
+					ref="captchaWidgetRef"
+					v-model="captcha.token.value"
+				/>
 
 				<UButton
 					type="submit"
 					icon="i-lucide-log-in"
 					:loading="submitting"
+					:disabled="submitDisabled"
 					size="lg"
 					class="w-full justify-center"
 				>
@@ -135,7 +129,8 @@
 
 				<AuthProviderList />
 			</form>
-			<EmailCodeLoginForm v-else key="email" />
+			<EmailCodeLoginForm v-else-if="authMode === 'email'" key="email" />
+			<ForgotPasswordForm v-else key="forgot-password" embedded />
 		</Transition>
 	</div>
 </template>
@@ -152,27 +147,43 @@ const route = useRoute()
 const localePath = useLocalePath()
 const { login } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
+const { getErrorCode } = useApiError()
 const submitting = ref(false)
 const rememberMe = ref(true)
 const passwordVisible = ref(false)
-const authMode = ref<'password' | 'email'>('password')
+const authMode = ref<'password' | 'email' | 'forgotPassword'>('password')
+const captcha = useCap(false)
+const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive<LoginFormState>({
 	handleOrEmail: '',
 	password: '',
 })
 
 const authTitleKey = computed(() =>
-	authMode.value === 'email' ? 'emailCodeLogin.title' : 'login.title',
+	authMode.value === 'email'
+		? 'emailCodeLogin.title'
+		: authMode.value === 'forgotPassword'
+			? 'forgotPassword.title'
+			: 'login.title',
 )
 const authDescriptionKey = computed(() =>
 	authMode.value === 'email'
 		? 'emailCodeLogin.description'
-		: 'login.description',
+		: authMode.value === 'forgotPassword'
+			? 'forgotPassword.description'
+			: 'login.description',
 )
 const registerRoute = computed(() => ({
 	path: localePath('/register'),
 	query: route.query.redirect ? { redirect: route.query.redirect } : {},
 }))
+const submitDisabled = computed(
+	() =>
+		!form.handleOrEmail ||
+		!form.password ||
+		submitting.value ||
+		(captcha.required.value && !captcha.token.value),
+)
 
 const getRedirectPath = (): string => {
 	return normalizePortalRedirectPath(route.query.redirect, {
@@ -181,16 +192,36 @@ const getRedirectPath = (): string => {
 	})
 }
 
+const resetCaptcha = (): void => {
+	captcha.reset()
+	captchaWidgetRef.value?.reset()
+}
+
 const submit = async (): Promise<void> => {
+	if (submitDisabled.value) {
+		return
+	}
+
 	submitting.value = true
 
 	try {
-		await login(form)
+		await login({
+			...form,
+			captchaToken: captcha.consumeToken(),
+		})
 		notifySuccess({
 			title: t('login.notifications.successTitle'),
 		})
 		await navigateTo(getRedirectPath())
 	} catch (error) {
+		if (getErrorCode(error) === 'CAPTCHA_REQUIRED') {
+			captcha.markRequired()
+		}
+
+		if (captcha.required.value) {
+			resetCaptcha()
+		}
+
 		notifyError(error, {
 			title: t('login.notifications.failedTitle'),
 			description: t('login.notifications.failedDescription'),
@@ -198,40 +229,6 @@ const submit = async (): Promise<void> => {
 	} finally {
 		submitting.value = false
 	}
-}
-
-const beforeEnter = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = '0'
-	htmlElement.style.opacity = '0'
-}
-
-const enter = (element: Element, done: () => void): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = `${htmlElement.scrollHeight}px`
-	htmlElement.style.opacity = '1'
-	window.setTimeout(done, 240)
-}
-
-const afterEnter = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = 'auto'
-	htmlElement.style.opacity = ''
-}
-
-const beforeLeave = (element: Element): void => {
-	const htmlElement = element as HTMLElement
-	htmlElement.style.height = `${htmlElement.scrollHeight}px`
-	htmlElement.style.opacity = '1'
-}
-
-const leave = (element: Element, done: () => void): void => {
-	const htmlElement = element as HTMLElement
-	requestAnimationFrame(() => {
-		htmlElement.style.height = '0'
-		htmlElement.style.opacity = '0'
-	})
-	window.setTimeout(done, 240)
 }
 </script>
 
@@ -241,15 +238,43 @@ const leave = (element: Element, done: () => void): void => {
 .auth-back-enter-active,
 .auth-back-leave-active {
 	transition:
-		height 240ms ease,
-		opacity 180ms ease;
+		grid-template-rows 360ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 240ms ease,
+		transform 320ms ease;
+	display: grid;
+	overflow: hidden;
+}
+
+.auth-panel-enter-active > *,
+.auth-panel-leave-active > *,
+.auth-back-enter-active > *,
+.auth-back-leave-active > * {
+	min-height: 0;
+}
+
+.auth-panel-enter-from,
+.auth-panel-leave-to,
+.auth-back-enter-from,
+.auth-back-leave-to {
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transform: translateY(-6px);
+}
+
+.auth-panel-enter-to,
+.auth-panel-leave-from,
+.auth-back-enter-to,
+.auth-back-leave-from {
+	grid-template-rows: 1fr;
+	opacity: 1;
+	transform: translateY(0);
 }
 
 .auth-title-enter-active,
 .auth-title-leave-active {
 	transition:
-		opacity 180ms ease,
-		transform 220ms ease;
+		opacity 240ms ease,
+		transform 300ms ease;
 }
 
 .auth-title-enter-from {
