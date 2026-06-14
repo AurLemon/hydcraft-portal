@@ -9,6 +9,7 @@
 				size="sm"
 				variant="link"
 				icon="i-lucide-check"
+				:disabled="disabled"
 				:loading="submitting"
 				:aria-label="t('profile.edit.actions.updateUsername')"
 				@click="$emit('submit')"
@@ -29,7 +30,7 @@
 							{{ publicProfileUrl }}
 						</div>
 						<div class="text-xs text-slate-500 dark:text-slate-400">
-							{{ t('profile.edit.hints.usernameCooldown') }}
+							{{ usernameStatusText }}
 						</div>
 					</div>
 				</div>
@@ -48,6 +49,8 @@ import {
 interface ProfileUsernameSectionProps {
 	publicProfileUrl: string
 	submitting: boolean
+	disabled: boolean
+	usernameStatusText: string
 }
 
 defineProps<ProfileUsernameSectionProps>()

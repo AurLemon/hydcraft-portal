@@ -171,6 +171,14 @@ export default defineNuxtConfig({
 	colorMode: {
 		preference: 'system',
 	},
+	nitro: {
+		serverAssets: [
+			{
+				baseName: 'ip2region',
+				dir: './data/ip2region',
+			},
+		],
+	},
 	seo: {
 		enabled: false,
 	},

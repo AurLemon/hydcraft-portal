@@ -51,7 +51,13 @@
 						</ProfileField>
 						<ProfileField :label="t('profile.security.fields.lastLogin')">
 							<div :class="readonlyFieldClass">
-								{{ lastLoginText }}
+								<div>{{ lastLoginText }}</div>
+								<div
+									v-if="currentSessionLocation"
+									class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+								>
+									{{ currentSessionLocation }}
+								</div>
 							</div>
 						</ProfileField>
 					</div>
@@ -64,91 +70,102 @@
 						<div :class="profileSectionTitleClass">
 							{{ t('profile.security.sections.emails') }}
 						</div>
-						<div class="flex flex-wrap items-center gap-2">
-							<UButton
-								type="button"
-								size="sm"
-								variant="link"
-								icon="i-lucide-plus"
-								@click="addEmailModalOpen = true"
-							>
-								{{ t('profile.security.actions.addEmail') }}
-							</UButton>
-							<UButton
-								type="button"
-								size="sm"
-								variant="link"
-								color="error"
-								icon="i-lucide-trash-2"
-								:disabled="
-									!selectedEmailId || selectedEmailId === primaryEmail?.id
-								"
-								@click="deleteSelectedEmail"
-							>
-								{{ t('profile.security.actions.deleteEmail') }}
-							</UButton>
-						</div>
+						<UButton
+							type="button"
+							size="sm"
+							variant="link"
+							icon="i-lucide-plus"
+							@click="openAddEmailModal"
+						>
+							{{ t('profile.security.actions.addEmail') }}
+						</UButton>
 					</div>
 					<div :class="profileCardClass" class="grid gap-4">
-						<ProfileField :label="t('profile.security.fields.primaryEmail')">
-							<div :class="readonlyFieldClass">
-								<div class="flex min-w-0 items-center gap-2">
-									<span class="min-w-0 flex-1 truncate">
-										{{
-											primaryEmail?.email ||
-											currentUser?.email ||
-											t('profile.security.empty.emailNotSet')
-										}}
-									</span>
-									<UBadge
-										:color="primaryEmail?.verifiedAt ? 'success' : 'error'"
-										variant="soft"
-										class="shrink-0 whitespace-nowrap"
+						<TransitionGroup name="email-row" tag="div" class="grid gap-4">
+							<ProfileField
+								v-for="(email, index) in orderedEmails"
+								:key="email.id"
+								:label="getEmailFieldLabel(email, index)"
+							>
+								<div :class="readonlyFieldClass">
+									<div
+										class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center"
 									>
-										{{
-											primaryEmail?.verifiedAt
-												? t('profile.security.status.verified')
-												: t('profile.security.status.unverified')
-										}}
-									</UBadge>
-									<UButton
-										v-if="primaryEmail && !primaryEmail.verifiedAt"
-										type="button"
-										size="xs"
-										variant="link"
-										icon="i-lucide-mail-check"
-										@click="openVerifyEmailModal"
-									>
-										{{ t('profile.security.actions.verify') }}
-									</UButton>
+										<div class="flex min-w-0 flex-1 items-center gap-2">
+											<span class="min-w-0 flex-1 truncate">
+												{{ email.email }}
+											</span>
+											<UBadge
+												v-if="email.kind === 'PRIMARY'"
+												color="primary"
+												variant="soft"
+												class="shrink-0 whitespace-nowrap"
+											>
+												{{ t('profile.security.emailTags.primary') }}
+											</UBadge>
+											<UBadge
+												:color="email.verifiedAt ? 'success' : 'error'"
+												variant="soft"
+												class="shrink-0 whitespace-nowrap"
+											>
+												{{
+													email.verifiedAt
+														? t('profile.security.status.verified')
+														: t('profile.security.status.unverified')
+												}}
+											</UBadge>
+										</div>
+										<div class="flex shrink-0 flex-wrap items-center gap-2">
+											<UButton
+												v-if="!email.verifiedAt"
+												type="button"
+												size="xs"
+												variant="soft"
+												icon="i-lucide-mail-check"
+												@click="openVerifyEmailModal(email)"
+											>
+												{{ t('profile.security.actions.verify') }}
+											</UButton>
+											<UButton
+												v-if="email.kind !== 'PRIMARY'"
+												type="button"
+												size="xs"
+												variant="soft"
+												icon="i-lucide-star"
+												:disabled="!email.verifiedAt"
+												:loading="changingPrimaryEmailId === email.id"
+												@click="changePrimaryEmail(email)"
+											>
+												{{ t('profile.security.actions.setPrimaryEmail') }}
+											</UButton>
+											<UButton
+												v-if="email.kind !== 'PRIMARY'"
+												type="button"
+												size="xs"
+												color="error"
+												variant="soft"
+												icon="i-lucide-trash-2"
+												@click="openDeleteEmailModal(email)"
+											>
+												{{ t('profile.security.actions.deleteEmail') }}
+											</UButton>
+										</div>
+									</div>
 								</div>
-							</div>
-						</ProfileField>
-						<ProfileField
-							v-if="allEmails.length >= 2"
-							:label="t('profile.security.fields.switchPrimaryEmail')"
-						>
-							<div class="flex items-center gap-2">
-								<USelect
-									v-model="selectedEmailId"
-									:items="emailSelectItems"
-									:placeholder="t('profile.security.placeholders.selectEmail')"
-									class="min-w-0 flex-1"
-								/>
-								<UButton
-									type="button"
-									size="sm"
-									icon="i-lucide-check"
-									:disabled="
-										!selectedEmailId || selectedEmailId === primaryEmail?.id
-									"
-									:loading="changingPrimaryEmail"
-									@click="changePrimaryEmail"
-								>
-									{{ t('profile.security.actions.switch') }}
-								</UButton>
-							</div>
-						</ProfileField>
+							</ProfileField>
+							<ProfileField
+								v-if="!orderedEmails.length"
+								key="empty-email"
+								:label="t('profile.security.fields.primaryEmail')"
+							>
+								<div :class="readonlyFieldClass">
+									{{
+										currentUser?.email ||
+										t('profile.security.empty.emailNotSet')
+									}}
+								</div>
+							</ProfileField>
+						</TransitionGroup>
 					</div>
 				</section>
 
@@ -230,10 +247,10 @@
 											</UBadge>
 										</div>
 										<p class="mt-0.5 text-sm text-slate-500">
-											{{
-												session.ipAddress ||
-												t('profile.security.values.unknownIp')
-											}}
+											{{ getIpLocationDisplay(session) }}
+										</p>
+										<p class="text-sm text-slate-500">
+											{{ getIpAddressDisplay(session.ipAddress) }}
 										</p>
 										<p class="text-sm text-slate-500">
 											{{ formatDateTime(session.updatedAt) }}
@@ -332,16 +349,12 @@
 						/>
 					</div>
 
-					<label class="mt-6 grid gap-1.5 text-sm font-medium">
+					<div class="mt-6 grid gap-1.5 text-sm font-medium">
 						<span>{{ t('profile.security.fields.receiverEmail') }}</span>
-						<UInput
-							v-model="passwordResetForm.email"
-							type="email"
-							required
-							autocomplete="email"
-							placeholder="name@example.com"
-						/>
-					</label>
+						<div :class="readonlyFieldClass">
+							{{ passwordResetReceiverEmail }}
+						</div>
+					</div>
 
 					<div
 						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
@@ -358,6 +371,7 @@
 							type="submit"
 							icon="i-lucide-mail"
 							:loading="passwordResetSubmitting"
+							:disabled="!passwordResetReceiverEmail"
 						>
 							{{ t('profile.security.actions.sendResetEmail') }}
 						</UButton>
@@ -465,7 +479,7 @@
 		<UModal
 			:open="addEmailModalOpen"
 			:ui="{ content: 'max-w-md', body: 'p-0' }"
-			@update:open="addEmailModalOpen = $event"
+			@update:open="handleAddEmailModalOpenChange"
 		>
 			<template #content>
 				<form class="p-5 sm:p-6" @submit.prevent="submitAddEmail">
@@ -492,7 +506,21 @@
 							type="email"
 							required
 							autocomplete="email"
-							placeholder="name@example.com"
+							:disabled="addEmailStep === 'code'"
+						/>
+					</label>
+					<label
+						v-if="addEmailStep === 'code'"
+						class="mt-4 grid gap-1.5 text-sm font-medium"
+					>
+						<span>{{ t('profile.security.fields.verificationCode') }}</span>
+						<UInput
+							v-model="addEmailForm.code"
+							type="text"
+							inputmode="numeric"
+							maxlength="6"
+							autocomplete="one-time-code"
+							required
 						/>
 					</label>
 
@@ -509,13 +537,71 @@
 						</UButton>
 						<UButton
 							type="submit"
-							icon="i-lucide-mail-plus"
-							:loading="addEmailSubmitting"
+							:icon="
+								addEmailStep === 'code'
+									? 'i-lucide-check'
+									: 'i-lucide-mail-plus'
+							"
+							:loading="addEmailSubmitting || addEmailVerifying"
 						>
-							{{ t('profile.security.actions.sendVerificationEmail') }}
+							{{
+								addEmailStep === 'code'
+									? t('profile.security.actions.confirmVerify')
+									: t('profile.security.actions.sendVerificationEmail')
+							}}
 						</UButton>
 					</div>
 				</form>
+			</template>
+		</UModal>
+
+		<UModal
+			:open="deleteEmailModalOpen"
+			:ui="{ content: 'max-w-md', body: 'p-0' }"
+			@update:open="deleteEmailModalOpen = $event"
+		>
+			<template #content>
+				<div class="p-5 sm:p-6">
+					<div class="flex items-start gap-3">
+						<div
+							class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300"
+						>
+							<UIcon name="i-lucide-mail-x" class="size-5" />
+						</div>
+						<div class="min-w-0">
+							<h2 class="text-xl font-semibold text-slate-950 dark:text-white">
+								{{ t('profile.security.modals.deleteEmail.title') }}
+							</h2>
+							<p class="mt-1 text-sm leading-6 text-slate-500">
+								{{ t('profile.security.modals.deleteEmail.descriptionPrefix') }}
+								<strong>{{ deleteEmailTarget?.email }}</strong>
+								{{ t('profile.security.modals.deleteEmail.descriptionSuffix') }}
+							</p>
+						</div>
+					</div>
+
+					<div
+						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+					>
+						<UButton
+							type="button"
+							color="neutral"
+							variant="soft"
+							@click="deleteEmailModalOpen = false"
+						>
+							{{ t('profile.security.actions.cancel') }}
+						</UButton>
+						<UButton
+							type="button"
+							color="error"
+							icon="i-lucide-trash-2"
+							:loading="deleteEmailSubmitting"
+							@click="deleteSelectedEmail"
+						>
+							{{ t('profile.security.actions.confirmDeleteEmail') }}
+						</UButton>
+					</div>
+				</div>
 			</template>
 		</UModal>
 
@@ -538,7 +624,7 @@
 							</h2>
 							<p class="mt-1 text-sm leading-6 text-slate-500">
 								{{ t('profile.security.modals.verifyEmail.descriptionPrefix') }}
-								<strong>{{ primaryEmail?.email }}</strong>
+								<strong>{{ verifyEmailTarget?.email }}</strong>
 								{{ t('profile.security.modals.verifyEmail.descriptionSuffix') }}
 							</p>
 						</div>
@@ -551,7 +637,6 @@
 							type="text"
 							inputmode="numeric"
 							maxlength="6"
-							placeholder="000000"
 							autocomplete="one-time-code"
 							required
 						/>
@@ -611,10 +696,6 @@ definePageMeta({
 	middleware: 'portal-auth',
 })
 
-interface PasswordResetForm {
-	email: string
-}
-
 type SecurityEventType =
 	| 'LOGIN_SUCCESS'
 	| 'LOGIN_FAILED'
@@ -639,10 +720,22 @@ interface AccountSecurityEmail {
 	updatedAt: string
 }
 
+interface IpLocationSummary {
+	raw: string | null
+	country: string | null
+	region: string | null
+	province: string | null
+	city: string | null
+	district: string | null
+	isp: string | null
+	display: string | null
+}
+
 interface AccountSecuritySession {
 	id: string
 	userAgent: string | null
 	ipAddress: string | null
+	ipLocation: IpLocationSummary | null
 	expiresAt: string
 	createdAt: string
 	updatedAt: string
@@ -655,6 +748,7 @@ interface AccountSecurityEvent {
 	title: string
 	description: string | null
 	ipAddress: string | null
+	ipLocation: IpLocationSummary | null
 	userAgent: string | null
 	metadata: unknown
 	createdAt: string
@@ -686,7 +780,7 @@ interface SecurityEventDisplay {
 
 const localePath = useLocalePath()
 const { locale, t } = useI18n()
-const { user: currentUser, requestPasswordReset, logout } = usePortalAuth()
+const { user: currentUser, logout } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
 const {
 	data: profileData,
@@ -705,22 +799,26 @@ const passwordModalOpen = ref(false)
 const logoutModalOpen = ref(false)
 const revokeSessionsModalOpen = ref(false)
 const addEmailModalOpen = ref(false)
+const deleteEmailModalOpen = ref(false)
 const passwordResetSubmitting = ref(false)
 const logoutSubmitting = ref(false)
 const revokingOtherSessions = ref(false)
 const revokingSessionId = ref<string | null>(null)
-const selectedEmailId = ref<string | undefined>(undefined)
-const changingPrimaryEmail = ref(false)
+const changingPrimaryEmailId = ref<string | null>(null)
 const addEmailSubmitting = ref(false)
-const passwordResetForm = reactive<PasswordResetForm>({
-	email: currentUser.value?.email ?? '',
+const addEmailVerifying = ref(false)
+const deleteEmailSubmitting = ref(false)
+const addEmailStep = ref<'email' | 'code'>('email')
+const addEmailForm = reactive<{ email: string; code: string }>({
+	email: '',
+	code: '',
 })
-const addEmailForm = reactive<{ email: string }>({ email: '' })
 const verifyEmailModalOpen = ref(false)
 const verifyEmailSending = ref(false)
 const verifyEmailSubmitting = ref(false)
 const verifyEmailCooldown = ref(0)
 const verifyEmailForm = reactive<{ code: string }>({ code: '' })
+const verifyEmailTarget = ref<AccountSecurityEmail | null>(null)
 let verifyEmailCooldownTimer: ReturnType<typeof setInterval> | null = null
 
 const readonlyFieldClass =
@@ -814,13 +912,23 @@ const primaryEmail = computed(
 			(email) => email.kind === 'PRIMARY',
 		) ?? null,
 )
-const allEmails = computed(() => securityData.value?.security.emails ?? [])
-const emailSelectItems = computed(() =>
-	allEmails.value.map((email) => ({
-		label: `${email.email}${email.kind === 'PRIMARY' ? ` (${t('profile.security.emailTags.primary')})` : ''}${!email.verifiedAt ? ` (${t('profile.security.emailTags.unverified')})` : ''}`,
-		value: email.id,
-	})),
+const passwordResetReceiverEmail = computed(
+	() =>
+		securityData.value?.security.user.email ?? currentUser.value?.email ?? '',
 )
+const allEmails = computed(() => securityData.value?.security.emails ?? [])
+const orderedEmails = computed(() =>
+	[...allEmails.value].sort((left, right) => {
+		if (left.kind !== right.kind) {
+			return left.kind === 'PRIMARY' ? -1 : 1
+		}
+
+		return (
+			new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime()
+		)
+	}),
+)
+const deleteEmailTarget = ref<AccountSecurityEmail | null>(null)
 const credentialTypeLabel = computed(() =>
 	securityData.value?.security.user.hasPassword
 		? t('profile.security.credentials.password')
@@ -830,28 +938,28 @@ const activeSessions = computed(
 	() => securityData.value?.security.sessions ?? [],
 )
 const activeSessionCount = computed(() => activeSessions.value.length)
+const currentSession = computed(
+	() => activeSessions.value.find((session) => session.current) ?? null,
+)
+const currentSessionLocation = computed(
+	() => currentSession.value?.ipLocation?.display ?? null,
+)
 const securityEvents = computed(() => securityData.value?.security.events ?? [])
-watch(
-	() => currentUser.value?.email,
-	(email) => {
-		passwordResetForm.email = email ?? ''
-	},
-)
-
-watch(
-	allEmails,
-	(emails) => {
-		if (emails.length >= 2 && !selectedEmailId.value) {
-			selectedEmailId.value = primaryEmail.value?.id
-		}
-	},
-	{ immediate: true },
-)
 
 const formatDateTime = (value: string): string =>
 	dayjs(value).format(
-		locale.value === 'zh-CN' ? 'YYYY年M月D日 HH:mm' : 'YYYY-MM-DD HH:mm',
+		locale.value === 'zh-CN' ? 'YYYY年M月D日 HH:mm:ss' : 'YYYY-MM-DD HH:mm:ss',
 	)
+
+const getIpLocationDisplay = (
+	session: Pick<AccountSecuritySession, 'ipLocation'>,
+): string =>
+	session.ipLocation?.display ?? t('profile.security.values.unknownLocation')
+
+const getIpAddressDisplay = (ipAddress: string | null): string =>
+	ipAddress
+		? t('profile.security.values.ipAddress', { ip: ipAddress })
+		: t('profile.security.values.unknownIp')
 
 interface DeviceInfo {
 	label: string
@@ -899,23 +1007,32 @@ const getSecurityEventLabel = (type: SecurityEventType): string =>
 const getSecurityEventIcon = (type: SecurityEventType): string =>
 	securityEventDisplayMap[type].icon
 
-const changePrimaryEmail = async (): Promise<void> => {
-	if (
-		!selectedEmailId.value ||
-		selectedEmailId.value === primaryEmail.value?.id
-	) {
+const getEmailFieldLabel = (
+	email: AccountSecurityEmail,
+	index: number,
+): string => {
+	if (email.kind === 'PRIMARY') {
+		return t('profile.security.fields.primaryEmail')
+	}
+
+	return t('profile.security.fields.emailIndex', { index: index + 1 })
+}
+
+const changePrimaryEmail = async (
+	email: AccountSecurityEmail,
+): Promise<void> => {
+	if (email.kind === 'PRIMARY' || !email.verifiedAt) {
 		return
 	}
 
-	changingPrimaryEmail.value = true
+	changingPrimaryEmailId.value = email.id
 
 	try {
 		await $fetch('/api/auth/emails/primary', {
 			method: 'PATCH',
-			body: { emailId: selectedEmailId.value },
+			body: { emailId: email.id },
 		})
 		await refreshSecurity()
-		selectedEmailId.value = undefined
 		notifySuccess({
 			title: t('profile.security.notifications.primaryEmailChanged'),
 		})
@@ -924,24 +1041,33 @@ const changePrimaryEmail = async (): Promise<void> => {
 			title: t('profile.security.notifications.primaryEmailChangeFailed'),
 		})
 	} finally {
-		changingPrimaryEmail.value = false
+		changingPrimaryEmailId.value = null
 	}
 }
 
-const deleteSelectedEmail = async (): Promise<void> => {
-	if (
-		!selectedEmailId.value ||
-		selectedEmailId.value === primaryEmail.value?.id
-	) {
+const openDeleteEmailModal = (email: AccountSecurityEmail): void => {
+	if (email.kind === 'PRIMARY') {
 		return
 	}
 
+	deleteEmailTarget.value = email
+	deleteEmailModalOpen.value = true
+}
+
+const deleteSelectedEmail = async (): Promise<void> => {
+	if (!deleteEmailTarget.value || deleteEmailTarget.value.kind === 'PRIMARY') {
+		return
+	}
+
+	deleteEmailSubmitting.value = true
+
 	try {
-		await $fetch(`/api/auth/emails/${selectedEmailId.value}`, {
+		await $fetch(`/api/auth/emails/${deleteEmailTarget.value.id}`, {
 			method: 'DELETE',
 		})
 		await refreshSecurity()
-		selectedEmailId.value = undefined
+		deleteEmailModalOpen.value = false
+		deleteEmailTarget.value = null
 		notifySuccess({
 			title: t('profile.security.notifications.emailDeleted'),
 		})
@@ -949,11 +1075,36 @@ const deleteSelectedEmail = async (): Promise<void> => {
 		notifyError(submitError, {
 			title: t('profile.security.notifications.emailDeleteFailed'),
 		})
+	} finally {
+		deleteEmailSubmitting.value = false
+	}
+}
+
+const resetAddEmailForm = (): void => {
+	addEmailStep.value = 'email'
+	addEmailForm.email = ''
+	addEmailForm.code = ''
+}
+
+const openAddEmailModal = (): void => {
+	resetAddEmailForm()
+	addEmailModalOpen.value = true
+}
+
+const handleAddEmailModalOpenChange = (open: boolean): void => {
+	addEmailModalOpen.value = open
+	if (!open) {
+		resetAddEmailForm()
 	}
 }
 
 const submitAddEmail = async (): Promise<void> => {
 	if (!addEmailForm.email) {
+		return
+	}
+
+	if (addEmailStep.value === 'code') {
+		await confirmAddEmail()
 		return
 	}
 
@@ -964,8 +1115,8 @@ const submitAddEmail = async (): Promise<void> => {
 			method: 'POST',
 			body: { email: addEmailForm.email, purpose: 'ADD_SECONDARY_EMAIL' },
 		})
-		addEmailModalOpen.value = false
-		addEmailForm.email = ''
+		addEmailStep.value = 'code'
+		addEmailForm.code = ''
 		notifySuccess({
 			title: t('profile.security.notifications.verificationEmailSent'),
 			description: t(
@@ -978,6 +1129,39 @@ const submitAddEmail = async (): Promise<void> => {
 		})
 	} finally {
 		addEmailSubmitting.value = false
+	}
+}
+
+const confirmAddEmail = async (): Promise<void> => {
+	if (!addEmailForm.email || !addEmailForm.code) {
+		return
+	}
+
+	addEmailVerifying.value = true
+
+	try {
+		await $fetch('/api/users/me/security/emails/secondary', {
+			method: 'POST',
+			body: {
+				email: addEmailForm.email,
+				code: addEmailForm.code,
+			},
+		})
+		await refreshSecurity()
+		addEmailModalOpen.value = false
+		resetAddEmailForm()
+		notifySuccess({
+			title: t('profile.security.notifications.emailAdded'),
+		})
+	} catch (submitError) {
+		notifyError(submitError, {
+			title: t('profile.security.notifications.emailVerifyFailed'),
+			description: t(
+				'profile.security.notifications.emailVerifyFailedDescription',
+			),
+		})
+	} finally {
+		addEmailVerifying.value = false
 	}
 }
 
@@ -995,14 +1179,15 @@ const startVerifyEmailCooldown = (): void => {
 	}, 1000)
 }
 
-const openVerifyEmailModal = (): void => {
+const openVerifyEmailModal = (email: AccountSecurityEmail): void => {
+	verifyEmailTarget.value = email
 	verifyEmailForm.code = ''
 	verifyEmailCooldown.value = 0
 	verifyEmailModalOpen.value = true
 }
 
 const sendVerifyEmailCode = async (): Promise<void> => {
-	if (!primaryEmail.value) {
+	if (!verifyEmailTarget.value) {
 		return
 	}
 
@@ -1012,7 +1197,7 @@ const sendVerifyEmailCode = async (): Promise<void> => {
 		await $fetch('/api/users/me/security/email-verifications', {
 			method: 'POST',
 			body: {
-				email: primaryEmail.value.email,
+				email: verifyEmailTarget.value.email,
 				purpose: 'VERIFY_EMAIL',
 			},
 		})
@@ -1031,7 +1216,7 @@ const sendVerifyEmailCode = async (): Promise<void> => {
 }
 
 const submitVerifyEmailCode = async (): Promise<void> => {
-	if (!primaryEmail.value || !verifyEmailForm.code) {
+	if (!verifyEmailTarget.value || !verifyEmailForm.code) {
 		return
 	}
 
@@ -1041,12 +1226,13 @@ const submitVerifyEmailCode = async (): Promise<void> => {
 		await $fetch('/api/users/me/security/emails/verify', {
 			method: 'POST',
 			body: {
-				email: primaryEmail.value.email,
+				email: verifyEmailTarget.value.email,
 				code: verifyEmailForm.code,
 			},
 		})
 		verifyEmailModalOpen.value = false
 		verifyEmailForm.code = ''
+		verifyEmailTarget.value = null
 		await refreshSecurity()
 		notifySuccess({
 			title: t('profile.security.notifications.emailVerified'),
@@ -1067,8 +1253,8 @@ const submitPasswordReset = async (): Promise<void> => {
 	passwordResetSubmitting.value = true
 
 	try {
-		await requestPasswordReset({
-			email: passwordResetForm.email,
+		await $fetch('/api/users/me/security/password-reset', {
+			method: 'POST',
 		})
 		passwordModalOpen.value = false
 		notifySuccess({
@@ -1092,7 +1278,7 @@ const submitLogout = async (): Promise<void> => {
 
 	try {
 		await logout()
-		await navigateTo(localePath('/login'))
+		await navigateTo(localePath('/'))
 	} catch (submitError) {
 		notifyError(submitError, {
 			title: t('profile.security.notifications.logoutFailed'),
@@ -1156,3 +1342,23 @@ const revokeOtherSessions = async (): Promise<void> => {
 	}
 }
 </script>
+
+<style scoped>
+.email-row-move,
+.email-row-enter-active,
+.email-row-leave-active {
+	transition:
+		transform 180ms ease,
+		opacity 180ms ease;
+}
+
+.email-row-enter-from,
+.email-row-leave-to {
+	opacity: 0;
+	transform: translateY(6px);
+}
+
+.email-row-leave-active {
+	position: absolute;
+}
+</style>

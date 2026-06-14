@@ -1,11 +1,4 @@
-import {
-	deleteCookie,
-	getCookie,
-	getHeader,
-	getRequestIP,
-	setCookie,
-	type H3Event,
-} from 'h3'
+import { deleteCookie, getCookie, getHeader, setCookie, type H3Event } from 'h3'
 import { createHash, randomBytes } from 'node:crypto'
 import type {
 	User,
@@ -15,6 +8,7 @@ import type {
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
+import { getClientIpAddress } from '../ip-location/ip-normalizer'
 import { signAuthToken, verifyAuthToken } from './jwt'
 
 export interface UserSummary {
@@ -158,7 +152,7 @@ export const issueRefreshToken = async (
 			userId: user.id,
 			tokenHash: hashRefreshToken(refreshToken),
 			userAgent: getHeader(event, 'user-agent') ?? null,
-			ipAddress: getRequestIP(event, { xForwardedFor: true }) ?? null,
+			ipAddress: getClientIpAddress(event),
 			expiresAt,
 		},
 	})

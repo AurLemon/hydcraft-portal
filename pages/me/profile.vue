@@ -26,17 +26,22 @@
 			<form class="mx-auto mt-16 grid w-full max-w-3xl gap-16" @submit.prevent>
 				<ProfileUsernameSection
 					v-model:form="form"
+					:disabled="!canSubmitUsername"
 					:public-profile-url="publicProfileUrl"
 					:submitting="submittingSection === 'username'"
+					:username-status-text="usernameStatusText"
 					@submit="submitUsername"
 				/>
 				<ProfileBasicSection
+					:profile-id="profile.id"
 					:created-at="profile.createdAt"
 					:joined-at="profile.joinedAt"
 					:hydroline-id="profile.hydrolineId"
 					:submitting="submittingSection === 'basic'"
 					v-model:form="form"
+					@avatar-uploaded="handleAvatarUploaded"
 					@copy-hydroline-id="copyHydrolineId"
+					@reset-avatar="handleAvatarReset"
 					@submit="submitBasicProfile"
 				/>
 				<ProfilePreferenceSection v-model:form="form" />
@@ -52,6 +57,7 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import { useToast } from '@nuxt/ui/composables'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import {
@@ -68,7 +74,7 @@ definePageMeta({
 })
 
 const toast = useToast()
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const runtimeConfig = useRuntimeConfig()
 const { user: currentUser } = usePortalAuth()
 const { notifyError } = useAdminToast()
@@ -87,6 +93,72 @@ const coverImage = computed(() => profile.value?.coverUrl ?? '')
 const publicProfileUrl = computed(() => {
 	const siteUrl = runtimeConfig.public.siteUrl.replace(/\/$/, '')
 	return `${siteUrl}/u/${form.username}`
+})
+const trimmedUsername = computed(() => form.username.trim())
+const isUsernameCaseOnlyChange = computed(() => {
+	if (!profile.value) {
+		return false
+	}
+
+	return (
+		trimmedUsername.value !== profile.value.username &&
+		trimmedUsername.value.toLowerCase() === profile.value.username.toLowerCase()
+	)
+})
+const isUsernameChangedBeyondCase = computed(() => {
+	if (!profile.value) {
+		return false
+	}
+
+	return (
+		trimmedUsername.value !== profile.value.username &&
+		!isUsernameCaseOnlyChange.value
+	)
+})
+const isUsernameCooldownActive = computed(() => {
+	const canChangeAt = profile.value?.canChangeUsernameAt
+
+	if (!canChangeAt) {
+		return false
+	}
+
+	return dayjs(canChangeAt).isAfter(dayjs())
+})
+const canSubmitUsername = computed(
+	() => !isUsernameCooldownActive.value || !isUsernameChangedBeyondCase.value,
+)
+const formattedCanChangeUsernameAt = computed(() => {
+	const canChangeAt = profile.value?.canChangeUsernameAt
+
+	if (!canChangeAt) {
+		return ''
+	}
+
+	return new Intl.DateTimeFormat(String(locale.value), {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	}).format(dayjs(canChangeAt).toDate())
+})
+const usernameStatusText = computed(() => {
+	if (isUsernameCooldownActive.value) {
+		if (isUsernameCaseOnlyChange.value) {
+			return t('profile.edit.hints.usernameCaseOnlyAvailableUntil', {
+				date: formattedCanChangeUsernameAt.value,
+			})
+		}
+
+		return t('profile.edit.hints.usernameLockedUntil', {
+			date: formattedCanChangeUsernameAt.value,
+			days: profile.value?.usernameChangeCooldownDays ?? 30,
+		})
+	}
+
+	return t('profile.edit.hints.usernameAvailableNow', {
+		days: profile.value?.usernameChangeCooldownDays ?? 30,
+	})
 })
 
 watch(
@@ -207,7 +279,7 @@ const submitSocialProfile = async (): Promise<void> => {
 }
 
 const patchProfileAttachment = async (
-	payload: Record<string, string>,
+	payload: Record<string, string | null>,
 	title: string,
 ): Promise<void> => {
 	try {
@@ -243,6 +315,15 @@ const handleCoverUploaded = async (
 			coverAttachmentId: result.id,
 		},
 		t('profile.notifications.coverUpdated'),
+	)
+}
+
+const handleAvatarReset = async (): Promise<void> => {
+	await patchProfileAttachment(
+		{
+			avatarAttachmentId: null,
+		},
+		t('profile.notifications.avatarReset'),
 	)
 }
 

@@ -100,8 +100,11 @@ export const normalizeUsername = (value: unknown): string | undefined => {
 		throw badRequest('USERNAME_INVALID_CHARACTERS')
 	}
 
-	return username.toLowerCase()
+	return username
 }
+
+export const normalizeUsernameForComparison = (username: string): string =>
+	username.toLowerCase()
 
 export const normalizeDisplayName = (value: unknown): string | undefined =>
 	normalizeRequiredText(value, 32, 'displayName')

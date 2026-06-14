@@ -49,6 +49,8 @@ export default defineEventHandler(async (event) => {
 			},
 			data: {
 				disconnectedAt: new Date(),
+				avatarAttachmentId: null,
+				avatarUrl: null,
 			},
 		})
 	}
@@ -69,6 +71,9 @@ export default defineEventHandler(async (event) => {
 	await emitEvent('user.oauth.unlinked', {
 		userId: user.id,
 		provider: account.provider,
+		externalAccountId: account.id,
+		avatarAttachmentId: account.avatarAttachmentId,
+		avatarUrl: account.avatarUrl,
 		updatedAt: new Date(),
 	})
 

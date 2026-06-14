@@ -6,12 +6,30 @@ import { prisma } from '../../../../utils/db/prisma'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
 import {
 	getOAuthProviderConfig,
-	getOAuthRedirectUri,
 	parseOAuthProvider,
 } from '../../../../utils/oauth/providers'
 
 const hashState = (state: string): string =>
 	createHash('sha256').update(state).digest('hex')
+
+const getOptionalCurrentUser = async (
+	event: Parameters<typeof requireCurrentUser>[0],
+) => {
+	try {
+		return await requireCurrentUser(event)
+	} catch (error) {
+		if (
+			typeof error === 'object' &&
+			error !== null &&
+			'statusCode' in error &&
+			(error as { statusCode?: number }).statusCode === 401
+		) {
+			return null
+		}
+
+		throw error
+	}
+}
 
 export default defineEventHandler(async (event) => {
 	const provider = parseOAuthProvider(getRouterParam(event, 'provider'))
@@ -29,20 +47,20 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	const user = await requireCurrentUser(event)
+	const user = await getOptionalCurrentUser(event)
 	const query = getQuery(event)
 	const state = randomBytes(32).toString('base64url')
 
 	await prisma.oAuthStateToken.create({
 		data: {
-			userId: user.id,
+			userId: user?.id ?? null,
 			provider,
 			stateHash: hashState(state),
 			redirectTo:
 				typeof query.redirectTo === 'string' ? query.redirectTo : null,
 			locale: normalizeMailLocale(
 				typeof query.locale === 'string' ? query.locale : null,
-				user.preferences?.language ?? 'ZH_CN',
+				user?.preferences?.language ?? 'ZH_CN',
 			),
 			expiresAt: new Date(Date.now() + 10 * 60 * 1000),
 		},
@@ -50,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
 	const url = new URL(config.authorizeUrl)
 	url.searchParams.set('client_id', config.clientId)
-	url.searchParams.set('redirect_uri', getOAuthRedirectUri(provider))
+	url.searchParams.set('redirect_uri', config.redirectUri)
 	url.searchParams.set('response_type', 'code')
 	url.searchParams.set('state', state)
 	url.searchParams.set('scope', config.scopes.join(' '))

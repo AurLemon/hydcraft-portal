@@ -44,6 +44,85 @@ const {
 	inactiveNavItemClass: () => props.inactiveNavItemClass,
 	hidden: () => props.hidden,
 })
+
+const mobileRouteListInner = ref<HTMLElement | null>(null)
+const mobileRouteListHeight = ref<number | null>(null)
+
+let mobileRouteListAnimationFrame: number | null = null
+let mobileRouteListResizeObserver: ResizeObserver | null = null
+
+const syncMobileRouteListHeight = () => {
+	const inner = mobileRouteListInner.value
+
+	if (!inner) {
+		return
+	}
+
+	mobileRouteListHeight.value = inner.scrollHeight
+}
+
+const scheduleMobileRouteListHeightSync = () => {
+	if (mobileRouteListAnimationFrame !== null) {
+		cancelAnimationFrame(mobileRouteListAnimationFrame)
+	}
+
+	mobileRouteListAnimationFrame = requestAnimationFrame(() => {
+		mobileRouteListAnimationFrame = null
+		syncMobileRouteListHeight()
+	})
+}
+
+watch(
+	[
+		() => mobileMenuOpen.value,
+		() => groupTransitionKey.value,
+		() => selectableMobileGroupNavItems.value.length,
+		() => selectableMobileFallback.value?.key ?? '',
+	],
+	async ([isOpen]) => {
+		if (!isOpen) {
+			return
+		}
+
+		await nextTick()
+		scheduleMobileRouteListHeightSync()
+	},
+	{ flush: 'post' },
+)
+
+watch(
+	mobileRouteListInner,
+	(inner, previousInner) => {
+		if (previousInner) {
+			mobileRouteListResizeObserver?.unobserve(previousInner)
+		}
+
+		if (inner) {
+			mobileRouteListResizeObserver?.observe(inner)
+			scheduleMobileRouteListHeightSync()
+		}
+	},
+	{ flush: 'post' },
+)
+
+onMounted(() => {
+	mobileRouteListResizeObserver = new ResizeObserver(() => {
+		scheduleMobileRouteListHeightSync()
+	})
+
+	if (mobileRouteListInner.value) {
+		mobileRouteListResizeObserver.observe(mobileRouteListInner.value)
+		syncMobileRouteListHeight()
+	}
+})
+
+onBeforeUnmount(() => {
+	if (mobileRouteListAnimationFrame !== null) {
+		cancelAnimationFrame(mobileRouteListAnimationFrame)
+	}
+
+	mobileRouteListResizeObserver?.disconnect()
+})
 </script>
 
 <template>
@@ -223,85 +302,116 @@ const {
 					</div>
 
 					<div
-						class="grid w-[calc(100vw-3rem)] max-w-full grid-cols-[1.75rem_minmax(0,1fr)_1.75rem] items-start gap-2"
+						class="flex w-[calc(100vw-3rem)] max-w-full flex-col items-start gap-2"
 					>
-						<button
-							type="button"
-							class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-opacity duration-[240ms] ease-out hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-							:class="
-								canGoBack
-									? 'pointer-events-auto opacity-80 delay-[240ms]'
-									: 'pointer-events-none opacity-0 delay-0'
-							"
-							:aria-hidden="!canGoBack"
-							:aria-label="backButtonLabel"
-							:tabindex="canGoBack ? 0 : -1"
-							@click="showParentMenu"
+						<div
+							class="w-full overflow-hidden transition-[height] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+							:style="{
+								height:
+									mobileRouteListHeight === null
+										? 'auto'
+										: `${mobileRouteListHeight}px`,
+							}"
 						>
-							<UIcon name="i-lucide-arrow-left" class="h-5 w-5" />
-						</button>
-
-						<Transition
-							mode="out-in"
-							enter-active-class="transition duration-[420ms] ease-out"
-							enter-from-class="-translate-y-1.5 opacity-0"
-							enter-to-class="translate-y-0 opacity-100"
-							leave-active-class="transition duration-[300ms] ease-in"
-							leave-from-class="translate-y-0 opacity-100"
-							leave-to-class="translate-y-1.5 opacity-0"
-						>
-							<div
-								:key="groupTransitionKey"
-								class="flex min-w-0 max-w-full flex-wrap items-center gap-2"
+							<Transition
+								mode="out-in"
+								enter-active-class="transition duration-[420ms] ease-out"
+								enter-from-class="-translate-y-1.5 opacity-0"
+								enter-to-class="translate-y-0 opacity-100"
+								leave-active-class="transition duration-[300ms] ease-in"
+								leave-from-class="translate-y-0 opacity-100"
+								leave-to-class="translate-y-1.5 opacity-0"
+								@after-enter="scheduleMobileRouteListHeightSync"
+								@after-leave="scheduleMobileRouteListHeightSync"
 							>
-								<UButton
-									v-for="item in selectableMobileGroupNavItems"
-									:key="item.key"
-									type="button"
-									color="neutral"
-									variant="ghost"
-									class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap text-white opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-white active:bg-slate-500/10 dark:text-slate-50 dark:hover:text-slate-900 dark:active:bg-white/10"
-									@click="selectMobileNavItem(item)"
+								<div
+									:key="groupTransitionKey"
+									ref="mobileRouteListInner"
+									class="flex min-w-0 max-w-full flex-wrap items-center gap-2"
 								>
-									<span
-										class="pointer-events-none absolute bottom-[0.28em] left-1/2 -z-10 h-[0.95em] w-[96%] origin-bottom -translate-x-1/2 translate-y-[0.18em] scale-y-[0.55] rounded-md bg-[rgba(125,211,252,0.16)] opacity-0 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:scale-y-[1] group-hover:opacity-100"
-										aria-hidden="true"
-									/>
-									{{ item.label }}
-								</UButton>
+									<UButton
+										v-for="item in selectableMobileGroupNavItems"
+										:key="item.key"
+										type="button"
+										color="neutral"
+										variant="ghost"
+										class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap text-white opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-white active:bg-slate-500/10 dark:text-slate-50 dark:hover:text-slate-900 dark:active:bg-white/10"
+										@click="selectMobileNavItem(item)"
+									>
+										<span
+											class="pointer-events-none absolute bottom-[0.28em] left-1/2 -z-10 h-[0.95em] w-[96%] origin-bottom -translate-x-1/2 translate-y-[0.18em] scale-y-[0.55] rounded-md bg-[rgba(125,211,252,0.16)] opacity-0 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:scale-y-[1] group-hover:opacity-100"
+											aria-hidden="true"
+										/>
+										{{ item.label }}
+									</UButton>
 
-								<UButton
-									v-if="selectableMobileFallback"
+									<UButton
+										v-if="selectableMobileFallback"
+										type="button"
+										color="neutral"
+										variant="ghost"
+										class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap text-white opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-white active:bg-slate-500/10 dark:text-slate-50 dark:hover:text-slate-900 dark:active:bg-white/10"
+										@click="selectMobileFallback"
+									>
+										<span
+											class="pointer-events-none absolute bottom-[0.28em] left-1/2 -z-10 h-[0.95em] w-[96%] origin-bottom -translate-x-1/2 translate-y-[0.18em] scale-y-[0.55] rounded-md bg-[rgba(125,211,252,0.16)] opacity-0 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:scale-y-[1] group-hover:opacity-100"
+											aria-hidden="true"
+										/>
+										{{ selectableMobileFallback.label }}
+									</UButton>
+								</div>
+							</Transition>
+						</div>
+
+						<div class="flex items-center">
+							<div
+								class="overflow-hidden transition-[width,margin-right,opacity] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+								:class="
+									canGoBack ? 'mr-2 w-7 opacity-80' : 'mr-0 w-0 opacity-0'
+								"
+							>
+								<button
 									type="button"
-									color="neutral"
-									variant="ghost"
-									class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap text-white opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-white active:bg-slate-500/10 dark:text-slate-50 dark:hover:text-slate-900 dark:active:bg-white/10"
-									@click="selectMobileFallback"
+									class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-[opacity,transform] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									:class="
+										canGoBack
+											? 'pointer-events-auto translate-x-0 opacity-100'
+											: 'pointer-events-none -translate-x-2 opacity-0'
+									"
+									:aria-hidden="!canGoBack"
+									:aria-label="backButtonLabel"
+									:tabindex="canGoBack ? 0 : -1"
+									@click="showParentMenu"
 								>
-									<span
-										class="pointer-events-none absolute bottom-[0.28em] left-1/2 -z-10 h-[0.95em] w-[96%] origin-bottom -translate-x-1/2 translate-y-[0.18em] scale-y-[0.55] rounded-md bg-[rgba(125,211,252,0.16)] opacity-0 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:scale-y-[1] group-hover:opacity-100"
-										aria-hidden="true"
-									/>
-									{{ selectableMobileFallback.label }}
-								</UButton>
+									<UIcon name="i-lucide-arrow-left" class="h-5 w-5" />
+								</button>
 							</div>
-						</Transition>
 
-						<button
-							type="button"
-							class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-opacity duration-[240ms] ease-out hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-							:class="
-								displayedGroup.key !== routeGroupKey
-									? 'pointer-events-auto opacity-80 delay-[240ms]'
-									: 'pointer-events-none opacity-0 delay-0'
-							"
-							:aria-hidden="displayedGroup.key === routeGroupKey"
-							:aria-label="t('header.nav.currentGroup')"
-							:tabindex="displayedGroup.key !== routeGroupKey ? 0 : -1"
-							@click="showRouteMenu"
-						>
-							<UIcon name="i-lucide-corner-down-right" class="h-5 w-5" />
-						</button>
+							<div
+								class="overflow-hidden transition-[width,opacity] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+								:class="
+									displayedGroup.key !== routeGroupKey
+										? 'w-7 opacity-80'
+										: 'w-0 opacity-0'
+								"
+							>
+								<button
+									type="button"
+									class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-[opacity,transform] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									:class="
+										displayedGroup.key !== routeGroupKey
+											? 'pointer-events-auto translate-x-0 opacity-100'
+											: 'pointer-events-none -translate-x-2 opacity-0'
+									"
+									:aria-hidden="displayedGroup.key === routeGroupKey"
+									:aria-label="t('header.nav.currentGroup')"
+									:tabindex="displayedGroup.key !== routeGroupKey ? 0 : -1"
+									@click="showRouteMenu"
+								>
+									<UIcon name="i-lucide-corner-down-right" class="h-5 w-5" />
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

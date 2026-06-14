@@ -36,8 +36,8 @@ interface PortalLoginBody {
 interface PortalRegisterBody {
 	handle: string
 	password: string
-	displayName?: string
-	email?: string
+	email: string
+	code: string
 }
 
 interface PortalPasswordResetRequestBody {
@@ -52,6 +52,18 @@ interface PortalPasswordResetBody {
 
 interface PortalPasswordResetRequestResponse {
 	accepted: boolean
+}
+
+interface PortalEmailCodeLoginRequestBody {
+	email: string
+	intent: 'LOGIN' | 'REGISTER'
+	locale?: string
+}
+
+interface PortalEmailCodeLoginBody {
+	email: string
+	code: string
+	intent: 'LOGIN' | 'REGISTER'
 }
 
 const isUnauthorizedError = (error: unknown): boolean =>
@@ -128,6 +140,30 @@ export const usePortalAuth = () => {
 		return response.user
 	}
 
+	const requestEmailCodeLogin = async (
+		body: PortalEmailCodeLoginRequestBody,
+	): Promise<void> => {
+		await $fetch('/api/auth/email-code/request', {
+			method: 'POST',
+			body,
+		})
+	}
+
+	const loginWithEmailCode = async (
+		body: PortalEmailCodeLoginBody,
+	): Promise<PortalUserSummary> => {
+		const response = await $fetch<PortalAuthMeResponse>(
+			'/api/auth/email-code/confirm',
+			{
+				method: 'POST',
+				body,
+			},
+		)
+		user.value = response.user
+		resolved.value = true
+		return response.user
+	}
+
 	const requestPasswordReset = async (
 		body: PortalPasswordResetRequestBody,
 	): Promise<PortalPasswordResetRequestResponse> => {
@@ -166,6 +202,8 @@ export const usePortalAuth = () => {
 		fetchCurrentUser,
 		login,
 		register,
+		requestEmailCodeLogin,
+		loginWithEmailCode,
 		requestPasswordReset,
 		resetPassword,
 		logout,

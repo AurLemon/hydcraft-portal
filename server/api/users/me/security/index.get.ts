@@ -3,6 +3,12 @@ import {
 	findCurrentRefreshSession,
 	requireCurrentUser,
 } from '../../../../utils/auth/session'
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../../../../utils/ip-location/ip-location'
+
+const RECENT_SECURITY_EVENT_LIMIT = 5
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
@@ -61,9 +67,28 @@ export default defineEventHandler(async (event) => {
 			orderBy: {
 				createdAt: 'desc',
 			},
-			take: 20,
+			take: RECENT_SECURITY_EVENT_LIMIT,
 		}),
 	])
+
+	const sessionsWithLocation = await Promise.all(
+		sessions.map(async (session) => ({
+			...session,
+			ipAddress:
+				normalizeIpAddressForDisplay(session.ipAddress) ?? session.ipAddress,
+			ipLocation: await lookupIpLocation(session.ipAddress),
+			current: session.id === currentSession?.id,
+		})),
+	)
+	const eventsWithLocation = await Promise.all(
+		events.map(async (securityEvent) => ({
+			...securityEvent,
+			ipAddress:
+				normalizeIpAddressForDisplay(securityEvent.ipAddress) ??
+				securityEvent.ipAddress,
+			ipLocation: await lookupIpLocation(securityEvent.ipAddress),
+		})),
+	)
 
 	return {
 		security: {
@@ -83,11 +108,8 @@ export default defineEventHandler(async (event) => {
 				),
 			},
 			emails,
-			sessions: sessions.map((session) => ({
-				...session,
-				current: session.id === currentSession?.id,
-			})),
-			events,
+			sessions: sessionsWithLocation,
+			events: eventsWithLocation,
 		},
 	}
 })

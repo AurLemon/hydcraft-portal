@@ -95,6 +95,22 @@ const activeNavTextClass = computed(() =>
 		? 'text-primary'
 		: 'text-[rgb(125,211,252)]',
 )
+const routeMiddleware = computed(() => route.meta.middleware)
+const shouldRedirectAfterLogout = computed(() => {
+	const middleware = routeMiddleware.value
+
+	if (typeof middleware === 'string') {
+		return middleware === 'portal-auth' || middleware === 'admin-auth'
+	}
+
+	if (Array.isArray(middleware)) {
+		return middleware.some(
+			(item) => item === 'portal-auth' || item === 'admin-auth',
+		)
+	}
+
+	return false
+})
 
 const headerScrimClass = computed(() =>
 	usesHeroVideoHeaderChrome.value
@@ -173,6 +189,11 @@ const selectLocale = async (value: LocaleCode): Promise<void> => {
 const handleLogout = async (): Promise<void> => {
 	userMenuOpen.value = false
 	await logout()
+
+	if (shouldRedirectAfterLogout.value) {
+		await navigateTo(localePath('/'))
+	}
+
 	notifySuccess({
 		title: t('header.userMenu.logoutSuccessTitle'),
 	})

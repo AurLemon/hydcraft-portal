@@ -13,7 +13,7 @@ import type {
 	MinecraftProfileSummary,
 	PublicUserProfile,
 } from './types'
-import { normalizeUsername } from './validation'
+import { normalizeUsername, normalizeUsernameForComparison } from './validation'
 
 export const getEditableUserProfile = async (
 	userId: string,
@@ -36,7 +36,7 @@ export const getPublicUserProfile = async (
 	username: string,
 	currentUserId?: string | null,
 ): Promise<PublicUserProfile> => {
-	const user = await findUserProfileByUsername(username.toLowerCase())
+	const user = await findUserProfileByUsername(username)
 
 	if (!user) {
 		throw createApiError({
@@ -60,7 +60,7 @@ export const getPublicUserProfile = async (
 export const getPublicMinecraftSummary = async (
 	username: string,
 ): Promise<MinecraftProfileSummary> => {
-	const user = await findUserProfileByUsername(username.toLowerCase())
+	const user = await findUserProfileByUsername(username)
 
 	if (!user) {
 		throw createApiError({
@@ -95,14 +95,18 @@ export const checkUsernameAvailability = async (
 	currentUserId?: string,
 ): Promise<{ username: string; available: boolean }> => {
 	const username = normalizeUsername(usernameInput)
+	const normalizedUsername = normalizeUsernameForComparison(username ?? '')
 
 	if (!username) {
 		throw createBadRequestError('USERNAME_REQUIRED')
 	}
 
-	const user = await prisma.user.findUnique({
+	const user = await prisma.user.findFirst({
 		where: {
-			username,
+			username: {
+				equals: normalizedUsername,
+				mode: 'insensitive',
+			},
 		},
 		select: {
 			id: true,

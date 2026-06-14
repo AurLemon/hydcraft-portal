@@ -55,52 +55,13 @@
 				<div
 					class="flex min-w-0 flex-col items-center gap-3 text-center sm:flex-row sm:gap-4 sm:text-left lg:mt-10"
 				>
-					<AttachmentUploadButton
-						purpose="user-avatar"
-						owner-type="user"
+					<ProfileAvatarUploadButton
 						:owner-id="profile.id"
-						preview-shape="circle"
-						color="neutral"
-						variant="ghost"
-						size="sm"
-						icon=""
-						class="h-24 w-24 shrink-0 sm:h-28 sm:w-28"
-						button-class="group relative h-full w-full overflow-hidden rounded-full border border-white/40 bg-slate-900/40 p-0 hover:!bg-slate-900/40"
+						:avatar-url="form.avatarUrl"
+						:display-name="form.displayName"
+						:username="form.username"
 						@uploaded="$emit('avatarUploaded', $event)"
-					>
-						<div
-							class="relative block h-full w-full overflow-hidden rounded-full"
-						>
-							<template v-if="form.avatarUrl && !avatarImageFailed">
-								<USkeleton
-									v-if="!avatarImageReady"
-									class="block h-full w-full rounded-full"
-								/>
-								<img
-									ref="avatarImageRef"
-									:src="form.avatarUrl"
-									:alt="form.displayName || form.username"
-									class="block h-full w-full rounded-full object-cover transition-opacity duration-200"
-									:class="avatarImageReady ? 'opacity-100' : 'hidden opacity-0'"
-									loading="eager"
-									decoding="async"
-									@load="markAvatarImageReady"
-									@error="markAvatarImageFailed"
-								/>
-							</template>
-							<div
-								v-else
-								class="flex h-full w-full items-center justify-center rounded-full bg-slate-700 text-3xl leading-none font-semibold text-slate-300 sm:text-4xl"
-							>
-								{{ avatarInitial }}
-							</div>
-						</div>
-						<span
-							class="absolute inset-0 flex items-center justify-center bg-slate-950/45 opacity-0 transition-opacity group-hover:opacity-100"
-						>
-							<UIcon name="i-lucide-camera" class="h-6 w-6 text-white" />
-						</span>
-					</AttachmentUploadButton>
+					/>
 
 					<div class="min-w-0 max-w-full">
 						<div
@@ -208,16 +169,8 @@ defineEmits<{
 }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
-const avatarImageRef = ref<HTMLImageElement | null>(null)
-const avatarImageReady = ref(false)
-const avatarImageFailed = ref(false)
 
 const effectiveCoverImage = computed(() => props.coverImage || defaultCover)
-const avatarInitial = computed(() =>
-	(props.form.displayName || props.form.username || '?')
-		.slice(0, 1)
-		.toUpperCase(),
-)
 const joinedDays = computed(() =>
 	Math.max(dayjs().diff(dayjs(props.profile.joinedAt), 'day'), 0),
 )
@@ -259,42 +212,4 @@ const badgeLabel = (badge: ProfileBadge): string => {
 }
 const heroActionClass =
 	'border border-white/18 !bg-slate-950/46 !text-white shadow-lg backdrop-blur-md hover:!bg-slate-950/62 disabled:!bg-slate-950/46 disabled:!text-white disabled:opacity-70'
-
-const markAvatarImageReady = (): void => {
-	avatarImageReady.value = true
-	avatarImageFailed.value = false
-}
-
-const markAvatarImageFailed = (): void => {
-	avatarImageReady.value = true
-	avatarImageFailed.value = true
-}
-
-const syncCachedAvatarImageState = async (): Promise<void> => {
-	await nextTick()
-
-	if (!props.form.avatarUrl || !avatarImageRef.value?.complete) {
-		return
-	}
-
-	if (avatarImageRef.value.naturalWidth > 0) {
-		markAvatarImageReady()
-		return
-	}
-
-	markAvatarImageFailed()
-}
-
-watch(
-	() => props.form.avatarUrl,
-	() => {
-		avatarImageReady.value = false
-		avatarImageFailed.value = false
-		void syncCachedAvatarImageState()
-	},
-)
-
-onMounted(() => {
-	void syncCachedAvatarImageState()
-})
 </script>

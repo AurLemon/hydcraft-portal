@@ -87,6 +87,7 @@ enum MinecraftAccountSource {
 
 enum ExternalProvider {
   GITHUB
+  GOOGLE
   MICROSOFT
   QQ
   DISCORD
@@ -104,6 +105,11 @@ enum EmailVerificationPurpose {
   CHANGE_PRIMARY_EMAIL
   ADD_SECONDARY_EMAIL
   PASSWORD_RESET
+}
+
+enum AuthEmailCodePurpose {
+  EMAIL_LOGIN
+  EMAIL_REGISTER
 }
 
 enum SecurityEventType {

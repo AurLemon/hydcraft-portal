@@ -1,29 +1,46 @@
 import { prisma } from '../../utils/db/prisma'
 import { hashPassword } from '../../utils/auth/password'
 import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
+import { consumeAuthEmailCode } from '../../utils/auth/email-code'
 import {
+	assertEmail,
 	assertHandle,
 	assertPassword,
-	normalizeEmail,
 } from '../../utils/auth/validation'
 import {
 	createUniqueHydrolineId,
 	ensureUserProfileDefaults,
 } from '../../utils/profile/defaults'
 import { recordSecurityEvent } from '../../utils/security/security-events'
+import { createApiError } from '../../utils/errors'
 
 interface RegisterBody {
 	handle: string
 	password: string
-	displayName?: string
-	email?: string
+	email: string
+	code: string
 }
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<RegisterBody>(event)
 	const handle = assertHandle(body.handle ?? '')
 	const password = assertPassword(body.password ?? '')
-	const email = normalizeEmail(body.email)
+	const email = assertEmail(body.email)
+	const code = body.code?.trim()
+
+	if (!code) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'EMAIL_VERIFICATION_CODE_REQUIRED',
+		})
+	}
+
+	const verifiedEmail = await consumeAuthEmailCode(
+		email,
+		code,
+		'EMAIL_REGISTER',
+	)
+	const now = new Date()
 	const passwordHash = await hashPassword(password)
 	const hydrolineId = await createUniqueHydrolineId()
 
@@ -32,8 +49,9 @@ export default defineEventHandler(async (event) => {
 			handle,
 			username: handle,
 			hydrolineId,
-			displayName: body.displayName?.trim() || null,
-			email,
+			displayName: handle,
+			email: verifiedEmail,
+			emailVerifiedAt: now,
 			role: 'USER',
 			status: 'ACTIVE',
 			credential: {
@@ -41,15 +59,13 @@ export default defineEventHandler(async (event) => {
 					passwordHash,
 				},
 			},
-			emails: email
-				? {
-						create: {
-							email,
-							kind: 'PRIMARY',
-							verifiedAt: null,
-						},
-					}
-				: undefined,
+			emails: {
+				create: {
+					email: verifiedEmail,
+					kind: 'PRIMARY',
+					verifiedAt: now,
+				},
+			},
 		},
 	})
 	await ensureUserProfileDefaults(user.id)

@@ -26,7 +26,7 @@ interface EventMap {
 	}
 	'user.profile.attachment-replaced': {
 		userId: string
-		purpose: 'user-avatar' | 'user-cover'
+		purpose: 'user-avatar' | 'user-cover' | 'external-account-avatar'
 		activeAttachmentId: string | null
 		updatedAt: Date
 	}
@@ -68,11 +68,21 @@ interface EventMap {
 		userId: string
 		provider: string
 		providerAccountId: string
+		externalAccountId: string
+		updatedAt: Date
+	}
+	'user.oauth.attachment-replaced': {
+		userId: string
+		externalAccountId: string
+		activeAttachmentId: string | null
 		updatedAt: Date
 	}
 	'user.oauth.unlinked': {
 		userId: string
 		provider: string
+		externalAccountId: string
+		avatarAttachmentId: string | null
+		avatarUrl: string | null
 		updatedAt: Date
 	}
 }

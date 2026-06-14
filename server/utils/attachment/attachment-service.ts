@@ -14,6 +14,7 @@ import type {
 	AttachmentApp,
 	AttachmentCategory,
 	AttachmentOwnerType,
+	AttachmentPolicy,
 	AttachmentPublicSummary,
 	AttachmentPurpose,
 	AttachmentPublicVariant,
@@ -49,6 +50,9 @@ interface UploadAttachmentInput {
 	buffer: Buffer
 	purpose: AttachmentPurpose
 	ownerId?: string
+	ownerType?: AttachmentOwnerType
+	category?: AttachmentCategory
+	visibility?: AttachmentVisibility
 }
 
 const badRequest = (code: string) => createBadRequestError(code)
@@ -107,20 +111,30 @@ const requireOwnedAttachment = async (
 
 const resolveUploadContext = (
 	user: User,
-	ownerId?: string,
+	input: UploadAttachmentInput,
+	policy: AttachmentPolicy,
 ): {
 	app: AttachmentApp
 	category: AttachmentCategory
 	ownerType: AttachmentOwnerType
 	ownerId: string | null
 	visibility: AttachmentVisibility
-} => ({
-	app: 'portal',
-	category: 'profile',
-	ownerType: 'user',
-	ownerId: ownerId ?? user.id,
-	visibility: 'PUBLIC',
-})
+} => {
+	const ownerType = input.ownerType ?? 'user'
+	const ownerId = input.ownerId ?? (ownerType === 'user' ? user.id : null)
+
+	if (!ownerId) {
+		throw badRequest('INVALID_ATTACHMENT_INPUT')
+	}
+
+	return {
+		app: 'portal',
+		category: input.category ?? policy.category,
+		ownerType,
+		ownerId,
+		visibility: input.visibility ?? policy.visibility,
+	}
+}
 
 const toVariantSummary = (
 	storage: StorageAdapter,
@@ -208,13 +222,46 @@ export class AttachmentService {
 		private readonly storageProfiles: StorageProfiles,
 	) {}
 
+	private deleteAttachmentObjects(
+		attachment: Attachment & { variants: AttachmentVariant[] },
+		context:
+			| 'attachment variant object'
+			| 'replaced attachment object'
+			| 'admin attachment object',
+	): void {
+		const objectKeys = new Set<string>()
+
+		for (const variant of attachment.variants) {
+			objectKeys.add(variant.objectKey)
+		}
+
+		if (attachment.objectKey) {
+			objectKeys.add(attachment.objectKey)
+		}
+
+		if (attachment.originalKey) {
+			objectKeys.add(attachment.originalKey)
+		}
+
+		for (const objectKey of objectKeys) {
+			void this.storage
+				.deleteObject({
+					profile: 'publicAssets',
+					objectKey,
+				})
+				.catch((error) => {
+					console.error(`Failed to delete ${context}`, error)
+				})
+		}
+	}
+
 	async uploadAttachment(
 		user: User,
 		input: UploadAttachmentInput,
 	): Promise<AttachmentPublicSummary> {
 		const purpose = normalizePurpose(input.purpose)
 		const policy = getAttachmentPolicy(purpose)
-		const uploadContext = resolveUploadContext(user, input.ownerId)
+		const uploadContext = resolveUploadContext(user, input, policy)
 		const contentType = parseString(input.contentType, 'contentType')
 		const sizeBytes = parseSizeBytes(input.buffer.byteLength)
 
@@ -367,16 +414,7 @@ export class AttachmentService {
 			},
 		})
 
-		for (const variant of attachment.variants) {
-			void this.storage
-				.deleteObject({
-					profile: 'publicAssets',
-					objectKey: variant.objectKey,
-				})
-				.catch((error) => {
-					console.error('Failed to delete attachment variant object', error)
-				})
-		}
+		this.deleteAttachmentObjects(attachment, 'attachment variant object')
 	}
 
 	async deleteProfileAttachmentsExcept(input: {
@@ -384,10 +422,36 @@ export class AttachmentService {
 		purpose: 'user-avatar' | 'user-cover'
 		activeAttachmentId: string | null
 	}): Promise<void> {
+		await this.deleteAttachmentsExcept({
+			ownerType: 'user',
+			ownerId: input.userId,
+			purpose: input.purpose,
+			activeAttachmentId: input.activeAttachmentId,
+		})
+	}
+
+	async deleteExternalAccountAvatarAttachmentsExcept(input: {
+		externalAccountId: string
+		activeAttachmentId: string | null
+	}): Promise<void> {
+		await this.deleteAttachmentsExcept({
+			ownerType: 'external-account',
+			ownerId: input.externalAccountId,
+			purpose: 'external-account-avatar',
+			activeAttachmentId: input.activeAttachmentId,
+		})
+	}
+
+	private async deleteAttachmentsExcept(input: {
+		ownerType: AttachmentOwnerType
+		ownerId: string
+		purpose: AttachmentPurpose
+		activeAttachmentId: string | null
+	}): Promise<void> {
 		const attachments = await prisma.attachment.findMany({
 			where: {
-				ownerType: 'user',
-				ownerId: input.userId,
+				ownerType: input.ownerType,
+				ownerId: input.ownerId,
 				purpose: input.purpose,
 				status: {
 					notIn: ['DELETED', 'EXPIRED'],
@@ -421,16 +485,7 @@ export class AttachmentService {
 		})
 
 		for (const attachment of attachments) {
-			for (const variant of attachment.variants) {
-				void this.storage
-					.deleteObject({
-						profile: 'publicAssets',
-						objectKey: variant.objectKey,
-					})
-					.catch((error) => {
-						console.error('Failed to delete replaced attachment object', error)
-					})
-			}
+			this.deleteAttachmentObjects(attachment, 'replaced attachment object')
 		}
 	}
 
@@ -556,16 +611,7 @@ export class AttachmentService {
 			},
 		})
 
-		for (const variant of attachment.variants) {
-			void this.storage
-				.deleteObject({
-					profile: 'publicAssets',
-					objectKey: variant.objectKey,
-				})
-				.catch((error) => {
-					console.error('Failed to delete attachment variant object', error)
-				})
-		}
+		this.deleteAttachmentObjects(attachment, 'admin attachment object')
 	}
 }
 

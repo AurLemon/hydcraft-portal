@@ -17,6 +17,22 @@
 			</UButton>
 		</div>
 		<div :class="profileCardClass" class="grid gap-4">
+			<ProfileField
+				:label="t('profile.fields.avatar')"
+				field-class="grid gap-2 md:grid-cols-[180px_1fr] md:items-center"
+			>
+				<ProfileAvatarUploadButton
+					:owner-id="profileId"
+					:avatar-url="form.avatarUrl"
+					:display-name="form.displayName"
+					:username="form.username"
+					show-reset
+					size-class="h-20 w-20 shrink-0"
+					button-class="group relative h-full w-full overflow-hidden rounded-full border border-slate-200 bg-slate-50 p-0 hover:!bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:!bg-slate-900/60"
+					@uploaded="$emit('avatarUploaded', $event)"
+					@reset="$emit('resetAvatar')"
+				/>
+			</ProfileField>
 			<ProfileField :label="t('profile.fields.displayName')" required>
 				<UInput
 					v-model="form.displayName"
@@ -92,6 +108,7 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import ProfileBirthdayField from '~/components/profile/edit/ProfileBirthdayField.vue'
 import {
 	countryItems,
@@ -102,6 +119,7 @@ import {
 } from '~/utils/profile-edit'
 
 interface ProfileBasicSectionProps {
+	profileId: string
 	hydrolineId: string
 	createdAt: string
 	joinedAt: string
@@ -111,6 +129,8 @@ interface ProfileBasicSectionProps {
 defineProps<ProfileBasicSectionProps>()
 defineEmits<{
 	copyHydrolineId: []
+	avatarUploaded: [result: AttachmentUploadResult]
+	resetAvatar: []
 	submit: []
 }>()
 const form = defineModel<ProfileForm>('form', { required: true })

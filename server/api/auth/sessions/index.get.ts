@@ -3,6 +3,10 @@ import {
 	getRefreshTokenHashFromEvent,
 	requireCurrentUser,
 } from '../../../utils/auth/session'
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../../../utils/ip-location/ip-location'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
@@ -28,16 +32,20 @@ export default defineEventHandler(async (event) => {
 	})
 
 	return {
-		sessions: sessions.map((session) => ({
-			id: session.id,
-			userAgent: session.userAgent,
-			ipAddress: session.ipAddress,
-			expiresAt: session.expiresAt,
-			revokedAt: session.revokedAt,
-			createdAt: session.createdAt,
-			updatedAt: session.updatedAt,
-			isCurrent: session.tokenHash === currentTokenHash,
-			isActive: !session.revokedAt && session.expiresAt > now,
-		})),
+		sessions: await Promise.all(
+			sessions.map(async (session) => ({
+				id: session.id,
+				userAgent: session.userAgent,
+				ipAddress:
+					normalizeIpAddressForDisplay(session.ipAddress) ?? session.ipAddress,
+				ipLocation: await lookupIpLocation(session.ipAddress),
+				expiresAt: session.expiresAt,
+				revokedAt: session.revokedAt,
+				createdAt: session.createdAt,
+				updatedAt: session.updatedAt,
+				isCurrent: session.tokenHash === currentTokenHash,
+				isActive: !session.revokedAt && session.expiresAt > now,
+			})),
+		),
 	}
 })

@@ -37,16 +37,11 @@ const trimOptional = (value: string | null | undefined): string | null => {
 }
 
 export const getMailRuntimeConfig = (): MailRuntimeConfig => {
-	const host = trimOptional(process.env.MAIL_SMTP_HOST ?? process.env.SMTP_HOST)
-	const port = parsePort(process.env.MAIL_SMTP_PORT ?? process.env.SMTP_PORT)
-	const user = trimOptional(process.env.MAIL_SMTP_USER ?? process.env.SMTP_USER)
-	const pass = trimOptional(
-		process.env.MAIL_SMTP_PASSWORD ?? process.env.SMTP_PASS,
-	)
-	const secure = parseBoolean(
-		process.env.MAIL_SMTP_SECURE ?? process.env.SMTP_SECURE,
-		port === 465,
-	)
+	const host = trimOptional(process.env.MAIL_SMTP_HOST)
+	const port = parsePort(process.env.MAIL_SMTP_PORT)
+	const user = trimOptional(process.env.MAIL_SMTP_USER)
+	const pass = trimOptional(process.env.MAIL_SMTP_PASSWORD)
+	const secure = parseBoolean(process.env.MAIL_SMTP_SECURE, port === 465)
 	const enabled = parseBoolean(process.env.MAIL_ENABLED, true)
 
 	return {

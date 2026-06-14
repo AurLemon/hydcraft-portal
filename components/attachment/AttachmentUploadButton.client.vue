@@ -14,7 +14,7 @@
 			:size="size"
 			:icon="icon"
 			:class="buttonClass"
-			:loading="uploading"
+			:loading="showLoading && uploading"
 			:disabled="!policy"
 			@click="openFilePicker"
 		>
@@ -60,6 +60,7 @@ interface AttachmentUploadButtonProps {
 	size?: ButtonSize
 	icon?: string
 	buttonClass?: string
+	showLoading?: boolean
 }
 
 const props = withDefaults(defineProps<AttachmentUploadButtonProps>(), {
@@ -70,6 +71,7 @@ const props = withDefaults(defineProps<AttachmentUploadButtonProps>(), {
 	size: 'sm',
 	icon: 'i-lucide-image',
 	buttonClass: '',
+	showLoading: true,
 })
 const emit = defineEmits<{
 	uploaded: [result: AttachmentUploadResult]

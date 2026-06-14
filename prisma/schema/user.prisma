@@ -160,6 +160,7 @@ model ExternalAccount {
   providerAccountId String
   providerUsername  String?
   providerEmail     String?
+  avatarAttachmentId String?
   avatarUrl         String?
   scope             String?
   rawProfile        Json?
@@ -203,6 +204,22 @@ model EmailVerificationToken {
   updatedAt    DateTime                 @updatedAt
 
   @@index([userId, email, purpose])
+  @@index([expiresAt])
+  @@index([consumedAt])
+}
+
+model AuthEmailCode {
+  id         String               @id @default(cuid())
+  email      String
+  codeHash   String
+  purpose    AuthEmailCodePurpose
+  locale     UserProfileLanguage  @default(ZH_CN)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([email, purpose])
   @@index([expiresAt])
   @@index([consumedAt])
 }

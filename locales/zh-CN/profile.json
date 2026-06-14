@@ -7,6 +7,7 @@
 		"fields": {
 			"handle": "用户名",
 			"username": "用户名",
+			"avatar": "头像",
 			"displayName": "显示名称",
 			"avatarUrl": "头像 URL",
 			"bio": "个人简介",
@@ -39,10 +40,14 @@
 			"actions": {
 				"updateUsername": "更新用户名",
 				"updateProfile": "更新档案",
-				"copyHydrolineId": "复制 Hydroline ID"
+				"copyHydrolineId": "复制 Hydroline ID",
+				"resetAvatar": "重置头像"
 			},
 			"hints": {
 				"usernameCooldown": "用户名每 30 天只能修改一次，修改后旧链接可能失效或跳转。",
+				"usernameAvailableNow": "当前可修改用户名。修改后 {days} 天内不能再次修改，旧链接可能失效或跳转。",
+				"usernameLockedUntil": "用户名每 {days} 天只能修改一次，下次可以在 {date} 修改。",
+				"usernameCaseOnlyAvailableUntil": "当前处于冷却期，仅可调整用户名大小写；下次可以在 {date} 修改其他内容。",
 				"languagePreference": "偏好语言会作为访问默认语言路由时的快速切换目标。",
 				"publicEmail": "开启展示后，公开邮箱可能被其他人看到。"
 			}
@@ -135,6 +140,7 @@
 			"noChanges": "没有需要保存的更改",
 			"imageSaveFailed": "资料图片保存失败",
 			"avatarUpdated": "头像已更新",
+			"avatarReset": "头像已重置",
 			"coverUpdated": "封面已更新",
 			"preferencesSaved": "偏好已保存",
 			"preferencesSaveFailed": "偏好保存失败",
@@ -185,6 +191,7 @@
 				"currentRole": "当前身份",
 				"lastLogin": "上次登录",
 				"primaryEmail": "主邮箱",
+				"emailIndex": "邮箱 {index}",
 				"switchPrimaryEmail": "切换主邮箱",
 				"receiverEmail": "接收邮箱",
 				"emailAddress": "邮箱地址",
@@ -196,6 +203,7 @@
 				"deleteEmail": "删除邮箱",
 				"verify": "验证",
 				"switch": "切换",
+				"setPrimaryEmail": "设为主邮箱",
 				"revokeOtherSessions": "撤销其他会话",
 				"logout": "退出登录",
 				"revoke": "撤销",
@@ -204,6 +212,7 @@
 				"sendResetEmail": "发送重置邮件",
 				"confirmLogout": "确认退出",
 				"confirmRevoke": "确认撤销",
+				"confirmDeleteEmail": "确认删除",
 				"sendVerificationEmail": "发送验证邮件",
 				"sendCode": "发送验证码",
 				"resendAfter": "{seconds}s 后可重发",
@@ -228,7 +237,9 @@
 				"current": "当前会话"
 			},
 			"values": {
-				"unknownIp": "未知 IP"
+				"unknownIp": "未知 IP",
+				"unknownLocation": "未知归属地",
+				"ipAddress": "{ip}"
 			},
 			"roles": {
 				"OWNER": "站点所有者",
@@ -287,6 +298,11 @@
 					"title": "添加邮箱",
 					"description": "添加后需要验证邮箱才能设为主邮箱。"
 				},
+				"deleteEmail": {
+					"title": "删除邮箱？",
+					"descriptionPrefix": "即将删除 ",
+					"descriptionSuffix": "。删除后需要重新添加并验证才能再次使用。"
+				},
 				"verifyEmail": {
 					"title": "验证邮箱",
 					"descriptionPrefix": "向 ",
@@ -296,6 +312,7 @@
 			"notifications": {
 				"primaryEmailChanged": "主邮箱已切换",
 				"primaryEmailChangeFailed": "切换主邮箱失败",
+				"emailAdded": "邮箱已添加",
 				"emailDeleted": "邮箱已删除",
 				"emailDeleteFailed": "删除邮箱失败",
 				"verificationEmailSent": "验证邮件已发送",
@@ -308,7 +325,7 @@
 				"emailVerifyFailed": "验证失败",
 				"emailVerifyFailedDescription": "验证码无效或已过期，请重新发送。",
 				"resetEmailSent": "重置邮件已发送",
-				"resetEmailSentDescription": "如果邮箱匹配有效账号，你将收到下一步操作链接。",
+				"resetEmailSentDescription": "请检查当前账号邮箱，并按邮件指引继续操作。",
 				"resetEmailSendFailed": "重置邮件发送失败",
 				"logoutFailed": "退出登录失败",
 				"sessionRevoked": "会话已撤销",

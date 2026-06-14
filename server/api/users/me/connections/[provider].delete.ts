@@ -68,6 +68,9 @@ export default defineEventHandler(async (event) => {
 	await emitEvent('user.oauth.unlinked', {
 		userId: user.id,
 		provider,
+		externalAccountId: account.id,
+		avatarAttachmentId: account.avatarAttachmentId,
+		avatarUrl: account.avatarUrl,
 		updatedAt: new Date(),
 	})
 

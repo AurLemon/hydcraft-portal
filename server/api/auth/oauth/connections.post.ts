@@ -15,7 +15,13 @@ interface ConnectOAuthBody {
 	rawProfile?: Prisma.InputJsonValue
 }
 
-const connectableProviders: ExternalProvider[] = ['GITHUB', 'QQ', 'MINECRAFT']
+const connectableProviders: ExternalProvider[] = [
+	'GITHUB',
+	'GOOGLE',
+	'MICROSOFT',
+	'QQ',
+	'MINECRAFT',
+]
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
@@ -49,21 +55,26 @@ export default defineEventHandler(async (event) => {
 			code: 'OAUTH_ACCOUNT_ALREADY_LINKED',
 		})
 	}
+	const replacedAccounts = await prisma.externalAccount.findMany({
+		where: {
+			userId: user.id,
+			provider,
+			providerAccountId: {
+				not: providerAccountId,
+			},
+		},
+	})
 
 	const account = await prisma.$transaction(async (tx) => {
-		await tx.externalAccount.updateMany({
-			where: {
-				userId: user.id,
-				provider,
-				providerAccountId: {
-					not: providerAccountId,
+		if (replacedAccounts.length) {
+			await tx.externalAccount.deleteMany({
+				where: {
+					id: {
+						in: replacedAccounts.map((item) => item.id),
+					},
 				},
-				disconnectedAt: null,
-			},
-			data: {
-				disconnectedAt: new Date(),
-			},
-		})
+			})
+		}
 
 		return tx.externalAccount.upsert({
 			where: {
@@ -114,8 +125,20 @@ export default defineEventHandler(async (event) => {
 		userId: user.id,
 		provider,
 		providerAccountId,
+		externalAccountId: account.id,
 		updatedAt: account.updatedAt,
 	})
+
+	for (const replacedAccount of replacedAccounts) {
+		await emitEvent('user.oauth.unlinked', {
+			userId: user.id,
+			provider,
+			externalAccountId: replacedAccount.id,
+			avatarAttachmentId: replacedAccount.avatarAttachmentId,
+			avatarUrl: replacedAccount.avatarUrl,
+			updatedAt: account.updatedAt,
+		})
+	}
 
 	return {
 		ok: true,

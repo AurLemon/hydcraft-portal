@@ -21,6 +21,7 @@ import {
 	normalizeTimezoneMode,
 	normalizeUrl,
 	normalizeUsername,
+	normalizeUsernameForComparison,
 } from './validation'
 
 interface ProfilePatchBody {
@@ -220,6 +221,14 @@ const assertUsernameCanChange = (user: User): void => {
 	})
 }
 
+const isUsernameCaseOnlyChange = (
+	currentUsername: string,
+	nextUsername: string,
+): boolean =>
+	currentUsername !== nextUsername &&
+	normalizeUsernameForComparison(currentUsername) ===
+		normalizeUsernameForComparison(nextUsername)
+
 const emitProfileUpdateEvents = async (
 	user: User,
 	username: string | undefined,
@@ -264,6 +273,12 @@ export const updateEditableUserProfile = async (
 	await ensureUserProfileDefaults(user.id)
 
 	const username = normalizeUsername(body.username)
+	const usernameCaseOnlyChange =
+		username === undefined
+			? false
+			: isUsernameCaseOnlyChange(user.username, username)
+	const usernameChanged = username !== undefined && username !== user.username
+	const usernameChangedBeyondCase = usernameChanged && !usernameCaseOnlyChange
 	const avatarAttachmentId = normalizeAttachmentId(
 		body.avatarAttachmentId,
 		'avatarAttachmentId',
@@ -278,7 +293,7 @@ export const updateEditableUserProfile = async (
 	const countryOrRegion = normalizeCountryOrRegion(body.countryOrRegion)
 	const birthday = normalizeBirthday(body.birthday)
 
-	if (username && username !== user.username) {
+	if (usernameChangedBeyondCase) {
 		assertUsernameCanChange(user)
 
 		const availability = await checkUsernameAvailability(username, user.id)
@@ -314,9 +329,7 @@ export const updateEditableUserProfile = async (
 
 	const userData = {
 		...(username !== undefined ? { username } : {}),
-		...(username !== undefined && username !== user.username
-			? { usernameChangedAt: new Date() }
-			: {}),
+		...(usernameChangedBeyondCase ? { usernameChangedAt: new Date() } : {}),
 		// TODO: Keep avatarUrl/coverUrl only for legacy compatibility.
 		// Future UI should resolve display URLs from Attachment variants instead of storing full URLs on User.
 		...(avatarAttachmentId !== undefined

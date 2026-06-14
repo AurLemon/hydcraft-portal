@@ -91,6 +91,12 @@ const formatSentAt = (locale: MailLocale): string =>
 		timeZone: 'Asia/Shanghai',
 	}).format(new Date())
 
+const formatIpAddress = (
+	ipAddress: string | null,
+	ipLocation: string | null | undefined,
+): string =>
+	ipAddress ? `${ipAddress}${ipLocation ? `（${ipLocation}）` : ''}` : ''
+
 export const renderVerificationMail = (
 	input: VerificationMailInput,
 ): MailTemplateRenderResult => {
@@ -99,10 +105,11 @@ export const renderVerificationMail = (
 	const copy = copyByLocale[mailLocale]
 	const displayName = input.displayName || 'HydCraft User'
 	const sentAt = formatSentAt(mailLocale)
+	const ipAddress = formatIpAddress(input.ipAddress, input.ipLocation)
 	const paragraphs = [
 		copy.codeLabel,
 		copy.expires,
-		input.ipAddress ? `${copy.ipPrefix} ${input.ipAddress}` : '',
+		ipAddress ? `${copy.ipPrefix}${ipAddress}` : '',
 		copy.warning,
 	].filter(Boolean)
 
@@ -123,7 +130,7 @@ export const renderVerificationMail = (
 		'',
 		`${copy.codeLabel} ${input.code}`,
 		copy.expires,
-		input.ipAddress ? `${copy.ipPrefix} ${input.ipAddress}` : '',
+		ipAddress ? `${copy.ipPrefix}${ipAddress}` : '',
 		copy.warning,
 		'',
 		`${copy.footerNote} · ${sentAt}`,

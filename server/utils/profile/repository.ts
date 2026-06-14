@@ -38,9 +38,12 @@ export const findUserProfileById = async (id: string) =>
 	})
 
 export const findUserProfileByUsername = async (username: string) =>
-	await prisma.user.findUnique({
+	await prisma.user.findFirst({
 		where: {
-			username,
+			username: {
+				equals: username,
+				mode: 'insensitive',
+			},
 		},
 		include: PROFILE_INCLUDE,
 	})

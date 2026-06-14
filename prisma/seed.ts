@@ -12,7 +12,7 @@ const prisma = new PrismaClient({
 
 const defaultOwner = {
 	handle: 'aurlemon',
-	username: 'aurlemon',
+	username: 'AurLemon',
 	hydrolineId: 'H-2601280B23HS',
 	displayName: 'AurLemon',
 	role: 'OWNER' as const,
@@ -260,33 +260,6 @@ async function main() {
 			label: null,
 			color: null,
 			sortOrder: 0,
-		},
-	})
-
-	await prisma.minecraftAccount.upsert({
-		where: {
-			normalizedUsername: 'aurlemon',
-		},
-		create: {
-			userId: owner.id,
-			username: 'AurLemon',
-			normalizedUsername: 'aurlemon',
-			uuid: '00000000-0000-4000-8000-000000000128',
-			status: 'VERIFIED',
-			source: 'MANUAL',
-			isPrimary: true,
-			verifiedAt: new Date(),
-			lastSeenAt: new Date(),
-		},
-		update: {
-			userId: owner.id,
-			username: 'AurLemon',
-			uuid: '00000000-0000-4000-8000-000000000128',
-			status: 'VERIFIED',
-			source: 'MANUAL',
-			isPrimary: true,
-			verifiedAt: new Date(),
-			lastSeenAt: new Date(),
 		},
 	})
 

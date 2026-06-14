@@ -1,5 +1,9 @@
 import { requireCurrentUser } from '../../../utils/auth/session'
 import { prisma } from '../../../utils/db/prisma'
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../../../utils/ip-location/ip-location'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
@@ -26,6 +30,14 @@ export default defineEventHandler(async (event) => {
 	})
 
 	return {
-		events,
+		events: await Promise.all(
+			events.map(async (securityEvent) => ({
+				...securityEvent,
+				ipAddress:
+					normalizeIpAddressForDisplay(securityEvent.ipAddress) ??
+					securityEvent.ipAddress,
+				ipLocation: await lookupIpLocation(securityEvent.ipAddress),
+			})),
+		),
 	}
 })

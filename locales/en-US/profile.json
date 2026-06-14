@@ -7,6 +7,7 @@
 		"fields": {
 			"handle": "Handle",
 			"username": "Username",
+			"avatar": "Avatar",
 			"displayName": "Display name",
 			"avatarUrl": "Avatar URL",
 			"bio": "Bio",
@@ -39,10 +40,14 @@
 			"actions": {
 				"updateUsername": "Update username",
 				"updateProfile": "Update profile",
-				"copyHydrolineId": "Copy Hydroline ID"
+				"copyHydrolineId": "Copy Hydroline ID",
+				"resetAvatar": "Reset avatar"
 			},
 			"hints": {
 				"usernameCooldown": "You can change your username once every 30 days. Old links may stop working or redirect after the change.",
+				"usernameAvailableNow": "You can change your username now. After a change, you cannot change it again for {days} days. Old links may stop working or redirect.",
+				"usernameLockedUntil": "You can change your username once every {days} days. You can change it again on {date}.",
+				"usernameCaseOnlyAvailableUntil": "You are in the cooldown window. Only username casing can be updated now; other changes are available again on {date}.",
 				"languagePreference": "Your preferred language is used as the quick target when you enter a default-language route.",
 				"publicEmail": "If shown publicly, this email may be visible to other people."
 			}
@@ -135,6 +140,7 @@
 			"noChanges": "No changes to save",
 			"imageSaveFailed": "Failed to save profile image",
 			"avatarUpdated": "Avatar updated",
+			"avatarReset": "Avatar reset",
 			"coverUpdated": "Cover updated",
 			"preferencesSaved": "Preferences saved",
 			"preferencesSaveFailed": "Failed to save preferences",
@@ -183,6 +189,7 @@
 				"currentRole": "Current role",
 				"lastLogin": "Last login",
 				"primaryEmail": "Primary email",
+				"emailIndex": "Email {index}",
 				"switchPrimaryEmail": "Switch primary email",
 				"receiverEmail": "Receiver email",
 				"emailAddress": "Email address",
@@ -194,6 +201,7 @@
 				"deleteEmail": "Delete email",
 				"verify": "Verify",
 				"switch": "Switch",
+				"setPrimaryEmail": "Set primary",
 				"revokeOtherSessions": "Revoke other sessions",
 				"logout": "Log out",
 				"revoke": "Revoke",
@@ -202,6 +210,7 @@
 				"sendResetEmail": "Send reset email",
 				"confirmLogout": "Confirm logout",
 				"confirmRevoke": "Confirm revoke",
+				"confirmDeleteEmail": "Confirm delete",
 				"sendVerificationEmail": "Send verification email",
 				"sendCode": "Send code",
 				"resendAfter": "Resend in {seconds}s",
@@ -223,7 +232,11 @@
 				"activeCount": "{count} active",
 				"current": "Current session"
 			},
-			"values": { "unknownIp": "Unknown IP" },
+			"values": {
+				"unknownIp": "Unknown IP",
+				"unknownLocation": "Unknown location",
+				"ipAddress": "{ip}"
+			},
 			"roles": {
 				"OWNER": "Site owner",
 				"ADMIN": "Admin",
@@ -279,6 +292,11 @@
 					"title": "Add email",
 					"description": "The email must be verified before it can become your primary email."
 				},
+				"deleteEmail": {
+					"title": "Delete email?",
+					"descriptionPrefix": "You are about to delete ",
+					"descriptionSuffix": ". You will need to add and verify it again before using it."
+				},
 				"verifyEmail": {
 					"title": "Verify email",
 					"descriptionPrefix": "Send a code to ",
@@ -288,6 +306,7 @@
 			"notifications": {
 				"primaryEmailChanged": "Primary email switched",
 				"primaryEmailChangeFailed": "Failed to switch primary email",
+				"emailAdded": "Email added",
 				"emailDeleted": "Email deleted",
 				"emailDeleteFailed": "Failed to delete email",
 				"verificationEmailSent": "Verification email sent",
@@ -300,7 +319,7 @@
 				"emailVerifyFailed": "Verification failed",
 				"emailVerifyFailedDescription": "The code is invalid or expired. Send a new one and try again.",
 				"resetEmailSent": "Reset email sent",
-				"resetEmailSentDescription": "If the email belongs to a valid account, you will receive the next-step link.",
+				"resetEmailSentDescription": "Check your current account email and follow the instructions to continue.",
 				"resetEmailSendFailed": "Failed to send reset email",
 				"logoutFailed": "Failed to log out",
 				"sessionRevoked": "Session revoked",

@@ -7,6 +7,7 @@
 		"fields": {
 			"handle": "使用者名稱",
 			"username": "使用者名稱",
+			"avatar": "頭像",
 			"displayName": "顯示名稱",
 			"avatarUrl": "頭像 URL",
 			"bio": "個人簡介",
@@ -39,10 +40,14 @@
 			"actions": {
 				"updateUsername": "更新使用者名稱",
 				"updateProfile": "更新檔案",
-				"copyHydrolineId": "複製 Hydroline ID"
+				"copyHydrolineId": "複製 Hydroline ID",
+				"resetAvatar": "重設頭像"
 			},
 			"hints": {
 				"usernameCooldown": "使用者名稱每 30 天只能修改一次，修改後舊連結可能失效或跳轉。",
+				"usernameAvailableNow": "目前可修改使用者名稱。修改後 {days} 天內不能再次修改，舊連結可能失效或跳轉。",
+				"usernameLockedUntil": "使用者名稱每 {days} 天只能修改一次，下次可以在 {date} 修改。",
+				"usernameCaseOnlyAvailableUntil": "目前處於冷卻期，僅可調整使用者名稱大小寫；下次可以在 {date} 修改其他內容。",
 				"languagePreference": "偏好語言會作為進入預設語言路由時的快速切換目標。",
 				"publicEmail": "開啟展示後，公開信箱可能被其他人看到。"
 			}
@@ -135,6 +140,7 @@
 			"noChanges": "沒有需要儲存的變更",
 			"imageSaveFailed": "資料圖片儲存失敗",
 			"avatarUpdated": "頭像已更新",
+			"avatarReset": "頭像已重設",
 			"coverUpdated": "封面已更新",
 			"preferencesSaved": "偏好已儲存",
 			"preferencesSaveFailed": "偏好儲存失敗",
@@ -181,6 +187,7 @@
 				"currentRole": "目前身分",
 				"lastLogin": "上次登入",
 				"primaryEmail": "主信箱",
+				"emailIndex": "信箱 {index}",
 				"switchPrimaryEmail": "切換主信箱",
 				"receiverEmail": "接收信箱",
 				"emailAddress": "信箱地址",
@@ -192,6 +199,7 @@
 				"deleteEmail": "刪除信箱",
 				"verify": "驗證",
 				"switch": "切換",
+				"setPrimaryEmail": "設為主信箱",
 				"revokeOtherSessions": "撤銷其他會話",
 				"logout": "登出",
 				"revoke": "撤銷",
@@ -200,6 +208,7 @@
 				"sendResetEmail": "傳送重設郵件",
 				"confirmLogout": "確認登出",
 				"confirmRevoke": "確認撤銷",
+				"confirmDeleteEmail": "確認刪除",
 				"sendVerificationEmail": "傳送驗證郵件",
 				"sendCode": "傳送驗證碼",
 				"resendAfter": "{seconds}s 後可重寄",
@@ -215,7 +224,11 @@
 			"status": { "verified": "已驗證", "unverified": "未驗證" },
 			"placeholders": { "selectEmail": "選擇信箱" },
 			"sessions": { "activeCount": "{count} 個活躍", "current": "目前會話" },
-			"values": { "unknownIp": "未知 IP" },
+			"values": {
+				"unknownIp": "未知 IP",
+				"unknownLocation": "未知歸屬地",
+				"ipAddress": "{ip}"
+			},
 			"roles": {
 				"OWNER": "站點所有者",
 				"ADMIN": "管理員",
@@ -268,6 +281,11 @@
 					"title": "新增信箱",
 					"description": "新增後需要驗證信箱才能設為主信箱。"
 				},
+				"deleteEmail": {
+					"title": "刪除信箱？",
+					"descriptionPrefix": "即將刪除 ",
+					"descriptionSuffix": "。刪除後需要重新新增並驗證才能再次使用。"
+				},
 				"verifyEmail": {
 					"title": "驗證信箱",
 					"descriptionPrefix": "向 ",
@@ -277,6 +295,7 @@
 			"notifications": {
 				"primaryEmailChanged": "主信箱已切換",
 				"primaryEmailChangeFailed": "切換主信箱失敗",
+				"emailAdded": "信箱已新增",
 				"emailDeleted": "信箱已刪除",
 				"emailDeleteFailed": "刪除信箱失敗",
 				"verificationEmailSent": "驗證郵件已傳送",
@@ -289,7 +308,7 @@
 				"emailVerifyFailed": "驗證失敗",
 				"emailVerifyFailedDescription": "驗證碼無效或已過期，請重新傳送。",
 				"resetEmailSent": "重設郵件已傳送",
-				"resetEmailSentDescription": "如果信箱符合有效帳號，你將收到下一步操作連結。",
+				"resetEmailSentDescription": "請檢查目前帳號信箱，並依照郵件指引繼續操作。",
 				"resetEmailSendFailed": "重設郵件傳送失敗",
 				"logoutFailed": "登出失敗",
 				"sessionRevoked": "會話已撤銷",

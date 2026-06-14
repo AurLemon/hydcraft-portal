@@ -34,7 +34,13 @@
 								<div
 									class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-700 dark:bg-slate-900/70 dark:text-slate-200"
 								>
-									<UIcon :name="provider.icon" class="size-6" />
+									<img
+										v-if="provider.logoUrl"
+										:src="provider.logoUrl"
+										:alt="provider.label"
+										class="size-6 object-contain"
+									/>
+									<UIcon v-else :name="provider.icon" class="size-6" />
 								</div>
 								<div class="min-w-0">
 									<div class="flex flex-wrap items-center gap-2">
@@ -44,40 +50,41 @@
 										<UBadge
 											:color="provider.connected ? 'primary' : 'neutral'"
 											variant="soft"
+											:class="
+												provider.connected
+													? 'inline-flex max-w-full items-center gap-1.5'
+													: undefined
+											"
 										>
-											{{
-												!provider.configured
-													? t('profile.connections.status.unavailable')
-													: provider.connected
-														? t('profile.connections.status.connected')
-														: t('profile.connections.status.disconnected')
-											}}
+											<template v-if="!provider.configured">
+												{{ t('profile.connections.status.unavailable') }}
+											</template>
+											<template v-else-if="provider.connected">
+												<UIcon
+													name="i-lucide-check"
+													class="size-3.5 shrink-0"
+												/>
+												<UAvatar
+													v-if="provider.account?.avatarUrl"
+													:src="provider.account.avatarUrl"
+													:alt="
+														provider.account?.providerUsername || provider.label
+													"
+													size="3xs"
+												/>
+												<span class="truncate">
+													{{
+														provider.account?.providerUsername ||
+														provider.account?.providerEmail ||
+														t('profile.connections.status.connected')
+													}}
+												</span>
+											</template>
+											<template v-else>
+												{{ t('profile.connections.status.disconnected') }}
+											</template>
 										</UBadge>
 									</div>
-									<p
-										v-if="
-											provider.account?.providerUsername ||
-											provider.account?.providerEmail ||
-											provider.connected
-										"
-										class="mt-1 truncate text-sm text-slate-500"
-									>
-										{{
-											provider.account?.providerUsername ||
-											provider.account?.providerEmail ||
-											t('profile.connections.values.connectedAccount')
-										}}
-									</p>
-									<p
-										v-if="provider.account?.lastUsedAt"
-										class="mt-1 text-xs text-slate-400"
-									>
-										{{
-											t('profile.connections.values.lastUsedAt', {
-												date: formatDateTime(provider.account.lastUsedAt),
-											})
-										}}
-									</p>
 								</div>
 							</div>
 							<div class="flex shrink-0 gap-2">
@@ -151,7 +158,6 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from 'dayjs'
 import {
 	profileSectionTitleClass,
 	type ProfileResponse,
@@ -180,6 +186,7 @@ interface ConnectionProvider {
 	provider: Provider
 	label: string
 	icon: string
+	logoUrl?: string
 	configured: boolean
 	connected: boolean
 	account: ExternalAccountSummary | null
@@ -214,9 +221,6 @@ const {
 const profile = computed(() => profileData.value?.profile ?? null)
 const connections = computed(() => connectionsData.value?.connections ?? null)
 const unlinkingProvider = ref<Provider | null>(null)
-
-const formatDateTime = (value: string): string =>
-	dayjs(value).format('YYYY-MM-DD HH:mm')
 
 const unlinkProvider = async (provider: Provider): Promise<void> => {
 	unlinkingProvider.value = provider

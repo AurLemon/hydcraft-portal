@@ -1,7 +1,8 @@
-import { getHeader, getRequestIP, type H3Event } from 'h3'
+import { getHeader, type H3Event } from 'h3'
 import type { Prisma, SecurityEventType } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { emitEvent } from '../events/event-bus'
+import { getClientIpAddress } from '../ip-location/ip-normalizer'
 
 interface RecordSecurityEventOptions {
 	event?: H3Event
@@ -26,9 +27,7 @@ export const recordSecurityEvent = async ({
 			type,
 			title,
 			description: description ?? null,
-			ipAddress: event
-				? (getRequestIP(event, { xForwardedFor: true }) ?? null)
-				: null,
+			ipAddress: event ? getClientIpAddress(event) : null,
 			userAgent: event ? (getHeader(event, 'user-agent') ?? null) : null,
 			metadata,
 		},

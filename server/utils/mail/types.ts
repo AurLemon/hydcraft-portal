@@ -14,6 +14,7 @@ export interface VerificationMailInput {
 	code: string
 	operation: string
 	ipAddress: string | null
+	ipLocation?: string | null
 	locale: UserProfileLanguage
 }
 

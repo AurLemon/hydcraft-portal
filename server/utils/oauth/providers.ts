@@ -12,8 +12,11 @@ export interface OAuthProviderConfig {
 	provider: ExternalProvider
 	label: string
 	icon: string
+	logoUrl?: string
+	proxyEnabled: boolean
 	clientId: string
 	clientSecret: string
+	redirectUri: string
 	authorizeUrl: string
 	tokenUrl: string
 	userUrl: string
@@ -25,8 +28,11 @@ export interface OAuthProviderDefinition {
 	provider: ExternalProvider
 	label: string
 	icon: string
+	logoUrl?: string
 	clientIdEnv: string
 	clientSecretEnv: string
+	redirectUriEnv: string
+	proxyEnabledEnv?: string
 	authorizeUrl: string
 	tokenUrl: string
 	userUrl: string
@@ -38,11 +44,24 @@ export interface OAuthProviderSummary {
 	provider: ExternalProvider
 	label: string
 	icon: string
+	logoUrl?: string
 	configured: boolean
 }
 
 const readString = (value: unknown): string | null =>
 	typeof value === 'string' && value.trim() ? value.trim() : null
+
+const readBoolean = (value: unknown): boolean =>
+	typeof value === 'string' &&
+	['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase())
+
+const hasOAuthProxyConfig = (): boolean =>
+	Boolean(
+		(readString(process.env.OAUTH_PROXY_URL) ??
+			readString(process.env.PROXY_URL)) &&
+		(readString(process.env.OAUTH_PROXY_KEY) ??
+			readString(process.env.PROXY_KEY)),
+	)
 
 const getBaseUrl = (): string =>
 	(process.env.NUXT_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
@@ -54,6 +73,8 @@ const oauthProviderDefinitions = [
 		icon: 'i-lucide-github',
 		clientIdEnv: 'GITHUB_OAUTH_CLIENT_ID',
 		clientSecretEnv: 'GITHUB_OAUTH_CLIENT_SECRET',
+		redirectUriEnv: 'GITHUB_OAUTH_REDIRECT_URI',
+		proxyEnabledEnv: 'GITHUB_OAUTH_PROXY_ENABLED',
 		authorizeUrl: 'https://github.com/login/oauth/authorize',
 		tokenUrl: 'https://github.com/login/oauth/access_token',
 		userUrl: 'https://api.github.com/user',
@@ -67,11 +88,54 @@ const oauthProviderDefinitions = [
 		}),
 	},
 	{
+		provider: 'GOOGLE',
+		label: 'Google',
+		icon: 'i-lucide-chrome',
+		logoUrl: '/brands/google_logo.svg',
+		clientIdEnv: 'GOOGLE_OAUTH_CLIENT_ID',
+		clientSecretEnv: 'GOOGLE_OAUTH_CLIENT_SECRET',
+		redirectUriEnv: 'GOOGLE_OAUTH_REDIRECT_URI',
+		proxyEnabledEnv: 'GOOGLE_OAUTH_PROXY_ENABLED',
+		authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+		tokenUrl: 'https://oauth2.googleapis.com/token',
+		userUrl: 'https://www.googleapis.com/oauth2/v3/userinfo',
+		scopes: ['openid', 'email', 'profile'],
+		mapProfile: (raw) => ({
+			id: String(raw.sub),
+			username: readString(raw.name),
+			email: readString(raw.email),
+			avatarUrl: readString(raw.picture),
+			raw,
+		}),
+	},
+	{
+		provider: 'MICROSOFT',
+		label: 'Microsoft',
+		icon: 'i-lucide-panels-top-left',
+		logoUrl: '/brands/microsoft_logo.svg',
+		clientIdEnv: 'MICROSOFT_OAUTH_CLIENT_ID',
+		clientSecretEnv: 'MICROSOFT_OAUTH_CLIENT_SECRET',
+		redirectUriEnv: 'MICROSOFT_OAUTH_REDIRECT_URI',
+		authorizeUrl: `https://login.microsoftonline.com/${process.env.MICROSOFT_OAUTH_TENANT_ID ?? 'common'}/oauth2/v2.0/authorize`,
+		tokenUrl: `https://login.microsoftonline.com/${process.env.MICROSOFT_OAUTH_TENANT_ID ?? 'common'}/oauth2/v2.0/token`,
+		userUrl: 'https://graph.microsoft.com/oidc/userinfo',
+		scopes: ['openid', 'email', 'profile', 'User.Read'],
+		mapProfile: (raw) => ({
+			id: String(raw.sub),
+			username: readString(raw.name),
+			email: readString(raw.email) ?? readString(raw.preferred_username),
+			avatarUrl: null,
+			raw,
+		}),
+	},
+	{
 		provider: 'QQ',
 		label: 'QQ',
 		icon: 'i-lucide-message-circle',
+		logoUrl: '/brands/qq_logo.png',
 		clientIdEnv: 'QQ_OAUTH_CLIENT_ID',
 		clientSecretEnv: 'QQ_OAUTH_CLIENT_SECRET',
+		redirectUriEnv: 'QQ_OAUTH_REDIRECT_URI',
 		authorizeUrl: 'https://graph.qq.com/oauth2.0/authorize',
 		tokenUrl: 'https://graph.qq.com/oauth2.0/token',
 		userUrl: 'https://graph.qq.com/user/get_user_info',
@@ -109,14 +173,26 @@ export const getOAuthProviderSummary = (
 	provider: definition.provider,
 	label: definition.label,
 	icon: definition.icon,
+	logoUrl: definition.logoUrl,
 	configured: Boolean(
 		process.env[definition.clientIdEnv] &&
-		process.env[definition.clientSecretEnv],
+		process.env[definition.clientSecretEnv] &&
+		(!readBoolean(process.env[definition.proxyEnabledEnv ?? '']) ||
+			hasOAuthProxyConfig()),
 	),
 })
 
-export const getOAuthRedirectUri = (provider: ExternalProvider): string =>
+const getFallbackOAuthRedirectUri = (provider: ExternalProvider): string =>
 	`${getBaseUrl()}/api/auth/oauth/${provider.toLowerCase()}/callback`
+
+export const getOAuthRedirectUri = (provider: ExternalProvider): string => {
+	const definition = getOAuthProviderDefinition(provider)
+	const configuredRedirectUri = definition
+		? readString(process.env[definition.redirectUriEnv])
+		: null
+
+	return configuredRedirectUri ?? getFallbackOAuthRedirectUri(provider)
+}
 
 export const getOAuthProviderConfig = (
 	provider: ExternalProvider,
@@ -138,8 +214,11 @@ export const getOAuthProviderConfig = (
 		provider: definition.provider,
 		label: definition.label,
 		icon: definition.icon,
+		logoUrl: definition.logoUrl,
+		proxyEnabled: readBoolean(process.env[definition.proxyEnabledEnv ?? '']),
 		clientId,
 		clientSecret,
+		redirectUri: getOAuthRedirectUri(provider),
 		authorizeUrl: definition.authorizeUrl,
 		tokenUrl: definition.tokenUrl,
 		userUrl: definition.userUrl,

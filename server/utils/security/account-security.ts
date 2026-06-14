@@ -1,5 +1,5 @@
 import { createHash, randomInt } from 'node:crypto'
-import { getRequestIP, type H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import type {
 	EmailVerificationPurpose,
 	User,
@@ -11,6 +11,8 @@ import { emitEvent } from '../events/event-bus'
 import { sendMail } from '../mail/smtp'
 import { renderVerificationMail } from '../mail/templates'
 import { normalizeEmail } from '../auth/validation'
+import { lookupIpLocation } from '../ip-location/ip-location'
+import { getClientIpAddress } from '../ip-location/ip-normalizer'
 import { recordSecurityEvent } from './security-events'
 
 const EMAIL_CODE_TTL_MS = 10 * 60 * 1000
@@ -116,12 +118,15 @@ export const sendEmailVerificationCode = async (
 		},
 	})
 	const expiresAt = new Date(now.getTime() + EMAIL_CODE_TTL_MS)
+	const ipAddress = getClientIpAddress(event)
+	const ipLocation = await lookupIpLocation(ipAddress)
 
 	const mail = renderVerificationMail({
 		displayName: user.displayName || user.username,
 		code,
 		operation: getVerificationOperation(purpose, locale),
-		ipAddress: getRequestIP(event, { xForwardedFor: true }) ?? null,
+		ipAddress,
+		ipLocation: ipLocation?.display,
 		locale,
 	})
 

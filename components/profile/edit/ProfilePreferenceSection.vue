@@ -56,6 +56,7 @@ const { t } = useI18n()
 const route = useRoute()
 const nuxtApp = useNuxtApp()
 const switchLocalePath = useSwitchLocalePath()
+const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const i18nApi = nuxtApp.$i18n as {
 	setLocale?: (code: LocaleCode) => Promise<void>
 }
@@ -76,6 +77,14 @@ const selectLanguagePreference = async (value: unknown): Promise<void> => {
 	form.value.preferences.language = language
 
 	const targetLocale = profileLanguageToLocaleCode[language]
+
+	if (import.meta.client) {
+		window.sessionStorage.setItem(
+			MANUAL_LOCALE_SWITCH_STORAGE_KEY,
+			String(Date.now()),
+		)
+	}
+
 	const targetPath = switchLocalePath(targetLocale)
 
 	if (targetPath && targetPath !== route.fullPath) {

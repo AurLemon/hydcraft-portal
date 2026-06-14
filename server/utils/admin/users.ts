@@ -23,6 +23,7 @@ import {
 	normalizeTimezoneMode,
 	normalizeUrl,
 	normalizeUsername,
+	normalizeUsernameForComparison,
 } from '../profile/validation'
 
 const USER_ROLES = new Set<UserRole>(['USER', 'MEMBER', 'ADMIN', 'OWNER'])
@@ -613,9 +614,13 @@ export const updateAdminUser = async (
 	}
 
 	if (username) {
+		const normalizedUsername = normalizeUsernameForComparison(username)
 		const exists = await prisma.user.findFirst({
 			where: {
-				username,
+				username: {
+					equals: normalizedUsername,
+					mode: 'insensitive',
+				},
 				id: {
 					not: userId,
 				},

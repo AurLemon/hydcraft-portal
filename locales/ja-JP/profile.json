@@ -7,6 +7,7 @@
 		"fields": {
 			"handle": "ユーザー名",
 			"username": "ユーザー名",
+			"avatar": "アバター",
 			"displayName": "表示名",
 			"avatarUrl": "アバター URL",
 			"bio": "自己紹介",
@@ -39,10 +40,14 @@
 			"actions": {
 				"updateUsername": "ユーザー名を更新",
 				"updateProfile": "プロフィールを更新",
-				"copyHydrolineId": "Hydroline ID をコピー"
+				"copyHydrolineId": "Hydroline ID をコピー",
+				"resetAvatar": "アバターをリセット"
 			},
 			"hints": {
 				"usernameCooldown": "ユーザー名は 30 日に 1 回だけ変更できます。変更後、古いリンクは無効になるかリダイレクトされる場合があります。",
+				"usernameAvailableNow": "現在ユーザー名を変更できます。変更後は {days} 日間、再度変更できません。古いリンクは無効になるかリダイレクトされる場合があります。",
+				"usernameLockedUntil": "ユーザー名は {days} 日に 1 回だけ変更できます。次回は {date} に変更できます。",
+				"usernameCaseOnlyAvailableUntil": "現在はクールダウン中です。ユーザー名の大文字小文字だけは今すぐ更新でき、その他の変更は {date} から可能です。",
 				"languagePreference": "既定言語ルートに入ったとき、この設定を素早い切り替え先として使います。",
 				"publicEmail": "公開すると、このメールアドレスは他の人に見える可能性があります。"
 			}
@@ -135,6 +140,7 @@
 			"noChanges": "保存する変更はありません",
 			"imageSaveFailed": "プロフィール画像の保存に失敗しました",
 			"avatarUpdated": "アバターを更新しました",
+			"avatarReset": "アバターをリセットしました",
 			"coverUpdated": "カバーを更新しました",
 			"preferencesSaved": "設定を保存しました",
 			"preferencesSaveFailed": "設定の保存に失敗しました",
@@ -183,6 +189,7 @@
 				"currentRole": "現在のロール",
 				"lastLogin": "最終ログイン",
 				"primaryEmail": "メインメール",
+				"emailIndex": "メール {index}",
 				"switchPrimaryEmail": "メインメールを切り替え",
 				"receiverEmail": "受信メール",
 				"emailAddress": "メールアドレス",
@@ -194,6 +201,7 @@
 				"deleteEmail": "メールを削除",
 				"verify": "認証",
 				"switch": "切り替え",
+				"setPrimaryEmail": "メインに設定",
 				"revokeOtherSessions": "他のセッションを無効化",
 				"logout": "ログアウト",
 				"revoke": "無効化",
@@ -202,6 +210,7 @@
 				"sendResetEmail": "リセットメールを送信",
 				"confirmLogout": "ログアウトを確認",
 				"confirmRevoke": "無効化を確認",
+				"confirmDeleteEmail": "削除を確認",
 				"sendVerificationEmail": "認証メールを送信",
 				"sendCode": "コードを送信",
 				"resendAfter": "{seconds}s 後に再送信可能",
@@ -220,7 +229,11 @@
 				"activeCount": "{count} 件が有効",
 				"current": "現在のセッション"
 			},
-			"values": { "unknownIp": "不明な IP" },
+			"values": {
+				"unknownIp": "不明な IP",
+				"unknownLocation": "不明な所在地",
+				"ipAddress": "{ip}"
+			},
 			"roles": {
 				"OWNER": "サイト所有者",
 				"ADMIN": "管理者",
@@ -273,6 +286,11 @@
 					"title": "メールを追加",
 					"description": "追加後、メインメールに設定するにはメール認証が必要です。"
 				},
+				"deleteEmail": {
+					"title": "メールを削除しますか？",
+					"descriptionPrefix": "",
+					"descriptionSuffix": " を削除します。再度使用するには追加して認証し直す必要があります。"
+				},
 				"verifyEmail": {
 					"title": "メールを認証",
 					"descriptionPrefix": "",
@@ -282,6 +300,7 @@
 			"notifications": {
 				"primaryEmailChanged": "メインメールを切り替えました",
 				"primaryEmailChangeFailed": "メインメールの切り替えに失敗しました",
+				"emailAdded": "メールを追加しました",
 				"emailDeleted": "メールを削除しました",
 				"emailDeleteFailed": "メールの削除に失敗しました",
 				"verificationEmailSent": "認証メールを送信しました",
@@ -294,7 +313,7 @@
 				"emailVerifyFailed": "認証に失敗しました",
 				"emailVerifyFailedDescription": "コードが無効または期限切れです。再送信してもう一度お試しください。",
 				"resetEmailSent": "リセットメールを送信しました",
-				"resetEmailSentDescription": "メールが有効なアカウントに一致する場合、次の手順のリンクが届きます。",
+				"resetEmailSentDescription": "現在のアカウントのメールを確認し、案内に従って続行してください。",
 				"resetEmailSendFailed": "リセットメールの送信に失敗しました",
 				"logoutFailed": "ログアウトに失敗しました",
 				"sessionRevoked": "セッションを無効化しました",
