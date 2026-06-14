@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-	middleware: 'portal-auth',
+	middleware: ['portal-auth', 'minecraft-accounts-redirect'],
 })
-
-const localePath = useLocalePath()
-
-await navigateTo(localePath('/me/minecraft'), { redirectCode: 301 })
 </script>
+
+<template>
+	<div />
+</template>

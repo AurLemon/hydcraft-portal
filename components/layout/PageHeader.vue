@@ -199,9 +199,11 @@ const handleLogout = async (): Promise<void> => {
 	})
 }
 
-if (import.meta.client && !resolved.value) {
-	void fetchCurrentUser()
-}
+onMounted(() => {
+	if (!resolved.value) {
+		void fetchCurrentUser()
+	}
+})
 </script>
 
 <template>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-	middleware: 'admin-auth',
+	middleware: ['admin-auth', 'admin-redirect'],
 })
-
-const localePath = useLocalePath()
-
-await navigateTo(localePath('/admin/overview'), { redirectCode: 301 })
 </script>
+
+<template>
+	<div />
+</template>

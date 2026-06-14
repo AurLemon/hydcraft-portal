@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const localePath = useLocalePath()
-
-await navigateTo(localePath('/server/overview'), { redirectCode: 301 })
+definePageMeta({
+	middleware: 'server-redirect',
+})
 </script>
+
+<template>
+	<div />
+</template>

@@ -29,7 +29,7 @@ export const mainHeaderMenuGroup: HeaderMenuGroup = {
 	items: [
 		{ key: 'entry', labelKey: 'routes.entry', to: '/' },
 		{ key: 'intro', labelKey: 'routes.intro', to: '/intro' },
-		{ key: 'server', labelKey: 'routes.server', to: '/server' },
+		{ key: 'server', labelKey: 'routes.server', to: '/server/overview' },
 		{ key: 'timeline', labelKey: 'routes.timeline', to: '/timeline' },
 		{ key: 'about', labelKey: 'routes.about', to: '/about' },
 	],

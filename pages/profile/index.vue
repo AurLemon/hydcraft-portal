@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-	middleware: 'portal-auth',
+	middleware: ['portal-auth', 'me-redirect'],
 })
-
-const localePath = useLocalePath()
-
-await navigateTo(localePath('/me/profile'), { redirectCode: 301 })
 </script>
+
+<template>
+	<div />
+</template>
