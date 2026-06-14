@@ -14,6 +14,7 @@
 				ref="widgetElement"
 				class="cap-widget-shell"
 				:style="capWidgetStyle"
+				:data-cap-theme="capTheme"
 				data-cap-fullwidth="true"
 				:data-cap-api-endpoint="apiEndpoint"
 				v-bind="capI18nAttrs"
@@ -44,6 +45,8 @@ interface CapWidgetStyle {
 	'--cap-font': string
 	'--cap-widget-width': string
 }
+
+type CapTheme = 'light' | 'dark' | 'system'
 
 declare global {
 	interface Window {
@@ -125,6 +128,7 @@ const isCapLocale = (value: string): value is CapLocale =>
 
 const { locale, t, te } = useI18n()
 const runtimeConfig = useRuntimeConfig()
+const colorMode = useNuxtApp().$colorMode
 const widgetElement = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const loadFailed = ref(false)
@@ -210,6 +214,15 @@ const capWidgetStyle = computed<CapWidgetStyle>(() => ({
 		'var(--font-sans, Rubik, "MiSans VF", "MiSans Latin VF", "Misans TC VF", sans-serif)',
 	'--cap-widget-width': '100%',
 }))
+const capTheme = computed<CapTheme>(() => {
+	const preference = colorMode.preference
+
+	if (preference === 'light' || preference === 'dark') {
+		return preference
+	}
+
+	return 'system'
+})
 const capWidgetPatchOptions = computed(() => ({
 	fontFamily: capWidgetStyle.value['--cap-font'],
 	fullWidth: true,
