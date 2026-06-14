@@ -6,6 +6,46 @@ export interface CapWidgetPatchOptions {
 
 const PATCHED_ATTR = 'data-hydcraft-cap-patched'
 const PATCH_STYLE_ATTR = 'data-hydcraft-cap-style'
+const BRANDING_LABEL = 'Hydroline Captcha'
+
+const patchBranding = (root: ShadowRoot): void => {
+	const brandingLink = Array.from(
+		root.querySelectorAll<HTMLAnchorElement>('a'),
+	).find((anchor) => anchor.textContent?.trim() === 'Cap-Worker')
+
+	if (!brandingLink) {
+		return
+	}
+
+	if (root.textContent?.includes(BRANDING_LABEL)) {
+		return
+	}
+
+	const brandingText = document.createElement('span')
+	brandingText.textContent = BRANDING_LABEL
+	brandingText.className = brandingLink.className
+	brandingText.setAttribute('style', brandingLink.getAttribute('style') ?? '')
+	brandingText.setAttribute('aria-label', BRANDING_LABEL)
+
+	for (const attributeName of brandingLink.getAttributeNames()) {
+		if (
+			attributeName === 'class' ||
+			attributeName === 'style' ||
+			attributeName === 'href' ||
+			attributeName === 'target' ||
+			attributeName === 'rel'
+		) {
+			continue
+		}
+
+		brandingText.setAttribute(
+			attributeName,
+			brandingLink.getAttribute(attributeName) ?? '',
+		)
+	}
+
+	brandingLink.replaceWith(brandingText)
+}
 
 const createPatchStyle = (options: CapWidgetPatchOptions): string => {
 	const rules: string[] = []
@@ -70,6 +110,8 @@ export const applyCapWidgetPatch = (
 	const existingStyle = root.querySelector<HTMLStyleElement>(
 		`style[${PATCH_STYLE_ATTR}]`,
 	)
+
+	patchBranding(root)
 
 	if (existingStyle) {
 		existingStyle.textContent = patchCss
