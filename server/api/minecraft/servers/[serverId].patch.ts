@@ -1,8 +1,9 @@
 import { prisma } from '../../../utils/db/prisma'
 import { requireAdminUser } from '../../../utils/auth/session'
-import { createApiError } from '../../../utils/errors'
+import { createApiError, createBadRequestError } from '../../../utils/errors'
 import { encryptConfigValue } from '../../../utils/security/encryption'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
+import { assertMinecraftServerId } from '../../../utils/minecraft/normalize'
 
 interface SourceConfigBody {
 	host?: string
@@ -24,9 +25,9 @@ interface PortalBridgeConfigBody {
 }
 
 interface UpdateMinecraftServerBody {
+	serverId?: string
 	code?: string
 	name?: string
-	description?: string | null
 	host?: string
 	port?: number
 	enabled?: boolean
@@ -68,6 +69,34 @@ export default defineEventHandler(async (event) => {
 			statusCode: 404,
 			code: 'MINECRAFT_SERVER_NOT_FOUND',
 		})
+	}
+
+	let nextServerId: string | undefined
+
+	if (body.serverId !== undefined) {
+		try {
+			nextServerId = assertMinecraftServerId(body.serverId)
+		} catch {
+			throw createBadRequestError('INVALID_MINECRAFT_SERVER_ID')
+		}
+	}
+
+	if (nextServerId && nextServerId !== serverId) {
+		const conflict = await prisma.minecraftServer.findUnique({
+			where: {
+				serverId: nextServerId,
+			},
+			select: {
+				id: true,
+			},
+		})
+
+		if (conflict) {
+			throw createApiError({
+				statusCode: 409,
+				code: 'MINECRAFT_SERVER_ID_CONFLICT',
+			})
+		}
 	}
 
 	if (body.portalBridge) {
@@ -164,9 +193,9 @@ export default defineEventHandler(async (event) => {
 			serverId,
 		},
 		data: {
+			serverId: nextServerId,
 			code: normalizeOptionalText(body.code) ?? undefined,
 			name: normalizeOptionalText(body.name) ?? undefined,
-			description: normalizeOptionalText(body.description),
 			host: normalizeOptionalText(body.host) ?? undefined,
 			port: body.port,
 			enabled: body.enabled,

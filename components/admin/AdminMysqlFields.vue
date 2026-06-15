@@ -1,57 +1,70 @@
 <template>
 	<label
-		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
 	>
 		<span>{{ t('admin.mysqlFields.host') }}</span>
-		<input :value="host" @input="emitValue('host', $event)" />
-	</label>
-	<label
-		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
-	>
-		<span>{{ t('admin.mysqlFields.port') }}</span>
-		<input
-			:value="port"
-			type="number"
-			min="1"
-			max="65535"
-			@input="emitNumber('port', $event)"
+		<UInput
+			:model-value="host"
+			class="w-full"
+			@update:model-value="emitString('host', $event)"
 		/>
 	</label>
 	<label
-		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
+	>
+		<span>{{ t('admin.mysqlFields.port') }}</span>
+		<UInput
+			:model-value="port"
+			class="w-full"
+			type="number"
+			min="1"
+			max="65535"
+			@update:model-value="emitNumber('port', $event)"
+		/>
+	</label>
+	<label
+		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
 	>
 		<span>{{ t('admin.mysqlFields.database') }}</span>
-		<input :value="database" @input="emitValue('database', $event)" />
+		<UInput
+			:model-value="database"
+			class="w-full"
+			@update:model-value="emitString('database', $event)"
+		/>
 	</label>
 	<label
-		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
 	>
 		<span>{{ t('admin.mysqlFields.username') }}</span>
-		<input :value="username" @input="emitValue('username', $event)" />
+		<UInput
+			:model-value="username"
+			class="w-full"
+			@update:model-value="emitString('username', $event)"
+		/>
 	</label>
 	<label
-		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 [&>strong]:text-slate-950 [&>input]:rounded-lg [&>input]:border [&>input]:border-slate-300 [&>input]:bg-slate-50/90 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:font-normal [&>input]:text-slate-950 [&>input]:outline-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-slate-300 [&>textarea]:bg-slate-50/90 [&>textarea]:px-3 [&>textarea]:py-2.5 [&>textarea]:text-sm [&>textarea]:font-normal [&>textarea]:text-slate-950 [&>textarea]:outline-none focus-within:[&>input]:border-sky-500 focus-within:[&>input]:ring-4 focus-within:[&>input]:ring-sky-500/15 focus-within:[&>textarea]:border-sky-500 focus-within:[&>textarea]:ring-4 focus-within:[&>textarea]:ring-sky-500/15 dark:[&>span]:text-slate-400 dark:[&>strong]:text-slate-100 dark:[&>input]:border-slate-700 dark:[&>input]:bg-slate-950/80 dark:[&>input]:text-white dark:[&>textarea]:border-slate-700 dark:[&>textarea]:bg-slate-950/80 dark:[&>textarea]:text-white"
+		class="grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
 	>
 		<span>{{ t('admin.mysqlFields.password') }}</span>
-		<input
-			:value="password"
+		<UInput
+			:model-value="password"
+			class="w-full"
 			type="password"
 			:placeholder="
 				hasPassword ? t('admin.serverConfig.placeholders.keepSecret') : ''
 			"
-			@input="emitValue('password', $event)"
+			@update:model-value="emitString('password', $event)"
 		/>
 	</label>
-	<label
-		class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200 [&>input]:h-4 [&>input]:w-4 [&>input]:accent-sky-500"
-	>
-		<input
-			:checked="enabled"
-			type="checkbox"
-			@change="emitBoolean('enabled', $event)"
+	<div class="flex items-center justify-between gap-3 px-1 py-1">
+		<span class="text-sm font-medium text-slate-700 dark:text-slate-200">
+			{{ t('admin.mysqlFields.enabled') }}
+		</span>
+		<USwitch
+			:model-value="enabled"
+			@update:model-value="emit('update:enabled', $event)"
 		/>
-		<span>{{ t('admin.mysqlFields.enabled') }}</span>
-	</label>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -76,42 +89,33 @@ const emit = defineEmits<{
 	'update:enabled': [value: boolean]
 }>()
 
-const getInput = (event: Event): HTMLInputElement =>
-	event.target as HTMLInputElement
-
-const emitValue = (
+const emitString = (
 	key: 'host' | 'database' | 'username' | 'password',
-	event: Event,
+	value: string | number,
 ): void => {
-	const value = getInput(event).value
+	const normalized = String(value)
 
 	if (key === 'host') {
-		emit('update:host', value)
+		emit('update:host', normalized)
 		return
 	}
 
 	if (key === 'database') {
-		emit('update:database', value)
+		emit('update:database', normalized)
 		return
 	}
 
 	if (key === 'username') {
-		emit('update:username', value)
+		emit('update:username', normalized)
 		return
 	}
 
-	emit('update:password', value)
+	emit('update:password', normalized)
 }
 
-const emitNumber = (key: 'port', event: Event): void => {
+const emitNumber = (key: 'port', value: string | number): void => {
 	if (key === 'port') {
-		emit('update:port', Number(getInput(event).value))
-	}
-}
-
-const emitBoolean = (key: 'enabled', event: Event): void => {
-	if (key === 'enabled') {
-		emit('update:enabled', getInput(event).checked)
+		emit('update:port', Number(value))
 	}
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
 	<button
 		type="button"
-		class="group flex h-full min-h-64 w-full flex-col justify-between rounded-lg border border-slate-200/80 bg-white/82 p-5 text-left shadow-sm transition duration-200 hover:border-sky-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:border-slate-800/80 dark:bg-slate-950/74 dark:hover:border-sky-500/70"
-		@click="$emit('configure')"
+		class="group grid h-full min-h-64 w-full cursor-pointer gap-4 rounded-lg border border-slate-200 bg-white p-5 text-left shadow-sm shadow-transparent transition duration-200 hover:bg-slate-50 hover:shadow-md hover:shadow-slate-200/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-900 dark:hover:shadow-black/10"
+		@click="$emit('open')"
 	>
 		<div>
 			<div class="flex items-start justify-between gap-4">
@@ -18,23 +18,18 @@
 						{{ server.name }}
 					</h2>
 				</div>
-				<span
-					class="inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium"
-					:class="
-						server.enabled
-							? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300'
-							: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300'
-					"
+				<UBadge
+					:color="server.enabled ? 'success' : 'neutral'"
+					variant="subtle"
+					class="shrink-0"
 				>
-					{{ server.enabled ? 'Enabled' : 'Disabled' }}
-				</span>
+					{{
+						server.enabled
+							? t('admin.serverDetail.states.enabled')
+							: t('admin.serverDetail.states.disabled')
+					}}
+				</UBadge>
 			</div>
-
-			<p
-				class="mt-4 line-clamp-2 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300"
-			>
-				{{ server.description || '未填写服务器描述' }}
-			</p>
 
 			<div class="mt-5 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
 				<div class="rounded-md bg-slate-50 p-3 dark:bg-slate-900/70">
@@ -65,9 +60,11 @@ interface AdminServerCardProps {
 	server: MinecraftServerSummary
 }
 
+const { t } = useI18n()
+
 defineProps<AdminServerCardProps>()
 
 defineEmits<{
-	configure: []
+	open: []
 }>()
 </script>

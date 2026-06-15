@@ -8,6 +8,12 @@ export type ProfileCountryOrRegionKey =
 	| 'TAIWAN_CHINA'
 	| 'MACAU_CHINA'
 	| 'OVERSEAS_REGION'
+export type ProfileCountryOrRegion =
+	| '中国内地'
+	| '中国香港'
+	| '中国台湾'
+	| '中国澳门'
+	| '海外地区'
 export type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 export type TimezoneMode = 'AUTO' | 'MANUAL'
 export type PrivacyKey =
@@ -91,7 +97,7 @@ export interface ProfileForm {
 	avatarUrl: string
 	bio: string
 	location: string
-	countryOrRegion: string
+	countryOrRegion: ProfileCountryOrRegion | undefined
 	gender: ProfileGender
 	birthday: string
 	preferences: {
@@ -150,7 +156,7 @@ export const countryItems = [
 	{ key: 'OVERSEAS_REGION', value: '海外地区' },
 ] as const satisfies ReadonlyArray<{
 	key: ProfileCountryOrRegionKey
-	value: string
+	value: ProfileCountryOrRegion
 }>
 export const privacyItems: Array<{ key: PrivacyKey; label: string }> = [
 	{ key: 'publicProfile', label: '公开个人主页' },
@@ -174,7 +180,7 @@ export const createEmptyProfileForm = (): ProfileForm => ({
 	avatarUrl: '',
 	bio: '',
 	location: '',
-	countryOrRegion: '',
+	countryOrRegion: undefined,
 	gender: 'UNSPECIFIED',
 	birthday: '',
 	preferences: {
@@ -344,11 +350,9 @@ export const assignProfileForm = (
 	form.bio = value.bio ?? ''
 	form.location = value.location ?? ''
 	const countryOrRegion = normalizeCountryOrRegionOption(value.countryOrRegion)
-	form.countryOrRegion = countryItems.some(
+	form.countryOrRegion = countryItems.find(
 		(item) => item.value === countryOrRegion,
-	)
-		? (countryOrRegion ?? '')
-		: ''
+	)?.value
 	form.gender = value.gender
 	form.birthday = toDateInput(value.birthday)
 	form.preferences.language = value.preferences.language
@@ -393,7 +397,11 @@ export const buildProfilePatchPayload = (
 		['displayName', form.displayName, original.displayName ?? ''],
 		['bio', form.bio, original.bio ?? ''],
 		['location', form.location, original.location ?? ''],
-		['countryOrRegion', form.countryOrRegion, original.countryOrRegion ?? ''],
+		[
+			'countryOrRegion',
+			form.countryOrRegion ?? '',
+			original.countryOrRegion ?? '',
+		],
 		['gender', form.gender, original.gender],
 		['birthday', form.birthday, toDateInput(original.birthday)],
 	] as const

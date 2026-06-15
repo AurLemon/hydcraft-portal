@@ -84,6 +84,92 @@
 				"description": "サーバーを追加してから PortalBridge、AuthMe、LuckPerms を設定します。"
 			}
 		},
+		"serverCreate": {
+			"title": "サーバーを追加"
+		},
+		"serverDetail": {
+			"back": "サーバー",
+			"fallbackTitle": "サーバー",
+			"loading": "読み込み中",
+			"loadFailed": "サーバー状態の読み込みに失敗しました",
+			"actions": {
+				"basic": "基本情報",
+				"bridge": "Bridge",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms",
+				"viewAll": "すべて表示",
+				"testAndInspect": "テスト / 表示",
+				"testRefresh": "更新をテスト",
+				"close": "閉じる"
+			},
+			"sections": {
+				"onlinePlayers": "オンライン人数",
+				"portalBridge": "PortalBridge",
+				"serverInfo": "サーバー情報",
+				"dataSources": "データソース",
+				"playerData": "プレイヤーデータ",
+				"serverPlayerInfo": "サーバープレイヤー情報",
+				"recentSnapshots": "最近のスナップショット",
+				"recentBridgeMessages": "最近の Bridge メッセージ",
+				"recentCommands": "最近のコマンド",
+				"recentCommandsHint": "ここには Portal バックエンドから Bridge へ送った最近の同期・確認コマンドが表示されます。"
+			},
+			"fields": {
+				"serverId": "サーバー ID",
+				"connectionState": "接続状態",
+				"lastConnected": "最終接続",
+				"lastMessage": "最終メッセージ",
+				"code": "コード",
+				"address": "アドレス",
+				"sortOrder": "並び順",
+				"createdAt": "作成日時",
+				"authMeDatabase": "AuthMe データベース",
+				"luckPermsDatabase": "LuckPerms データベース",
+				"identityCount": "ID 記録",
+				"observedPlayers": "観測されたオンラインプレイヤー",
+				"openSessions": "オンラインセッション",
+				"totalSessions": "総セッション",
+				"playerName": "プレイヤー名",
+				"firstJoinedAt": "初回参加",
+				"lastUpdated": "最終読み込み"
+			},
+			"states": {
+				"enabled": "有効",
+				"disabled": "無効",
+				"notConfigured": "未設定",
+				"empty": "なし",
+				"error": "エラー"
+			},
+			"empty": {
+				"description": "サーバー説明は未入力です",
+				"snapshots": "スナップショットはありません",
+				"messages": "メッセージはありません",
+				"commands": "コマンドはありません",
+				"playerInfo": "データはまだありません"
+			},
+			"chart": {
+				"onlinePlayers": "オンライン人数",
+				"empty": "人数スナップショットはありません"
+			},
+			"inspector": {
+				"eyebrow": "テストと表示",
+				"snapshotsTitle": "スナップショットデータ",
+				"bridgeTitle": "Bridge メッセージデータ"
+			},
+			"detail": {
+				"title": "詳細",
+				"snapshotId": "スナップショット ID",
+				"observedAt": "観測日時",
+				"createdAt": "作成日時",
+				"messageId": "メッセージ ID",
+				"receivedAt": "受信日時",
+				"ackedAt": "Ack 日時",
+				"status": "状態",
+				"sentAt": "送信日時",
+				"completedAt": "完了日時",
+				"error": "エラー"
+			}
+		},
 		"users": {
 			"title": "ユーザー",
 			"filters": {
@@ -187,7 +273,10 @@
 			"createEyebrow": "サーバーを追加",
 			"title": "サーバー接続設定",
 			"sections": {
-				"basic": "サーバー基本情報"
+				"basic": "サーバー基本情報",
+				"portalBridge": "PortalBridge",
+				"authMe": "AuthMe MySQL",
+				"luckPerms": "LuckPerms MySQL"
 			},
 			"fields": {
 				"serverId": "サーバー ID",
@@ -199,6 +288,8 @@
 				"description": "説明",
 				"enabled": "このサーバーを有効化",
 				"bridgeId": "Bridge ID",
+				"module": "Module",
+				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "Bridge 接続を有効化"
 			},
@@ -207,7 +298,8 @@
 			},
 			"actions": {
 				"cancel": "キャンセル",
-				"save": "設定を保存"
+				"save": "設定を保存",
+				"close": "閉じる"
 			}
 		},
 		"mysqlFields": {

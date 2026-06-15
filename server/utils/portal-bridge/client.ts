@@ -23,6 +23,7 @@ interface BridgeRuntimeConfig extends PortalBridgeConfig {
 class PortalBridgeConnection {
 	private socket: WebSocket | null = null
 	private reconnectTimer: NodeJS.Timeout | null = null
+	private onlinePlayersSyncTimer: NodeJS.Timeout | null = null
 	private stopped = false
 
 	constructor(private readonly config: BridgeRuntimeConfig) {}
@@ -40,6 +41,7 @@ class PortalBridgeConnection {
 			this.reconnectTimer = null
 		}
 
+		this.stopOnlinePlayersSync()
 		this.socket?.close()
 		this.socket = null
 	}
@@ -124,6 +126,7 @@ class PortalBridgeConnection {
 		})
 
 		this.socket.addEventListener('close', () => {
+			this.stopOnlinePlayersSync()
 			void prisma.portalBridgeConfig.update({
 				where: { id: this.config.id },
 				data: {
@@ -161,10 +164,12 @@ class PortalBridgeConnection {
 					lastError: null,
 				},
 			})
+			this.startOnlinePlayersSync()
 			return
 		}
 
 		if (envelope.topic === 'bridge.rejected') {
+			this.stopOnlinePlayersSync()
 			await prisma.portalBridgeConfig.update({
 				where: { id: this.config.id },
 				data: {
@@ -195,11 +200,11 @@ class PortalBridgeConnection {
 	private ack(envelope: PortalBridgeEnvelope): void {
 		const ack = createAckEnvelope(
 			{
-				service: 'portal',
+				serverId: this.config.minecraftServer.serverId,
+				bridgeId: 'hydcraft-portal',
 				module: 'portal-backend',
 			},
 			{
-				serverId: this.config.minecraftServer.serverId,
 				bridgeId: this.config.bridgeId,
 				module: this.config.module,
 			},
@@ -241,6 +246,34 @@ class PortalBridgeConnection {
 			this.reconnectTimer = null
 			this.connect()
 		}, 5000)
+	}
+
+	private startOnlinePlayersSync(): void {
+		if (this.onlinePlayersSyncTimer) {
+			return
+		}
+
+		this.sendOnlinePlayersSyncCommand()
+		this.onlinePlayersSyncTimer = setInterval(() => {
+			this.sendOnlinePlayersSyncCommand()
+		}, 60_000)
+	}
+
+	private stopOnlinePlayersSync(): void {
+		if (!this.onlinePlayersSyncTimer) {
+			return
+		}
+
+		clearInterval(this.onlinePlayersSyncTimer)
+		this.onlinePlayersSyncTimer = null
+	}
+
+	private sendOnlinePlayersSyncCommand(): void {
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			return
+		}
+
+		this.sendCommand('sync.onlinePlayers.now')
 	}
 }
 

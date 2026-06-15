@@ -8,7 +8,11 @@
 					{{ t('admin.servers.title') }}
 				</h1>
 			</div>
-			<UButton icon="i-lucide-plus" size="lg" @click="openCreate">
+			<UButton
+				:to="localePath('/admin/servers/create')"
+				icon="i-lucide-plus"
+				size="lg"
+			>
 				{{ t('admin.servers.create') }}
 			</UButton>
 		</div>
@@ -41,21 +45,14 @@
 				v-for="server in servers"
 				:key="server.id"
 				:server="server"
-				@configure="openEdit(server)"
+				@open="openServer(server)"
 			/>
 		</section>
-
-		<AdminServerConfigModal
-			v-model:open="modalOpen"
-			:server="selectedServer"
-			@saved="handleSaved"
-		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import AdminServerCard from '~/components/admin/AdminServerCard.vue'
-import AdminServerConfigModal from '~/components/admin/AdminServerConfigModal.vue'
 import type {
 	MinecraftServerSummary,
 	MinecraftServersResponse,
@@ -66,12 +63,12 @@ definePageMeta({
 	middleware: 'admin-auth',
 })
 
-const { notifyError, notifySuccess } = useAdminToast()
-const { data, pending, error, refresh } =
-	await useFetch<MinecraftServersResponse>('/api/minecraft/servers')
+const { notifyError } = useAdminToast()
+const { data, pending, error } = await useFetch<MinecraftServersResponse>(
+	'/api/minecraft/servers',
+)
 
-const modalOpen = ref(false)
-const selectedServer = ref<MinecraftServerSummary | null>(null)
+const localePath = useLocalePath()
 const servers = computed(() => data.value?.servers ?? [])
 
 watch(
@@ -86,21 +83,7 @@ watch(
 	{ immediate: true },
 )
 
-const openCreate = (): void => {
-	selectedServer.value = null
-	modalOpen.value = true
-}
-
-const openEdit = (server: MinecraftServerSummary): void => {
-	selectedServer.value = server
-	modalOpen.value = true
-}
-
-const handleSaved = async (): Promise<void> => {
-	await refresh()
-	notifySuccess({
-		title: t('admin.notifications.serverSaved'),
-		description: t('admin.notifications.serverSavedDescription'),
-	})
+const openServer = async (server: MinecraftServerSummary): Promise<void> => {
+	await navigateTo(localePath(`/admin/servers/${server.serverId}`))
 }
 </script>

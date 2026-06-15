@@ -84,6 +84,92 @@
 				"description": "新增一个服务器后，再配置 PortalBridge、AuthMe 和 LuckPerms。"
 			}
 		},
+		"serverCreate": {
+			"title": "新增服务器"
+		},
+		"serverDetail": {
+			"back": "服务器",
+			"fallbackTitle": "服务器",
+			"loading": "加载中",
+			"loadFailed": "读取服务器状态失败",
+			"actions": {
+				"basic": "基础信息",
+				"bridge": "Bridge",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms",
+				"viewAll": "查看全部",
+				"testAndInspect": "测试 / 查看",
+				"testRefresh": "测试刷新",
+				"close": "关闭"
+			},
+			"sections": {
+				"onlinePlayers": "在线人数",
+				"portalBridge": "PortalBridge",
+				"serverInfo": "服务器信息",
+				"dataSources": "数据源",
+				"playerData": "玩家数据",
+				"serverPlayerInfo": "服务器玩家信息",
+				"recentSnapshots": "最近快照",
+				"recentBridgeMessages": "最近 Bridge 消息",
+				"recentCommands": "最近命令",
+				"recentCommandsHint": "这里记录的是 Portal 后台最近主动发给 Bridge 的同步与检测命令。"
+			},
+			"fields": {
+				"serverId": "服务器 ID",
+				"connectionState": "连接状态",
+				"lastConnected": "最后连接",
+				"lastMessage": "最后消息",
+				"code": "代码",
+				"address": "地址",
+				"sortOrder": "排序",
+				"createdAt": "创建时间",
+				"authMeDatabase": "AuthMe 数据库",
+				"luckPermsDatabase": "LuckPerms 数据库",
+				"identityCount": "身份记录",
+				"observedPlayers": "观测到的在线玩家",
+				"openSessions": "在线会话",
+				"totalSessions": "总会话",
+				"playerName": "玩家名称",
+				"firstJoinedAt": "第一次加入",
+				"lastUpdated": "最后读取"
+			},
+			"states": {
+				"enabled": "启用",
+				"disabled": "停用",
+				"notConfigured": "未配置",
+				"empty": "暂无",
+				"error": "错误"
+			},
+			"empty": {
+				"description": "未填写服务器描述",
+				"snapshots": "暂无快照",
+				"messages": "暂无消息",
+				"commands": "暂无命令",
+				"playerInfo": "暂无数据"
+			},
+			"chart": {
+				"onlinePlayers": "在线人数",
+				"empty": "暂无人数快照"
+			},
+			"inspector": {
+				"eyebrow": "测试与查看",
+				"snapshotsTitle": "快照数据",
+				"bridgeTitle": "Bridge 消息数据"
+			},
+			"detail": {
+				"title": "详情",
+				"snapshotId": "快照 ID",
+				"observedAt": "观测时间",
+				"createdAt": "创建时间",
+				"messageId": "消息 ID",
+				"receivedAt": "接收时间",
+				"ackedAt": "Ack 时间",
+				"status": "状态",
+				"sentAt": "发送时间",
+				"completedAt": "完成时间",
+				"error": "错误"
+			}
+		},
 		"users": {
 			"title": "用户",
 			"filters": {
@@ -187,7 +273,10 @@
 			"createEyebrow": "新增服务器",
 			"title": "服务器接入配置",
 			"sections": {
-				"basic": "服务器基础信息"
+				"basic": "服务器基础信息",
+				"portalBridge": "PortalBridge",
+				"authMe": "AuthMe MySQL",
+				"luckPerms": "LuckPerms MySQL"
 			},
 			"fields": {
 				"serverId": "服务器 ID",
@@ -199,6 +288,8 @@
 				"description": "描述",
 				"enabled": "启用该服务器",
 				"bridgeId": "Bridge ID",
+				"module": "Module",
+				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "启用 Bridge 连接"
 			},
@@ -207,7 +298,8 @@
 			},
 			"actions": {
 				"cancel": "取消",
-				"save": "保存配置"
+				"save": "保存配置",
+				"close": "关闭"
 			}
 		},
 		"mysqlFields": {

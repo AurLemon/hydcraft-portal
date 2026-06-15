@@ -84,6 +84,92 @@
 				"description": "Create a server before configuring PortalBridge, AuthMe, and LuckPerms."
 			}
 		},
+		"serverCreate": {
+			"title": "New Server"
+		},
+		"serverDetail": {
+			"back": "Servers",
+			"fallbackTitle": "Server",
+			"loading": "Loading",
+			"loadFailed": "Failed to load server status",
+			"actions": {
+				"basic": "Basic",
+				"bridge": "Bridge",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms",
+				"viewAll": "View all",
+				"testAndInspect": "Test / Inspect",
+				"testRefresh": "Test refresh",
+				"close": "Close"
+			},
+			"sections": {
+				"onlinePlayers": "Online players",
+				"portalBridge": "PortalBridge",
+				"serverInfo": "Server info",
+				"dataSources": "Data sources",
+				"playerData": "Player data",
+				"serverPlayerInfo": "Server player info",
+				"recentSnapshots": "Recent snapshots",
+				"recentBridgeMessages": "Recent Bridge messages",
+				"recentCommands": "Recent commands",
+				"recentCommandsHint": "These are recent sync and inspection commands sent from the Portal backend to Bridge."
+			},
+			"fields": {
+				"serverId": "Server ID",
+				"connectionState": "Connection state",
+				"lastConnected": "Last connected",
+				"lastMessage": "Last message",
+				"code": "Code",
+				"address": "Address",
+				"sortOrder": "Sort order",
+				"createdAt": "Created at",
+				"authMeDatabase": "AuthMe database",
+				"luckPermsDatabase": "LuckPerms database",
+				"identityCount": "Identities",
+				"observedPlayers": "Observed online players",
+				"openSessions": "Open sessions",
+				"totalSessions": "Total sessions",
+				"playerName": "Player name",
+				"firstJoinedAt": "First joined",
+				"lastUpdated": "Last read"
+			},
+			"states": {
+				"enabled": "Enabled",
+				"disabled": "Disabled",
+				"notConfigured": "Not configured",
+				"empty": "None",
+				"error": "Error"
+			},
+			"empty": {
+				"description": "No server description",
+				"snapshots": "No snapshots",
+				"messages": "No messages",
+				"commands": "No commands",
+				"playerInfo": "No data yet"
+			},
+			"chart": {
+				"onlinePlayers": "Online players",
+				"empty": "No player snapshots"
+			},
+			"inspector": {
+				"eyebrow": "Test and inspect",
+				"snapshotsTitle": "Snapshot data",
+				"bridgeTitle": "Bridge message data"
+			},
+			"detail": {
+				"title": "Details",
+				"snapshotId": "Snapshot ID",
+				"observedAt": "Observed at",
+				"createdAt": "Created at",
+				"messageId": "Message ID",
+				"receivedAt": "Received at",
+				"ackedAt": "Acked at",
+				"status": "Status",
+				"sentAt": "Sent at",
+				"completedAt": "Completed at",
+				"error": "Error"
+			}
+		},
 		"users": {
 			"title": "Users",
 			"filters": {
@@ -187,7 +273,10 @@
 			"createEyebrow": "New Server",
 			"title": "Server Access Configuration",
 			"sections": {
-				"basic": "Server Basic Info"
+				"basic": "Server Basic Info",
+				"portalBridge": "PortalBridge",
+				"authMe": "AuthMe MySQL",
+				"luckPerms": "LuckPerms MySQL"
 			},
 			"fields": {
 				"serverId": "Server ID",
@@ -199,6 +288,8 @@
 				"description": "Description",
 				"enabled": "Enable this server",
 				"bridgeId": "Bridge ID",
+				"module": "Module",
+				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "Enable Bridge connection"
 			},
@@ -207,7 +298,8 @@
 			},
 			"actions": {
 				"cancel": "Cancel",
-				"save": "Save Configuration"
+				"save": "Save Configuration",
+				"close": "Close"
 			}
 		},
 		"mysqlFields": {

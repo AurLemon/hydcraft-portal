@@ -26,17 +26,16 @@ model MinecraftAccount {
 }
 
 model MinecraftServer {
-  id          String   @id @default(cuid())
-  serverId    String   @unique
-  code        String   @unique
-  name        String
-  description String?
-  host        String
-  port        Int      @default(25565)
-  enabled     Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  serverId  String   @unique
+  code      String   @unique
+  name      String
+  host      String
+  port      Int      @default(25565)
+  enabled   Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   portalBridge PortalBridgeConfig?
   authMe       AuthMeSourceConfig?
@@ -112,7 +111,7 @@ model LuckPermsSourceConfig {
 model MinecraftServerSnapshot {
   id         String                      @id @default(cuid())
   serverId   String
-  server     MinecraftServer             @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  server     MinecraftServer             @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
   kind       MinecraftServerSnapshotKind
   observedAt DateTime
   payload    Json
@@ -126,7 +125,7 @@ model MinecraftServerSnapshot {
 model ServerPlayerIdentity {
   id                 String                            @id @default(cuid())
   serverId           String
-  server             MinecraftServer                   @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  server             MinecraftServer                   @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
   uuid               String
   username           String?
   normalizedUsername String?
@@ -165,7 +164,7 @@ model ServerPlayerIdentityEvidence {
 model ServerPlayerSession {
   id                 String          @id @default(cuid())
   serverId           String
-  server             MinecraftServer @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  server             MinecraftServer @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
   sessionId          String?
   uuid               String
   username           String?

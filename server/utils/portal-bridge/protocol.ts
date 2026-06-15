@@ -138,7 +138,8 @@ export const createBridgeHelloEnvelope = (input: {
 		type: 'hello',
 		topic: 'bridge.hello',
 		source: {
-			service: 'portal',
+			serverId: input.serverId,
+			bridgeId: 'hydcraft-portal',
 			module: 'portal-backend',
 		},
 		target: {
@@ -192,11 +193,11 @@ export const createCommandEnvelope = (input: {
 	type: 'command',
 	topic: 'command.request',
 	source: {
-		service: 'portal',
+		serverId: input.serverId,
+		bridgeId: 'hydcraft-portal',
 		module: 'portal-backend',
 	},
 	target: {
-		serverId: input.serverId,
 		bridgeId: input.bridgeId,
 		module: input.module,
 	},

@@ -16,7 +16,6 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 	serverId: server.serverId,
 	code: server.code,
 	name: server.name,
-	description: server.description,
 	host: server.host,
 	port: server.port,
 	enabled: server.enabled,

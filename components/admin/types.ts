@@ -37,7 +37,6 @@ export interface MinecraftServerSummary {
 	serverId: string
 	code: string
 	name: string
-	description: string | null
 	host: string
 	port: number
 	enabled: boolean
@@ -55,6 +54,83 @@ export interface MinecraftServersResponse {
 
 export interface MinecraftServerResponse {
 	server: MinecraftServerSummary
+}
+
+export interface MinecraftServerPlayerHistoryPoint {
+	observedAt: string
+	onlinePlayers: number
+	maxPlayers: number | null
+}
+
+export interface MinecraftServerPlayerIdentitySummary {
+	uuid: string
+	username: string
+	normalizedUsername: string
+	uuidSource: string | null
+	lastSeenAt: string | null
+}
+
+export interface MinecraftServerPlayerSnapshotSummary {
+	observedAt: string
+	players: MinecraftServerPlayerIdentitySummary[]
+}
+
+export interface MinecraftServerSnapshotSummary {
+	id: string
+	kind: string
+	observedAt: string
+	createdAt: string
+	payload: unknown
+}
+
+export interface PortalBridgeReceiptSummary {
+	id?: string
+	topic: string
+	seq: string | null
+	receivedAt: string
+	ackedAt: string | null
+	payload: unknown
+}
+
+export interface PortalBridgeCommandSummary {
+	id: string
+	commandId: string
+	action: string
+	status: string
+	sentAt: string | null
+	completedAt: string | null
+	errorMessage: string | null
+	payload: unknown
+	createdAt: string
+}
+
+export interface MinecraftServerOverviewResponse {
+	server: MinecraftServerSummary
+	metrics: {
+		identityCount: number
+		openSessionCount: number
+		totalSessionCount: number
+		latestPlayerSnapshot: MinecraftServerPlayerSnapshotSummary | null
+		latestStatus: MinecraftServerPlayerHistoryPoint | null
+		playerHistory: MinecraftServerPlayerHistoryPoint[]
+	}
+	snapshots: MinecraftServerSnapshotSummary[]
+	bridge: {
+		lastReceipt: PortalBridgeReceiptSummary | null
+		recentReceipts: PortalBridgeReceiptSummary[]
+		recentCommands: PortalBridgeCommandSummary[]
+	}
+}
+
+export interface PortalBridgeInspectResponse {
+	command: {
+		action: string
+		commandId: string
+		sentAt: string
+		timedOut: boolean
+	}
+	observed: MinecraftServerSnapshotSummary | PortalBridgeReceiptSummary | null
+	overview: MinecraftServerOverviewResponse
 }
 
 export type AdminUserRole = 'USER' | 'MEMBER' | 'ADMIN' | 'OWNER'

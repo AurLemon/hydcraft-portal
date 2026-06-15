@@ -27,7 +27,6 @@ interface CreateMinecraftServerBody {
 	serverId: string
 	code?: string
 	name: string
-	description?: string | null
 	host: string
 	port?: number
 	enabled?: boolean
@@ -50,7 +49,6 @@ export default defineEventHandler(async (event) => {
 			serverId,
 			code: body.code?.trim() || serverId,
 			name: body.name?.trim() || serverId,
-			description: body.description?.trim() || null,
 			host: body.host?.trim() || '127.0.0.1',
 			port: body.port ?? 25565,
 			enabled: body.enabled ?? true,

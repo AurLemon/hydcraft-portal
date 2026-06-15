@@ -84,6 +84,92 @@
 				"description": "新增一個伺服器後，再設定 PortalBridge、AuthMe 和 LuckPerms。"
 			}
 		},
+		"serverCreate": {
+			"title": "新增伺服器"
+		},
+		"serverDetail": {
+			"back": "伺服器",
+			"fallbackTitle": "伺服器",
+			"loading": "載入中",
+			"loadFailed": "讀取伺服器狀態失敗",
+			"actions": {
+				"basic": "基礎資訊",
+				"bridge": "Bridge",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms",
+				"viewAll": "查看全部",
+				"testAndInspect": "測試 / 查看",
+				"testRefresh": "測試重新整理",
+				"close": "關閉"
+			},
+			"sections": {
+				"onlinePlayers": "線上人數",
+				"portalBridge": "PortalBridge",
+				"serverInfo": "伺服器資訊",
+				"dataSources": "資料來源",
+				"playerData": "玩家資料",
+				"serverPlayerInfo": "伺服器玩家資訊",
+				"recentSnapshots": "最近快照",
+				"recentBridgeMessages": "最近 Bridge 訊息",
+				"recentCommands": "最近命令",
+				"recentCommandsHint": "這裡記錄的是 Portal 後台最近主動發給 Bridge 的同步與檢查命令。"
+			},
+			"fields": {
+				"serverId": "伺服器 ID",
+				"connectionState": "連線狀態",
+				"lastConnected": "最後連線",
+				"lastMessage": "最後訊息",
+				"code": "代碼",
+				"address": "地址",
+				"sortOrder": "排序",
+				"createdAt": "建立時間",
+				"authMeDatabase": "AuthMe 資料庫",
+				"luckPermsDatabase": "LuckPerms 資料庫",
+				"identityCount": "身份記錄",
+				"observedPlayers": "觀測到的在線玩家",
+				"openSessions": "線上會話",
+				"totalSessions": "總會話",
+				"playerName": "玩家名稱",
+				"firstJoinedAt": "第一次加入",
+				"lastUpdated": "最後讀取"
+			},
+			"states": {
+				"enabled": "啟用",
+				"disabled": "停用",
+				"notConfigured": "未設定",
+				"empty": "暫無",
+				"error": "錯誤"
+			},
+			"empty": {
+				"description": "未填寫伺服器描述",
+				"snapshots": "暫無快照",
+				"messages": "暫無訊息",
+				"commands": "暫無命令",
+				"playerInfo": "暫無資料"
+			},
+			"chart": {
+				"onlinePlayers": "線上人數",
+				"empty": "暫無人數快照"
+			},
+			"inspector": {
+				"eyebrow": "測試與查看",
+				"snapshotsTitle": "快照資料",
+				"bridgeTitle": "Bridge 訊息資料"
+			},
+			"detail": {
+				"title": "詳情",
+				"snapshotId": "快照 ID",
+				"observedAt": "觀測時間",
+				"createdAt": "建立時間",
+				"messageId": "訊息 ID",
+				"receivedAt": "接收時間",
+				"ackedAt": "Ack 時間",
+				"status": "狀態",
+				"sentAt": "發送時間",
+				"completedAt": "完成時間",
+				"error": "錯誤"
+			}
+		},
 		"users": {
 			"title": "使用者",
 			"filters": {
@@ -187,7 +273,10 @@
 			"createEyebrow": "新增伺服器",
 			"title": "伺服器接入設定",
 			"sections": {
-				"basic": "伺服器基礎資訊"
+				"basic": "伺服器基礎資訊",
+				"portalBridge": "PortalBridge",
+				"authMe": "AuthMe MySQL",
+				"luckPerms": "LuckPerms MySQL"
 			},
 			"fields": {
 				"serverId": "伺服器 ID",
@@ -199,6 +288,8 @@
 				"description": "描述",
 				"enabled": "啟用該伺服器",
 				"bridgeId": "Bridge ID",
+				"module": "Module",
+				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "啟用 Bridge 連線"
 			},
@@ -207,7 +298,8 @@
 			},
 			"actions": {
 				"cancel": "取消",
-				"save": "儲存設定"
+				"save": "儲存設定",
+				"close": "關閉"
 			}
 		},
 		"mysqlFields": {
