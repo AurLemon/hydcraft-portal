@@ -114,6 +114,8 @@
 				"timezoneMode": "Timezone mode",
 				"timezone": "Timezone",
 				"websiteUrl": "Website",
+				"qqNumber": "QQ",
+				"wechatId": "WeChat",
 				"publicEmail": "Public email",
 				"avatarAttachmentId": "Avatar attachment ID",
 				"coverAttachmentId": "Cover attachment ID",

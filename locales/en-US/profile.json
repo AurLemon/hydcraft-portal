@@ -15,12 +15,15 @@
 			"joinedAt": "Joined at",
 			"location": "Location",
 			"countryOrRegion": "Country / Region",
+			"gender": "Gender",
 			"birthday": "Birthday",
 			"language": "Language",
 			"timezone": "Timezone",
 			"autoTimezone": "Detect timezone automatically",
 			"h2wikiPageName": "HydCraft Wiki profile page",
 			"website": "Website",
+			"qqNumber": "QQ",
+			"wechatId": "WeChat",
 			"publicEmail": "Public email"
 		},
 		"actions": {
@@ -43,13 +46,54 @@
 				"copyHydrolineId": "Copy Hydroline ID",
 				"resetAvatar": "Reset avatar"
 			},
+			"birthday": {
+				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
+				"summaryEn": "{age} / {constellation} / {zodiac}",
+				"age": "{age} y.o. ({detail})",
+				"lunar": "Lunar {leap}{month} month {day}",
+				"lunarLeap": "Leap ",
+				"units": {
+					"year": "{count} Year",
+					"month": "{count} Month",
+					"day": "{count} Day"
+				},
+				"constellations": {
+					"aries": "Aries",
+					"taurus": "Taurus",
+					"gemini": "Gemini",
+					"cancer": "Cancer",
+					"leo": "Leo",
+					"virgo": "Virgo",
+					"libra": "Libra",
+					"scorpio": "Scorpio",
+					"sagittarius": "Sagittarius",
+					"capricorn": "Capricorn",
+					"aquarius": "Aquarius",
+					"pisces": "Pisces"
+				},
+				"zodiacs": {
+					"rat": "Rat",
+					"ox": "Ox",
+					"tiger": "Tiger",
+					"rabbit": "Rabbit",
+					"dragon": "Dragon",
+					"snake": "Snake",
+					"horse": "Horse",
+					"goat": "Goat",
+					"monkey": "Monkey",
+					"rooster": "Rooster",
+					"dog": "Dog",
+					"pig": "Pig"
+				}
+			},
 			"hints": {
 				"usernameCooldown": "You can change your username once every 30 days. Old links may stop working or redirect after the change.",
 				"usernameAvailableNow": "You can change your username now. After a change, you cannot change it again for {days} days. Old links may stop working or redirect.",
 				"usernameLockedUntil": "You can change your username once every {days} days. You can change it again on {date}.",
 				"usernameCaseOnlyAvailableUntil": "You are in the cooldown window. Only username casing can be updated now; other changes are available again on {date}.",
 				"languagePreference": "Your preferred language is used as the quick target when you enter a default-language route.",
-				"publicEmail": "If shown publicly, this email may be visible to other people."
+				"publicEmail": "If shown publicly, this email may be visible to other people.",
+				"socialSegmentOnly": "Enter only the page name, username, or user ID here. Do not paste a full https link."
 			}
 		},
 		"public": {
@@ -80,6 +124,8 @@
 			},
 			"social": {
 				"website": "Website",
+				"qqNumber": "QQ",
+				"wechatId": "WeChat",
 				"publicEmail": "Public email"
 			}
 		},
@@ -109,11 +155,16 @@
 				"JA_JP": "日本語"
 			},
 			"country": {
-				"中国内地": "Mainland China",
-				"中国香港": "Hong Kong, China",
-				"中国台湾": "Taiwan, China",
-				"中国澳门": "Macau, China",
-				"海外地区": "Overseas regions"
+				"MAINLAND_CHINA": "Mainland China",
+				"HONG_KONG_CHINA": "Hong Kong, China",
+				"TAIWAN_CHINA": "Taiwan, China",
+				"MACAU_CHINA": "Macau, China",
+				"OVERSEAS_REGION": "Overseas regions"
+			},
+			"gender": {
+				"UNSPECIFIED": "Unspecified",
+				"MALE": "Male",
+				"FEMALE": "Female"
 			}
 		},
 		"privacy": {

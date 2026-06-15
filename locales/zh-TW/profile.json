@@ -15,12 +15,15 @@
 			"joinedAt": "加入時間",
 			"location": "現居地",
 			"countryOrRegion": "國家 / 地區",
+			"gender": "性別",
 			"birthday": "生日",
 			"language": "語言",
 			"timezone": "時區",
 			"autoTimezone": "自動識別時區",
 			"h2wikiPageName": "HydCraft Wiki 個人頁面",
 			"website": "個人網站",
+			"qqNumber": "QQ",
+			"wechatId": "微信",
 			"publicEmail": "公開信箱"
 		},
 		"actions": {
@@ -43,13 +46,53 @@
 				"copyHydrolineId": "複製 Hydroline ID",
 				"resetAvatar": "重設頭像"
 			},
+			"birthday": {
+				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
+				"age": "{age}歲（{detail}）",
+				"lunar": "農曆{leap}{month}月{day}",
+				"lunarLeap": "閏",
+				"units": {
+					"year": "{count}年",
+					"month": "{count}月",
+					"day": "{count}天"
+				},
+				"constellations": {
+					"aries": "牡羊座",
+					"taurus": "金牛座",
+					"gemini": "雙子座",
+					"cancer": "巨蟹座",
+					"leo": "獅子座",
+					"virgo": "處女座",
+					"libra": "天秤座",
+					"scorpio": "天蠍座",
+					"sagittarius": "射手座",
+					"capricorn": "摩羯座",
+					"aquarius": "水瓶座",
+					"pisces": "雙魚座"
+				},
+				"zodiacs": {
+					"rat": "鼠",
+					"ox": "牛",
+					"tiger": "虎",
+					"rabbit": "兔",
+					"dragon": "龍",
+					"snake": "蛇",
+					"horse": "馬",
+					"goat": "羊",
+					"monkey": "猴",
+					"rooster": "雞",
+					"dog": "狗",
+					"pig": "豬"
+				}
+			},
 			"hints": {
 				"usernameCooldown": "使用者名稱每 30 天只能修改一次，修改後舊連結可能失效或跳轉。",
 				"usernameAvailableNow": "目前可修改使用者名稱。修改後 {days} 天內不能再次修改，舊連結可能失效或跳轉。",
 				"usernameLockedUntil": "使用者名稱每 {days} 天只能修改一次，下次可以在 {date} 修改。",
 				"usernameCaseOnlyAvailableUntil": "目前處於冷卻期，僅可調整使用者名稱大小寫；下次可以在 {date} 修改其他內容。",
 				"languagePreference": "偏好語言會作為進入預設語言路由時的快速切換目標。",
-				"publicEmail": "開啟展示後，公開信箱可能被其他人看到。"
+				"publicEmail": "開啟展示後，公開信箱可能被其他人看到。",
+				"socialSegmentOnly": "這裡只輸入頁面名稱、使用者名稱或使用者 ID，不要直接輸入 https 連結。"
 			}
 		},
 		"public": {
@@ -80,6 +123,8 @@
 			},
 			"social": {
 				"website": "個人網站",
+				"qqNumber": "QQ",
+				"wechatId": "微信",
 				"publicEmail": "公開信箱"
 			}
 		},
@@ -109,11 +154,16 @@
 				"JA_JP": "日本語"
 			},
 			"country": {
-				"中国内地": "中國內地",
-				"中国香港": "中國香港",
-				"中国台湾": "中國台灣",
-				"中国澳门": "中國澳門",
-				"海外地区": "海外地區"
+				"MAINLAND_CHINA": "中國內地",
+				"HONG_KONG_CHINA": "中國香港",
+				"TAIWAN_CHINA": "中國台灣",
+				"MACAU_CHINA": "中國澳門",
+				"OVERSEAS_REGION": "海外地區"
+			},
+			"gender": {
+				"UNSPECIFIED": "未指定",
+				"MALE": "男",
+				"FEMALE": "女"
 			}
 		},
 		"privacy": {

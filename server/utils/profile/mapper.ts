@@ -78,6 +78,8 @@ export const toSocialSummary = (
 	githubUsername: user.profile?.githubUsername ?? null,
 	websiteUrl: user.profile?.websiteUrl ?? null,
 	bilibiliUrl: user.profile?.bilibiliUrl ?? null,
+	qqNumber: user.profile?.qqNumber ?? null,
+	wechatId: user.profile?.wechatId ?? null,
 	publicEmail: user.profile?.publicEmail ?? null,
 })
 
@@ -143,6 +145,7 @@ export const toEditableProfile = (user: ProfileUser): EditableUserProfile => ({
 	bio: user.bio,
 	location: user.location,
 	countryOrRegion: user.countryOrRegion,
+	gender: user.gender,
 	birthday: user.birthday,
 	preferences: {
 		language: user.preferences?.language ?? 'ZH_CN',
@@ -188,6 +191,7 @@ export const toPublicProfile = (
 	if (privacy.showCountryOrRegion) {
 		profile.countryOrRegion = user.countryOrRegion
 	}
+	profile.gender = user.gender
 	if (privacy.showBirthday) {
 		profile.birthday = user.birthday
 	}

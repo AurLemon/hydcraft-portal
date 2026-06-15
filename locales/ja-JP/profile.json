@@ -15,12 +15,15 @@
 			"joinedAt": "参加日",
 			"location": "所在地",
 			"countryOrRegion": "国 / 地域",
+			"gender": "性別",
 			"birthday": "誕生日",
 			"language": "言語",
 			"timezone": "タイムゾーン",
 			"autoTimezone": "タイムゾーンを自動検出",
 			"h2wikiPageName": "HydCraft Wiki 個人ページ",
 			"website": "個人サイト",
+			"qqNumber": "QQ",
+			"wechatId": "WeChat",
 			"publicEmail": "公開メール"
 		},
 		"actions": {
@@ -43,13 +46,53 @@
 				"copyHydrolineId": "Hydroline ID をコピー",
 				"resetAvatar": "アバターをリセット"
 			},
+			"birthday": {
+				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
+				"age": "{age}歳（{detail}）",
+				"lunar": "旧暦{leap}{month}月{day}",
+				"lunarLeap": "閏",
+				"units": {
+					"year": "{count}年",
+					"month": "{count}か月",
+					"day": "{count}日"
+				},
+				"constellations": {
+					"aries": "おひつじ座",
+					"taurus": "おうし座",
+					"gemini": "ふたご座",
+					"cancer": "かに座",
+					"leo": "しし座",
+					"virgo": "おとめ座",
+					"libra": "てんびん座",
+					"scorpio": "さそり座",
+					"sagittarius": "いて座",
+					"capricorn": "やぎ座",
+					"aquarius": "みずがめ座",
+					"pisces": "うお座"
+				},
+				"zodiacs": {
+					"rat": "子",
+					"ox": "丑",
+					"tiger": "寅",
+					"rabbit": "卯",
+					"dragon": "辰",
+					"snake": "巳",
+					"horse": "午",
+					"goat": "未",
+					"monkey": "申",
+					"rooster": "酉",
+					"dog": "戌",
+					"pig": "亥"
+				}
+			},
 			"hints": {
 				"usernameCooldown": "ユーザー名は 30 日に 1 回だけ変更できます。変更後、古いリンクは無効になるかリダイレクトされる場合があります。",
 				"usernameAvailableNow": "現在ユーザー名を変更できます。変更後は {days} 日間、再度変更できません。古いリンクは無効になるかリダイレクトされる場合があります。",
 				"usernameLockedUntil": "ユーザー名は {days} 日に 1 回だけ変更できます。次回は {date} に変更できます。",
 				"usernameCaseOnlyAvailableUntil": "現在はクールダウン中です。ユーザー名の大文字小文字だけは今すぐ更新でき、その他の変更は {date} から可能です。",
 				"languagePreference": "既定言語ルートに入ったとき、この設定を素早い切り替え先として使います。",
-				"publicEmail": "公開すると、このメールアドレスは他の人に見える可能性があります。"
+				"publicEmail": "公開すると、このメールアドレスは他の人に見える可能性があります。",
+				"socialSegmentOnly": "ここにはページ名、ユーザー名、またはユーザー ID だけを入力してください。https リンク全体は貼り付けないでください。"
 			}
 		},
 		"public": {
@@ -80,6 +123,8 @@
 			},
 			"social": {
 				"website": "個人サイト",
+				"qqNumber": "QQ",
+				"wechatId": "WeChat",
 				"publicEmail": "公開メール"
 			}
 		},
@@ -109,11 +154,16 @@
 				"JA_JP": "日本語"
 			},
 			"country": {
-				"中国内地": "中国内地",
-				"中国香港": "中国香港",
-				"中国台湾": "中国台湾",
-				"中国澳门": "中国マカオ",
-				"海外地区": "海外地域"
+				"MAINLAND_CHINA": "中国内地",
+				"HONG_KONG_CHINA": "中国香港",
+				"TAIWAN_CHINA": "中国台湾",
+				"MACAU_CHINA": "中国マカオ",
+				"OVERSEAS_REGION": "海外地域"
+			},
+			"gender": {
+				"UNSPECIFIED": "未指定",
+				"MALE": "男性",
+				"FEMALE": "女性"
 			}
 		},
 		"privacy": {

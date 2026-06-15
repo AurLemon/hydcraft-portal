@@ -114,6 +114,8 @@
 				"timezoneMode": "时区模式",
 				"timezone": "时区",
 				"websiteUrl": "个人网站",
+				"qqNumber": "QQ",
+				"wechatId": "微信",
 				"publicEmail": "公开邮箱",
 				"avatarAttachmentId": "头像附件 ID",
 				"coverAttachmentId": "封面附件 ID",

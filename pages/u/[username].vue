@@ -57,23 +57,33 @@
 						<span>{{ t('profile.public.sections.social') }}</span>
 					</div>
 					<div v-if="socialLinks.length" class="mt-4 grid gap-1">
-						<NuxtLink
+						<component
+							:is="link.href ? 'NuxtLink' : 'div'"
 							v-for="link in socialLinks"
 							:key="link.label"
-							:to="link.href"
-							external
-							target="_blank"
-							rel="noopener noreferrer"
-							class="flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
+							:to="link.href || undefined"
+							:external="link.href ? true : undefined"
+							:target="link.href ? '_blank' : undefined"
+							:rel="link.href ? 'noopener noreferrer' : undefined"
+							:class="[
+								'flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm text-slate-600 dark:text-slate-300',
+								link.href
+									? 'transition-colors hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-slate-900 dark:hover:text-white'
+									: '',
+							]"
 						>
 							<span>{{ link.label }}</span>
 							<span class="flex min-w-0 items-center gap-2">
 								<span class="truncate text-slate-500 dark:text-slate-400">
 									{{ link.text }}
 								</span>
-								<UIcon name="i-lucide-external-link" class="h-4 w-4" />
+								<UIcon
+									v-if="link.href"
+									name="i-lucide-external-link"
+									class="h-4 w-4"
+								/>
 							</span>
-						</NuxtLink>
+						</component>
 					</div>
 					<div v-else class="mt-4 text-sm text-slate-500 dark:text-slate-400">
 						{{ t('profile.public.empty.social') }}
@@ -143,6 +153,11 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import {
+	createSocialPreviewLink,
+	extractBilibiliId,
+	extractPathSegment,
+} from '~/utils/profile-edit'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -194,6 +209,8 @@ interface PublicProfile {
 		githubUsername: string | null
 		websiteUrl: string | null
 		bilibiliUrl: string | null
+		qqNumber: string | null
+		wechatId: string | null
 		publicEmail: string | null
 	}
 	activityStatus?: {
@@ -222,7 +239,7 @@ interface PublicProfileResponse {
 interface SocialLink {
 	label: string
 	text: string
-	href: string
+	href?: string
 }
 
 const route = useRoute()
@@ -269,11 +286,18 @@ const socialLinks = computed<SocialLink[]>(() => {
 	const links: SocialLink[] = []
 
 	if (social.githubUsername) {
-		links.push({
-			label: 'GitHub',
-			text: `github.com/${social.githubUsername}`,
-			href: `https://github.com/${social.githubUsername}`,
-		})
+		const githubPreview = createSocialPreviewLink(
+			'https://github.com/',
+			extractPathSegment(social.githubUsername, 'https://github.com/'),
+		)
+
+		if (githubPreview) {
+			links.push({
+				label: 'GitHub',
+				text: githubPreview.text,
+				href: githubPreview.href,
+			})
+		}
 	}
 
 	if (social.websiteUrl) {
@@ -285,19 +309,33 @@ const socialLinks = computed<SocialLink[]>(() => {
 	}
 
 	if (social.bilibiliUrl) {
-		links.push({
-			label: 'Bilibili',
-			text: stripProtocol(social.bilibiliUrl),
-			href: social.bilibiliUrl,
-		})
+		const bilibiliPreview = createSocialPreviewLink(
+			'https://space.bilibili.com/',
+			extractBilibiliId(social.bilibiliUrl),
+		)
+
+		if (bilibiliPreview) {
+			links.push({
+				label: 'Bilibili',
+				text: bilibiliPreview.text,
+				href: bilibiliPreview.href,
+			})
+		}
 	}
 
 	if (social.h2wikiPageName) {
-		links.push({
-			label: 'Wiki',
-			text: `wiki.hydroline.gg/u/${social.h2wikiPageName}`,
-			href: `https://wiki.hydroline.gg/u/${social.h2wikiPageName}`,
-		})
+		const wikiPreview = createSocialPreviewLink(
+			'https://wiki.hydcraft.cn/',
+			extractPathSegment(social.h2wikiPageName, 'https://wiki.hydcraft.cn/'),
+		)
+
+		if (wikiPreview) {
+			links.push({
+				label: 'Wiki',
+				text: wikiPreview.text,
+				href: wikiPreview.href,
+			})
+		}
 	}
 
 	if (social.publicEmail) {
@@ -305,6 +343,20 @@ const socialLinks = computed<SocialLink[]>(() => {
 			label: t('profile.public.social.publicEmail'),
 			text: social.publicEmail,
 			href: `mailto:${social.publicEmail}`,
+		})
+	}
+
+	if (social.qqNumber) {
+		links.push({
+			label: 'QQ',
+			text: social.qqNumber,
+		})
+	}
+
+	if (social.wechatId) {
+		links.push({
+			label: '微信',
+			text: social.wechatId,
 		})
 	}
 

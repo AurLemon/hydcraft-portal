@@ -99,8 +99,18 @@
 					:items="localizedCountryItems"
 				/>
 			</ProfileField>
+			<ProfileField :label="t('profile.fields.gender')">
+				<USelect
+					v-model="form.gender"
+					class="w-full text-sm"
+					:items="localizedGenderItems"
+				/>
+			</ProfileField>
 			<ProfileField :label="t('profile.fields.birthday')">
-				<ProfileBirthdayField v-model="form.birthday" />
+				<div class="grid gap-1.5">
+					<ProfileBirthdayField v-model="form.birthday" />
+					<ProfileBirthdayInfo :birthday="form.birthday" />
+				</div>
 			</ProfileField>
 		</div>
 	</section>
@@ -110,9 +120,11 @@
 import dayjs from 'dayjs'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import ProfileBirthdayField from '~/components/profile/edit/ProfileBirthdayField.vue'
+import ProfileBirthdayInfo from '~/components/profile/edit/ProfileBirthdayInfo.vue'
 import {
 	countryItems,
 	formatProfileDate,
+	genderItems,
 	profileCardClass,
 	profileSectionTitleClass,
 	type ProfileForm,
@@ -139,7 +151,14 @@ const { t } = useI18n()
 const localizedCountryItems = computed(() =>
 	countryItems.map((item) => ({
 		value: item.value,
-		label: t(`profile.options.country.${item.value}`),
+		label: t(`profile.options.country.${item.key}`),
+	})),
+)
+
+const localizedGenderItems = computed(() =>
+	genderItems.map((item) => ({
+		value: item.value,
+		label: t(`profile.options.gender.${item.value}`),
 	})),
 )
 

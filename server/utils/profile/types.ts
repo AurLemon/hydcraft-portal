@@ -1,6 +1,7 @@
 import type {
 	MinecraftAccountStatus,
 	TimezoneMode,
+	UserGender,
 	UserProfileLanguage,
 } from '~/generated/prisma/client'
 
@@ -30,6 +31,8 @@ export interface UserProfileSocialSummary {
 	githubUsername: string | null
 	websiteUrl: string | null
 	bilibiliUrl: string | null
+	qqNumber: string | null
+	wechatId: string | null
 	publicEmail: string | null
 }
 
@@ -88,6 +91,7 @@ export interface EditableUserProfile {
 	bio: string | null
 	location: string | null
 	countryOrRegion: string | null
+	gender: UserGender
 	birthday: Date | null
 	preferences: UserProfilePreferencesSummary
 	social: UserProfileSocialSummary
@@ -108,6 +112,7 @@ export interface PublicUserProfile {
 	bio?: string | null
 	location?: string | null
 	countryOrRegion?: string | null
+	gender?: UserGender
 	birthday?: Date | null
 	social?: UserProfileSocialSummary
 	activityStatus?: {

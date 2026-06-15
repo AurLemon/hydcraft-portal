@@ -1,5 +1,6 @@
 import type {
 	TimezoneMode,
+	UserGender,
 	UserProfileLanguage,
 } from '~/generated/prisma/client'
 import { createBadRequestError } from '../errors'
@@ -19,6 +20,7 @@ const SUPPORTED_TIMEZONES = new Set([
 	'UTC',
 ])
 const SUPPORTED_TIMEZONE_MODES = new Set<TimezoneMode>(['AUTO', 'MANUAL'])
+const SUPPORTED_GENDERS = new Set<UserGender>(['UNSPECIFIED', 'MALE', 'FEMALE'])
 const SUPPORTED_COUNTRIES_OR_REGIONS = new Set([
 	'中国内地',
 	'中国香港',
@@ -122,6 +124,21 @@ export const normalizeCountryOrRegion = (
 	}
 
 	return countryOrRegion
+}
+
+export const normalizeGender = (value: unknown): UserGender | undefined => {
+	if (value === undefined) {
+		return undefined
+	}
+
+	if (
+		typeof value !== 'string' ||
+		!SUPPORTED_GENDERS.has(value as UserGender)
+	) {
+		throw badRequest('GENDER_INVALID')
+	}
+
+	return value as UserGender
 }
 
 export const normalizeBirthday = (value: unknown): Date | null | undefined => {

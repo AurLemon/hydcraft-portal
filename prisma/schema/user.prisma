@@ -14,6 +14,7 @@ model User {
   bio                String?
   location           String?
   countryOrRegion    String?
+  gender             UserGender @default(UNSPECIFIED)
   birthday           DateTime?
   role               UserRole   @default(USER)
   status             UserStatus @default(ACTIVE)
@@ -51,6 +52,8 @@ model UserProfile {
   githubUsername String?
   websiteUrl     String?
   bilibiliUrl    String?
+  qqNumber       String?
+  wechatId       String?
   publicEmail    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

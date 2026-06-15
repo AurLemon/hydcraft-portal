@@ -128,7 +128,10 @@
 							</label>
 							<label :class="fieldClass">
 								<span>{{ t('admin.users.fields.countryOrRegion') }}</span>
-								<USelect v-model="form.countryOrRegion" :items="countryItems" />
+								<USelect
+									v-model="form.countryOrRegion"
+									:items="localizedCountryItems"
+								/>
 							</label>
 							<label :class="fieldClass">
 								<span>{{ t('admin.users.fields.birthday') }}</span>
@@ -325,6 +328,14 @@
 								<span>Bilibili</span>
 								<UInput v-model="form.social.bilibiliUrl" />
 							</label>
+							<label :class="fieldClass">
+								<span>QQ</span>
+								<UInput v-model="form.social.qqNumber" />
+							</label>
+							<label :class="fieldClass">
+								<span>微信</span>
+								<UInput v-model="form.social.wechatId" />
+							</label>
 							<label :class="[fieldClass, 'md:col-span-2']">
 								<span>{{ t('admin.users.fields.publicEmail') }}</span>
 								<UInput v-model="form.social.publicEmail" />
@@ -488,6 +499,8 @@ interface AdminUserForm {
 		githubUsername: string
 		websiteUrl: string
 		bilibiliUrl: string
+		qqNumber: string
+		wechatId: string
 		publicEmail: string
 	}
 	privacy: Record<PrivacyKey, boolean>
@@ -573,6 +586,8 @@ const createEmptyForm = (): AdminUserForm => ({
 		githubUsername: '',
 		websiteUrl: '',
 		bilibiliUrl: '',
+		qqNumber: '',
+		wechatId: '',
 		publicEmail: '',
 	},
 	privacy: Object.fromEntries(
@@ -583,6 +598,12 @@ const createEmptyForm = (): AdminUserForm => ({
 const form = reactive(createEmptyForm())
 const avatarPreviewUrl = computed(() => props.user?.avatarUrl || '')
 const coverPreviewUrl = computed(() => props.user?.coverUrl || '')
+const localizedCountryItems = computed<SelectItem[]>(() =>
+	countryItems.map((item) => ({
+		value: item.value,
+		label: t(`profile.options.country.${item.key}`),
+	})),
+)
 
 const assignForm = (user: AdminUser): void => {
 	form.username = user.username
@@ -611,6 +632,8 @@ const assignForm = (user: AdminUser): void => {
 	form.social.githubUsername = user.profile?.githubUsername ?? ''
 	form.social.websiteUrl = user.profile?.websiteUrl ?? ''
 	form.social.bilibiliUrl = user.profile?.bilibiliUrl ?? ''
+	form.social.qqNumber = user.profile?.qqNumber ?? ''
+	form.social.wechatId = user.profile?.wechatId ?? ''
 	form.social.publicEmail = user.profile?.publicEmail ?? ''
 
 	for (const item of privacyItems) {

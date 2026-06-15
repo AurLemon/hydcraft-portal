@@ -16,6 +16,7 @@ const runStep = (label: string, args: string[]): void => {
 }
 
 runStep('Reset database', ['exec', 'prisma', 'db', 'push', '--force-reset'])
+runStep('Generate Prisma client', ['prisma:generate'])
 runStep('Run seed', ['prisma:seed'])
 
 console.log('\n[db:dev-reset] Completed')

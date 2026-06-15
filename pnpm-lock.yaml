@@ -44,6 +44,9 @@ importers:
       ip2region.js:
         specifier: ^3.1.8
         version: 3.1.8
+      lunar-typescript:
+        specifier: ^1.8.6
+        version: 1.8.6
       motion-v:
         specifier: ^2.2.1
         version: 2.2.1(@vueuse/core@14.3.0(vue@3.5.35(typescript@5.9.3)))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vue@3.5.35(typescript@5.9.3))
@@ -5528,6 +5531,9 @@ packages:
   lru.min@1.1.4:
     resolution: {integrity: sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA==}
     engines: {bun: '>=1.0.0', deno: '>=1.30.0', node: '>=8.0.0'}
+
+  lunar-typescript@1.8.6:
+    resolution: {integrity: sha512-5Eo4T/cnuXfrgO4k5LCpOGHIUOuz5hCF/IfNv0T29WY2shR36Hiz+ecN9WjnUuxUKhql9gbOkPaQoqLFKtPRNA==}
 
   magic-regexp@0.10.0:
     resolution: {integrity: sha512-Uly1Bu4lO1hwHUW0CQeSWuRtzCMNO00CmXtS8N6fyvB3B979GOEEeAkiTUDsmbYLAbvpUS/Kt5c4ibosAzVyVg==}
@@ -13436,6 +13442,8 @@ snapshots:
       yallist: 3.1.1
 
   lru.min@1.1.4: {}
+
+  lunar-typescript@1.8.6: {}
 
   magic-regexp@0.10.0:
     dependencies:

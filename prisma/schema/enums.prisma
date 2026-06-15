@@ -19,6 +19,12 @@ enum UserProfileLanguage {
   JA_JP
 }
 
+enum UserGender {
+  UNSPECIFIED
+  MALE
+  FEMALE
+}
+
 enum TimezoneMode {
   AUTO
   MANUAL

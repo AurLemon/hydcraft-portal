@@ -114,6 +114,8 @@
 				"timezoneMode": "タイムゾーンモード",
 				"timezone": "タイムゾーン",
 				"websiteUrl": "Web サイト",
+				"qqNumber": "QQ",
+				"wechatId": "WeChat",
 				"publicEmail": "公開メール",
 				"avatarAttachmentId": "アバター添付 ID",
 				"coverAttachmentId": "カバー添付 ID",

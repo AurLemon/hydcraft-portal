@@ -19,7 +19,7 @@
 		</div>
 		<div :class="profileCardClass" class="grid gap-4">
 			<ProfileField :label="t('profile.fields.username')" required>
-				<div class="grid gap-2">
+				<div class="grid gap-1.5">
 					<UInput
 						v-model="form.username"
 						class="w-full text-sm"

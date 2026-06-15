@@ -89,6 +89,8 @@ export interface AdminUser {
 		githubUsername: string | null
 		websiteUrl: string | null
 		bilibiliUrl: string | null
+		qqNumber: string | null
+		wechatId: string | null
 		publicEmail: string | null
 	} | null
 	preferences: {

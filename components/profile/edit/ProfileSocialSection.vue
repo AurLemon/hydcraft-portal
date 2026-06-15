@@ -18,27 +18,59 @@
 		</div>
 		<div :class="profileCardClass" class="grid gap-4">
 			<ProfileField :label="t('profile.fields.h2wikiPageName')">
-				<UInput v-model="form.social.h2wikiPageName" class="w-full text-sm" />
+				<div class="grid gap-1.5">
+					<UInput v-model="form.social.h2wikiPageName" class="w-full text-sm" />
+					<div
+						v-if="h2wikiPreview"
+						class="text-xs text-slate-500 dark:text-slate-400"
+					>
+						{{ h2wikiPreview.text }}
+					</div>
+				</div>
 			</ProfileField>
 			<ProfileField label="GitHub">
-				<UInput v-model="form.social.githubUsername" class="w-full text-sm" />
-			</ProfileField>
-			<ProfileField :label="t('profile.fields.website')">
-				<UInput
-					v-model="form.social.websiteUrl"
-					class="w-full text-sm"
-					type="url"
-				/>
+				<div class="grid gap-1.5">
+					<UInput v-model="form.social.githubUsername" class="w-full text-sm" />
+					<div
+						v-if="githubPreview"
+						class="text-xs text-slate-500 dark:text-slate-400"
+					>
+						{{ githubPreview.text }}
+					</div>
+				</div>
 			</ProfileField>
 			<ProfileField label="Bilibili">
-				<UInput
-					v-model="form.social.bilibiliUrl"
-					class="w-full text-sm"
-					type="url"
-				/>
+				<div class="grid gap-1.5">
+					<UInput v-model="form.social.bilibiliUrl" class="w-full text-sm" />
+					<div
+						v-if="bilibiliPreview"
+						class="text-xs text-slate-500 dark:text-slate-400"
+					>
+						{{ bilibiliPreview.text }}
+					</div>
+				</div>
+			</ProfileField>
+			<ProfileField label="QQ">
+				<div class="grid gap-1.5">
+					<UInput v-model="form.social.qqNumber" class="w-full text-sm" />
+				</div>
+			</ProfileField>
+			<ProfileField label="微信">
+				<div class="grid gap-1.5">
+					<UInput v-model="form.social.wechatId" class="w-full text-sm" />
+				</div>
+			</ProfileField>
+			<ProfileField :label="t('profile.fields.website')">
+				<div class="grid gap-1.5">
+					<UInput
+						v-model="form.social.websiteUrl"
+						class="w-full text-sm"
+						type="url"
+					/>
+				</div>
 			</ProfileField>
 			<ProfileField :label="t('profile.fields.publicEmail')">
-				<div class="grid gap-2">
+				<div class="grid gap-1.5">
 					<UInput
 						v-model="form.social.publicEmail"
 						class="w-full text-sm"
@@ -55,6 +87,7 @@
 
 <script setup lang="ts">
 import {
+	createSocialPreviewLink,
 	profileCardClass,
 	profileSectionTitleClass,
 	type ProfileForm,
@@ -71,4 +104,23 @@ defineEmits<{
 
 const { t } = useI18n()
 const form = defineModel<ProfileForm>('form', { required: true })
+
+const h2wikiPreview = computed(() =>
+	createSocialPreviewLink(
+		'https://wiki.hydcraft.cn/',
+		form.value.social.h2wikiPageName,
+	),
+)
+const githubPreview = computed(() =>
+	createSocialPreviewLink(
+		'https://github.com/',
+		form.value.social.githubUsername,
+	),
+)
+const bilibiliPreview = computed(() =>
+	createSocialPreviewLink(
+		'https://space.bilibili.com/',
+		form.value.social.bilibiliUrl,
+	),
+)
 </script>

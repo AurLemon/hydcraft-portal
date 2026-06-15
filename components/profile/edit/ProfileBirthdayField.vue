@@ -1,5 +1,5 @@
 <template>
-	<div class="grid grid-cols-[1.4fr_1fr_1fr] gap-2">
+	<div class="grid grid-cols-[1.4fr_1fr_1fr] gap-2" @focusout="handleFocusOut">
 		<UInput
 			v-model="dateParts.year"
 			class="w-full text-sm"
@@ -29,6 +29,12 @@
 
 <script setup lang="ts">
 interface BirthdayDateParts {
+	year: string
+	month: string
+	day: string
+}
+
+interface ResolvedBirthdayDateParts {
 	year: string
 	month: string
 	day: string
@@ -77,7 +83,7 @@ const isValidDateParts = (
 }
 
 const assignDateParts = (value: string): void => {
-	const matched = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+	const matched = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
 	const [, year = '', month = '', day = ''] = matched ?? []
 
 	if (!matched || !isValidDateParts(year, month, day)) {
@@ -92,31 +98,118 @@ const assignDateParts = (value: string): void => {
 	dateParts.day = day
 }
 
+const buildNormalizedBirthday = (): string | null => {
+	if (!dateParts.year && !dateParts.month && !dateParts.day) {
+		return ''
+	}
+
+	if (dateParts.year.length !== 4 || !dateParts.month || !dateParts.day) {
+		return null
+	}
+
+	if (!isValidDateParts(dateParts.year, dateParts.month, dateParts.day)) {
+		return null
+	}
+
+	return `${dateParts.year}-${dateParts.month}-${dateParts.day}`
+}
+
+const resolveCommittedBirthdayParts = (): ResolvedBirthdayDateParts | null => {
+	if (!dateParts.year && !dateParts.month && !dateParts.day) {
+		return null
+	}
+
+	if (dateParts.year.length !== 4 || !dateParts.month || !dateParts.day) {
+		return null
+	}
+
+	const monthNumber = Number(dateParts.month)
+	const dayNumber = Number(dateParts.day)
+	const resolvedMonth =
+		Number.isInteger(monthNumber) && monthNumber >= 1 && monthNumber <= 12
+			? monthNumber
+			: 1
+	let resolvedDay =
+		Number.isInteger(dayNumber) && dayNumber >= 1 && dayNumber <= 31
+			? dayNumber
+			: 1
+
+	if (
+		!isValidDateParts(
+			dateParts.year,
+			String(resolvedMonth),
+			String(resolvedDay),
+		)
+	) {
+		resolvedDay = 1
+	}
+
+	return {
+		year: dateParts.year,
+		month: String(resolvedMonth).padStart(2, '0'),
+		day: String(resolvedDay).padStart(2, '0'),
+	}
+}
+
+const buildCommittedBirthday = (): string | null => {
+	const resolvedParts = resolveCommittedBirthdayParts()
+
+	if (!resolvedParts) {
+		return null
+	}
+
+	return `${resolvedParts.year}-${resolvedParts.month}-${resolvedParts.day}`
+}
+
 const syncBirthday = (): void => {
 	dateParts.year = normalizeNumericPart(dateParts.year, 4)
 	dateParts.month = normalizeNumericPart(dateParts.month, 2)
 	dateParts.day = normalizeNumericPart(dateParts.day, 2)
 
+	const normalizedBirthday = buildNormalizedBirthday()
+
+	if (normalizedBirthday === null) {
+		return
+	}
+
+	birthday.value = normalizedBirthday
+}
+
+const normalizeDisplayParts = (): void => {
 	if (!dateParts.year && !dateParts.month && !dateParts.day) {
 		birthday.value = ''
 		return
 	}
 
-	if (dateParts.year.length !== 4 || !dateParts.month || !dateParts.day) {
+	const normalizedBirthday = buildCommittedBirthday()
+
+	if (normalizedBirthday === null) {
+		dateParts.year = ''
+		dateParts.month = ''
+		dateParts.day = ''
+		birthday.value = ''
 		return
 	}
 
-	const normalizedMonth = dateParts.month.padStart(2, '0')
-	const normalizedDay = dateParts.day.padStart(2, '0')
-	const nextBirthday = `${dateParts.year}-${normalizedMonth}-${normalizedDay}`
+	birthday.value = normalizedBirthday
 
-	if (!isValidDateParts(dateParts.year, normalizedMonth, normalizedDay)) {
+	const [, year = '', month = '', day = ''] =
+		normalizedBirthday.match(/^(\d{4})-(\d{2})-(\d{2})$/) ?? []
+
+	dateParts.year = year
+	dateParts.month = month
+	dateParts.day = day
+}
+
+const handleFocusOut = (event: FocusEvent): void => {
+	const currentTarget = event.currentTarget as HTMLElement | null
+	const relatedTarget = event.relatedTarget as Node | null
+
+	if (currentTarget?.contains(relatedTarget)) {
 		return
 	}
 
-	birthday.value = nextBirthday
-	dateParts.month = normalizedMonth
-	dateParts.day = normalizedDay
+	normalizeDisplayParts()
 }
 
 watch(

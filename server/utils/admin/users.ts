@@ -259,6 +259,8 @@ const normalizeSocialData = (social: Record<string, unknown>) =>
 		bilibiliUrl: normalizeUrl(social.bilibiliUrl, 'bilibiliUrl', [
 			'bilibili.com',
 		]),
+		qqNumber: normalizeOptionalText(social.qqNumber, 32, 'qqNumber'),
+		wechatId: normalizeOptionalText(social.wechatId, 64, 'wechatId'),
 		publicEmail: normalizePublicEmail(social.publicEmail),
 	})
 

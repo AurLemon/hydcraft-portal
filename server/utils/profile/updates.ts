@@ -14,6 +14,7 @@ import {
 	normalizeBoolean,
 	normalizeCountryOrRegion,
 	normalizeDisplayName,
+	normalizeGender,
 	normalizeLanguage,
 	normalizeOptionalText,
 	normalizePublicEmail,
@@ -32,6 +33,7 @@ interface ProfilePatchBody {
 	bio?: unknown
 	location?: unknown
 	countryOrRegion?: unknown
+	gender?: unknown
 	birthday?: unknown
 	preferences?: Record<string, unknown>
 	social?: Record<string, unknown>
@@ -86,6 +88,8 @@ const normalizeSocialData = (social: Record<string, unknown>) =>
 		bilibiliUrl: normalizeUrl(social.bilibiliUrl, 'bilibiliUrl', [
 			'bilibili.com',
 		]),
+		qqNumber: normalizeOptionalText(social.qqNumber, 32, 'qqNumber'),
+		wechatId: normalizeOptionalText(social.wechatId, 64, 'wechatId'),
 		publicEmail: normalizePublicEmail(social.publicEmail),
 	})
 
@@ -291,6 +295,7 @@ export const updateEditableUserProfile = async (
 	const bio = normalizeBio(body.bio)
 	const location = normalizeOptionalText(body.location, 80, 'location')
 	const countryOrRegion = normalizeCountryOrRegion(body.countryOrRegion)
+	const gender = normalizeGender(body.gender)
 	const birthday = normalizeBirthday(body.birthday)
 
 	if (usernameChangedBeyondCase) {
@@ -325,6 +330,7 @@ export const updateEditableUserProfile = async (
 	collectChangedField(changedFields, 'bio', bio)
 	collectChangedField(changedFields, 'location', location)
 	collectChangedField(changedFields, 'countryOrRegion', countryOrRegion)
+	collectChangedField(changedFields, 'gender', gender)
 	collectChangedField(changedFields, 'birthday', birthday)
 
 	const userData = {
@@ -340,6 +346,7 @@ export const updateEditableUserProfile = async (
 		...(bio !== undefined ? { bio } : {}),
 		...(location !== undefined ? { location } : {}),
 		...(countryOrRegion !== undefined ? { countryOrRegion } : {}),
+		...(gender !== undefined ? { gender } : {}),
 		...(birthday !== undefined ? { birthday } : {}),
 	}
 	const preferences = body.preferences ?? {}

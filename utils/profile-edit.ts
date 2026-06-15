@@ -1,6 +1,13 @@
 import dayjs from 'dayjs'
 
 export type ProfileLanguage = 'ZH_CN' | 'ZH_TW' | 'EN_US' | 'JA_JP'
+export type ProfileGender = 'UNSPECIFIED' | 'MALE' | 'FEMALE'
+export type ProfileCountryOrRegionKey =
+	| 'MAINLAND_CHINA'
+	| 'HONG_KONG_CHINA'
+	| 'TAIWAN_CHINA'
+	| 'MACAU_CHINA'
+	| 'OVERSEAS_REGION'
 export type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 export type TimezoneMode = 'AUTO' | 'MANUAL'
 export type PrivacyKey =
@@ -59,6 +66,7 @@ export interface EditableProfile {
 	bio: string | null
 	location: string | null
 	countryOrRegion: string | null
+	gender: ProfileGender
 	birthday: string | null
 	preferences: {
 		language: ProfileLanguage
@@ -70,6 +78,8 @@ export interface EditableProfile {
 		githubUsername: string | null
 		websiteUrl: string | null
 		bilibiliUrl: string | null
+		qqNumber: string | null
+		wechatId: string | null
 		publicEmail: string | null
 	}
 	privacy: Record<PrivacyKey, boolean>
@@ -82,6 +92,7 @@ export interface ProfileForm {
 	bio: string
 	location: string
 	countryOrRegion: string
+	gender: ProfileGender
 	birthday: string
 	preferences: {
 		language: ProfileLanguage
@@ -93,6 +104,8 @@ export interface ProfileForm {
 		githubUsername: string
 		websiteUrl: string
 		bilibiliUrl: string
+		qqNumber: string
+		wechatId: string
 		publicEmail: string
 	}
 	privacy: Record<PrivacyKey, boolean>
@@ -100,6 +113,11 @@ export interface ProfileForm {
 
 export interface ProfileResponse {
 	profile: EditableProfile
+}
+
+export interface SocialPreviewLink {
+	text: string
+	href: string
 }
 
 export const profileCardClass =
@@ -113,6 +131,11 @@ export const languageItems = [
 	{ label: 'English', value: 'EN_US' },
 	{ label: '日本語', value: 'JA_JP' },
 ]
+export const genderItems = [
+	{ value: 'UNSPECIFIED', label: '未指定' },
+	{ value: 'MALE', label: '男' },
+	{ value: 'FEMALE', label: '女' },
+] as const
 export const timezoneItems = [
 	{ label: 'Asia/Shanghai', value: 'Asia/Shanghai' },
 	{ label: 'Asia/Singapore', value: 'Asia/Singapore' },
@@ -120,12 +143,15 @@ export const timezoneItems = [
 	{ label: 'UTC', value: 'UTC' },
 ]
 export const countryItems = [
-	{ label: '中国内地', value: '中国内地' },
-	{ label: '中国香港', value: '中国香港' },
-	{ label: '中国台湾', value: '中国台湾' },
-	{ label: '中国澳门', value: '中国澳门' },
-	{ label: '海外地区', value: '海外地区' },
-]
+	{ key: 'MAINLAND_CHINA', value: '中国内地' },
+	{ key: 'HONG_KONG_CHINA', value: '中国香港' },
+	{ key: 'TAIWAN_CHINA', value: '中国台湾' },
+	{ key: 'MACAU_CHINA', value: '中国澳门' },
+	{ key: 'OVERSEAS_REGION', value: '海外地区' },
+] as const satisfies ReadonlyArray<{
+	key: ProfileCountryOrRegionKey
+	value: string
+}>
 export const privacyItems: Array<{ key: PrivacyKey; label: string }> = [
 	{ key: 'publicProfile', label: '公开个人主页' },
 	{ key: 'showHydrolineId', label: '展示 Hydroline ID' },
@@ -149,6 +175,7 @@ export const createEmptyProfileForm = (): ProfileForm => ({
 	bio: '',
 	location: '',
 	countryOrRegion: '',
+	gender: 'UNSPECIFIED',
 	birthday: '',
 	preferences: {
 		language: 'ZH_CN',
@@ -160,6 +187,8 @@ export const createEmptyProfileForm = (): ProfileForm => ({
 		githubUsername: '',
 		websiteUrl: '',
 		bilibiliUrl: '',
+		qqNumber: '',
+		wechatId: '',
 		publicEmail: '',
 	},
 	privacy: {
@@ -207,6 +236,104 @@ export const formatProfileDate = (value: string): string =>
 export const toDateInput = (value: string | null): string =>
 	value ? dayjs(value).format('YYYY-MM-DD') : ''
 
+const SOCIAL_PREVIEW_BASE = {
+	h2wiki: 'https://wiki.hydcraft.cn/',
+	github: 'https://github.com/',
+	bilibili: 'https://space.bilibili.com/',
+} as const
+
+const normalizeSocialSegment = (value: string | null | undefined): string => {
+	const normalized = value?.trim() ?? ''
+
+	if (!normalized || /^https?:\/\//i.test(normalized)) {
+		return ''
+	}
+
+	return normalized.replace(/^\/+|\/+$/g, '')
+}
+
+export const extractPathSegment = (
+	value: string | null | undefined,
+	prefix: string,
+): string => {
+	const normalized = value?.trim() ?? ''
+
+	if (!normalized) {
+		return ''
+	}
+
+	if (!/^https?:\/\//i.test(normalized)) {
+		return normalized.replace(/^\/+|\/+$/g, '')
+	}
+
+	try {
+		const url = new URL(normalized)
+		const target = new URL(prefix)
+
+		if (url.origin !== target.origin) {
+			return ''
+		}
+
+		return url.pathname.replace(/^\/+|\/+$/g, '')
+	} catch {
+		return ''
+	}
+}
+
+export const extractBilibiliId = (value: string | null | undefined): string => {
+	const normalized = value?.trim() ?? ''
+
+	if (!normalized) {
+		return ''
+	}
+
+	if (!/^https?:\/\//i.test(normalized)) {
+		return normalized.replace(/^\/+|\/+$/g, '')
+	}
+
+	try {
+		const url = new URL(normalized)
+
+		if (
+			url.hostname !== 'space.bilibili.com' &&
+			url.hostname !== 'www.bilibili.com'
+		) {
+			return ''
+		}
+
+		const match = url.pathname.match(/(\d+)/)
+
+		if (match?.[1]) {
+			return match[1]
+		}
+
+		return url.pathname.replace(/^\/+|\/+$/g, '')
+	} catch {
+		return ''
+	}
+}
+
+export const createSocialPreviewLink = (
+	baseUrl: string,
+	value: string,
+): SocialPreviewLink | null => {
+	const segment = normalizeSocialSegment(value)
+
+	if (!segment) {
+		return null
+	}
+
+	return {
+		text: `${baseUrl.replace(/^https?:\/\//, '')}${segment}`,
+		href: `${baseUrl}${segment}`,
+	}
+}
+
+export const toBilibiliUrl = (value: string): string | null => {
+	const segment = normalizeSocialSegment(value)
+	return segment ? `${SOCIAL_PREVIEW_BASE.bilibili}${segment}` : null
+}
+
 export const assignProfileForm = (
 	form: ProfileForm,
 	value: EditableProfile,
@@ -222,14 +349,23 @@ export const assignProfileForm = (
 	)
 		? (countryOrRegion ?? '')
 		: ''
+	form.gender = value.gender
 	form.birthday = toDateInput(value.birthday)
 	form.preferences.language = value.preferences.language
 	form.preferences.timezoneMode = value.preferences.timezoneMode
 	form.preferences.timezone = value.preferences.timezone ?? 'Asia/Shanghai'
-	form.social.h2wikiPageName = value.social.h2wikiPageName ?? ''
-	form.social.githubUsername = value.social.githubUsername ?? ''
+	form.social.h2wikiPageName = extractPathSegment(
+		value.social.h2wikiPageName,
+		SOCIAL_PREVIEW_BASE.h2wiki,
+	)
+	form.social.githubUsername = extractPathSegment(
+		value.social.githubUsername,
+		SOCIAL_PREVIEW_BASE.github,
+	)
 	form.social.websiteUrl = value.social.websiteUrl ?? ''
-	form.social.bilibiliUrl = value.social.bilibiliUrl ?? ''
+	form.social.bilibiliUrl = extractBilibiliId(value.social.bilibiliUrl)
+	form.social.qqNumber = value.social.qqNumber ?? ''
+	form.social.wechatId = value.social.wechatId ?? ''
 	form.social.publicEmail = value.social.publicEmail ?? ''
 
 	for (const item of privacyItems) {
@@ -258,6 +394,7 @@ export const buildProfilePatchPayload = (
 		['bio', form.bio, original.bio ?? ''],
 		['location', form.location, original.location ?? ''],
 		['countryOrRegion', form.countryOrRegion, original.countryOrRegion ?? ''],
+		['gender', form.gender, original.gender],
 		['birthday', form.birthday, toDateInput(original.birthday)],
 	] as const
 
@@ -283,24 +420,48 @@ export const buildProfilePatchPayload = (
 	}
 
 	const social: Record<string, unknown> = {}
+	const normalizedOriginalWiki = extractPathSegment(
+		original.social.h2wikiPageName,
+		SOCIAL_PREVIEW_BASE.h2wiki,
+	)
+	const normalizedOriginalGithub = extractPathSegment(
+		original.social.githubUsername,
+		SOCIAL_PREVIEW_BASE.github,
+	)
+	const normalizedOriginalBilibili = extractBilibiliId(
+		original.social.bilibiliUrl,
+	)
 	const socialEntries = [
-		[
-			'h2wikiPageName',
-			form.social.h2wikiPageName,
-			original.social.h2wikiPageName ?? '',
-		],
-		[
-			'githubUsername',
-			form.social.githubUsername,
-			original.social.githubUsername ?? '',
-		],
+		['h2wikiPageName', form.social.h2wikiPageName, normalizedOriginalWiki],
+		['githubUsername', form.social.githubUsername, normalizedOriginalGithub],
 		['websiteUrl', form.social.websiteUrl, original.social.websiteUrl ?? ''],
-		['bilibiliUrl', form.social.bilibiliUrl, original.social.bilibiliUrl ?? ''],
+		['bilibiliUrl', form.social.bilibiliUrl, normalizedOriginalBilibili],
+		['qqNumber', form.social.qqNumber, original.social.qqNumber ?? ''],
+		['wechatId', form.social.wechatId, original.social.wechatId ?? ''],
 		['publicEmail', form.social.publicEmail, original.social.publicEmail ?? ''],
 	] as const
 
 	for (const [key, current, initial] of socialEntries) {
 		if (current !== initial) {
+			if (key === 'h2wikiPageName') {
+				social[key] = normalizeNullable(
+					extractPathSegment(current, SOCIAL_PREVIEW_BASE.h2wiki),
+				)
+				continue
+			}
+
+			if (key === 'githubUsername') {
+				social[key] = normalizeNullable(
+					extractPathSegment(current, SOCIAL_PREVIEW_BASE.github),
+				)
+				continue
+			}
+
+			if (key === 'bilibiliUrl') {
+				social[key] = toBilibiliUrl(current)
+				continue
+			}
+
 			social[key] = normalizeNullable(current)
 		}
 	}
