@@ -43,7 +43,7 @@ import type { MinecraftServerSummary } from './types'
 interface AdminServerConfigModalProps {
 	open: boolean
 	server: MinecraftServerSummary | null
-	mode?: 'all' | 'basic' | 'portalBridge' | 'authMe' | 'luckPerms'
+	mode?: 'all' | 'basic' | 'portalBridge' | 'authMe' | 'luckPerms' | 'sync'
 }
 
 const props = defineProps<AdminServerConfigModalProps>()

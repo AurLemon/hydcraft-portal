@@ -97,6 +97,10 @@
 				"bridge": "Bridge",
 				"authMe": "AuthMe",
 				"luckPerms": "LuckPerms",
+				"syncRate": "同步速率",
+				"bridgeStatus": "Bridge 狀態",
+				"authMeStatus": "AuthMe 狀態",
+				"luckPermsStatus": "LuckPerms 狀態",
 				"viewAll": "查看全部",
 				"testAndInspect": "測試 / 查看",
 				"testRefresh": "測試重新整理",
@@ -107,12 +111,12 @@
 				"portalBridge": "PortalBridge",
 				"serverInfo": "伺服器資訊",
 				"dataSources": "資料來源",
+				"syncStatus": "同步狀態",
 				"playerData": "玩家資料",
 				"serverPlayerInfo": "伺服器玩家資訊",
 				"recentSnapshots": "最近快照",
 				"recentBridgeMessages": "最近 Bridge 訊息",
-				"recentCommands": "最近命令",
-				"recentCommandsHint": "這裡記錄的是 Portal 後台最近主動發給 Bridge 的同步與檢查命令。"
+				"recentCommands": "最近命令"
 			},
 			"fields": {
 				"serverId": "伺服器 ID",
@@ -139,6 +143,20 @@
 				"notConfigured": "未設定",
 				"empty": "暫無",
 				"error": "錯誤"
+			},
+			"syncStates": {
+				"waiting": "等待首次同步",
+				"running": "同步中",
+				"success": "最近同步成功",
+				"error": "同步失敗"
+			},
+			"syncSources": {
+				"portalBridgePlayers": "Bridge 玩家",
+				"portalBridgePlayerData": "Bridge PlayerData",
+				"portalBridgeStats": "Bridge 統計",
+				"portalBridgeAdvancements": "Bridge 成就",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms"
 			},
 			"empty": {
 				"description": "未填寫伺服器描述",
@@ -168,7 +186,150 @@
 				"sentAt": "發送時間",
 				"completedAt": "完成時間",
 				"error": "錯誤"
+			},
+			"status": {
+				"eyebrow": "連線狀態",
+				"bridgeTitle": "Bridge 狀態",
+				"authMeTitle": "AuthMe 狀態",
+				"luckPermsTitle": "LuckPerms 狀態",
+				"connect": "連線",
+				"disconnect": "斷開",
+				"reconnect": "重新連線",
+				"enabled": "啟用狀態",
+				"running": "執行中",
+				"connected": "連線正常",
+				"connecting": "正在連線",
+				"disconnected": "未連線",
+				"notLoaded": "未讀取",
+				"runtimeState": "執行狀態",
+				"latency": "延遲",
+				"reconnectAttempts": "重連次數",
+				"nextRetryAt": "下次重試",
+				"manualRequired": "需要手動連線",
+				"notLoadedHint": "重新整理後查看目前 Bridge runtime。",
+				"disabledHint": "PortalBridge 已停用，不執行連線控制。",
+				"connectedHint": "WebSocket 已連線並接收 heartbeat。",
+				"retryHint": "正在等待下次自動重連：{time}",
+				"manualRequiredHint": "自動重連次數已用盡，請手動連線。",
+				"disconnectedHint": "目前沒有活躍連線。",
+				"lastHeartbeatAt": "最後 Heartbeat",
+				"lastDisconnectedAt": "最後斷開",
+				"heartbeats": "Heartbeat 資料",
+				"manualSync": "手動同步",
+				"syncStatus": "同步狀態",
+				"refreshSync": "刷新同步",
+				"noSyncStatus": "暫無同步記錄",
+				"lastStartedAt": "開始時間",
+				"lastFinishedAt": "結束時間",
+				"rowsRead": "讀取行數",
+				"rowsMatched": "匹配行數",
+				"rowsChanged": "變更行數",
+				"rowsSkipped": "略過行數",
+				"checkedAt": "檢測時間",
+				"connectionOk": "連線成功",
+				"connectionFailed": "連線失敗",
+				"connectionSkipped": "已停用，未檢測",
+				"loadFailed": "讀取狀態失敗",
+				"controlFailed": "控制連線失敗",
+				"manualSyncFailed": "手動同步失敗"
 			}
+		},
+		"serverPlayers": {
+			"title": "玩家列表",
+			"back": "伺服器詳情",
+			"actions": {
+				"resetSync": "清空並重新同步"
+			},
+			"filters": {
+				"search": "搜尋玩家名、UUID、信箱或 AuthMe 名稱",
+				"group": "權限組"
+			},
+			"fields": {
+				"id": "記錄 ID",
+				"player": "玩家",
+				"normalizedUsername": "標準化名稱",
+				"uuidSource": "UUID 來源",
+				"firstSeenAt": "第一次加入",
+				"lastSeenAt": "最後出現",
+				"evidenceCount": "證據數",
+				"conflictState": "衝突狀態",
+				"authMeId": "AuthMe ID",
+				"authMeUsername": "AuthMe 使用者名稱",
+				"authMeRealname": "AuthMe 暱稱",
+				"authMeEmail": "AuthMe 信箱",
+				"authMeRegisteredAt": "AuthMe 註冊時間",
+				"authMeLastLoginAt": "AuthMe 最後登入",
+				"authMeRegisterIp": "AuthMe 註冊 IP",
+				"authMeLastIp": "AuthMe 最後 IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe 同步時間",
+				"luckPermsUsername": "LuckPerms 使用者名稱",
+				"luckPermsPrimaryGroup": "LuckPerms 主群組",
+				"luckPermsSyncedAt": "LuckPerms 同步時間",
+				"portalAccountId": "Portal 帳號 ID",
+				"portalUserId": "Portal 使用者 ID",
+				"portalAccountStatus": "Portal 帳號狀態",
+				"portalAccountSource": "Portal 帳號來源",
+				"bridgeSyncedAt": "Bridge 同步時間",
+				"createdAt": "建立時間",
+				"updatedAt": "更新時間"
+			},
+			"states": {
+				"yes": "是",
+				"no": "否"
+			},
+			"empty": {
+				"unknown": "暫無",
+				"notLinked": "未同步"
+			},
+			"uuidSourceTooltip": "來源於 {source}",
+			"conflictTooltip": "存在衝突：{state}",
+			"resetSync": {
+				"eyebrow": "危險操作",
+				"title": "清空玩家同步資料並重新拉取",
+				"description": "這會清空目前伺服器的玩家同步投影、身分事件、playerdata 快照、同步狀態與 Bridge 收據，然後依照所選資料源重新拉取。Portal 使用者與 Minecraft 帳號綁定主表不會被刪除。",
+				"confirm": "清空並重新同步",
+				"successTitle": "已開始重新同步",
+				"successDescription": "玩家同步資料已重置，已依選擇的資料源觸發重新拉取。",
+				"failedTitle": "重新同步失敗",
+				"targets": {
+					"portalBridge": "PortalBridge 玩家 / playerdata / stats / advancements",
+					"authme": "AuthMe",
+					"luckperms": "LuckPerms"
+				}
+			}
+		},
+		"players": {
+			"title": "Minecraft 帳號",
+			"filters": {
+				"search": "搜尋玩家、AuthMe 名稱、綁定使用者或信箱",
+				"linked": "已綁定使用者",
+				"unlinked": "未綁定使用者"
+			},
+			"fields": {
+				"player": "玩家",
+				"linkedUser": "綁定使用者",
+				"status": "狀態",
+				"source": "來源",
+				"observed": "觀測",
+				"firstJoinedAt": "第一次加入",
+				"lastSeenAt": "最後出現",
+				"createdAt": "建立時間",
+				"updatedAt": "更新時間"
+			},
+			"states": {
+				"primary": "主帳號"
+			},
+			"empty": {
+				"unknown": "暫無",
+				"notLinked": "未綁定",
+				"noAuthMe": "暫無 AuthMe 名稱"
+			},
+			"observed": {
+				"serverPlayers": "{count} 筆觀測",
+				"servers": "{count} 個伺服器"
+			},
+			"sameNameSplitTooltip": "這個名稱在伺服器觀測層出現了 {count} 個不同 UUID，應該進入候選合併流程人工確認，而不是自動合併。"
 		},
 		"users": {
 			"title": "使用者",
@@ -276,7 +437,8 @@
 				"basic": "伺服器基礎資訊",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
-				"luckPerms": "LuckPerms MySQL"
+				"luckPerms": "LuckPerms MySQL",
+				"sync": "同步速率"
 			},
 			"fields": {
 				"serverId": "伺服器 ID",
@@ -291,7 +453,8 @@
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
-				"bridgeEnabled": "啟用 Bridge 連線"
+				"bridgeEnabled": "啟用 Bridge 連線",
+				"syncInterval": "同步間隔（分鐘）"
 			},
 			"placeholders": {
 				"keepSecret": "留空則保持不變"

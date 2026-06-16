@@ -1,7 +1,15 @@
 import type { RowDataPacket } from 'mysql2'
+import type { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
-import { closeExternalMysqlPool, createExternalMysqlPool } from './mysql'
-import { parseLuckPermsExpiry } from './time'
+import {
+	hashSyncValue,
+	syncLuckPermsPlayerToServerPlayer,
+} from '../minecraft/server-player'
+import { closeExternalMysqlPool } from './mysql'
+import {
+	createMysqlPoolFromSourceConfig,
+	type EnabledLuckPermsSourceConfig,
+} from './source-config'
 
 interface LuckPermsPlayerRow extends RowDataPacket {
 	uuid: string
@@ -13,230 +21,166 @@ interface LuckPermsGroupRow extends RowDataPacket {
 	name: string
 }
 
-interface LuckPermsUserPermissionRow extends RowDataPacket {
-	id: number
-	uuid: string
-	permission: string
-	value: 0 | 1
-	server: string
-	world: string
-	expiry: number
-	contexts: string
-}
-
-interface LuckPermsGroupPermissionRow extends RowDataPacket {
-	id: number
-	name: string
-	permission: string
-	value: 0 | 1
-	server: string
-	world: string
-	expiry: number
-	contexts: string
-}
-
-interface LuckPermsTrackRow extends RowDataPacket {
-	name: string
-	groups: string
-}
-
 interface ExternalSyncResult {
+	serversRead: number
 	rowsRead: number
-	rowsUpserted: number
+	rowsMatched: number
+	rowsChanged: number
+	rowsSkipped: number
+	latencyMs?: number | null
 }
 
-function normalizeMinecraftUsername(username: string) {
-	return username.trim().toLowerCase()
+const LUCKPERMS_GROUP_COLUMNS = [
+	'name',
+	'priority',
+	'weight',
+	'friendly_name',
+	'display_name',
+]
+
+const getLuckPermsTableColumns = async (
+	pool: ReturnType<typeof createMysqlPoolFromSourceConfig>,
+	database: string,
+	table: string,
+): Promise<Set<string>> => {
+	const [rows] = await pool.query<
+		Array<RowDataPacket & { COLUMN_NAME: string }>
+	>(
+		`
+			SELECT COLUMN_NAME
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
+		`,
+		[database, table],
+	)
+
+	return new Set(rows.map((row) => row.COLUMN_NAME))
 }
 
-export async function syncLuckPermsSnapshots(): Promise<ExternalSyncResult> {
-	const run = await prisma.externalSyncRun.create({
-		data: {
-			source: 'LUCKPERMS',
-		},
-	})
-	const pool = createExternalMysqlPool(process.env.LUCKPERMS_MYSQL_URL)
+const buildLuckPermsGroupSelect = (columns: Set<string>): string | null => {
+	if (!columns.has('name')) {
+		return null
+	}
+
+	const selected = LUCKPERMS_GROUP_COLUMNS.filter((column) =>
+		columns.has(column),
+	)
+	const fields = selected.map((column) => `\`${column}\``)
+
+	return `SELECT ${fields.join(', ')} FROM luckperms_groups`
+}
+
+export const syncLuckPermsSource = async (
+	config: EnabledLuckPermsSourceConfig,
+): Promise<ExternalSyncResult> => {
+	const pool = createMysqlPoolFromSourceConfig(config)
+	let latencyMs: number | null = null
 
 	try {
-		const syncedAt = new Date()
-		let rowsRead = 0
-		let rowsUpserted = 0
-
+		const latencyStartedAt = Date.now()
+		await pool.query('SELECT 1 AS ok')
+		latencyMs = Date.now() - latencyStartedAt
 		const [players] = await pool.query<LuckPermsPlayerRow[]>(`
 			SELECT uuid, username, primary_group
 			FROM luckperms_players
 		`)
-		rowsRead += players.length
+		const groupColumns = await getLuckPermsTableColumns(
+			pool,
+			config.database,
+			'luckperms_groups',
+		)
+		const groupSelect = buildLuckPermsGroupSelect(groupColumns)
+		const [groups] = groupSelect
+			? await pool.query<LuckPermsGroupRow[]>(groupSelect)
+			: [[] as LuckPermsGroupRow[]]
+		const syncedAt = new Date()
+		let rowsMatched = 0
+		let rowsChanged = 0
 
 		for (const row of players) {
-			await prisma.luckPermsPlayerSnapshot.upsert({
-				where: {
-					uuid: row.uuid,
-				},
-				create: {
-					uuid: row.uuid,
-					username: row.username,
-					normalizedUsername: normalizeMinecraftUsername(row.username),
-					primaryGroup: row.primary_group,
-					syncedAt,
-				},
-				update: {
-					username: row.username,
-					normalizedUsername: normalizeMinecraftUsername(row.username),
-					primaryGroup: row.primary_group,
-					syncedAt,
-				},
+			const result = await syncLuckPermsPlayerToServerPlayer({
+				serverId: config.minecraftServer.serverId,
+				uuid: row.uuid,
+				username: row.username,
+				primaryGroup: row.primary_group,
+				syncedAt,
 			})
-			rowsUpserted += 1
-		}
 
-		const [groups] = await pool.query<LuckPermsGroupRow[]>(`
-			SELECT name
-			FROM luckperms_groups
-		`)
-		rowsRead += groups.length
+			if (result.matched) {
+				rowsMatched += 1
+			}
+
+			if (result.changed) {
+				rowsChanged += 1
+			}
+		}
 
 		for (const row of groups) {
-			await prisma.luckPermsGroupSnapshot.upsert({
+			const raw = Object.fromEntries(Object.entries(row))
+			const rawHash = hashSyncValue(raw)
+			const existing = await prisma.minecraftServerLuckPermsGroup.findUnique({
 				where: {
-					name: row.name,
+					serverId_name: {
+						serverId: config.minecraftServer.serverId,
+						name: row.name,
+					},
+				},
+			})
+
+			rowsMatched += 1
+
+			if (existing?.rawHash === rawHash) {
+				continue
+			}
+
+			await prisma.minecraftServerLuckPermsGroup.upsert({
+				where: {
+					serverId_name: {
+						serverId: config.minecraftServer.serverId,
+						name: row.name,
+					},
 				},
 				create: {
+					serverId: config.minecraftServer.serverId,
 					name: row.name,
+					raw: raw as Prisma.InputJsonValue,
+					rawHash,
 					syncedAt,
 				},
 				update: {
+					raw: raw as Prisma.InputJsonValue,
+					rawHash,
 					syncedAt,
 				},
 			})
-			rowsUpserted += 1
+			rowsChanged += 1
 		}
 
-		const [userPermissions] = await pool.query<LuckPermsUserPermissionRow[]>(`
-				SELECT id, uuid, permission, value, server, world, expiry, contexts
-				FROM luckperms_user_permissions
-			`)
-		rowsRead += userPermissions.length
-
-		for (const row of userPermissions) {
-			await prisma.luckPermsUserPermissionSnapshot.upsert({
-				where: {
-					sourceId: row.id,
-				},
-				create: {
-					sourceId: row.id,
-					uuid: row.uuid,
-					permission: row.permission,
-					value: row.value === 1,
-					server: row.server,
-					world: row.world,
-					rawExpiry: BigInt(row.expiry),
-					expiresAt: parseLuckPermsExpiry(row.expiry),
-					contexts: row.contexts,
-					syncedAt,
-				},
-				update: {
-					uuid: row.uuid,
-					permission: row.permission,
-					value: row.value === 1,
-					server: row.server,
-					world: row.world,
-					rawExpiry: BigInt(row.expiry),
-					expiresAt: parseLuckPermsExpiry(row.expiry),
-					contexts: row.contexts,
-					syncedAt,
-				},
-			})
-			rowsUpserted += 1
-		}
-
-		const [groupPermissions] = await pool.query<LuckPermsGroupPermissionRow[]>(`
-				SELECT id, name, permission, value, server, world, expiry, contexts
-				FROM luckperms_group_permissions
-			`)
-		rowsRead += groupPermissions.length
-
-		for (const row of groupPermissions) {
-			await prisma.luckPermsGroupPermissionSnapshot.upsert({
-				where: {
-					sourceId: row.id,
-				},
-				create: {
-					sourceId: row.id,
-					groupName: row.name,
-					permission: row.permission,
-					value: row.value === 1,
-					server: row.server,
-					world: row.world,
-					rawExpiry: BigInt(row.expiry),
-					expiresAt: parseLuckPermsExpiry(row.expiry),
-					contexts: row.contexts,
-					syncedAt,
-				},
-				update: {
-					groupName: row.name,
-					permission: row.permission,
-					value: row.value === 1,
-					server: row.server,
-					world: row.world,
-					rawExpiry: BigInt(row.expiry),
-					expiresAt: parseLuckPermsExpiry(row.expiry),
-					contexts: row.contexts,
-					syncedAt,
-				},
-			})
-			rowsUpserted += 1
-		}
-
-		const [tracks] = await pool.query<LuckPermsTrackRow[]>(`
-			SELECT name, groups
-			FROM luckperms_tracks
-		`)
-		rowsRead += tracks.length
-
-		for (const row of tracks) {
-			await prisma.luckPermsTrackSnapshot.upsert({
-				where: {
-					name: row.name,
-				},
-				create: {
-					name: row.name,
-					rawGroups: row.groups,
-					syncedAt,
-				},
-				update: {
-					rawGroups: row.groups,
-					syncedAt,
-				},
-			})
-			rowsUpserted += 1
-		}
-
-		await prisma.externalSyncRun.update({
+		await prisma.luckPermsSourceConfig.update({
 			where: {
-				id: run.id,
+				id: config.id,
 			},
 			data: {
-				status: 'SUCCESS',
-				finishedAt: new Date(),
-				rowsRead,
-				rowsUpserted,
+				lastSyncAt: syncedAt,
+				lastError: null,
 			},
 		})
 
 		return {
-			rowsRead,
-			rowsUpserted,
+			serversRead: 1,
+			rowsRead: players.length + groups.length,
+			rowsMatched,
+			rowsChanged,
+			rowsSkipped: Math.max(0, rowsMatched - rowsChanged),
+			latencyMs,
 		}
 	} catch (error) {
-		await prisma.externalSyncRun.update({
+		await prisma.luckPermsSourceConfig.update({
 			where: {
-				id: run.id,
+				id: config.id,
 			},
 			data: {
-				status: 'FAILED',
-				finishedAt: new Date(),
-				errorMessage:
+				lastError:
 					error instanceof Error
 						? error.message
 						: 'Unknown LuckPerms sync error',
@@ -246,5 +190,44 @@ export async function syncLuckPermsSnapshots(): Promise<ExternalSyncResult> {
 		throw error
 	} finally {
 		await closeExternalMysqlPool(pool)
+	}
+}
+
+export async function syncLuckPermsSnapshots(): Promise<ExternalSyncResult> {
+	const configs = await prisma.luckPermsSourceConfig.findMany({
+		where: {
+			enabled: true,
+			minecraftServer: {
+				enabled: true,
+			},
+		},
+		include: {
+			minecraftServer: {
+				select: {
+					serverId: true,
+				},
+			},
+		},
+	})
+
+	let rowsRead = 0
+	let rowsMatched = 0
+	let rowsChanged = 0
+	let rowsSkipped = 0
+
+	for (const config of configs) {
+		const result = await syncLuckPermsSource(config)
+		rowsRead += result.rowsRead
+		rowsMatched += result.rowsMatched
+		rowsChanged += result.rowsChanged
+		rowsSkipped += result.rowsSkipped
+	}
+
+	return {
+		serversRead: configs.length,
+		rowsRead,
+		rowsMatched,
+		rowsChanged,
+		rowsSkipped,
 	}
 }

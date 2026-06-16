@@ -1,3 +1,4 @@
+import { onEvent } from '../utils/events/event-bus'
 import { portalBridgeManager } from '../utils/portal-bridge/client'
 
 export default defineNitroPlugin(() => {
@@ -9,4 +10,7 @@ export default defineNitroPlugin(() => {
 	}
 
 	void portalBridgeManager.startEnabled()
+	onEvent('minecraft-server.portal-bridge-config.saved', (payload) => {
+		void portalBridgeManager.refresh(payload.configId)
+	})
 })

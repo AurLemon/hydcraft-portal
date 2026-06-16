@@ -1,10 +1,14 @@
 import 'dotenv/config'
-import { syncAuthMeSnapshots } from '../server/utils/external-sync/authme'
-import { syncLuckPermsSnapshots } from '../server/utils/external-sync/luckperms'
+import { consola } from 'consola'
+import {
+	syncAuthMeSources,
+	syncLuckPermsSources,
+} from '../server/utils/external-sync/orchestrator'
 
 type SyncTarget = 'authme' | 'luckperms' | 'all'
 
 const target = (process.argv[2] ?? 'all') as SyncTarget
+const logger = consola.withTag('sync-script')
 
 if (!['authme', 'luckperms', 'all'].includes(target)) {
 	throw new Error(
@@ -13,11 +17,15 @@ if (!['authme', 'luckperms', 'all'].includes(target)) {
 }
 
 if (target === 'authme' || target === 'all') {
-	const result = await syncAuthMeSnapshots()
-	console.log(`AuthMe synced: ${result.rowsUpserted}/${result.rowsRead}`)
+	const result = await syncAuthMeSources('SCRIPT')
+	logger.success(
+		`AuthMe synced: read=${result.rowsRead} matched=${result.rowsMatched} changed=${result.rowsChanged} skipped=${result.rowsSkipped} across ${result.serversRead} servers`,
+	)
 }
 
 if (target === 'luckperms' || target === 'all') {
-	const result = await syncLuckPermsSnapshots()
-	console.log(`LuckPerms synced: ${result.rowsUpserted}/${result.rowsRead}`)
+	const result = await syncLuckPermsSources('SCRIPT')
+	logger.success(
+		`LuckPerms synced: read=${result.rowsRead} matched=${result.rowsMatched} changed=${result.rowsChanged} skipped=${result.rowsSkipped} across ${result.serversRead} servers`,
+	)
 }

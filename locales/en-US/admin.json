@@ -97,6 +97,10 @@
 				"bridge": "Bridge",
 				"authMe": "AuthMe",
 				"luckPerms": "LuckPerms",
+				"syncRate": "Sync Rate",
+				"bridgeStatus": "Bridge Status",
+				"authMeStatus": "AuthMe Status",
+				"luckPermsStatus": "LuckPerms Status",
 				"viewAll": "View all",
 				"testAndInspect": "Test / Inspect",
 				"testRefresh": "Test refresh",
@@ -107,12 +111,12 @@
 				"portalBridge": "PortalBridge",
 				"serverInfo": "Server info",
 				"dataSources": "Data sources",
+				"syncStatus": "Sync status",
 				"playerData": "Player data",
 				"serverPlayerInfo": "Server player info",
 				"recentSnapshots": "Recent snapshots",
 				"recentBridgeMessages": "Recent Bridge messages",
-				"recentCommands": "Recent commands",
-				"recentCommandsHint": "These are recent sync and inspection commands sent from the Portal backend to Bridge."
+				"recentCommands": "Recent commands"
 			},
 			"fields": {
 				"serverId": "Server ID",
@@ -139,6 +143,20 @@
 				"notConfigured": "Not configured",
 				"empty": "None",
 				"error": "Error"
+			},
+			"syncStates": {
+				"waiting": "Waiting for first sync",
+				"running": "Syncing",
+				"success": "Last sync succeeded",
+				"error": "Sync failed"
+			},
+			"syncSources": {
+				"portalBridgePlayers": "Bridge Players",
+				"portalBridgePlayerData": "Bridge PlayerData",
+				"portalBridgeStats": "Bridge Stats",
+				"portalBridgeAdvancements": "Bridge Advancements",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms"
 			},
 			"empty": {
 				"description": "No server description",
@@ -168,7 +186,140 @@
 				"sentAt": "Sent at",
 				"completedAt": "Completed at",
 				"error": "Error"
+			},
+			"status": {
+				"eyebrow": "Connection status",
+				"bridgeTitle": "Bridge Status",
+				"authMeTitle": "AuthMe Status",
+				"luckPermsTitle": "LuckPerms Status",
+				"connect": "Connect",
+				"disconnect": "Disconnect",
+				"reconnect": "Reconnect",
+				"enabled": "Enabled",
+				"running": "Running",
+				"connected": "Connected",
+				"connecting": "Connecting",
+				"disconnected": "Disconnected",
+				"notLoaded": "Not loaded",
+				"runtimeState": "Runtime state",
+				"latency": "Latency",
+				"reconnectAttempts": "Reconnect attempts",
+				"nextRetryAt": "Next retry",
+				"manualRequired": "Manual connection required",
+				"notLoadedHint": "Refresh to inspect the current Bridge runtime.",
+				"disabledHint": "PortalBridge is disabled, so connection controls are inactive.",
+				"connectedHint": "The WebSocket is connected and receiving heartbeats.",
+				"retryHint": "Waiting for the next automatic reconnect: {time}",
+				"manualRequiredHint": "Automatic reconnect attempts are exhausted. Connect manually.",
+				"disconnectedHint": "There is no active connection now.",
+				"lastHeartbeatAt": "Last heartbeat",
+				"lastDisconnectedAt": "Last disconnected",
+				"heartbeats": "Heartbeat data",
+				"manualSync": "Sync now",
+				"syncStatus": "Sync status",
+				"refreshSync": "Refresh sync",
+				"noSyncStatus": "No sync records yet",
+				"lastStartedAt": "Started at",
+				"lastFinishedAt": "Finished at",
+				"rowsRead": "Rows read",
+				"rowsMatched": "Rows matched",
+				"rowsChanged": "Rows changed",
+				"rowsSkipped": "Rows skipped",
+				"checkedAt": "Checked at",
+				"connectionOk": "Connection succeeded",
+				"connectionFailed": "Connection failed",
+				"connectionSkipped": "Disabled, not checked",
+				"loadFailed": "Failed to load status",
+				"controlFailed": "Failed to control connection",
+				"manualSyncFailed": "Manual sync failed"
 			}
+		},
+		"serverPlayers": {
+			"title": "Players",
+			"back": "Server detail",
+			"actions": {
+				"resetSync": "Reset and resync"
+			},
+			"filters": {
+				"search": "Search player, UUID, email, or AuthMe name",
+				"group": "Permission group"
+			},
+			"fields": {
+				"player": "Player",
+				"firstSeenAt": "First joined",
+				"lastSeenAt": "Last seen",
+				"authMeRegisteredAt": "AuthMe registered at",
+				"authMeLastLoginAt": "AuthMe last login",
+				"authMeRegisterIp": "AuthMe register IP",
+				"authMeLastIp": "AuthMe last IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe synced at",
+				"luckPermsPrimaryGroup": "LuckPerms primary group",
+				"luckPermsSyncedAt": "LuckPerms synced at",
+				"portalAccountId": "Portal account ID",
+				"portalUserId": "Portal user ID",
+				"portalAccountStatus": "Portal account status",
+				"portalAccountSource": "Portal account source",
+				"bridgeSyncedAt": "Bridge synced at",
+				"createdAt": "Created at",
+				"updatedAt": "Updated at"
+			},
+			"states": {
+				"yes": "Yes",
+				"no": "No"
+			},
+			"empty": {
+				"unknown": "None",
+				"notLinked": "Not synced"
+			},
+			"uuidSourceTooltip": "Source: {source}",
+			"conflictTooltip": "Conflict detected: {state}",
+			"resetSync": {
+				"eyebrow": "Danger zone",
+				"title": "Reset player sync data and pull again",
+				"description": "This clears player sync projections, identity events, playerdata snapshots, sync task state, and Bridge receipts for this server, then pulls from the selected sources again. Portal users and Minecraft account bindings are not deleted.",
+				"confirm": "Reset and resync",
+				"successTitle": "Resync started",
+				"successDescription": "Player sync data was reset and the selected sources were triggered again.",
+				"failedTitle": "Resync failed",
+				"targets": {
+					"portalBridge": "PortalBridge players / playerdata / stats / advancements",
+					"authme": "AuthMe",
+					"luckperms": "LuckPerms"
+				}
+			}
+		},
+		"players": {
+			"title": "Minecraft Accounts",
+			"filters": {
+				"search": "Search player, AuthMe name, linked user, or email",
+				"linked": "Linked users",
+				"unlinked": "Unlinked users"
+			},
+			"fields": {
+				"player": "Player",
+				"linkedUser": "Linked user",
+				"status": "Status",
+				"source": "Source",
+				"observed": "Observed",
+				"firstJoinedAt": "First joined",
+				"lastSeenAt": "Last seen",
+				"createdAt": "Created at",
+				"updatedAt": "Updated at"
+			},
+			"states": {
+				"primary": "Primary account"
+			},
+			"empty": {
+				"unknown": "None",
+				"notLinked": "Not linked",
+				"noAuthMe": "No AuthMe name yet"
+			},
+			"observed": {
+				"serverPlayers": "{count} observations",
+				"servers": "{count} servers"
+			},
+			"sameNameSplitTooltip": "This name appears with {count} different UUIDs across server observations. It should go through a candidate merge review instead of being auto-merged."
 		},
 		"users": {
 			"title": "Users",
@@ -276,7 +427,8 @@
 				"basic": "Server Basic Info",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
-				"luckPerms": "LuckPerms MySQL"
+				"luckPerms": "LuckPerms MySQL",
+				"sync": "Sync Rate"
 			},
 			"fields": {
 				"serverId": "Server ID",
@@ -291,7 +443,8 @@
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
-				"bridgeEnabled": "Enable Bridge connection"
+				"bridgeEnabled": "Enable Bridge connection",
+				"syncInterval": "Sync interval (minutes)"
 			},
 			"placeholders": {
 				"keepSecret": "Leave blank to keep unchanged"

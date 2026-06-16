@@ -137,6 +137,18 @@ enum SecurityEventType {
 enum ExternalSyncSource {
   AUTHME
   LUCKPERMS
+  PORTAL_BRIDGE_PLAYERS
+  PORTAL_BRIDGE_PLAYERDATA
+  PORTAL_BRIDGE_STATS
+  PORTAL_BRIDGE_ADVANCEMENTS
+}
+
+enum ExternalSyncReason {
+  STARTUP
+  SCHEDULED
+  MANUAL
+  SCRIPT
+  CONFIG_SAVED
 }
 
 enum ExternalSyncStatus {

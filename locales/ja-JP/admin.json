@@ -97,6 +97,10 @@
 				"bridge": "Bridge",
 				"authMe": "AuthMe",
 				"luckPerms": "LuckPerms",
+				"syncRate": "同期レート",
+				"bridgeStatus": "Bridge 状態",
+				"authMeStatus": "AuthMe 状態",
+				"luckPermsStatus": "LuckPerms 状態",
 				"viewAll": "すべて表示",
 				"testAndInspect": "テスト / 表示",
 				"testRefresh": "更新をテスト",
@@ -107,12 +111,12 @@
 				"portalBridge": "PortalBridge",
 				"serverInfo": "サーバー情報",
 				"dataSources": "データソース",
+				"syncStatus": "同期状態",
 				"playerData": "プレイヤーデータ",
 				"serverPlayerInfo": "サーバープレイヤー情報",
 				"recentSnapshots": "最近のスナップショット",
 				"recentBridgeMessages": "最近の Bridge メッセージ",
-				"recentCommands": "最近のコマンド",
-				"recentCommandsHint": "ここには Portal バックエンドから Bridge へ送った最近の同期・確認コマンドが表示されます。"
+				"recentCommands": "最近のコマンド"
 			},
 			"fields": {
 				"serverId": "サーバー ID",
@@ -139,6 +143,20 @@
 				"notConfigured": "未設定",
 				"empty": "なし",
 				"error": "エラー"
+			},
+			"syncStates": {
+				"waiting": "初回同期待ち",
+				"running": "同期中",
+				"success": "直近の同期は成功",
+				"error": "同期失敗"
+			},
+			"syncSources": {
+				"portalBridgePlayers": "Bridge プレイヤー",
+				"portalBridgePlayerData": "Bridge PlayerData",
+				"portalBridgeStats": "Bridge 統計",
+				"portalBridgeAdvancements": "Bridge 実績",
+				"authMe": "AuthMe",
+				"luckPerms": "LuckPerms"
 			},
 			"empty": {
 				"description": "サーバー説明は未入力です",
@@ -168,7 +186,150 @@
 				"sentAt": "送信日時",
 				"completedAt": "完了日時",
 				"error": "エラー"
+			},
+			"status": {
+				"eyebrow": "接続状態",
+				"bridgeTitle": "Bridge 状態",
+				"authMeTitle": "AuthMe 状態",
+				"luckPermsTitle": "LuckPerms 状態",
+				"connect": "接続",
+				"disconnect": "切断",
+				"reconnect": "再接続",
+				"enabled": "有効状態",
+				"running": "実行中",
+				"connected": "接続中",
+				"connecting": "接続しています",
+				"disconnected": "未接続",
+				"notLoaded": "未取得",
+				"runtimeState": "実行状態",
+				"latency": "レイテンシ",
+				"reconnectAttempts": "再接続回数",
+				"nextRetryAt": "次回リトライ",
+				"manualRequired": "手動接続が必要",
+				"notLoadedHint": "更新すると現在の Bridge runtime を確認できます。",
+				"disabledHint": "PortalBridge は無効のため、接続操作は行いません。",
+				"connectedHint": "WebSocket は接続中で heartbeat を受信しています。",
+				"retryHint": "次の自動再接続を待機中：{time}",
+				"manualRequiredHint": "自動再接続回数を使い切りました。手動で接続してください。",
+				"disconnectedHint": "現在アクティブな接続はありません。",
+				"lastHeartbeatAt": "最終 Heartbeat",
+				"lastDisconnectedAt": "最終切断",
+				"heartbeats": "Heartbeat データ",
+				"manualSync": "手動同期",
+				"syncStatus": "同期状態",
+				"refreshSync": "同期を更新",
+				"noSyncStatus": "同期記録はまだありません",
+				"lastStartedAt": "開始日時",
+				"lastFinishedAt": "終了日時",
+				"rowsRead": "読み取り行数",
+				"rowsMatched": "一致行数",
+				"rowsChanged": "変更行数",
+				"rowsSkipped": "スキップ行数",
+				"checkedAt": "確認日時",
+				"connectionOk": "接続成功",
+				"connectionFailed": "接続失敗",
+				"connectionSkipped": "無効のため未確認",
+				"loadFailed": "状態の読み込みに失敗しました",
+				"controlFailed": "接続制御に失敗しました",
+				"manualSyncFailed": "手動同期に失敗しました"
 			}
+		},
+		"serverPlayers": {
+			"title": "プレイヤー一覧",
+			"back": "サーバー詳細",
+			"actions": {
+				"resetSync": "同期をリセットして再同期"
+			},
+			"filters": {
+				"search": "プレイヤー名、UUID、メール、AuthMe 名で検索",
+				"group": "権限グループ"
+			},
+			"fields": {
+				"id": "レコード ID",
+				"player": "プレイヤー",
+				"normalizedUsername": "正規化ユーザー名",
+				"uuidSource": "UUID ソース",
+				"firstSeenAt": "初回参加",
+				"lastSeenAt": "最終確認",
+				"evidenceCount": "証拠数",
+				"conflictState": "競合状態",
+				"authMeId": "AuthMe ID",
+				"authMeUsername": "AuthMe ユーザー名",
+				"authMeRealname": "AuthMe 表示名",
+				"authMeEmail": "AuthMe メール",
+				"authMeRegisteredAt": "AuthMe 登録日時",
+				"authMeLastLoginAt": "AuthMe 最終ログイン",
+				"authMeRegisterIp": "AuthMe 登録 IP",
+				"authMeLastIp": "AuthMe 最終 IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe 同期日時",
+				"luckPermsUsername": "LuckPerms ユーザー名",
+				"luckPermsPrimaryGroup": "LuckPerms プライマリグループ",
+				"luckPermsSyncedAt": "LuckPerms 同期日時",
+				"portalAccountId": "Portal アカウント ID",
+				"portalUserId": "Portal ユーザー ID",
+				"portalAccountStatus": "Portal アカウント状態",
+				"portalAccountSource": "Portal アカウントソース",
+				"bridgeSyncedAt": "Bridge 同期日時",
+				"createdAt": "作成日時",
+				"updatedAt": "更新日時"
+			},
+			"states": {
+				"yes": "はい",
+				"no": "いいえ"
+			},
+			"empty": {
+				"unknown": "なし",
+				"notLinked": "未同期"
+			},
+			"uuidSourceTooltip": "出所: {source}",
+			"conflictTooltip": "競合あり: {state}",
+			"resetSync": {
+				"eyebrow": "危険な操作",
+				"title": "プレイヤー同期データを消去して再取得",
+				"description": "このサーバーのプレイヤー同期投影、身元イベント、playerdata スナップショット、同期状態、Bridge 受信履歴を消去し、選択したデータソースから再取得します。Portal ユーザーと Minecraft アカウントの紐付け本体は削除しません。",
+				"confirm": "消去して再同期",
+				"successTitle": "再同期を開始しました",
+				"successDescription": "プレイヤー同期データをリセットし、選択したソースの再取得を開始しました。",
+				"failedTitle": "再同期に失敗しました",
+				"targets": {
+					"portalBridge": "PortalBridge のプレイヤー / playerdata / stats / advancements",
+					"authme": "AuthMe",
+					"luckperms": "LuckPerms"
+				}
+			}
+		},
+		"players": {
+			"title": "Minecraft アカウント",
+			"filters": {
+				"search": "プレイヤー名、AuthMe 名、紐付けユーザー、メールで検索",
+				"linked": "紐付け済みユーザー",
+				"unlinked": "未紐付けユーザー"
+			},
+			"fields": {
+				"player": "プレイヤー",
+				"linkedUser": "紐付けユーザー",
+				"status": "状態",
+				"source": "ソース",
+				"observed": "観測",
+				"firstJoinedAt": "初回参加",
+				"lastSeenAt": "最終確認",
+				"createdAt": "作成日時",
+				"updatedAt": "更新日時"
+			},
+			"states": {
+				"primary": "主アカウント"
+			},
+			"empty": {
+				"unknown": "なし",
+				"notLinked": "未紐付け",
+				"noAuthMe": "AuthMe 名称はまだありません"
+			},
+			"observed": {
+				"serverPlayers": "観測 {count} 件",
+				"servers": "{count} サーバー"
+			},
+			"sameNameSplitTooltip": "この名前はサーバー観測で {count} 個の異なる UUID として現れています。自動統合ではなく、候補統合レビューに回すべきです。"
 		},
 		"users": {
 			"title": "ユーザー",
@@ -276,7 +437,8 @@
 				"basic": "サーバー基本情報",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
-				"luckPerms": "LuckPerms MySQL"
+				"luckPerms": "LuckPerms MySQL",
+				"sync": "同期レート"
 			},
 			"fields": {
 				"serverId": "サーバー ID",
@@ -291,7 +453,8 @@
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
-				"bridgeEnabled": "Bridge 接続を有効化"
+				"bridgeEnabled": "Bridge 接続を有効化",
+				"syncInterval": "同期間隔（分）"
 			},
 			"placeholders": {
 				"keepSecret": "空欄なら変更しません"

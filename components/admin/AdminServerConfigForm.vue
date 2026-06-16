@@ -106,6 +106,48 @@
 					:has-password="server?.luckPerms?.hasPassword ?? false"
 				/>
 			</section>
+
+			<section v-if="visibleSections.sync" class="grid gap-4">
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+					<label :class="fieldClass">
+						<span
+							>PortalBridge
+							{{ t('admin.serverConfig.fields.syncInterval') }}</span
+						>
+						<UInput
+							v-model.number="form.portalBridge.coreSyncIntervalMinutes"
+							class="w-full"
+							type="number"
+							min="1"
+							step="1"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span
+							>AuthMe {{ t('admin.serverConfig.fields.syncInterval') }}</span
+						>
+						<UInput
+							v-model.number="form.authMe.syncIntervalMinutes"
+							class="w-full"
+							type="number"
+							min="1"
+							step="1"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span
+							>LuckPerms {{ t('admin.serverConfig.fields.syncInterval') }}</span
+						>
+						<UInput
+							v-model.number="form.luckPerms.syncIntervalMinutes"
+							class="w-full"
+							type="number"
+							min="1"
+							step="1"
+						/>
+					</label>
+				</div>
+			</section>
 		</div>
 
 		<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -135,6 +177,7 @@ interface MysqlForm {
 	username: string
 	password: string
 	enabled: boolean
+	syncIntervalMinutes: number
 }
 
 interface PortalBridgeForm {
@@ -143,6 +186,7 @@ interface PortalBridgeForm {
 	wsUrl: string
 	secret: string
 	enabled: boolean
+	coreSyncIntervalMinutes: number
 }
 
 interface ServerForm {
@@ -160,7 +204,7 @@ interface ServerForm {
 
 interface AdminServerConfigFormProps {
 	server: MinecraftServerSummary | null
-	mode?: 'all' | 'basic' | 'portalBridge' | 'authMe' | 'luckPerms'
+	mode?: 'all' | 'basic' | 'portalBridge' | 'authMe' | 'luckPerms' | 'sync'
 	showCancel?: boolean
 }
 
@@ -184,6 +228,7 @@ const visibleSections = computed(() => ({
 	portalBridge: formMode.value === 'all' || formMode.value === 'portalBridge',
 	authMe: formMode.value === 'all' || formMode.value === 'authMe',
 	luckPerms: formMode.value === 'all' || formMode.value === 'luckPerms',
+	sync: formMode.value === 'sync',
 }))
 const fieldClass =
 	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200'
@@ -202,6 +247,7 @@ const createEmptyForm = (): ServerForm => ({
 		wsUrl: 'ws://127.0.0.1:28546',
 		secret: '',
 		enabled: false,
+		coreSyncIntervalMinutes: 30,
 	},
 	authMe: {
 		host: '',
@@ -210,6 +256,7 @@ const createEmptyForm = (): ServerForm => ({
 		username: '',
 		password: '',
 		enabled: false,
+		syncIntervalMinutes: 30,
 	},
 	luckPerms: {
 		host: '',
@@ -218,8 +265,15 @@ const createEmptyForm = (): ServerForm => ({
 		username: '',
 		password: '',
 		enabled: false,
+		syncIntervalMinutes: 30,
 	},
 })
+
+const secondsToMinutes = (value: number | undefined): number =>
+	Math.max(1, Math.floor((value ?? 1800) / 60))
+
+const minutesToSeconds = (value: number): number =>
+	Math.max(60, Math.floor(value || 30) * 60)
 
 const form = reactive<ServerForm>(createEmptyForm())
 
@@ -240,6 +294,8 @@ const resetForm = (): void => {
 					wsUrl: source.portalBridge?.wsUrl ?? '',
 					secret: '',
 					enabled: source.portalBridge?.enabled ?? false,
+					coreSyncIntervalMinutes:
+						source.portalBridge?.coreSyncIntervalMinutes ?? 30,
 				},
 				authMe: {
 					host: source.authMe?.host ?? '',
@@ -248,6 +304,9 @@ const resetForm = (): void => {
 					username: source.authMe?.username ?? '',
 					password: '',
 					enabled: source.authMe?.enabled ?? false,
+					syncIntervalMinutes: secondsToMinutes(
+						source.authMe?.syncIntervalSeconds,
+					),
 				},
 				luckPerms: {
 					host: source.luckPerms?.host ?? '',
@@ -256,6 +315,9 @@ const resetForm = (): void => {
 					username: source.luckPerms?.username ?? '',
 					password: '',
 					enabled: source.luckPerms?.enabled ?? false,
+					syncIntervalMinutes: secondsToMinutes(
+						source.luckPerms?.syncIntervalSeconds,
+					),
 				},
 			}
 		: createEmptyForm()
@@ -286,9 +348,16 @@ const buildPayload = () => ({
 					wsUrl: form.portalBridge.wsUrl,
 					secret: form.portalBridge.secret || undefined,
 					enabled: form.portalBridge.enabled,
+					coreSyncIntervalMinutes: form.portalBridge.coreSyncIntervalMinutes,
 				},
 			}
-		: {}),
+		: visibleSections.value.sync
+			? {
+					portalBridge: {
+						coreSyncIntervalMinutes: form.portalBridge.coreSyncIntervalMinutes,
+					},
+				}
+			: {}),
 	...(visibleSections.value.authMe
 		? {
 				authMe: {
@@ -298,9 +367,20 @@ const buildPayload = () => ({
 					username: form.authMe.username,
 					password: form.authMe.password || undefined,
 					enabled: form.authMe.enabled,
+					syncIntervalSeconds: minutesToSeconds(
+						form.authMe.syncIntervalMinutes,
+					),
 				},
 			}
-		: {}),
+		: visibleSections.value.sync
+			? {
+					authMe: {
+						syncIntervalSeconds: minutesToSeconds(
+							form.authMe.syncIntervalMinutes,
+						),
+					},
+				}
+			: {}),
 	...(visibleSections.value.luckPerms
 		? {
 				luckPerms: {
@@ -310,9 +390,20 @@ const buildPayload = () => ({
 					username: form.luckPerms.username,
 					password: form.luckPerms.password || undefined,
 					enabled: form.luckPerms.enabled,
+					syncIntervalSeconds: minutesToSeconds(
+						form.luckPerms.syncIntervalMinutes,
+					),
 				},
 			}
-		: {}),
+		: visibleSections.value.sync
+			? {
+					luckPerms: {
+						syncIntervalSeconds: minutesToSeconds(
+							form.luckPerms.syncIntervalMinutes,
+						),
+					},
+				}
+			: {}),
 })
 
 const submit = async (): Promise<void> => {

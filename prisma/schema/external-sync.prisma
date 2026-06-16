@@ -1,111 +1,41 @@
-model ExternalSyncRun {
-  id           String             @id @default(cuid())
-  source       ExternalSyncSource
-  status       ExternalSyncStatus @default(RUNNING)
-  startedAt    DateTime           @default(now())
-  finishedAt   DateTime?
-  rowsRead     Int                @default(0)
-  rowsUpserted Int                @default(0)
-  errorMessage String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+model ExternalSyncTaskState {
+  id              String             @id @default(cuid())
+  taskKey         String             @unique
+  serverId        String
+  server          MinecraftServer    @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
+  source          ExternalSyncSource
+  reason          ExternalSyncReason?
+  running         Boolean            @default(false)
+  intervalSeconds Int                @default(1800)
+  lastStartedAt   DateTime?
+  lastFinishedAt  DateTime?
+  lastSuccessAt   DateTime?
+  lastError        String?
+  rowsRead        Int                @default(0)
+  rowsMatched     Int                @default(0)
+  rowsChanged     Int                @default(0)
+  rowsSkipped     Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
+  @@index([serverId])
   @@index([source])
-  @@index([status])
-  @@index([startedAt])
+  @@index([running])
+  @@index([lastSuccessAt])
 }
 
-model AuthMeAccountSnapshot {
-  id                 String    @id @default(cuid())
-  authmeId           Int       @unique
-  username           String
-  normalizedUsername String    @unique
-  realname           String?
-  email              String?
-  registeredAt       DateTime?
-  lastLoginAt        DateTime?
-  hasTotp            Boolean   @default(false)
-  rawRegdate         BigInt?
-  rawLastlogin       BigInt?
-  syncedAt           DateTime  @default(now())
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-
-  @@index([username])
-  @@index([realname])
-  @@index([lastLoginAt])
-}
-
-model LuckPermsPlayerSnapshot {
-  id                 String   @id @default(cuid())
-  uuid               String   @unique
-  username           String
-  normalizedUsername String
-  primaryGroup       String
-  syncedAt           DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  @@index([username])
-  @@index([normalizedUsername])
-  @@index([primaryGroup])
-}
-
-model LuckPermsGroupSnapshot {
+model MinecraftServerLuckPermsGroup {
   id        String   @id @default(cuid())
-  name      String   @unique
+  serverId  String
+  server    MinecraftServer @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
+  name      String
+  raw       Json?
+  rawHash   String?
   syncedAt  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
-model LuckPermsUserPermissionSnapshot {
-  id         String    @id @default(cuid())
-  sourceId   Int       @unique
-  uuid       String
-  permission String
-  value      Boolean
-  server     String
-  world      String
-  rawExpiry  BigInt
-  expiresAt  DateTime?
-  contexts   String
-  syncedAt   DateTime  @default(now())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  @@index([uuid])
-  @@index([permission])
-  @@index([server])
-  @@index([world])
-}
-
-model LuckPermsGroupPermissionSnapshot {
-  id         String    @id @default(cuid())
-  sourceId   Int       @unique
-  groupName  String
-  permission String
-  value      Boolean
-  server     String
-  world      String
-  rawExpiry  BigInt
-  expiresAt  DateTime?
-  contexts   String
-  syncedAt   DateTime  @default(now())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  @@index([groupName])
-  @@index([permission])
-  @@index([server])
-  @@index([world])
-}
-
-model LuckPermsTrackSnapshot {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  rawGroups String
-  syncedAt  DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([serverId, name])
+  @@index([serverId])
+  @@index([name])
 }

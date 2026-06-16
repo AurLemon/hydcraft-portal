@@ -1,12 +1,12 @@
-import { syncAuthMeSnapshots } from '../../utils/external-sync/authme'
+import { syncAuthMeSources } from '../../utils/external-sync/orchestrator'
 
 export default defineTask({
 	meta: {
 		name: 'external-sync:authme',
-		description: 'Read AuthMe MySQL data and upsert Portal snapshots.',
+		description: 'Read per-server AuthMe MySQL data and enrich server players.',
 	},
 	async run() {
-		const result = await syncAuthMeSnapshots()
+		const result = await syncAuthMeSources('MANUAL')
 
 		return {
 			result,

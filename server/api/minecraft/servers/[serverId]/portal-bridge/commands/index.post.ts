@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	const commandId = portalBridgeManager.sendCommand(
+	const commandId = await portalBridgeManager.sendCommand(
 		bridgeConfig.id,
 		body.action,
 		body.args,

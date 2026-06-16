@@ -135,7 +135,10 @@ export default defineEventHandler(async (event) => {
 
 	const startedAt = new Date()
 	const action = inspectActionByTarget[body.target]
-	const commandId = portalBridgeManager.sendCommand(bridgeConfig.id, action)
+	const commandId = await portalBridgeManager.sendCommand(
+		bridgeConfig.id,
+		action,
+	)
 	const observed =
 		body.target === 'snapshots'
 			? await waitForSnapshot({

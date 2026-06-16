@@ -1,5 +1,6 @@
 import { prisma } from '../db/prisma'
 import { onEvent } from '../events/event-bus'
+import { upsertMinecraftServerPlayerFromIdentity } from './server-player'
 
 let registered = false
 
@@ -41,6 +42,15 @@ export const projectServerPlayerIdentityEvidence = async (payload: {
 				increment: 1,
 			},
 		},
+	})
+
+	await upsertMinecraftServerPlayerFromIdentity({
+		serverId: payload.serverId,
+		uuid: payload.uuid,
+		username: payload.username,
+		normalizedUsername: payload.normalizedUsername,
+		uuidSource: payload.uuidSource,
+		observedAt: payload.observedAt,
 	})
 }
 

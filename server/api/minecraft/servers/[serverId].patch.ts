@@ -4,6 +4,11 @@ import { createApiError, createBadRequestError } from '../../../utils/errors'
 import { encryptConfigValue } from '../../../utils/security/encryption'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
 import { assertMinecraftServerId } from '../../../utils/minecraft/normalize'
+import { emitEvent } from '../../../utils/events/event-bus'
+import {
+	triggerAuthMeSyncForServer,
+	triggerLuckPermsSyncForServer,
+} from '../../../utils/external-sync/orchestrator'
 
 interface SourceConfigBody {
 	host?: string
@@ -12,6 +17,7 @@ interface SourceConfigBody {
 	username?: string
 	password?: string | null
 	enabled?: boolean
+	syncIntervalSeconds?: number
 }
 
 interface PortalBridgeConfigBody {
@@ -22,6 +28,7 @@ interface PortalBridgeConfigBody {
 	enabled?: boolean
 	requestedTopics?: string[]
 	allowedTopics?: string[]
+	coreSyncIntervalMinutes?: number
 }
 
 interface UpdateMinecraftServerBody {
@@ -51,16 +58,56 @@ const normalizeStringList = (
 	value: string[] | undefined,
 ): string[] | undefined => value?.map((item) => item.trim()).filter(Boolean)
 
+const normalizePortalBridgeSyncIntervalMinutes = (
+	value: number | undefined,
+): number | undefined =>
+	value === undefined ? undefined : Math.max(1, Math.floor(value || 30))
+
+const hasSourceConnectionFields = (source: SourceConfigBody): boolean =>
+	source.host !== undefined ||
+	source.port !== undefined ||
+	source.database !== undefined ||
+	source.username !== undefined ||
+	source.password !== undefined ||
+	source.enabled !== undefined
+
+const hasPortalBridgeConnectionFields = (
+	config: PortalBridgeConfigBody,
+): boolean =>
+	config.bridgeId !== undefined ||
+	config.module !== undefined ||
+	config.wsUrl !== undefined ||
+	config.secret !== undefined ||
+	config.enabled !== undefined ||
+	config.requestedTopics !== undefined ||
+	config.allowedTopics !== undefined
+
 export default defineEventHandler(async (event) => {
 	await requireAdminUser(event)
 	const serverId = getRouterParam(event, 'serverId') ?? ''
 	const body = await readBody<UpdateMinecraftServerBody>(event)
+	const syncAfterSave: Array<() => Promise<unknown>> = []
 	const existing = await prisma.minecraftServer.findUnique({
 		where: {
 			serverId,
 		},
 		select: {
 			id: true,
+			portalBridge: {
+				select: {
+					id: true,
+				},
+			},
+			authMe: {
+				select: {
+					id: true,
+				},
+			},
+			luckPerms: {
+				select: {
+					id: true,
+				},
+			},
 		},
 	})
 
@@ -99,8 +146,12 @@ export default defineEventHandler(async (event) => {
 		}
 	}
 
-	if (body.portalBridge) {
-		await prisma.portalBridgeConfig.upsert({
+	if (
+		body.portalBridge &&
+		(existing.portalBridge ||
+			hasPortalBridgeConnectionFields(body.portalBridge))
+	) {
+		const portalBridgeConfig = await prisma.portalBridgeConfig.upsert({
 			where: {
 				minecraftServerId: existing.id,
 			},
@@ -115,6 +166,10 @@ export default defineEventHandler(async (event) => {
 					normalizeStringList(body.portalBridge.requestedTopics) ?? [],
 				allowedTopics:
 					normalizeStringList(body.portalBridge.allowedTopics) ?? [],
+				coreSyncIntervalMinutes:
+					normalizePortalBridgeSyncIntervalMinutes(
+						body.portalBridge.coreSyncIntervalMinutes,
+					) ?? 30,
 			},
 			update: {
 				bridgeId:
@@ -128,12 +183,22 @@ export default defineEventHandler(async (event) => {
 				enabled: body.portalBridge.enabled,
 				requestedTopics: normalizeStringList(body.portalBridge.requestedTopics),
 				allowedTopics: normalizeStringList(body.portalBridge.allowedTopics),
+				coreSyncIntervalMinutes: normalizePortalBridgeSyncIntervalMinutes(
+					body.portalBridge.coreSyncIntervalMinutes,
+				),
 			},
+		})
+
+		await emitEvent('minecraft-server.portal-bridge-config.saved', {
+			configId: portalBridgeConfig.id,
 		})
 	}
 
-	if (body.authMe) {
-		await prisma.authMeSourceConfig.upsert({
+	if (
+		body.authMe &&
+		(existing.authMe || hasSourceConnectionFields(body.authMe))
+	) {
+		const authMeConfig = await prisma.authMeSourceConfig.upsert({
 			where: {
 				minecraftServerId: existing.id,
 			},
@@ -145,6 +210,7 @@ export default defineEventHandler(async (event) => {
 				username: body.authMe.username?.trim() || 'readonly',
 				encryptedPassword: encryptConfigValue(body.authMe.password),
 				enabled: body.authMe.enabled ?? false,
+				syncIntervalSeconds: body.authMe.syncIntervalSeconds ?? 1800,
 			},
 			update: {
 				host: normalizeOptionalText(body.authMe.host) ?? undefined,
@@ -156,12 +222,25 @@ export default defineEventHandler(async (event) => {
 						? undefined
 						: encryptConfigValue(body.authMe.password),
 				enabled: body.authMe.enabled,
+				syncIntervalSeconds: body.authMe.syncIntervalSeconds,
 			},
 		})
+
+		if (authMeConfig.enabled) {
+			syncAfterSave.push(() =>
+				triggerAuthMeSyncForServer({
+					serverId: nextServerId ?? serverId,
+					reason: 'CONFIG_SAVED',
+				}),
+			)
+		}
 	}
 
-	if (body.luckPerms) {
-		await prisma.luckPermsSourceConfig.upsert({
+	if (
+		body.luckPerms &&
+		(existing.luckPerms || hasSourceConnectionFields(body.luckPerms))
+	) {
+		const luckPermsConfig = await prisma.luckPermsSourceConfig.upsert({
 			where: {
 				minecraftServerId: existing.id,
 			},
@@ -173,6 +252,7 @@ export default defineEventHandler(async (event) => {
 				username: body.luckPerms.username?.trim() || 'readonly',
 				encryptedPassword: encryptConfigValue(body.luckPerms.password),
 				enabled: body.luckPerms.enabled ?? false,
+				syncIntervalSeconds: body.luckPerms.syncIntervalSeconds ?? 1800,
 			},
 			update: {
 				host: normalizeOptionalText(body.luckPerms.host) ?? undefined,
@@ -184,8 +264,18 @@ export default defineEventHandler(async (event) => {
 						? undefined
 						: encryptConfigValue(body.luckPerms.password),
 				enabled: body.luckPerms.enabled,
+				syncIntervalSeconds: body.luckPerms.syncIntervalSeconds,
 			},
 		})
+
+		if (luckPermsConfig.enabled) {
+			syncAfterSave.push(() =>
+				triggerLuckPermsSyncForServer({
+					serverId: nextServerId ?? serverId,
+					reason: 'CONFIG_SAVED',
+				}),
+			)
+		}
 	}
 
 	const server = await prisma.minecraftServer.update({
@@ -207,6 +297,15 @@ export default defineEventHandler(async (event) => {
 			luckPerms: true,
 		},
 	})
+
+	for (const triggerSync of syncAfterSave) {
+		void triggerSync().catch((error) => {
+			console.error(
+				'[sync] Failed to trigger source sync after config save',
+				error,
+			)
+		})
+	}
 
 	return {
 		server: toMinecraftServerSummary(server),

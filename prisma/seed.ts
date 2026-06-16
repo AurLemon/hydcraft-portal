@@ -1,8 +1,49 @@
 import 'dotenv/config'
+import {
+	createCipheriv,
+	createSecretKey,
+	randomBytes,
+	scryptSync,
+} from 'crypto'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import { PrismaClient } from '../generated/prisma/client'
 import { hashPassword } from '../server/utils/auth/password'
+
+const ALGORITHM = 'aes-256-gcm'
+const IV_BYTES = 12
+const TAG_BYTES = 16
+
+const getEncryptionKey = (): ReturnType<typeof createSecretKey> => {
+	const secret = process.env.CONFIG_ENCRYPTION_KEY
+
+	if (!secret) {
+		throw new Error('CONFIG_ENCRYPTION_KEY_MISSING')
+	}
+
+	return createSecretKey(
+		Uint8Array.from(scryptSync(secret, 'hydcraft-portal-config', 32)),
+	)
+}
+
+const encryptConfigValue = (
+	value: string | null | undefined,
+): string | null => {
+	if (!value) {
+		return null
+	}
+
+	const iv = Uint8Array.from(randomBytes(IV_BYTES))
+	const cipher = createCipheriv(ALGORITHM, getEncryptionKey(), iv, {
+		authTagLength: TAG_BYTES,
+	})
+	const ciphertext = `${cipher.update(value, 'utf8', 'base64url')}${cipher.final(
+		'base64url',
+	)}`
+	const tag = cipher.getAuthTag().toString('base64url')
+
+	return [Buffer.from(iv).toString('base64url'), tag, ciphertext].join('.')
+}
 
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL ?? '',
@@ -37,6 +78,13 @@ const defaultServer = {
 	name: 'HydCraft Main',
 	host: '127.0.0.1',
 	port: 25565,
+	portalBridge: {
+		bridgeId: 'portalbridge-main',
+		module: 'portalbridge-core',
+		wsUrl: 'ws://127.0.0.1:28546',
+		secret: 'change-me',
+		coreSyncIntervalMinutes: 30,
+	},
 }
 
 async function main() {
@@ -126,7 +174,7 @@ async function main() {
 		console.log(`Seed owner credential ensured: ${defaultOwner.handle}`)
 	}
 
-	await prisma.minecraftServer.upsert({
+	const server = await prisma.minecraftServer.upsert({
 		where: {
 			serverId: defaultServer.serverId,
 		},
@@ -142,6 +190,79 @@ async function main() {
 			name: defaultServer.name,
 			host: defaultServer.host,
 			port: defaultServer.port,
+		},
+	})
+
+	await prisma.portalBridgeConfig.upsert({
+		where: {
+			minecraftServerId: server.id,
+		},
+		create: {
+			minecraftServerId: server.id,
+			bridgeId: defaultServer.portalBridge.bridgeId,
+			module: defaultServer.portalBridge.module,
+			wsUrl: defaultServer.portalBridge.wsUrl,
+			encryptedSecret: encryptConfigValue(defaultServer.portalBridge.secret),
+			enabled: true,
+			requestedTopics: [],
+			allowedTopics: [],
+			coreSyncIntervalMinutes:
+				defaultServer.portalBridge.coreSyncIntervalMinutes,
+		},
+		update: {
+			bridgeId: defaultServer.portalBridge.bridgeId,
+			module: defaultServer.portalBridge.module,
+			wsUrl: defaultServer.portalBridge.wsUrl,
+			encryptedSecret: encryptConfigValue(defaultServer.portalBridge.secret),
+			enabled: true,
+			coreSyncIntervalMinutes:
+				defaultServer.portalBridge.coreSyncIntervalMinutes,
+		},
+	})
+
+	await prisma.authMeSourceConfig.upsert({
+		where: {
+			minecraftServerId: server.id,
+		},
+		create: {
+			minecraftServerId: server.id,
+			host: '127.0.0.1',
+			port: 3306,
+			database: 'authme',
+			username: 'readonly',
+			encryptedPassword: null,
+			enabled: false,
+		},
+		update: {
+			host: '127.0.0.1',
+			port: 3306,
+			database: 'authme',
+			username: 'readonly',
+			encryptedPassword: null,
+			enabled: false,
+		},
+	})
+
+	await prisma.luckPermsSourceConfig.upsert({
+		where: {
+			minecraftServerId: server.id,
+		},
+		create: {
+			minecraftServerId: server.id,
+			host: '127.0.0.1',
+			port: 3306,
+			database: 'luckperms',
+			username: 'readonly',
+			encryptedPassword: null,
+			enabled: false,
+		},
+		update: {
+			host: '127.0.0.1',
+			port: 3306,
+			database: 'luckperms',
+			username: 'readonly',
+			encryptedPassword: null,
+			enabled: false,
 		},
 	})
 

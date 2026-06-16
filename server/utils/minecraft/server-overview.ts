@@ -1,6 +1,7 @@
 import type { MinecraftServerSnapshotKind } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
+import { listServerPlayerPreview } from '../admin/server-players'
 import { toMinecraftServerSummary } from './server-config'
 
 interface PlayerSnapshotItem {
@@ -105,11 +106,13 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 		latestPlayerSnapshot,
 		latestSnapshots,
 		identityCount,
+		playerInfoPreview,
 		openSessionCount,
 		totalSessionCount,
 		lastReceipt,
 		recentReceipts,
 		recentCommands,
+		syncTaskStates,
 	] = await Promise.all([
 		prisma.minecraftServerSnapshot.findMany({
 			where: {
@@ -146,11 +149,12 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 				},
 			],
 		}),
-		prisma.serverPlayerIdentity.count({
+		prisma.minecraftServerPlayer.count({
 			where: {
 				serverId,
 			},
 		}),
+		listServerPlayerPreview(serverId),
 		prisma.serverPlayerSession.count({
 			where: {
 				serverId,
@@ -194,6 +198,16 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 					take: 8,
 				})
 			: [],
+		prisma.externalSyncTaskState.findMany({
+			where: {
+				serverId,
+			},
+			orderBy: [
+				{
+					source: 'asc',
+				},
+			],
+		}),
 	])
 
 	const playerHistory = statusSnapshots
@@ -216,12 +230,14 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 		server: toMinecraftServerSummary(server),
 		metrics: {
 			identityCount,
+			serverPlayerCount: identityCount,
 			openSessionCount,
 			totalSessionCount,
 			latestPlayerSnapshot: latestObservedPlayers,
 			latestStatus,
 			playerHistory,
 		},
+		playerInfoPreview,
 		snapshots: latestSnapshots.map((snapshot) => ({
 			id: snapshot.id,
 			kind: snapshot.kind,
@@ -259,5 +275,20 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 				createdAt: command.createdAt,
 			})),
 		},
+		syncTaskStates: syncTaskStates.map((state) => ({
+			taskKey: state.taskKey,
+			source: state.source,
+			reason: state.reason,
+			running: state.running,
+			intervalSeconds: state.intervalSeconds,
+			lastStartedAt: state.lastStartedAt,
+			lastFinishedAt: state.lastFinishedAt,
+			lastSuccessAt: state.lastSuccessAt,
+			lastError: state.lastError,
+			rowsRead: state.rowsRead,
+			rowsMatched: state.rowsMatched,
+			rowsChanged: state.rowsChanged,
+			rowsSkipped: state.rowsSkipped,
+		})),
 	}
 }

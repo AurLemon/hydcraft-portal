@@ -3,6 +3,7 @@ import { requireAdminUser } from '../../../utils/auth/session'
 import { encryptConfigValue } from '../../../utils/security/encryption'
 import { assertMinecraftServerId } from '../../../utils/minecraft/normalize'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
+import { emitEvent } from '../../../utils/events/event-bus'
 
 interface SourceConfigBody {
 	host: string
@@ -11,6 +12,7 @@ interface SourceConfigBody {
 	username: string
 	password?: string | null
 	enabled?: boolean
+	syncIntervalSeconds?: number
 }
 
 interface PortalBridgeConfigBody {
@@ -21,6 +23,7 @@ interface PortalBridgeConfigBody {
 	enabled?: boolean
 	requestedTopics?: string[]
 	allowedTopics?: string[]
+	coreSyncIntervalMinutes?: number
 }
 
 interface CreateMinecraftServerBody {
@@ -38,6 +41,10 @@ interface CreateMinecraftServerBody {
 
 const normalizeStringList = (value: string[] | undefined): string[] =>
 	value?.map((item) => item.trim()).filter(Boolean) ?? []
+
+const normalizePortalBridgeSyncIntervalMinutes = (
+	value: number | undefined,
+): number => Math.max(1, Math.floor(value || 30))
 
 export default defineEventHandler(async (event) => {
 	await requireAdminUser(event)
@@ -67,6 +74,9 @@ export default defineEventHandler(async (event) => {
 							allowedTopics: normalizeStringList(
 								body.portalBridge.allowedTopics,
 							),
+							coreSyncIntervalMinutes: normalizePortalBridgeSyncIntervalMinutes(
+								body.portalBridge.coreSyncIntervalMinutes,
+							),
 						},
 					}
 				: undefined,
@@ -79,6 +89,7 @@ export default defineEventHandler(async (event) => {
 							username: body.authMe.username.trim(),
 							encryptedPassword: encryptConfigValue(body.authMe.password),
 							enabled: body.authMe.enabled ?? false,
+							syncIntervalSeconds: body.authMe.syncIntervalSeconds ?? 1800,
 						},
 					}
 				: undefined,
@@ -91,6 +102,7 @@ export default defineEventHandler(async (event) => {
 							username: body.luckPerms.username.trim(),
 							encryptedPassword: encryptConfigValue(body.luckPerms.password),
 							enabled: body.luckPerms.enabled ?? false,
+							syncIntervalSeconds: body.luckPerms.syncIntervalSeconds ?? 1800,
 						},
 					}
 				: undefined,
@@ -101,6 +113,12 @@ export default defineEventHandler(async (event) => {
 			luckPerms: true,
 		},
 	})
+
+	if (server.portalBridge) {
+		await emitEvent('minecraft-server.portal-bridge-config.saved', {
+			configId: server.portalBridge.id,
+		})
+	}
 
 	return {
 		server: toMinecraftServerSummary(server),

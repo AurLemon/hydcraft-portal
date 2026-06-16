@@ -1,12 +1,12 @@
-import { syncLuckPermsSnapshots } from '../../utils/external-sync/luckperms'
+import { syncLuckPermsSources } from '../../utils/external-sync/orchestrator'
 
 export default defineTask({
 	meta: {
 		name: 'external-sync:luckperms',
-		description: 'Read LuckPerms MySQL data and upsert Portal snapshots.',
+		description: 'Read per-server LuckPerms groups and enrich server players.',
 	},
 	async run() {
-		const result = await syncLuckPermsSnapshots()
+		const result = await syncLuckPermsSources('MANUAL')
 
 		return {
 			result,

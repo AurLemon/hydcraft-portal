@@ -12,6 +12,7 @@ export interface PortalBridgeSummary {
 	enabled: boolean
 	requestedTopics: string[]
 	allowedTopics: string[]
+	coreSyncIntervalMinutes: number
 	resumeFromSeq: string
 	lastConnectionState: string
 	lastConnectedAt: string | null
@@ -27,6 +28,7 @@ export interface MysqlSourceSummary {
 	database: string
 	username: string
 	enabled: boolean
+	syncIntervalSeconds: number
 	lastSyncAt: string | null
 	lastError: string | null
 	hasPassword: boolean
@@ -104,22 +106,120 @@ export interface PortalBridgeCommandSummary {
 	createdAt: string
 }
 
+export interface ExternalSyncTaskStateSummary {
+	taskKey: string
+	source: string
+	reason: string | null
+	running: boolean
+	intervalSeconds: number
+	lastStartedAt: string | null
+	lastFinishedAt: string | null
+	lastSuccessAt: string | null
+	lastError: string | null
+	rowsRead: number
+	rowsMatched: number
+	rowsChanged: number
+	rowsSkipped: number
+}
+
+export interface MinecraftServerPlayerInfo {
+	id: string
+	serverId: string
+	uuid: string | null
+	username: string | null
+	normalizedUsername: string | null
+	uuidSource: string | null
+	firstSeenAt: string | null
+	lastSeenAt: string | null
+	evidenceCount: number
+	conflictState: string
+	authMe: {
+		id: number | null
+		username: string | null
+		realname: string | null
+		email: string | null
+		registeredAt: string | null
+		lastLoginAt: string | null
+		registerIp: string | null
+		lastIp: string | null
+		hasTotp: boolean
+		syncedAt: string | null
+	}
+	luckPerms: {
+		username: string | null
+		primaryGroup: string | null
+		syncedAt: string | null
+	}
+	bridgeSyncedAt: string | null
+	createdAt: string
+	updatedAt: string
+}
+
+export interface MinecraftServerPlayersResponse {
+	items: MinecraftServerPlayerInfo[]
+	page: number
+	pageSize: number
+	total: number
+	pageCount: number
+}
+
+export interface AdminMinecraftAccountInfo {
+	id: string
+	username: string
+	normalizedUsername: string
+	status: string
+	source: string
+	authmeName: string | null
+	authmeId: number | null
+	firstJoinedAt: string | null
+	lastSeenAt: string | null
+	isPrimary: boolean
+	verifiedAt: string | null
+	unlinkedAt: string | null
+	note: string | null
+	createdAt: string
+	updatedAt: string
+	user: {
+		id: string
+		username: string
+		displayName: string | null
+		email: string | null
+		avatarUrl: string | null
+	} | null
+	observed: {
+		serverPlayerCount: number
+		serverCount: number
+		sameNameUuidCount: number
+	}
+}
+
+export interface AdminMinecraftAccountsResponse {
+	items: AdminMinecraftAccountInfo[]
+	page: number
+	pageSize: number
+	total: number
+	pageCount: number
+}
+
 export interface MinecraftServerOverviewResponse {
 	server: MinecraftServerSummary
 	metrics: {
 		identityCount: number
+		serverPlayerCount: number
 		openSessionCount: number
 		totalSessionCount: number
 		latestPlayerSnapshot: MinecraftServerPlayerSnapshotSummary | null
 		latestStatus: MinecraftServerPlayerHistoryPoint | null
 		playerHistory: MinecraftServerPlayerHistoryPoint[]
 	}
+	playerInfoPreview: MinecraftServerPlayerInfo[]
 	snapshots: MinecraftServerSnapshotSummary[]
 	bridge: {
 		lastReceipt: PortalBridgeReceiptSummary | null
 		recentReceipts: PortalBridgeReceiptSummary[]
 		recentCommands: PortalBridgeCommandSummary[]
 	}
+	syncTaskStates: ExternalSyncTaskStateSummary[]
 }
 
 export interface PortalBridgeInspectResponse {

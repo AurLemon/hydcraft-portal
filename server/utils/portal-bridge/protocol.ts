@@ -60,6 +60,9 @@ export const PORTAL_BRIDGE_PROTOCOL_VERSION = 1
 export const DEFAULT_REQUESTED_TOPICS = [
 	'bridge.heartbeat',
 	'bridge.metrics',
+	'command.accepted',
+	'command.rejected',
+	'command.result',
 	'mc.server.info.snapshot',
 	'mc.server.status.snapshot',
 	'mc.server.worlds.snapshot',
@@ -70,6 +73,15 @@ export const DEFAULT_REQUESTED_TOPICS = [
 	'mc.player.quit',
 	'mc.player.session.opened',
 	'mc.player.session.closed',
+	'mc.playerdata.scan.started',
+	'mc.playerdata.scan.chunk',
+	'mc.playerdata.scan.completed',
+	'mc.stats.snapshot.manifest',
+	'mc.stats.snapshot.chunk',
+	'mc.stats.snapshot.completed',
+	'mc.advancements.snapshot.manifest',
+	'mc.advancements.snapshot.chunk',
+	'mc.advancements.snapshot.completed',
 ]
 
 export const COMMAND_ACTIONS = [

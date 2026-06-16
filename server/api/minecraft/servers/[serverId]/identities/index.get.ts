@@ -1,18 +1,16 @@
-import { prisma } from '../../../../../utils/db/prisma'
+import { requireAdminUser } from '../../../../../utils/auth/session'
+import { listServerPlayers } from '../../../../../utils/admin/server-players'
 
 export default defineEventHandler(async (event) => {
+	await requireAdminUser(event)
 	const serverId = getRouterParam(event, 'serverId') ?? ''
-	const identities = await prisma.serverPlayerIdentity.findMany({
-		where: {
-			serverId,
-		},
-		orderBy: {
-			lastSeenAt: 'desc',
-		},
-		take: 100,
+	const players = await listServerPlayers({
+		serverId,
+		page: 1,
+		pageSize: 100,
 	})
 
 	return {
-		identities,
+		identities: players.items,
 	}
 })

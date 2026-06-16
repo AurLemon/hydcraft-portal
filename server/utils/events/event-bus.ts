@@ -9,6 +9,41 @@ interface EventMap {
 		uuidSource?: string | null
 		observedAt: Date
 	}
+	'server-player.authme-synced': {
+		serverId: string
+		uuid?: string | null
+		playerId: string
+		syncedAt: Date
+	}
+	'server-player.luckperms-synced': {
+		serverId: string
+		uuid: string
+		playerId: string
+		syncedAt: Date
+	}
+	'server-player.playerdata-synced': {
+		serverId: string
+		uuid: string
+		playerId: string
+		syncedAt: Date
+	}
+	'server-player.stats-synced': {
+		serverId: string
+		uuid: string
+		playerId: string
+		snapshotId: string
+		observedAt: Date
+	}
+	'server-player.advancements-synced': {
+		serverId: string
+		uuid: string
+		playerId: string
+		snapshotId: string
+		observedAt: Date
+	}
+	'minecraft-server.portal-bridge-config.saved': {
+		configId: string
+	}
 	'user.profile.updated': {
 		userId: string
 		changedFields: string[]

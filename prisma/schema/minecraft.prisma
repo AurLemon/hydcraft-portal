@@ -43,6 +43,9 @@ model MinecraftServer {
   snapshots    MinecraftServerSnapshot[]
   identities   ServerPlayerIdentity[]
   sessions     ServerPlayerSession[]
+  players      MinecraftServerPlayer[]
+  externalSyncTaskStates ExternalSyncTaskState[]
+  luckPermsGroups        MinecraftServerLuckPermsGroup[]
 }
 
 model PortalBridgeConfig {
@@ -56,6 +59,7 @@ model PortalBridgeConfig {
   enabled             Boolean                     @default(false)
   requestedTopics     String[]                    @default([])
   allowedTopics       String[]                    @default([])
+  coreSyncIntervalMinutes Int                     @default(30)
   resumeFromSeq       BigInt                      @default(0)
   lastConnectionState PortalBridgeConnectionState @default(DISCONNECTED)
   lastConnectedAt     DateTime?
@@ -82,6 +86,7 @@ model AuthMeSourceConfig {
   username          String
   encryptedPassword String?
   enabled           Boolean         @default(false)
+  syncIntervalSeconds Int           @default(1800)
   lastSyncAt        DateTime?
   lastError         String?
   createdAt         DateTime        @default(now())
@@ -100,6 +105,7 @@ model LuckPermsSourceConfig {
   username          String
   encryptedPassword String?
   enabled           Boolean         @default(false)
+  syncIntervalSeconds Int           @default(1800)
   lastSyncAt        DateTime?
   lastError         String?
   createdAt         DateTime        @default(now())
@@ -179,6 +185,113 @@ model ServerPlayerSession {
   @@index([serverId, uuid])
   @@index([openedAt])
   @@index([closedAt])
+}
+
+model MinecraftServerPlayer {
+  id                        String                            @id @default(cuid())
+  serverId                  String
+  server                    MinecraftServer                   @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
+  uuid                      String?
+  username                  String?
+  normalizedUsername        String?
+  uuidSource                String?
+  firstSeenAt               DateTime?
+  lastSeenAt                DateTime?
+  evidenceCount             Int                               @default(0)
+  conflictState             ServerPlayerIdentityConflictState @default(NONE)
+  authmeId                  Int?
+  authmeUsername            String?
+  authmeRealname            String?
+  authmeEmail               String?
+  authmeRegisteredAt        DateTime?
+  authmeLastLoginAt         DateTime?
+  authmeRegisterIp          String?
+  authmeLastIp              String?
+  authmeHasTotp             Boolean                           @default(false)
+  authmeRaw                 Json?
+  authmeRawHash             String?
+  authmeSyncedAt            DateTime?
+  luckPermsUsername         String?
+  luckPermsPrimaryGroup     String?
+  luckPermsSyncedAt         DateTime?
+  portalAccountId           String?
+  portalUserId              String?
+  portalAccountStatus       MinecraftAccountStatus?
+  portalAccountSource       MinecraftAccountSource?
+  bridgeSyncedAt            DateTime?
+  createdAt                 DateTime                          @default(now())
+  updatedAt                 DateTime                          @updatedAt
+
+  authMeCredential          MinecraftServerPlayerAuthMeCredential?
+  playerData                MinecraftServerPlayerData?
+  statsSnapshot             MinecraftServerPlayerStatsSnapshot?
+  advancementsSnapshot      MinecraftServerPlayerAdvancementsSnapshot?
+
+  @@unique([serverId, uuid])
+  @@index([serverId])
+  @@index([serverId, normalizedUsername])
+  @@index([serverId, authmeId])
+  @@index([serverId, luckPermsPrimaryGroup])
+  @@index([serverId, lastSeenAt])
+}
+
+model MinecraftServerPlayerAuthMeCredential {
+  id                      String                @id @default(cuid())
+  minecraftServerPlayerId String                @unique
+  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
+  passwordHash            String?
+  passwordAlgorithm       String?
+  rawPasswordHash         String?
+  credentialHash          String?
+  syncedAt                DateTime              @default(now())
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+}
+
+model MinecraftServerPlayerData {
+  id                      String                @id @default(cuid())
+  minecraftServerPlayerId String                @unique
+  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
+  playerDataFile          String?
+  lastModifiedAt          DateTime?
+  hasStatsFile            Boolean               @default(false)
+  hasAdvancementsFile     Boolean               @default(false)
+  lastKnownName           String?
+  firstPlayedAt           DateTime?
+  lastPlayedAt            DateTime?
+  syncedAt                DateTime              @default(now())
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+}
+
+model MinecraftServerPlayerStatsSnapshot {
+  id                      String                @id @default(cuid())
+  minecraftServerPlayerId String                @unique
+  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
+  snapshotId              String
+  statsHash               String?
+  observedAt              DateTime
+  lastScannedAt           DateTime?
+  stats                   Json
+  createdAt               DateTime              @default(now())
+
+  @@index([snapshotId])
+  @@index([observedAt])
+}
+
+model MinecraftServerPlayerAdvancementsSnapshot {
+  id                      String                @id @default(cuid())
+  minecraftServerPlayerId String                @unique
+  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
+  snapshotId              String
+  advancementsHash        String?
+  observedAt              DateTime
+  lastScannedAt           DateTime?
+  advancements            Json
+  createdAt               DateTime              @default(now())
+
+  @@index([snapshotId])
+  @@index([observedAt])
 }
 
 model PortalBridgeMessageReceipt {
