@@ -39,8 +39,6 @@ const syncSourceList: ExternalSyncSource[] = [
 	'PORTAL_BRIDGE_PLAYERDATA',
 	'PORTAL_BRIDGE_STATS',
 	'PORTAL_BRIDGE_ADVANCEMENTS',
-	'AUTHME',
-	'LUCKPERMS',
 ]
 
 const readTasks = async (serverId: string) => {
@@ -106,13 +104,6 @@ const clearServerPlayerSyncState = async (serverId: string) => {
 				serverId,
 			},
 		})
-		await tx.minecraftServerPlayerAuthMeCredential.deleteMany({
-			where: {
-				player: {
-					serverId,
-				},
-			},
-		})
 		await tx.minecraftServerPlayerData.deleteMany({
 			where: {
 				player: {
@@ -132,11 +123,6 @@ const clearServerPlayerSyncState = async (serverId: string) => {
 				player: {
 					serverId,
 				},
-			},
-		})
-		await tx.minecraftServerLuckPermsGroup.deleteMany({
-			where: {
-				serverId,
 			},
 		})
 		if (bridgeConfig) {

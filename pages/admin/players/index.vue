@@ -14,7 +14,7 @@
 			class="mt-8 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
 		>
 			<div
-				class="grid gap-3 border-b border-slate-200 p-4 dark:border-slate-800 lg:grid-cols-7"
+				class="grid gap-3 border-b border-slate-200 p-4 dark:border-slate-800 lg:grid-cols-6"
 			>
 				<UInput
 					v-model="filters.search"
@@ -22,19 +22,14 @@
 					:placeholder="t('admin.players.filters.search')"
 				/>
 				<USelect
-					v-model="filters.status"
-					:items="statusItems"
-					:placeholder="t('admin.players.fields.status')"
-				/>
-				<USelect
-					v-model="filters.source"
-					:items="sourceItems"
-					:placeholder="t('admin.players.fields.source')"
-				/>
-				<USelect
 					v-model="filters.linked"
 					:items="linkedItems"
 					:placeholder="t('admin.players.fields.linkedUser')"
+				/>
+				<UInput
+					v-model="filters.group"
+					icon="i-lucide-shield"
+					:placeholder="t('admin.players.filters.group')"
 				/>
 				<USelect
 					v-model="filters.sortField"
@@ -64,35 +59,43 @@
 				class="min-h-72"
 			>
 				<template #player-cell="{ row }">
-					<div class="min-w-0">
-						<p
-							class="flex min-w-0 items-center gap-1 font-medium text-slate-900 dark:text-white"
-						>
-							<span class="truncate">{{ row.original.username }}</span>
-							<UTooltip
-								v-if="hasSameNameSplit(row.original.observed.sameNameUuidCount)"
-								:text="
-									getSameNameSplitMessage(
-										row.original.observed.sameNameUuidCount,
-									)
-								"
+					<div class="flex min-w-0 items-center gap-3">
+						<SkeletonImage
+							:src="getMinecraftHeadRendererUrl(row.original.username)"
+							:alt="row.original.username"
+							class="size-10 shrink-0 overflow-hidden rounded-md"
+							image-class="size-10 object-cover"
+							skeleton-class="rounded-md"
+						/>
+						<div class="min-w-0">
+							<p
+								class="flex min-w-0 items-center gap-1 font-medium text-slate-900 dark:text-white"
 							>
-								<UIcon
-									name="i-lucide-triangle-alert"
-									class="size-3.5 shrink-0 text-amber-500"
-								/>
-							</UTooltip>
-							<UBadge
-								v-if="row.original.isPrimary"
-								color="primary"
-								variant="subtle"
+								<span class="truncate">{{ row.original.username }}</span>
+								<UBadge
+									v-if="row.original.isPrimary"
+									color="primary"
+									variant="subtle"
+								>
+									{{ t('admin.players.states.primary') }}
+								</UBadge>
+							</p>
+							<p
+								v-if="getAccountUuid(row.original)"
+								class="flex min-w-0 items-center gap-1 font-mono text-xs text-slate-500"
 							>
-								{{ t('admin.players.states.primary') }}
-							</UBadge>
-						</p>
-						<p class="truncate text-xs text-slate-500">
-							{{ row.original.authmeName ?? t('admin.players.empty.noAuthMe') }}
-						</p>
+								<span class="truncate">{{ getAccountUuid(row.original) }}</span>
+								<UTooltip
+									v-if="getAccountUuids(row.original).length > 1"
+									:text="getAccountUuidTooltip(row.original)"
+								>
+									<UIcon
+										name="i-lucide-ellipsis"
+										class="size-3.5 shrink-0 text-slate-400"
+									/>
+								</UTooltip>
+							</p>
+						</div>
 					</div>
 				</template>
 				<template #user-cell="{ row }">
@@ -119,45 +122,83 @@
 						t('admin.players.empty.notLinked')
 					}}</span>
 				</template>
-				<template #status-cell="{ row }">
-					<UBadge :color="getStatusColor(row.original.status)" variant="subtle">
-						{{ row.original.status }}
-					</UBadge>
+				<template #authMeRegisteredAt-cell="{ row }">
+					{{ formatDate(row.original.authMe?.registeredAt ?? null) }}
 				</template>
-				<template #source-cell="{ row }">
-					<UBadge color="neutral" variant="subtle">{{
-						row.original.source
-					}}</UBadge>
-				</template>
-				<template #observed-cell="{ row }">
-					<div class="flex flex-wrap gap-1">
-						<UBadge color="neutral" variant="subtle">
+				<template #authMeRegisterIp-cell="{ row }">
+					<div class="min-w-0">
+						<p class="truncate text-sm text-slate-900 dark:text-white">
 							{{
-								t('admin.players.observed.serverPlayers', {
-									count: row.original.observed.serverPlayerCount,
-								})
+								getIpLocationDisplay(row.original.authMe?.registerIpLocation)
 							}}
-						</UBadge>
-						<UBadge color="neutral" variant="subtle">
-							{{
-								t('admin.players.observed.servers', {
-									count: row.original.observed.serverCount,
-								})
-							}}
-						</UBadge>
+						</p>
+						<p class="truncate text-xs text-slate-500">
+							{{ getIpAddressDisplay(row.original.authMe?.registerIp ?? null) }}
+						</p>
 					</div>
 				</template>
-				<template #firstJoinedAt-cell="{ row }">
-					{{ formatDate(row.original.firstJoinedAt) }}
+				<template #authMeLastLoginAt-cell="{ row }">
+					{{ formatDate(row.original.authMe?.lastLoginAt ?? null) }}
 				</template>
-				<template #lastSeenAt-cell="{ row }">
-					{{ formatDate(row.original.lastSeenAt) }}
+				<template #authMeLastIp-cell="{ row }">
+					<div class="min-w-0">
+						<p class="truncate text-sm text-slate-900 dark:text-white">
+							{{ getIpLocationDisplay(row.original.authMe?.lastIpLocation) }}
+						</p>
+						<p class="truncate text-xs text-slate-500">
+							{{ getIpAddressDisplay(row.original.authMe?.lastIp ?? null) }}
+						</p>
+					</div>
 				</template>
-				<template #createdAt-cell="{ row }">
-					{{ formatDate(row.original.createdAt) }}
+				<template #luckPermsPrimaryGroup-cell="{ row }">
+					<UBadge
+						v-if="row.original.luckPerms?.primaryGroup"
+						color="neutral"
+						variant="subtle"
+					>
+						{{ row.original.luckPerms.primaryGroup }}
+					</UBadge>
+					<span v-else class="text-sm text-slate-500">
+						{{ t('admin.players.empty.noGroup') }}
+					</span>
 				</template>
-				<template #updatedAt-cell="{ row }">
-					{{ formatDate(row.original.updatedAt) }}
+				<template #worldFirstJoinedAt-cell="{ row }">
+					{{ formatDate(row.original.worldJoin.firstJoinedAt) }}
+				</template>
+				<template #worldLastJoinedAt-cell="{ row }">
+					{{ formatDate(row.original.worldJoin.lastJoinedAt) }}
+				</template>
+				<template #dataEntries-cell="{ row }">
+					<div class="inline-flex flex-nowrap gap-1 whitespace-nowrap">
+						<UButton
+							size="xs"
+							:color="
+								hasAdvancementsEntry(row.original) ? 'primary' : 'neutral'
+							"
+							variant="soft"
+							:disabled="!hasAdvancementsEntry(row.original)"
+							:to="
+								hasAdvancementsEntry(row.original)
+									? getDataEntryRoute(row.original, 'advancements')
+									: undefined
+							"
+						>
+							{{ t('admin.players.dataEntries.advancements') }}
+						</UButton>
+						<UButton
+							size="xs"
+							:color="hasStatsEntry(row.original) ? 'primary' : 'neutral'"
+							variant="soft"
+							:disabled="!hasStatsEntry(row.original)"
+							:to="
+								hasStatsEntry(row.original)
+									? getDataEntryRoute(row.original, 'stats')
+									: undefined
+							"
+						>
+							{{ t('admin.players.dataEntries.stats') }}
+						</UButton>
+					</div>
 				</template>
 			</UTable>
 
@@ -174,8 +215,14 @@
 </template>
 
 <script setup lang="ts">
+import { h } from 'vue'
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
-import type { AdminMinecraftAccountsResponse } from '~/components/admin/types'
+import type {
+	AdminMinecraftAccountInfo,
+	AdminMinecraftAccountsResponse,
+	IpLocationSummary,
+} from '~/components/admin/types'
+import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -183,15 +230,15 @@ definePageMeta({
 })
 
 const { locale, t } = useI18n()
+const localePath = useLocalePath()
 const ALL_FILTER_VALUE = '__all__'
 const page = ref(1)
 const pageSize = ref(20)
 const filters = reactive({
 	search: '',
-	status: ALL_FILTER_VALUE,
-	source: ALL_FILTER_VALUE,
 	linked: ALL_FILTER_VALUE,
-	sortField: 'updatedAt',
+	group: '',
+	sortField: 'authMeLastLoginAt',
 	sortDirection: 'desc',
 })
 const getFilterQueryValue = (value: string): string | undefined =>
@@ -200,9 +247,8 @@ const query = computed(() => ({
 	page: page.value,
 	pageSize: pageSize.value,
 	search: filters.search || undefined,
-	status: getFilterQueryValue(filters.status),
-	source: getFilterQueryValue(filters.source),
 	linked: getFilterQueryValue(filters.linked),
+	group: filters.group || undefined,
 	sortField: filters.sortField,
 	sortDirection: filters.sortDirection,
 }))
@@ -215,35 +261,49 @@ const pageMeta = computed(() => ({
 	total: data.value?.total ?? 0,
 	pageCount: data.value?.pageCount ?? 1,
 }))
+const tableHeader = (label: string) => () =>
+	h('span', { class: 'whitespace-nowrap' }, label)
 const columns = [
-	{ accessorKey: 'player', header: t('admin.players.fields.player') },
-	{ accessorKey: 'user', header: t('admin.players.fields.linkedUser') },
-	{ accessorKey: 'status', header: t('admin.players.fields.status') },
-	{ accessorKey: 'source', header: t('admin.players.fields.source') },
-	{ accessorKey: 'observed', header: t('admin.players.fields.observed') },
 	{
-		accessorKey: 'firstJoinedAt',
-		header: t('admin.players.fields.firstJoinedAt'),
+		accessorKey: 'player',
+		header: tableHeader(t('admin.players.fields.player')),
 	},
-	{ accessorKey: 'lastSeenAt', header: t('admin.players.fields.lastSeenAt') },
-	{ accessorKey: 'createdAt', header: t('admin.players.fields.createdAt') },
-	{ accessorKey: 'updatedAt', header: t('admin.players.fields.updatedAt') },
-]
-const statusItems = [
-	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	{ label: 'PENDING', value: 'PENDING' },
-	{ label: 'VERIFIED', value: 'VERIFIED' },
-	{ label: 'IMPORTED', value: 'IMPORTED' },
-	{ label: 'UNLINKED', value: 'UNLINKED' },
-	{ label: 'CONFLICTED', value: 'CONFLICTED' },
-]
-const sourceItems = [
-	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	{ label: 'PORTAL', value: 'PORTAL' },
-	{ label: 'AUTHME', value: 'AUTHME' },
-	{ label: 'MANUAL', value: 'MANUAL' },
-	{ label: 'MIGRATION', value: 'MIGRATION' },
-	{ label: 'OTHER', value: 'OTHER' },
+	{
+		accessorKey: 'user',
+		header: tableHeader(t('admin.players.fields.linkedUser')),
+	},
+	{
+		accessorKey: 'authMeRegisteredAt',
+		header: tableHeader(t('admin.players.fields.authMeRegisteredAt')),
+	},
+	{
+		accessorKey: 'authMeRegisterIp',
+		header: tableHeader(t('admin.players.fields.authMeRegisterIp')),
+	},
+	{
+		accessorKey: 'authMeLastLoginAt',
+		header: tableHeader(t('admin.players.fields.authMeLastLoginAt')),
+	},
+	{
+		accessorKey: 'authMeLastIp',
+		header: tableHeader(t('admin.players.fields.authMeLastIp')),
+	},
+	{
+		accessorKey: 'luckPermsPrimaryGroup',
+		header: tableHeader(t('admin.players.fields.luckPermsPrimaryGroup')),
+	},
+	{
+		accessorKey: 'worldFirstJoinedAt',
+		header: tableHeader(t('admin.players.fields.worldFirstJoinedAt')),
+	},
+	{
+		accessorKey: 'worldLastJoinedAt',
+		header: tableHeader(t('admin.players.fields.worldLastJoinedAt')),
+	},
+	{
+		accessorKey: 'dataEntries',
+		header: tableHeader(t('admin.players.fields.dataEntries')),
+	},
 ]
 const linkedItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
@@ -251,12 +311,20 @@ const linkedItems = [
 	{ label: t('admin.players.filters.unlinked'), value: 'unlinked' },
 ]
 const sortFieldItems = [
-	{ label: t('admin.players.fields.updatedAt'), value: 'updatedAt' },
-	{ label: t('admin.players.fields.lastSeenAt'), value: 'lastSeenAt' },
-	{ label: t('admin.players.fields.firstJoinedAt'), value: 'firstJoinedAt' },
+	{
+		label: t('admin.players.fields.authMeLastLoginAt'),
+		value: 'authMeLastLoginAt',
+	},
+	{
+		label: t('admin.players.fields.authMeRegisteredAt'),
+		value: 'authMeRegisteredAt',
+	},
+	{
+		label: t('admin.players.fields.authMeSyncedAt'),
+		value: 'authMeSyncedAt',
+	},
 	{ label: t('admin.players.fields.player'), value: 'username' },
-	{ label: t('admin.players.fields.status'), value: 'status' },
-	{ label: t('admin.players.fields.source'), value: 'source' },
+	{ label: t('admin.players.fields.updatedAt'), value: 'updatedAt' },
 ]
 const sortDirectionItems = [
 	{ label: t('admin.sort.desc'), value: 'desc' },
@@ -274,25 +342,72 @@ const formatDate = (value: string | null): string => {
 	}).format(new Date(value))
 }
 
-const hasSameNameSplit = (count: number): boolean => count > 1
+const getIpLocationDisplay = (
+	ipLocation: IpLocationSummary | null | undefined,
+): string => ipLocation?.display ?? t('admin.players.empty.unknownLocation')
 
-const getSameNameSplitMessage = (count: number): string =>
-	t('admin.players.sameNameSplitTooltip', { count })
+const getIpAddressDisplay = (ipAddress: string | null): string =>
+	ipAddress ?? t('admin.players.empty.unknown')
 
-const getStatusColor = (status: string) => {
-	if (status === 'VERIFIED') {
-		return 'success'
+const getAccountUuid = (account: AdminMinecraftAccountInfo): string | null =>
+	getAccountUuids(account)[0]?.uuid ?? null
+
+const getAccountUuids = (
+	account: AdminMinecraftAccountInfo,
+): { uuid: string; serverIds: string[] }[] => {
+	const uuidServers = new Map<string, Set<string>>()
+
+	const addUuid = (
+		uuid: string | null | undefined,
+		serverId?: string,
+	): void => {
+		if (!uuid) {
+			return
+		}
+
+		const servers = uuidServers.get(uuid) ?? new Set<string>()
+
+		if (serverId) {
+			servers.add(serverId)
+		}
+
+		uuidServers.set(uuid, servers)
 	}
 
-	if (status === 'CONFLICTED') {
-		return 'warning'
+	addUuid(account.uuid)
+	addUuid(account.luckPerms?.uuid)
+
+	for (const link of account.serverLinks) {
+		addUuid(link.uuid, link.serverId)
 	}
 
-	if (status === 'UNLINKED') {
-		return 'neutral'
-	}
+	return [...uuidServers.entries()].map(([uuid, serverIds]) => ({
+		uuid,
+		serverIds: [...serverIds].sort(),
+	}))
+}
 
-	return 'primary'
+const getAccountUuidTooltip = (account: AdminMinecraftAccountInfo): string =>
+	getAccountUuids(account)
+		.map(({ uuid, serverIds }) =>
+			serverIds.length ? `${serverIds.join(', ')}: ${uuid}` : uuid,
+		)
+		.join('\n')
+
+const hasStatsEntry = (account: AdminMinecraftAccountInfo): boolean =>
+	account.serverLinks.some((link) => link.hasStats)
+
+const hasAdvancementsEntry = (account: AdminMinecraftAccountInfo): boolean =>
+	account.serverLinks.some((link) => link.hasAdvancements)
+
+const getDataEntryRoute = (
+	account: AdminMinecraftAccountInfo,
+	type: 'stats' | 'advancements',
+) => {
+	return localePath({
+		path: `/admin/servers/${type}`,
+		query: { player: account.normalizedUsername || account.username },
+	})
 }
 
 watch(
@@ -305,10 +420,9 @@ watch(
 
 const resetFilters = (): void => {
 	filters.search = ''
-	filters.status = ALL_FILTER_VALUE
-	filters.source = ALL_FILTER_VALUE
 	filters.linked = ALL_FILTER_VALUE
-	filters.sortField = 'updatedAt'
+	filters.group = ''
+	filters.sortField = 'authMeLastLoginAt'
 	filters.sortDirection = 'desc'
 }
 

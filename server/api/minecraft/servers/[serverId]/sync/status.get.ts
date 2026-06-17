@@ -21,36 +21,77 @@ export default defineEventHandler(async (event) => {
 		typeof group === 'string' && group in sourceGroups
 			? sourceGroups[group as keyof typeof sourceGroups]
 			: Object.values(sourceGroups).flat()
+	const globalSources = sources.filter(
+		(source) => source === 'AUTHME' || source === 'LUCKPERMS',
+	)
+	const serverSources = sources.filter(
+		(source) => source !== 'AUTHME' && source !== 'LUCKPERMS',
+	)
 
-	const states = await prisma.externalSyncTaskState.findMany({
-		where: {
-			serverId,
-			source: {
-				in: sources,
-			},
-		},
-		orderBy: [
-			{
-				source: 'asc',
-			},
-		],
-	})
+	const [serverStates, globalStates] = await Promise.all([
+		serverSources.length
+			? prisma.externalSyncTaskState.findMany({
+					where: {
+						serverId,
+						source: {
+							in: serverSources,
+						},
+					},
+					orderBy: [
+						{
+							source: 'asc',
+						},
+					],
+				})
+			: [],
+		globalSources.length
+			? prisma.externalSyncState.findMany({
+					where: {
+						source: {
+							in: globalSources,
+						},
+					},
+					orderBy: [
+						{
+							source: 'asc',
+						},
+					],
+				})
+			: [],
+	])
 
 	return {
-		tasks: states.map((state) => ({
-			taskKey: state.taskKey,
-			source: state.source,
-			reason: state.reason,
-			running: state.running,
-			intervalSeconds: state.intervalSeconds,
-			lastStartedAt: state.lastStartedAt,
-			lastFinishedAt: state.lastFinishedAt,
-			lastSuccessAt: state.lastSuccessAt,
-			lastError: state.lastError,
-			rowsRead: state.rowsRead,
-			rowsMatched: state.rowsMatched,
-			rowsChanged: state.rowsChanged,
-			rowsSkipped: state.rowsSkipped,
-		})),
+		tasks: [
+			...serverStates.map((state) => ({
+				taskKey: state.taskKey,
+				source: state.source,
+				reason: state.reason,
+				running: state.running,
+				intervalSeconds: state.intervalSeconds,
+				lastStartedAt: state.lastStartedAt,
+				lastFinishedAt: state.lastFinishedAt,
+				lastSuccessAt: state.lastSuccessAt,
+				lastError: state.lastError,
+				rowsRead: state.rowsRead,
+				rowsMatched: state.rowsMatched,
+				rowsChanged: state.rowsChanged,
+				rowsSkipped: state.rowsSkipped,
+			})),
+			...globalStates.map((state) => ({
+				taskKey: state.source.toLowerCase(),
+				source: state.source,
+				reason: state.reason,
+				running: state.running,
+				intervalSeconds: state.intervalSeconds,
+				lastStartedAt: state.lastStartedAt,
+				lastFinishedAt: state.lastFinishedAt,
+				lastSuccessAt: state.lastSuccessAt,
+				lastError: state.lastError,
+				rowsRead: state.rowsRead,
+				rowsMatched: state.rowsMatched,
+				rowsChanged: state.rowsChanged,
+				rowsSkipped: state.rowsSkipped,
+			})),
+		],
 	}
 })

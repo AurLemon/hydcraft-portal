@@ -13,8 +13,6 @@ export default defineEventHandler(async () => {
 		],
 		include: {
 			portalBridge: true,
-			authMe: true,
-			luckPerms: true,
 		},
 	})
 

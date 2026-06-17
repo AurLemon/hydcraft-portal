@@ -78,10 +78,32 @@
 		"servers": {
 			"title": "伺服器",
 			"create": "新增伺服器",
+			"viewDetail": "查看詳情",
+			"fields": {
+				"server": "伺服器",
+				"portalBridge": "Bridge",
+				"status": "狀態",
+				"actions": "查看詳情"
+			},
 			"loading": "正在讀取伺服器設定...",
 			"empty": {
 				"title": "還沒有伺服器設定",
-				"description": "新增一個伺服器後，再設定 PortalBridge、AuthMe 和 LuckPerms。"
+				"description": "新增一個伺服器後，再設定 PortalBridge。"
+			},
+			"externalSync": {
+				"authMe": "AuthMe 同步狀態",
+				"luckPerms": "LuckPerms 同步狀態",
+				"running": "同步中",
+				"error": "異常",
+				"notConfigured": "未設定",
+				"disabled": "已停用",
+				"synced": "已同步",
+				"pending": "待同步",
+				"lastSuccessAt": "最後成功",
+				"rowsRead": "讀取列數",
+				"never": "從未",
+				"database": "資料庫：{database}",
+				"databaseMissing": "資料庫未設定"
 			}
 		},
 		"serverCreate": {
@@ -204,6 +226,7 @@
 				"runtimeState": "執行狀態",
 				"latency": "延遲",
 				"reconnectAttempts": "重連次數",
+				"unlimited": "不限",
 				"nextRetryAt": "下次重試",
 				"manualRequired": "需要手動連線",
 				"notLoadedHint": "重新整理後查看目前 Bridge runtime。",
@@ -272,7 +295,8 @@
 				"portalAccountSource": "Portal 帳號來源",
 				"bridgeSyncedAt": "Bridge 同步時間",
 				"createdAt": "建立時間",
-				"updatedAt": "更新時間"
+				"updatedAt": "更新時間",
+				"dataEntries": "資料入口"
 			},
 			"states": {
 				"yes": "是",
@@ -280,7 +304,12 @@
 			},
 			"empty": {
 				"unknown": "暫無",
-				"notLinked": "未同步"
+				"notLinked": "未同步",
+				"unknownLocation": "未知位置"
+			},
+			"dataEntries": {
+				"stats": "統計",
+				"advancements": "成就"
 			},
 			"uuidSourceTooltip": "來源於 {source}",
 			"conflictTooltip": "存在衝突：{state}",
@@ -299,37 +328,90 @@
 				}
 			}
 		},
+		"serverStats": {
+			"title": "Stats 快照",
+			"back": "伺服器列表",
+			"filters": {
+				"serverId": "serverId",
+				"player": "玩家 ID",
+				"playerSearch": "搜尋玩家 ID"
+			},
+			"fields": {
+				"server": "伺服器",
+				"category": "分類",
+				"key": "鍵",
+				"value": "值",
+				"observedAt": "觀測時間",
+				"lastScannedAt": "掃描時間"
+			},
+			"valueModalTitle": "統計值詳情"
+		},
+		"serverAdvancements": {
+			"title": "Advancements 快照",
+			"back": "伺服器列表",
+			"filters": {
+				"serverId": "serverId",
+				"player": "玩家 ID",
+				"playerSearch": "搜尋玩家 ID"
+			},
+			"fields": {
+				"server": "伺服器",
+				"advancementKey": "成就鍵",
+				"done": "完成",
+				"criteria": "條件",
+				"observedAt": "觀測時間",
+				"lastScannedAt": "掃描時間"
+			},
+			"empty": {
+				"noCriteria": "暫無完成條件"
+			},
+			"criteriaModalTitle": "成就條件詳情"
+		},
 		"players": {
 			"title": "Minecraft 帳號",
 			"filters": {
 				"search": "搜尋玩家、AuthMe 名稱、綁定使用者或信箱",
 				"linked": "已綁定使用者",
-				"unlinked": "未綁定使用者"
+				"unlinked": "未綁定使用者",
+				"group": "LuckPerms 組",
+				"totpEnabled": "已啟用 TOTP",
+				"totpDisabled": "未啟用 TOTP"
 			},
 			"fields": {
 				"player": "玩家",
 				"linkedUser": "綁定使用者",
-				"status": "狀態",
-				"source": "來源",
-				"observed": "觀測",
-				"firstJoinedAt": "第一次加入",
-				"lastSeenAt": "最後出現",
+				"authMeRegisteredAt": "AuthMe 註冊時間",
+				"authMeLastLoginAt": "AuthMe 最後登入",
+				"authMeRegisterIp": "AuthMe 註冊 IP",
+				"authMeLastIp": "AuthMe 最後 IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe 同步時間",
+				"luckPermsPrimaryGroup": "LuckPerms 組",
+				"worldFirstJoinedAt": "世界首次加入",
+				"worldLastJoinedAt": "世界最近加入",
+				"uuid": "UUID",
+				"dataEntries": "資料入口",
 				"createdAt": "建立時間",
 				"updatedAt": "更新時間"
 			},
 			"states": {
-				"primary": "主帳號"
+				"primary": "主帳號",
+				"enabled": "已啟用",
+				"disabled": "未啟用"
 			},
 			"empty": {
 				"unknown": "暫無",
 				"notLinked": "未綁定",
-				"noAuthMe": "暫無 AuthMe 名稱"
+				"noAuthMe": "暫無 AuthMe 名稱",
+				"noGroup": "暫無權限組",
+				"noUuid": "暫無 UUID",
+				"unknownLocation": "未知位置",
+				"noDataEntries": "暫無"
 			},
-			"observed": {
-				"serverPlayers": "{count} 筆觀測",
-				"servers": "{count} 個伺服器"
-			},
-			"sameNameSplitTooltip": "這個名稱在伺服器觀測層出現了 {count} 個不同 UUID，應該進入候選合併流程人工確認，而不是自動合併。"
+			"dataEntries": {
+				"stats": "統計",
+				"advancements": "成就"
+			}
 		},
 		"users": {
 			"title": "使用者",
@@ -533,6 +615,13 @@
 				"createdAt": "建立時間",
 				"updatedAt": "更新時間"
 			}
+		},
+		"valueModal": {
+			"title": "值詳情",
+			"parsed": "解析結果",
+			"raw": "原始值",
+			"empty": "暫無內容",
+			"showAll": "顯示全部"
 		}
 	}
 }

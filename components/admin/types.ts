@@ -54,6 +54,27 @@ export interface MinecraftServersResponse {
 	servers: MinecraftServerSummary[]
 }
 
+export interface AdminExternalSyncSourceStatus {
+	source: 'AUTHME' | 'LUCKPERMS'
+	configured: boolean
+	enabled: boolean
+	database: string | null
+	intervalSeconds: number
+	running: boolean
+	lastStartedAt: string | null
+	lastFinishedAt: string | null
+	lastSuccessAt: string | null
+	lastError: string | null
+	rowsRead: number
+	rowsMatched: number
+	rowsChanged: number
+	rowsSkipped: number
+}
+
+export interface AdminExternalSyncStatusResponse {
+	sources: AdminExternalSyncSourceStatus[]
+}
+
 export interface MinecraftServerResponse {
 	server: MinecraftServerSummary
 }
@@ -131,6 +152,8 @@ export interface MinecraftServerPlayerInfo {
 	uuidSource: string | null
 	firstSeenAt: string | null
 	lastSeenAt: string | null
+	hasStats: boolean
+	hasAdvancements: boolean
 	evidenceCount: number
 	conflictState: string
 	authMe: {
@@ -141,7 +164,9 @@ export interface MinecraftServerPlayerInfo {
 		registeredAt: string | null
 		lastLoginAt: string | null
 		registerIp: string | null
+		registerIpLocation: IpLocationSummary | null
 		lastIp: string | null
+		lastIpLocation: IpLocationSummary | null
 		hasTotp: boolean
 		syncedAt: string | null
 	}
@@ -163,20 +188,114 @@ export interface MinecraftServerPlayersResponse {
 	pageCount: number
 }
 
+export interface MinecraftServerPlayerSnapshotPlayerInfo {
+	id: string
+	serverId: string
+	uuid: string
+	username: string | null
+	normalizedUsername: string | null
+	uuidSource: string | null
+	firstSeenAt: string | null
+	lastSeenAt: string | null
+	conflictState: string
+}
+
+export interface MinecraftServerPlayerSnapshotAuthMeInfo {
+	id: number | null
+	username: string | null
+	realname: string | null
+	email: string | null
+	registeredAt: string | null
+	lastLoginAt: string | null
+	registerIp: string | null
+	lastIp: string | null
+	hasTotp: boolean
+	syncedAt: string | null
+}
+
+export interface MinecraftServerPlayerSnapshotLuckPermsInfo {
+	username: string | null
+	primaryGroup: string | null
+	syncedAt: string | null
+}
+
+export interface MinecraftServerPlayerStatsDetailInfo {
+	id: string
+	snapshotId: string
+	category: string
+	key: string
+	value: unknown
+	valueText: string
+	observedAt: string
+	lastScannedAt: string | null
+	createdAt: string
+	player: MinecraftServerPlayerSnapshotPlayerInfo
+	authMe: MinecraftServerPlayerSnapshotAuthMeInfo
+}
+
+export interface MinecraftServerPlayerStatsSnapshotsResponse {
+	items: MinecraftServerPlayerStatsDetailInfo[]
+	page: number
+	pageSize: number
+	total: number
+	pageCount: number
+}
+
+export interface MinecraftServerPlayerAdvancementDetailInfo {
+	id: string
+	snapshotId: string
+	advancementKey: string
+	done: boolean
+	criteriaCount: number
+	completedCriteriaCount: number
+	completedCriteria: string[]
+	observedAt: string
+	lastScannedAt: string | null
+	createdAt: string
+	player: MinecraftServerPlayerSnapshotPlayerInfo
+	authMe: MinecraftServerPlayerSnapshotAuthMeInfo
+}
+
+export interface MinecraftServerPlayerAdvancementsSnapshotsResponse {
+	items: MinecraftServerPlayerAdvancementDetailInfo[]
+	page: number
+	pageSize: number
+	total: number
+	pageCount: number
+}
+
 export interface AdminMinecraftAccountInfo {
 	id: string
 	username: string
 	normalizedUsername: string
-	status: string
-	source: string
+	uuid: string | null
 	authmeName: string | null
 	authmeId: number | null
-	firstJoinedAt: string | null
-	lastSeenAt: string | null
+	authMe: {
+		id: number
+		username: string
+		realname: string | null
+		email: string | null
+		registeredAt: string | null
+		lastLoginAt: string | null
+		registerIp: string | null
+		registerIpLocation: IpLocationSummary | null
+		lastIp: string | null
+		lastIpLocation: IpLocationSummary | null
+		hasTotp: boolean
+		syncedAt: string
+	} | null
+	luckPerms: {
+		uuid: string
+		username: string | null
+		primaryGroup: string | null
+		syncedAt: string
+	} | null
+	worldJoin: {
+		firstJoinedAt: string | null
+		lastJoinedAt: string | null
+	}
 	isPrimary: boolean
-	verifiedAt: string | null
-	unlinkedAt: string | null
-	note: string | null
 	createdAt: string
 	updatedAt: string
 	user: {
@@ -186,11 +305,27 @@ export interface AdminMinecraftAccountInfo {
 		email: string | null
 		avatarUrl: string | null
 	} | null
-	observed: {
-		serverPlayerCount: number
-		serverCount: number
-		sameNameUuidCount: number
-	}
+	serverLinks: AdminMinecraftAccountServerLink[]
+}
+
+export interface IpLocationSummary {
+	raw: string | null
+	country: string | null
+	countryCode: string | null
+	region: string | null
+	province: string | null
+	city: string | null
+	district: string | null
+	isp: string | null
+	display: string | null
+}
+
+export interface AdminMinecraftAccountServerLink {
+	serverId: string
+	uuid: string
+	username: string | null
+	hasStats: boolean
+	hasAdvancements: boolean
 }
 
 export interface AdminMinecraftAccountsResponse {

@@ -1,37 +1,21 @@
-import type {
-	MinecraftAccountSource,
-	MinecraftAccountStatus,
-	Prisma,
-} from '~/generated/prisma/client'
+import type { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
-
-const MINECRAFT_ACCOUNT_STATUSES = new Set<MinecraftAccountStatus>([
-	'PENDING',
-	'VERIFIED',
-	'IMPORTED',
-	'UNLINKED',
-	'CONFLICTED',
-])
-
-const MINECRAFT_ACCOUNT_SOURCES = new Set<MinecraftAccountSource>([
-	'PORTAL',
-	'AUTHME',
-	'MANUAL',
-	'MIGRATION',
-	'OTHER',
-])
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../ip-location/ip-location'
 
 const SORT_FIELDS = new Set([
 	'username',
-	'status',
-	'source',
-	'firstJoinedAt',
-	'lastSeenAt',
+	'authMeRegisteredAt',
+	'authMeLastLoginAt',
+	'authMeSyncedAt',
 	'createdAt',
 	'updatedAt',
 ])
 
 const adminMinecraftAccountInclude = {
+	authMeAccount: true,
 	user: {
 		select: {
 			id: true,
@@ -47,84 +31,28 @@ type AdminMinecraftAccountEntity = Prisma.MinecraftAccountGetPayload<{
 	include: typeof adminMinecraftAccountInclude
 }>
 
-interface AccountObservedStats {
-	serverPlayerCount: number
-	serverCount: number
-	sameNameUuidCount: number
+interface AccountServerLink {
+	serverId: string
+	uuid: string
+	username: string | null
+	hasStats: boolean
+	hasAdvancements: boolean
 }
 
-interface ServerPlayerProjectionGroup {
-	normalizedUsername: string
-	username: string
-	uuid: string | null
-	status: MinecraftAccountStatus
-	authmeName: string | null
+interface AccountWorldJoinSummary {
 	firstJoinedAt: Date | null
-	lastSeenAt: Date | null
+	lastJoinedAt: Date | null
 }
 
-const normalizeStatus = (
-	value: string | undefined,
-): MinecraftAccountStatus | undefined =>
-	value && MINECRAFT_ACCOUNT_STATUSES.has(value as MinecraftAccountStatus)
-		? (value as MinecraftAccountStatus)
-		: undefined
-
-const normalizeSource = (
-	value: string | undefined,
-): MinecraftAccountSource | undefined =>
-	value && MINECRAFT_ACCOUNT_SOURCES.has(value as MinecraftAccountSource)
-		? (value as MinecraftAccountSource)
-		: undefined
-
-const countObservedStats = async (
-	account: AdminMinecraftAccountEntity,
-): Promise<AccountObservedStats> => {
-	const exactWhere: Prisma.MinecraftServerPlayerWhereInput = account.uuid
-		? { uuid: account.uuid }
-		: { normalizedUsername: account.normalizedUsername }
-
-	const sameNamePlayers = await prisma.minecraftServerPlayer.findMany({
-		where: {
-			normalizedUsername: account.normalizedUsername,
-			uuid: {
-				not: null,
-			},
-		},
-		select: {
-			uuid: true,
-		},
-		distinct: ['uuid'],
-	})
-
-	const [serverPlayerCount, observedServers] = await Promise.all([
-		prisma.minecraftServerPlayer.count({ where: exactWhere }),
-		prisma.minecraftServerPlayer.findMany({
-			where: exactWhere,
-			select: {
-				serverId: true,
-			},
-			distinct: ['serverId'],
-		}),
-	])
-
-	return {
-		serverPlayerCount,
-		serverCount: observedServers.length,
-		sameNameUuidCount: sameNamePlayers.length,
-	}
-}
-
-const minDate = (left: Date | null, right: Date | null): Date | null => {
-	if (!left) {
-		return right
-	}
-
-	if (!right) {
-		return left
-	}
-
-	return left.getTime() <= right.getTime() ? left : right
+interface AccountEnrichment {
+	luckPerms: {
+		uuid: string
+		username: string | null
+		primaryGroup: string | null
+		syncedAt: Date
+	} | null
+	worldJoin: AccountWorldJoinSummary
+	serverLinks: AccountServerLink[]
 }
 
 const maxDate = (left: Date | null, right: Date | null): Date | null => {
@@ -139,126 +67,18 @@ const maxDate = (left: Date | null, right: Date | null): Date | null => {
 	return left.getTime() >= right.getTime() ? left : right
 }
 
-const buildServerPlayerProjectionGroups = async (): Promise<
-	ServerPlayerProjectionGroup[]
-> => {
-	const players = await prisma.minecraftServerPlayer.findMany({
-		where: {
-			normalizedUsername: {
-				not: null,
-			},
-		},
+export const syncMinecraftAccountsFromAuthMeAccounts = async () => {
+	const accounts = await prisma.authMeAccount.findMany({
 		orderBy: {
 			updatedAt: 'desc',
 		},
-		select: {
-			username: true,
-			normalizedUsername: true,
-			uuid: true,
-			firstSeenAt: true,
-			lastSeenAt: true,
-			authmeId: true,
-			authmeUsername: true,
-			authmeRealname: true,
-			updatedAt: true,
-			playerData: {
-				select: {
-					firstPlayedAt: true,
-					lastPlayedAt: true,
-				},
-			},
-		},
 	})
-	const groups = new Map<
-		string,
-		{
-			username: string | null
-			uuids: Set<string>
-			authmeIds: Set<number>
-			authmeName: string | null
-			firstJoinedAt: Date | null
-			lastSeenAt: Date | null
-		}
-	>()
-
-	for (const player of players) {
-		if (!player.normalizedUsername) {
-			continue
-		}
-
-		const group = groups.get(player.normalizedUsername) ?? {
-			username: null,
-			uuids: new Set<string>(),
-			authmeIds: new Set<number>(),
-			authmeName: null,
-			firstJoinedAt: null,
-			lastSeenAt: null,
-		}
-
-		group.username ??= player.username
-		group.authmeName ??= player.authmeRealname ?? player.authmeUsername
-
-		if (player.uuid) {
-			group.uuids.add(player.uuid)
-		}
-
-		if (player.authmeId != null) {
-			group.authmeIds.add(player.authmeId)
-		}
-
-		group.firstJoinedAt = minDate(
-			group.firstJoinedAt,
-			player.playerData?.firstPlayedAt ?? player.firstSeenAt,
-		)
-		group.lastSeenAt = maxDate(
-			group.lastSeenAt,
-			player.playerData?.lastPlayedAt ?? player.lastSeenAt,
-		)
-		groups.set(player.normalizedUsername, group)
-	}
-
-	return [...groups.entries()].map(([normalizedUsername, group]) => {
-		const uuids = [...group.uuids]
-		const authmeIds = [...group.authmeIds]
-		const conflicted = uuids.length > 1
-
-		return {
-			normalizedUsername,
-			username: group.username ?? normalizedUsername,
-			uuid: !conflicted && uuids.length === 1 ? (uuids[0] ?? null) : null,
-			status: conflicted ? 'CONFLICTED' : 'IMPORTED',
-			authmeName: group.authmeName,
-			firstJoinedAt: group.firstJoinedAt,
-			lastSeenAt: group.lastSeenAt,
-		}
-	})
-}
-
-export const syncMinecraftAccountsFromServerPlayers = async () => {
-	const groups = await buildServerPlayerProjectionGroups()
 	let changed = 0
 
-	for (const group of groups) {
-		const uuidOwner = group.uuid
-			? await prisma.minecraftAccount.findFirst({
-					where: {
-						uuid: group.uuid,
-						normalizedUsername: {
-							not: group.normalizedUsername,
-						},
-					},
-					select: {
-						id: true,
-					},
-				})
-			: null
-		const safeUuid = uuidOwner ? null : group.uuid
-		const status: MinecraftAccountStatus = uuidOwner
-			? 'CONFLICTED'
-			: group.status
+	for (const authMeAccount of accounts) {
 		const existing = await prisma.minecraftAccount.findUnique({
 			where: {
-				normalizedUsername: group.normalizedUsername,
+				normalizedUsername: authMeAccount.normalizedUsername,
 			},
 			select: {
 				id: true,
@@ -266,28 +86,33 @@ export const syncMinecraftAccountsFromServerPlayers = async () => {
 				source: true,
 			},
 		})
+		const username = authMeAccount.realname || authMeAccount.username
+		const authmeName = authMeAccount.realname || authMeAccount.username
 
 		if (existing) {
 			const nextStatus =
 				existing.status === 'VERIFIED' || existing.status === 'IMPORTED'
 					? existing.status
-					: status
+					: 'IMPORTED'
 			const nextSource =
 				existing.source === 'PORTAL' || existing.source === 'MANUAL'
 					? existing.source
-					: 'MIGRATION'
+					: 'AUTHME'
 			await prisma.minecraftAccount.update({
 				where: {
 					id: existing.id,
 				},
 				data: {
-					username: group.username,
-					uuid: safeUuid,
+					username,
 					status: nextStatus,
 					source: nextSource,
-					authmeName: group.authmeName,
-					firstJoinedAt: group.firstJoinedAt,
-					lastSeenAt: group.lastSeenAt,
+					authmeId: authMeAccount.authmeId,
+					authmeName,
+					firstJoinedAt: authMeAccount.registeredAt,
+					lastSeenAt: maxDate(
+						authMeAccount.lastLoginAt,
+						authMeAccount.syncedAt,
+					),
 				},
 			})
 			changed += 1
@@ -296,42 +121,72 @@ export const syncMinecraftAccountsFromServerPlayers = async () => {
 
 		await prisma.minecraftAccount.create({
 			data: {
-				username: group.username,
-				normalizedUsername: group.normalizedUsername,
-				uuid: safeUuid,
-				status,
-				source: 'MIGRATION',
-				authmeName: group.authmeName,
-				firstJoinedAt: group.firstJoinedAt,
-				lastSeenAt: group.lastSeenAt,
+				username,
+				normalizedUsername: authMeAccount.normalizedUsername,
+				status: 'IMPORTED',
+				source: 'AUTHME',
+				authmeId: authMeAccount.authmeId,
+				authmeName,
+				firstJoinedAt: authMeAccount.registeredAt,
+				lastSeenAt: maxDate(authMeAccount.lastLoginAt, authMeAccount.syncedAt),
 			},
 		})
 		changed += 1
 	}
 
 	return {
-		matched: groups.length,
+		matched: accounts.length,
 		changed,
 	}
 }
 
 const serializeAdminMinecraftAccount = (
 	account: AdminMinecraftAccountEntity,
-	stats: AccountObservedStats,
+	enrichment: AccountEnrichment,
+	ipLocations: {
+		registerIp: Awaited<ReturnType<typeof lookupIpLocation>>
+		lastIp: Awaited<ReturnType<typeof lookupIpLocation>>
+	},
 ) => ({
 	id: account.id,
 	username: account.username,
 	normalizedUsername: account.normalizedUsername,
-	status: account.status,
-	source: account.source,
+	uuid: account.uuid,
 	authmeName: account.authmeName,
 	authmeId: account.authmeId,
-	firstJoinedAt: account.firstJoinedAt?.toISOString() ?? null,
-	lastSeenAt: account.lastSeenAt?.toISOString() ?? null,
+	authMe: account.authMeAccount
+		? {
+				id: account.authMeAccount.authmeId,
+				username: account.authMeAccount.username,
+				realname: account.authMeAccount.realname,
+				email: account.authMeAccount.email,
+				registeredAt: account.authMeAccount.registeredAt?.toISOString() ?? null,
+				lastLoginAt: account.authMeAccount.lastLoginAt?.toISOString() ?? null,
+				registerIp:
+					normalizeIpAddressForDisplay(account.authMeAccount.registerIp) ??
+					account.authMeAccount.registerIp,
+				registerIpLocation: ipLocations.registerIp,
+				lastIp:
+					normalizeIpAddressForDisplay(account.authMeAccount.lastIp) ??
+					account.authMeAccount.lastIp,
+				lastIpLocation: ipLocations.lastIp,
+				hasTotp: account.authMeAccount.hasTotp,
+				syncedAt: account.authMeAccount.syncedAt.toISOString(),
+			}
+		: null,
+	luckPerms: enrichment.luckPerms
+		? {
+				uuid: enrichment.luckPerms.uuid,
+				username: enrichment.luckPerms.username,
+				primaryGroup: enrichment.luckPerms.primaryGroup,
+				syncedAt: enrichment.luckPerms.syncedAt.toISOString(),
+			}
+		: null,
+	worldJoin: {
+		firstJoinedAt: enrichment.worldJoin.firstJoinedAt?.toISOString() ?? null,
+		lastJoinedAt: enrichment.worldJoin.lastJoinedAt?.toISOString() ?? null,
+	},
 	isPrimary: account.isPrimary,
-	verifiedAt: account.verifiedAt?.toISOString() ?? null,
-	unlinkedAt: account.unlinkedAt?.toISOString() ?? null,
-	note: account.note,
 	createdAt: account.createdAt.toISOString(),
 	updatedAt: account.updatedAt.toISOString(),
 	user: account.user
@@ -343,39 +198,315 @@ const serializeAdminMinecraftAccount = (
 				avatarUrl: account.user.avatarUrl,
 			}
 		: null,
-	observed: stats,
+	serverLinks: enrichment.serverLinks,
 })
+
+const readAccountEnrichment = async (
+	accounts: AdminMinecraftAccountEntity[],
+): Promise<Map<string, AccountEnrichment>> => {
+	const normalizedUsernames = [
+		...new Set(
+			accounts.flatMap(
+				(account) =>
+					account.authMeAccount?.normalizedUsername ??
+					account.normalizedUsername,
+			),
+		),
+	]
+	const accountUuids = [
+		...new Set(accounts.flatMap((account) => account.uuid ?? [])),
+	]
+	const [luckPermsPlayers, serverPlayers] = await Promise.all([
+		prisma.luckPermsPlayer.findMany({
+			where: {
+				OR: [
+					{
+						normalizedUsername: {
+							in: normalizedUsernames,
+						},
+					},
+					...(accountUuids.length
+						? [
+								{
+									uuid: {
+										in: accountUuids,
+									},
+								},
+							]
+						: []),
+				],
+			},
+		}),
+		prisma.minecraftServerPlayer.findMany({
+			where: {
+				OR: [
+					{
+						normalizedUsername: {
+							in: normalizedUsernames,
+						},
+					},
+					...(accountUuids.length
+						? [
+								{
+									uuid: {
+										in: accountUuids,
+									},
+								},
+							]
+						: []),
+				],
+			},
+			select: {
+				serverId: true,
+				uuid: true,
+				username: true,
+				normalizedUsername: true,
+				playerData: {
+					select: {
+						firstPlayedAt: true,
+						lastPlayedAt: true,
+					},
+				},
+				statsSnapshot: {
+					select: {
+						id: true,
+					},
+				},
+				advancementsSnapshot: {
+					select: {
+						id: true,
+					},
+				},
+			},
+			orderBy: [{ serverId: 'asc' }, { updatedAt: 'desc' }],
+		}),
+	])
+	const luckPermsByUuid = new Map(
+		luckPermsPlayers.map((player) => [player.uuid, player]),
+	)
+	const luckPermsByName = new Map(
+		luckPermsPlayers.flatMap((player) =>
+			player.normalizedUsername ? [[player.normalizedUsername, player]] : [],
+		),
+	)
+
+	return new Map(
+		accounts.map((account) => {
+			const normalizedUsername =
+				account.authMeAccount?.normalizedUsername ?? account.normalizedUsername
+			const luckPerms =
+				(account.uuid ? luckPermsByUuid.get(account.uuid) : undefined) ??
+				luckPermsByName.get(normalizedUsername) ??
+				null
+			const matchedPlayers = serverPlayers.filter(
+				(player) =>
+					(account.uuid && player.uuid === account.uuid) ||
+					player.normalizedUsername === normalizedUsername,
+			)
+			const nameMatchedPlayers = serverPlayers.filter(
+				(player) => player.normalizedUsername === normalizedUsername,
+			)
+			const firstJoinedAt = nameMatchedPlayers.reduce<Date | null>(
+				(earliest, player) => {
+					const firstPlayedAt = player.playerData?.firstPlayedAt ?? null
+
+					if (!firstPlayedAt) {
+						return earliest
+					}
+
+					if (!earliest) {
+						return firstPlayedAt
+					}
+
+					return firstPlayedAt.getTime() < earliest.getTime()
+						? firstPlayedAt
+						: earliest
+				},
+				null,
+			)
+			const lastJoinedAt = nameMatchedPlayers.reduce<Date | null>(
+				(latest, player) => {
+					const lastPlayedAt = player.playerData?.lastPlayedAt ?? null
+
+					if (!lastPlayedAt) {
+						return latest
+					}
+
+					if (!latest) {
+						return lastPlayedAt
+					}
+
+					return lastPlayedAt.getTime() > latest.getTime()
+						? lastPlayedAt
+						: latest
+				},
+				null,
+			)
+
+			return [
+				account.id,
+				{
+					luckPerms,
+					worldJoin: {
+						firstJoinedAt,
+						lastJoinedAt,
+					},
+					serverLinks: matchedPlayers.map((player) => ({
+						serverId: player.serverId,
+						uuid: player.uuid,
+						username: player.username,
+						hasStats: Boolean(player.statsSnapshot),
+						hasAdvancements: Boolean(player.advancementsSnapshot),
+					})),
+				},
+			]
+		}),
+	)
+}
+
+const findGroupMatchedNames = async (group: string): Promise<string[]> => {
+	const luckPermsPlayers = await prisma.luckPermsPlayer.findMany({
+		where: {
+			primaryGroup: {
+				contains: group,
+				mode: 'insensitive',
+			},
+		},
+		select: {
+			uuid: true,
+			normalizedUsername: true,
+		},
+	})
+	const groupUuids = luckPermsPlayers.map((player) => player.uuid)
+	const serverPlayers = groupUuids.length
+		? await prisma.minecraftServerPlayer.findMany({
+				where: {
+					uuid: {
+						in: groupUuids,
+					},
+					normalizedUsername: {
+						not: null,
+					},
+				},
+				select: {
+					normalizedUsername: true,
+				},
+				distinct: ['normalizedUsername'],
+			})
+		: []
+
+	return [
+		...new Set([
+			...luckPermsPlayers.flatMap((player) => player.normalizedUsername ?? []),
+			...serverPlayers.flatMap((player) => player.normalizedUsername ?? []),
+		]),
+	]
+}
+
+const buildOrderBy = (
+	sortField: string | undefined,
+	sortDirection: 'asc' | 'desc' | undefined,
+): Prisma.MinecraftAccountOrderByWithRelationInput[] => {
+	const field = sortField ?? 'authMeLastLoginAt'
+	const direction = sortDirection ?? 'desc'
+	const usernameOrder = {
+		username: 'asc',
+	} satisfies Prisma.MinecraftAccountOrderByWithRelationInput
+	const uuidOrder = {
+		uuid: { sort: 'asc', nulls: 'last' },
+	} satisfies Prisma.MinecraftAccountOrderByWithRelationInput
+	const fallbackOrder = [usernameOrder, uuidOrder]
+
+	if (field === 'authMeRegisteredAt') {
+		return [
+			{
+				authMeAccount: {
+					registeredAt: { sort: direction, nulls: 'last' },
+				},
+			},
+			...fallbackOrder,
+		]
+	}
+
+	if (field === 'authMeLastLoginAt') {
+		return [
+			{
+				authMeAccount: {
+					lastLoginAt: { sort: direction, nulls: 'last' },
+				},
+			},
+			...fallbackOrder,
+		]
+	}
+
+	if (field === 'authMeSyncedAt') {
+		return [
+			{
+				authMeAccount: {
+					syncedAt: direction,
+				},
+			},
+			...fallbackOrder,
+		]
+	}
+
+	if (field === 'username') {
+		return [{ username: direction }, { uuid: { sort: 'asc', nulls: 'last' } }]
+	}
+
+	if (SORT_FIELDS.has(field)) {
+		return [{ [field]: direction }, ...fallbackOrder]
+	}
+
+	return [{ updatedAt: 'desc' }, ...fallbackOrder]
+}
 
 export const listAdminMinecraftAccounts = async (input: {
 	page: number
 	pageSize: number
 	search?: string
-	status?: string
-	source?: string
 	linked?: string
+	group?: string
+	totp?: string
 	sortField?: string
 	sortDirection?: 'asc' | 'desc'
 }) => {
-	await syncMinecraftAccountsFromServerPlayers()
-
 	const linked =
 		input.linked === 'linked'
 			? true
 			: input.linked === 'unlinked'
 				? false
 				: undefined
+	const hasTotp =
+		input.totp === 'yes' ? true : input.totp === 'no' ? false : undefined
+	const groupMatchedNames = input.group
+		? await findGroupMatchedNames(input.group)
+		: undefined
 	const where: Prisma.MinecraftAccountWhereInput = {
-		...(normalizeStatus(input.status)
-			? { status: normalizeStatus(input.status) }
-			: {}),
-		...(normalizeSource(input.source)
-			? { source: normalizeSource(input.source) }
-			: {}),
+		authMeAccount: {
+			isNot: null,
+		},
 		...(linked === undefined
 			? {}
 			: linked
 				? { userId: { not: null } }
 				: { userId: null }),
+		...(hasTotp === undefined
+			? {}
+			: {
+					authMeAccount: {
+						is: {
+							hasTotp,
+						},
+					},
+				}),
+		...(groupMatchedNames
+			? {
+					normalizedUsername: {
+						in: groupMatchedNames,
+					},
+				}
+			: {}),
 		...(input.search
 			? {
 					OR: [
@@ -387,6 +518,49 @@ export const listAdminMinecraftAccounts = async (input: {
 							},
 						},
 						{ authmeName: { contains: input.search, mode: 'insensitive' } },
+						{
+							authMeAccount: {
+								is: {
+									OR: [
+										{
+											authmeId: Number.isFinite(Number(input.search))
+												? Number(input.search)
+												: -1,
+										},
+										{
+											username: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											realname: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											email: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											registerIp: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											lastIp: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+									],
+								},
+							},
+						},
 						{
 							user: {
 								is: {
@@ -417,12 +591,7 @@ export const listAdminMinecraftAccounts = async (input: {
 				}
 			: {}),
 	}
-	const sortField = input.sortField ?? 'updatedAt'
-	const sortDirection = input.sortDirection ?? 'desc'
-	const orderBy: Prisma.MinecraftAccountOrderByWithRelationInput =
-		SORT_FIELDS.has(sortField)
-			? { [sortField]: sortDirection }
-			: { updatedAt: 'desc' }
+	const orderBy = buildOrderBy(input.sortField, input.sortDirection)
 
 	const [total, accounts] = await Promise.all([
 		prisma.minecraftAccount.count({ where }),
@@ -434,19 +603,44 @@ export const listAdminMinecraftAccounts = async (input: {
 			include: adminMinecraftAccountInclude,
 		}),
 	])
-	const stats = await Promise.all(accounts.map(countObservedStats))
-
-	return {
-		items: accounts.map((account, index) =>
-			serializeAdminMinecraftAccount(
-				account,
-				stats[index] ?? {
-					serverPlayerCount: 0,
-					serverCount: 0,
-					sameNameUuidCount: 0,
-				},
+	const enrichment = await readAccountEnrichment(accounts)
+	const ipLocationsByAccountId = new Map(
+		await Promise.all(
+			accounts.map(
+				async (account) =>
+					[
+						account.id,
+						{
+							registerIp: await lookupIpLocation(
+								account.authMeAccount?.registerIp,
+							),
+							lastIp: await lookupIpLocation(account.authMeAccount?.lastIp),
+						},
+					] as const,
 			),
 		),
+	)
+
+	return {
+		items: accounts.map((account) => {
+			const ipLocations = ipLocationsByAccountId.get(account.id) ?? {
+				registerIp: null,
+				lastIp: null,
+			}
+
+			return serializeAdminMinecraftAccount(
+				account,
+				enrichment.get(account.id) ?? {
+					luckPerms: null,
+					worldJoin: {
+						firstJoinedAt: null,
+						lastJoinedAt: null,
+					},
+					serverLinks: [],
+				},
+				ipLocations,
+			)
+		}),
 		page: input.page,
 		pageSize: input.pageSize,
 		total,

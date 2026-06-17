@@ -1,3 +1,81 @@
+model AuthMeAccount {
+  id                 String   @id @default(cuid())
+  authmeId           Int      @unique
+  username           String
+  realname           String?
+  normalizedUsername String   @unique
+  email              String?
+  registeredAt       DateTime?
+  lastLoginAt        DateTime?
+  registerIp         String?
+  lastIp             String?
+  hasTotp            Boolean  @default(false)
+  raw                Json?
+  rawHash            String?
+  syncedAt           DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  minecraftAccount MinecraftAccount?
+
+  @@index([username])
+  @@index([realname])
+  @@index([email])
+  @@index([lastLoginAt])
+  @@index([syncedAt])
+}
+
+model LuckPermsPlayer {
+  id                 String   @id @default(cuid())
+  uuid               String   @unique
+  username           String?
+  normalizedUsername String?
+  primaryGroup       String?
+  raw                Json?
+  rawHash            String?
+  syncedAt           DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([normalizedUsername])
+  @@index([primaryGroup])
+  @@index([syncedAt])
+}
+
+model LuckPermsGroup {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  raw       Json?
+  rawHash   String?
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([syncedAt])
+}
+
+model ExternalSyncState {
+  id              String             @id @default(cuid())
+  source          ExternalSyncSource @unique
+  reason          ExternalSyncReason?
+  running         Boolean            @default(false)
+  enabled         Boolean            @default(false)
+  intervalSeconds Int                @default(1800)
+  lastStartedAt   DateTime?
+  lastFinishedAt  DateTime?
+  lastSuccessAt   DateTime?
+  lastError        String?
+  rowsRead        Int                @default(0)
+  rowsMatched     Int                @default(0)
+  rowsChanged     Int                @default(0)
+  rowsSkipped     Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([running])
+  @@index([lastSuccessAt])
+}
+
 model ExternalSyncTaskState {
   id              String             @id @default(cuid())
   taskKey         String             @unique
@@ -22,20 +100,4 @@ model ExternalSyncTaskState {
   @@index([source])
   @@index([running])
   @@index([lastSuccessAt])
-}
-
-model MinecraftServerLuckPermsGroup {
-  id        String   @id @default(cuid())
-  serverId  String
-  server    MinecraftServer @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
-  name      String
-  raw       Json?
-  rawHash   String?
-  syncedAt  DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([serverId, name])
-  @@index([serverId])
-  @@index([name])
 }

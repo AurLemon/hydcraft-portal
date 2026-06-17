@@ -1,36 +1,63 @@
-import type {
-	AuthMeSourceConfig,
-	LuckPermsSourceConfig,
-} from '~/generated/prisma/client'
-import { decryptConfigValue } from '../security/encryption'
 import { createExternalMysqlPool } from './mysql'
 
-interface MysqlSourceConfig {
-	host: string
-	port: number
+interface EnvExternalSourceConfig {
+	enabled: boolean
+	databaseUrl: string | null
 	database: string
-	username: string
-	encryptedPassword: string | null
+	intervalSeconds: number
 }
 
-export const createMysqlPoolFromSourceConfig = (config: MysqlSourceConfig) => {
-	const password = decryptConfigValue(config.encryptedPassword) ?? ''
-	const url = new URL(`mysql://${config.host}:${config.port}`)
-	url.username = config.username
-	url.password = password
-	url.pathname = `/${config.database}`
+const DEFAULT_SYNC_INTERVAL_SECONDS = 1800
+const MIN_SYNC_INTERVAL_SECONDS = 60
 
-	return createExternalMysqlPool(url.toString())
+const readBooleanEnv = (value: string | undefined): boolean =>
+	value === '1' || value?.toLowerCase() === 'true'
+
+const readIntervalEnv = (value: string | undefined): number => {
+	const parsed = Number(value)
+
+	return Number.isFinite(parsed) && parsed > 0
+		? Math.max(MIN_SYNC_INTERVAL_SECONDS, Math.floor(parsed))
+		: DEFAULT_SYNC_INTERVAL_SECONDS
 }
 
-export type EnabledAuthMeSourceConfig = AuthMeSourceConfig & {
-	minecraftServer: {
-		serverId: string
+const readDatabaseName = (databaseUrl: string | null): string => {
+	if (!databaseUrl) {
+		return ''
+	}
+
+	try {
+		const url = new URL(databaseUrl)
+
+		return url.pathname.replace(/^\//, '').split('/')[0] ?? ''
+	} catch {
+		return ''
 	}
 }
 
-export type EnabledLuckPermsSourceConfig = LuckPermsSourceConfig & {
-	minecraftServer: {
-		serverId: string
+export const readAuthMeSourceConfig = (): EnvExternalSourceConfig => {
+	const databaseUrl = process.env.AUTHME_DATABASE_URL?.trim() || null
+
+	return {
+		enabled: readBooleanEnv(process.env.AUTHME_SYNC_ENABLED),
+		databaseUrl,
+		database: readDatabaseName(databaseUrl),
+		intervalSeconds: readIntervalEnv(process.env.AUTHME_SYNC_INTERVAL_SECONDS),
 	}
 }
+
+export const readLuckPermsSourceConfig = (): EnvExternalSourceConfig => {
+	const databaseUrl = process.env.LUCKPERMS_DATABASE_URL?.trim() || null
+
+	return {
+		enabled: readBooleanEnv(process.env.LUCKPERMS_SYNC_ENABLED),
+		databaseUrl,
+		database: readDatabaseName(databaseUrl),
+		intervalSeconds: readIntervalEnv(
+			process.env.LUCKPERMS_SYNC_INTERVAL_SECONDS,
+		),
+	}
+}
+
+export const createMysqlPoolFromDatabaseUrl = (databaseUrl: string | null) =>
+	createExternalMysqlPool(databaseUrl ?? undefined)

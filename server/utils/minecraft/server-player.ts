@@ -14,31 +14,6 @@ export interface UpsertServerPlayerIdentityInput {
 	observedAt: Date
 }
 
-export interface SyncAuthMePlayerInput {
-	serverId: string
-	authmeId: number
-	username: string
-	realname?: string | null
-	email?: string | null
-	registeredAt?: Date | null
-	lastLoginAt?: Date | null
-	registerIp?: string | null
-	lastIp?: string | null
-	hasTotp: boolean
-	passwordHash?: string | null
-	passwordAlgorithm?: string | null
-	raw: PrismaTypes.InputJsonValue
-	syncedAt: Date
-}
-
-export interface SyncLuckPermsPlayerInput {
-	serverId: string
-	uuid: string
-	username: string
-	primaryGroup: string
-	syncedAt: Date
-}
-
 export interface SyncPlayerDataInput {
 	serverId: string
 	uuid: string
@@ -77,14 +52,21 @@ export interface SyncMutationResult {
 	changed: boolean
 }
 
-const skippedResult: SyncMutationResult = {
-	matched: false,
-	changed: false,
-}
-
 const matchedUnchangedResult: SyncMutationResult = {
 	matched: true,
 	changed: false,
+}
+
+const isEmptyJsonValue = (value: unknown): boolean => {
+	if (value == null) {
+		return true
+	}
+
+	if (typeof value === 'object' && !Array.isArray(value)) {
+		return Object.keys(value).length === 0
+	}
+
+	return false
 }
 
 export const hashSyncValue = (value: unknown): string =>
@@ -183,21 +165,6 @@ const readPlayerByUuidOrThrow = async (input: {
 	return player
 }
 
-const findUsernameOnlyPlayer = async (input: {
-	serverId: string
-	normalizedUsername: string
-}) =>
-	await prisma.minecraftServerPlayer.findFirst({
-		where: {
-			serverId: input.serverId,
-			uuid: null,
-			normalizedUsername: input.normalizedUsername,
-		},
-		orderBy: {
-			createdAt: 'asc',
-		},
-	})
-
 const ensurePlayerByUuid = async (input: {
 	serverId: string
 	uuid: string
@@ -217,45 +184,9 @@ const ensurePlayerByUuid = async (input: {
 		return existing
 	}
 
-	const usernameOnlyPlayer = normalizedUsername
-		? await findUsernameOnlyPlayer({
-				serverId: input.serverId,
-				normalizedUsername,
-			})
-		: null
 	const portalAccountPatch = await getPortalAccountPatch({
 		uuid: input.uuid,
 	})
-
-	if (usernameOnlyPlayer) {
-		try {
-			await prisma.minecraftServerPlayer.update({
-				where: {
-					id: usernameOnlyPlayer.id,
-				},
-				data: {
-					uuid: input.uuid,
-					username: input.username ?? usernameOnlyPlayer.username,
-					normalizedUsername:
-						normalizedUsername ?? usernameOnlyPlayer.normalizedUsername,
-					uuidSource: input.uuidSource ?? usernameOnlyPlayer.uuidSource,
-					firstSeenAt: usernameOnlyPlayer.firstSeenAt ?? input.observedAt,
-					lastSeenAt: input.observedAt,
-					bridgeSyncedAt: input.observedAt,
-					...portalAccountPatch,
-				},
-			})
-		} catch (error) {
-			if (!isUniqueConstraintError(error)) {
-				throw error
-			}
-		}
-
-		return await readPlayerByUuidOrThrow({
-			serverId: input.serverId,
-			uuid: input.uuid,
-		})
-	}
 
 	try {
 		await prisma.minecraftServerPlayer.create({
@@ -317,33 +248,6 @@ export const upsertMinecraftServerPlayerFromIdentity = async (
 		})
 	}
 
-	const usernameOnlyPlayer = normalizedUsername
-		? await findUsernameOnlyPlayer({
-				serverId: input.serverId,
-				normalizedUsername,
-			})
-		: null
-
-	if (usernameOnlyPlayer) {
-		return await prisma.minecraftServerPlayer.update({
-			where: {
-				id: usernameOnlyPlayer.id,
-			},
-			data: {
-				uuid: input.uuid,
-				username: input.username ?? usernameOnlyPlayer.username,
-				normalizedUsername,
-				uuidSource: input.uuidSource ?? usernameOnlyPlayer.uuidSource,
-				lastSeenAt: input.observedAt,
-				evidenceCount: {
-					increment: 1,
-				},
-				bridgeSyncedAt: input.observedAt,
-				...portalAccountPatch,
-			},
-		})
-	}
-
 	try {
 		return await prisma.minecraftServerPlayer.create({
 			data: {
@@ -368,193 +272,6 @@ export const upsertMinecraftServerPlayerFromIdentity = async (
 			serverId: input.serverId,
 			uuid: input.uuid,
 		})
-	}
-}
-
-export const syncAuthMePlayerToServerPlayer = async (
-	input: SyncAuthMePlayerInput,
-): Promise<SyncMutationResult> => {
-	const displayUsername = input.realname || input.username
-	const normalizedUsername = normalizeMinecraftUsername(displayUsername)
-
-	if (!normalizedUsername) {
-		return skippedResult
-	}
-
-	const candidate =
-		(await prisma.minecraftServerPlayer.findFirst({
-			where: {
-				serverId: input.serverId,
-				OR: [
-					{
-						authmeId: input.authmeId,
-					},
-					{
-						normalizedUsername,
-					},
-				],
-			},
-			include: {
-				authMeCredential: true,
-			},
-			orderBy: [
-				{
-					uuid: 'asc',
-				},
-				{
-					createdAt: 'asc',
-				},
-			],
-		})) ??
-		(await prisma.minecraftServerPlayer.create({
-			data: {
-				serverId: input.serverId,
-				uuid: null,
-				username: displayUsername,
-				normalizedUsername,
-				firstSeenAt: input.registeredAt ?? input.syncedAt,
-				lastSeenAt: input.lastLoginAt ?? input.syncedAt,
-			},
-			include: {
-				authMeCredential: true,
-			},
-		}))
-
-	const authmeRawHash = hashSyncValue(input.raw)
-	const credentialHash = hashSyncValue({
-		passwordHash: input.passwordHash,
-		passwordAlgorithm: input.passwordAlgorithm,
-		rawPasswordHash: input.passwordHash,
-	})
-	const playerChanged =
-		candidate.authmeId !== input.authmeId ||
-		candidate.authmeUsername !== input.username ||
-		candidate.authmeRealname !== input.realname ||
-		candidate.authmeEmail !== input.email ||
-		!datesEqual(candidate.authmeRegisteredAt, input.registeredAt) ||
-		!datesEqual(candidate.authmeLastLoginAt, input.lastLoginAt) ||
-		candidate.authmeRegisterIp !== input.registerIp ||
-		candidate.authmeLastIp !== input.lastIp ||
-		candidate.authmeHasTotp !== input.hasTotp ||
-		candidate.authmeRawHash !== authmeRawHash
-	const credential = candidate.authMeCredential
-	const credentialChanged =
-		!credential ||
-		credential.passwordHash !== input.passwordHash ||
-		credential.passwordAlgorithm !== input.passwordAlgorithm ||
-		credential.rawPasswordHash !== input.passwordHash ||
-		credential.credentialHash !== credentialHash
-
-	if (!playerChanged && !credentialChanged) {
-		return matchedUnchangedResult
-	}
-
-	if (playerChanged) {
-		await prisma.minecraftServerPlayer.update({
-			where: {
-				id: candidate.id,
-			},
-			data: {
-				username: candidate.username ?? displayUsername,
-				normalizedUsername: candidate.normalizedUsername ?? normalizedUsername,
-				firstSeenAt:
-					candidate.firstSeenAt ?? input.registeredAt ?? input.syncedAt,
-				lastSeenAt: candidate.lastSeenAt ?? input.lastLoginAt ?? input.syncedAt,
-				authmeId: input.authmeId,
-				authmeUsername: input.username,
-				authmeRealname: input.realname,
-				authmeEmail: input.email,
-				authmeRegisteredAt: input.registeredAt,
-				authmeLastLoginAt: input.lastLoginAt,
-				authmeRegisterIp: input.registerIp,
-				authmeLastIp: input.lastIp,
-				authmeHasTotp: input.hasTotp,
-				authmeRaw: input.raw,
-				authmeRawHash,
-				authmeSyncedAt: input.syncedAt,
-			},
-		})
-	}
-
-	if (credentialChanged) {
-		await prisma.minecraftServerPlayerAuthMeCredential.upsert({
-			where: {
-				minecraftServerPlayerId: candidate.id,
-			},
-			create: {
-				minecraftServerPlayerId: candidate.id,
-				passwordHash: input.passwordHash,
-				passwordAlgorithm: input.passwordAlgorithm,
-				rawPasswordHash: input.passwordHash,
-				credentialHash,
-				syncedAt: input.syncedAt,
-			},
-			update: {
-				passwordHash: input.passwordHash,
-				passwordAlgorithm: input.passwordAlgorithm,
-				rawPasswordHash: input.passwordHash,
-				credentialHash,
-				syncedAt: input.syncedAt,
-			},
-		})
-	}
-
-	await emitEvent('server-player.authme-synced', {
-		serverId: input.serverId,
-		uuid: candidate.uuid,
-		playerId: candidate.id,
-		syncedAt: input.syncedAt,
-	})
-
-	return {
-		matched: true,
-		changed: true,
-	}
-}
-
-export const syncLuckPermsPlayerToServerPlayer = async (
-	input: SyncLuckPermsPlayerInput,
-): Promise<SyncMutationResult> => {
-	const normalizedUsername = normalizeMinecraftUsername(input.username)
-	const player = await ensurePlayerByUuid({
-		serverId: input.serverId,
-		uuid: input.uuid,
-		username: input.username,
-		normalizedUsername,
-		uuidSource: 'LUCKPERMS',
-		observedAt: input.syncedAt,
-	})
-
-	if (
-		player.luckPermsUsername === input.username &&
-		player.luckPermsPrimaryGroup === input.primaryGroup
-	) {
-		return matchedUnchangedResult
-	}
-
-	const updated = await prisma.minecraftServerPlayer.update({
-		where: {
-			id: player.id,
-		},
-		data: {
-			username: player.username ?? input.username,
-			normalizedUsername: player.normalizedUsername ?? normalizedUsername,
-			luckPermsUsername: input.username,
-			luckPermsPrimaryGroup: input.primaryGroup,
-			luckPermsSyncedAt: input.syncedAt,
-		},
-	})
-
-	await emitEvent('server-player.luckperms-synced', {
-		serverId: input.serverId,
-		uuid: input.uuid,
-		playerId: updated.id,
-		syncedAt: input.syncedAt,
-	})
-
-	return {
-		matched: true,
-		changed: true,
 	}
 }
 
@@ -678,7 +395,15 @@ export const syncMinecraftServerPlayerStatsSnapshot = async (
 	const statsHash = input.statsHash ?? hashSyncValue(input.stats)
 	const existing = playerWithStats.statsSnapshot
 
-	if (existing?.statsHash === statsHash) {
+	// bridge 的 statsHash 是玩家 stats 文件的字节哈希，与 portal 存储的 payload 解耦。
+	// 历史上 bridge 在未声明 includePayload 时发过「真 hash + 空 payload」，
+	// 库里因此留下 hash 命中但内容为空的脏行。这里在 hash 命中时额外校验：
+	// 仅当「存量已有内容」或「incoming 也为空（无内容可回填）」时才跳过，
+	// 否则（存量空 + incoming 非空）用新鲜 payload 回填。
+	if (
+		existing?.statsHash === statsHash &&
+		(!isEmptyJsonValue(existing.stats) || isEmptyJsonValue(input.stats))
+	) {
 		return matchedUnchangedResult
 	}
 
@@ -745,7 +470,13 @@ export const syncMinecraftServerPlayerAdvancementsSnapshot = async (
 		input.advancementsHash ?? hashSyncValue(input.advancements)
 	const existing = playerWithAdvancements.advancementsSnapshot
 
-	if (existing?.advancementsHash === advancementsHash) {
+	// 同 stats：bridge 的 advancementsHash 是文件字节哈希，与 payload 解耦。
+	// hash 命中时仅当「存量已有内容」或「incoming 也为空」才跳过，否则回填脏行。
+	if (
+		existing?.advancementsHash === advancementsHash &&
+		(!isEmptyJsonValue(existing.advancements) ||
+			isEmptyJsonValue(input.advancements))
+	) {
 		return matchedUnchangedResult
 	}
 

@@ -20,6 +20,35 @@ const isManualSyncTarget = (value: unknown): value is ManualSyncTarget =>
 	value === 'portalBridge' || value === 'authme' || value === 'luckperms'
 
 const readTasks = async (serverId: string, target: ManualSyncTarget) => {
+	if (target === 'authme' || target === 'luckperms') {
+		const source = target === 'authme' ? 'AUTHME' : 'LUCKPERMS'
+		const state = await prisma.externalSyncState.findUnique({
+			where: {
+				source,
+			},
+		})
+
+		return state
+			? [
+					{
+						taskKey: source.toLowerCase(),
+						source: state.source,
+						reason: state.reason,
+						running: state.running,
+						intervalSeconds: state.intervalSeconds,
+						lastStartedAt: state.lastStartedAt,
+						lastFinishedAt: state.lastFinishedAt,
+						lastSuccessAt: state.lastSuccessAt,
+						lastError: state.lastError,
+						rowsRead: state.rowsRead,
+						rowsMatched: state.rowsMatched,
+						rowsChanged: state.rowsChanged,
+						rowsSkipped: state.rowsSkipped,
+					},
+				]
+			: []
+	}
+
 	const sources =
 		target === 'portalBridge'
 			? ([
@@ -28,9 +57,7 @@ const readTasks = async (serverId: string, target: ManualSyncTarget) => {
 					'PORTAL_BRIDGE_STATS',
 					'PORTAL_BRIDGE_ADVANCEMENTS',
 				] as const)
-			: target === 'authme'
-				? (['AUTHME'] as const)
-				: (['LUCKPERMS'] as const)
+			: []
 
 	const states = await prisma.externalSyncTaskState.findMany({
 		where: {

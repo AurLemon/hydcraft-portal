@@ -220,52 +220,6 @@ async function main() {
 		},
 	})
 
-	await prisma.authMeSourceConfig.upsert({
-		where: {
-			minecraftServerId: server.id,
-		},
-		create: {
-			minecraftServerId: server.id,
-			host: '127.0.0.1',
-			port: 3306,
-			database: 'authme',
-			username: 'readonly',
-			encryptedPassword: null,
-			enabled: false,
-		},
-		update: {
-			host: '127.0.0.1',
-			port: 3306,
-			database: 'authme',
-			username: 'readonly',
-			encryptedPassword: null,
-			enabled: false,
-		},
-	})
-
-	await prisma.luckPermsSourceConfig.upsert({
-		where: {
-			minecraftServerId: server.id,
-		},
-		create: {
-			minecraftServerId: server.id,
-			host: '127.0.0.1',
-			port: 3306,
-			database: 'luckperms',
-			username: 'readonly',
-			encryptedPassword: null,
-			enabled: false,
-		},
-		update: {
-			host: '127.0.0.1',
-			port: 3306,
-			database: 'luckperms',
-			username: 'readonly',
-			encryptedPassword: null,
-			enabled: false,
-		},
-	})
-
 	console.log(`Seed minecraft server ensured: ${defaultServer.serverId}`)
 
 	await prisma.userProfile.upsert({

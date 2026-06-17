@@ -29,11 +29,16 @@ const formatLatency = (latencyMs: number | null | undefined): string => {
 }
 
 const describeContext = (input: {
-	serverId: string
+	serverId?: string
+	scope?: string
 	source: ExternalSyncSource
 	reason?: ExternalSyncReason | null
 }): string =>
-	`${sourceLabels[input.source]} sync [server=${input.serverId}] [reason=${input.reason ?? 'UNKNOWN'}]`
+	`${sourceLabels[input.source]} sync [${
+		input.serverId
+			? `server=${input.serverId}`
+			: `scope=${input.scope ?? 'GLOBAL'}`
+	}] [reason=${input.reason ?? 'UNKNOWN'}]`
 
 const quietSuccessSources = new Set<ExternalSyncSource>([
 	'PORTAL_BRIDGE_PLAYERS',
@@ -62,7 +67,8 @@ const writeSyncLog = (
 }
 
 export const logExternalSyncStarted = (input: {
-	serverId: string
+	serverId?: string
+	scope?: string
 	source: ExternalSyncSource
 	reason?: ExternalSyncReason | null
 }): void => {
@@ -74,7 +80,8 @@ export const logExternalSyncStarted = (input: {
 }
 
 export const logExternalSyncSucceeded = (input: {
-	serverId: string
+	serverId?: string
+	scope?: string
 	source: ExternalSyncSource
 	reason?: ExternalSyncReason | null
 	rowsRead: number
@@ -101,7 +108,8 @@ export const logExternalSyncSucceeded = (input: {
 }
 
 export const logExternalSyncFailed = (input: {
-	serverId: string
+	serverId?: string
+	scope?: string
 	source: ExternalSyncSource
 	reason?: ExternalSyncReason | null
 	startedAt?: Date | null

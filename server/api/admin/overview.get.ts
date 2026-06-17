@@ -1,5 +1,9 @@
 import { requireAdminUser } from '../../utils/auth/session'
 import { prisma } from '../../utils/db/prisma'
+import {
+	readAuthMeSourceConfig,
+	readLuckPermsSourceConfig,
+} from '../../utils/external-sync/source-config'
 import { getPortalRuntimeStartedAt } from '../../utils/runtime/portal-runtime'
 
 type OverviewStatus = 'normal' | 'error' | 'inactive'
@@ -29,12 +33,8 @@ export default defineEventHandler(async (event) => {
 		serverErrorCount,
 		userCount,
 		usersCreatedToday,
-		authMeCount,
-		enabledAuthMeCount,
-		authMeErrorCount,
-		luckPermsCount,
-		enabledLuckPermsCount,
-		luckPermsErrorCount,
+		authMeState,
+		luckPermsState,
 		portalBridgeCount,
 		enabledPortalBridgeCount,
 		portalBridgeErrorCount,
@@ -49,8 +49,6 @@ export default defineEventHandler(async (event) => {
 			where: {
 				enabled: true,
 				OR: [
-					{ authMe: { is: { lastError: { not: null } } } },
-					{ luckPerms: { is: { lastError: { not: null } } } },
 					{ portalBridge: { is: { lastError: { not: null } } } },
 					{
 						portalBridge: {
@@ -73,32 +71,14 @@ export default defineEventHandler(async (event) => {
 				},
 			},
 		}),
-		prisma.authMeSourceConfig.count(),
-		prisma.authMeSourceConfig.count({
+		prisma.externalSyncState.findUnique({
 			where: {
-				enabled: true,
+				source: 'AUTHME',
 			},
 		}),
-		prisma.authMeSourceConfig.count({
+		prisma.externalSyncState.findUnique({
 			where: {
-				enabled: true,
-				lastError: {
-					not: null,
-				},
-			},
-		}),
-		prisma.luckPermsSourceConfig.count(),
-		prisma.luckPermsSourceConfig.count({
-			where: {
-				enabled: true,
-			},
-		}),
-		prisma.luckPermsSourceConfig.count({
-			where: {
-				enabled: true,
-				lastError: {
-					not: null,
-				},
+				source: 'LUCKPERMS',
 			},
 		}),
 		prisma.portalBridgeConfig.count(),
@@ -127,24 +107,28 @@ export default defineEventHandler(async (event) => {
 	])
 
 	const runningSince = getPortalRuntimeStartedAt()
+	const authMeConfig = readAuthMeSourceConfig()
+	const luckPermsConfig = readLuckPermsSourceConfig()
+	const authMeCount = authMeConfig.databaseUrl ? 1 : 0
+	const enabledAuthMeCount = authMeConfig.enabled ? 1 : 0
+	const luckPermsCount = luckPermsConfig.databaseUrl ? 1 : 0
+	const enabledLuckPermsCount = luckPermsConfig.enabled ? 1 : 0
 	const serverStatus: OverviewStatus =
 		serverErrorCount > 0
 			? 'error'
 			: serverCount === 0 || enabledServerCount < serverCount
 				? 'inactive'
 				: 'normal'
-	const authMeStatus: OverviewStatus =
-		authMeErrorCount > 0
-			? 'error'
-			: authMeCount === 0 || enabledAuthMeCount === 0
-				? 'inactive'
-				: 'normal'
-	const luckPermsStatus: OverviewStatus =
-		luckPermsErrorCount > 0
-			? 'error'
-			: luckPermsCount === 0 || enabledLuckPermsCount === 0
-				? 'inactive'
-				: 'normal'
+	const authMeStatus: OverviewStatus = authMeState?.lastError
+		? 'error'
+		: authMeCount === 0 || enabledAuthMeCount === 0
+			? 'inactive'
+			: 'normal'
+	const luckPermsStatus: OverviewStatus = luckPermsState?.lastError
+		? 'error'
+		: luckPermsCount === 0 || enabledLuckPermsCount === 0
+			? 'inactive'
+			: 'normal'
 	const portalBridgeStatus: OverviewStatus =
 		portalBridgeErrorCount > 0
 			? 'error'

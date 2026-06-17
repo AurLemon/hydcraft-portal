@@ -5,7 +5,11 @@ import {
 	createBadRequestError,
 } from '../../../../../../utils/errors'
 import { closeExternalMysqlPool } from '../../../../../../utils/external-sync/mysql'
-import { createMysqlPoolFromSourceConfig } from '../../../../../../utils/external-sync/source-config'
+import {
+	createMysqlPoolFromDatabaseUrl,
+	readAuthMeSourceConfig,
+	readLuckPermsSourceConfig,
+} from '../../../../../../utils/external-sync/source-config'
 
 type MysqlSourceName = 'authme' | 'luckperms'
 
@@ -21,46 +25,44 @@ export default defineEventHandler(async (event) => {
 		throw createBadRequestError('MYSQL_SOURCE_UNSUPPORTED')
 	}
 
-	const server = await prisma.minecraftServer.findUnique({
+	const serverExists = await prisma.minecraftServer.findUnique({
 		where: {
 			serverId,
 		},
-		include: {
-			authMe: true,
-			luckPerms: true,
+		select: {
+			id: true,
 		},
 	})
 
-	if (!server) {
+	if (!serverExists) {
 		throw createApiError({
 			statusCode: 404,
 			code: 'MINECRAFT_SERVER_NOT_FOUND',
 		})
 	}
 
-	const config = source === 'authme' ? server.authMe : server.luckPerms
+	const config =
+		source === 'authme' ? readAuthMeSourceConfig() : readLuckPermsSourceConfig()
+	const state = await prisma.externalSyncState.findUnique({
+		where: {
+			source: source === 'authme' ? 'AUTHME' : 'LUCKPERMS',
+		},
+	})
 
-	if (!config) {
-		throw createApiError({
-			statusCode: 404,
-			code: 'MYSQL_SOURCE_CONFIG_NOT_FOUND',
-		})
-	}
-
-	if (!config.enabled) {
+	if (!config.enabled || !config.databaseUrl) {
 		return {
 			source,
 			config: {
-				id: config.id,
-				host: config.host,
-				port: config.port,
-				database: config.database,
-				username: config.username,
+				id: source,
+				host: null,
+				port: null,
+				database: config.database || null,
+				username: null,
 				enabled: config.enabled,
-				syncIntervalSeconds: config.syncIntervalSeconds,
-				lastSyncAt: config.lastSyncAt,
-				lastError: config.lastError,
-				hasPassword: Boolean(config.encryptedPassword),
+				syncIntervalSeconds: config.intervalSeconds,
+				lastSyncAt: state?.lastSuccessAt ?? null,
+				lastError: state?.lastError ?? null,
+				hasPassword: Boolean(config.databaseUrl),
 			},
 			connection: {
 				ok: false,
@@ -78,7 +80,7 @@ export default defineEventHandler(async (event) => {
 	let errorMessage: string | null = null
 
 	try {
-		const pool = createMysqlPoolFromSourceConfig(config)
+		const pool = createMysqlPoolFromDatabaseUrl(config.databaseUrl)
 
 		try {
 			await pool.query('SELECT 1 AS ok')
@@ -96,16 +98,16 @@ export default defineEventHandler(async (event) => {
 	return {
 		source,
 		config: {
-			id: config.id,
-			host: config.host,
-			port: config.port,
-			database: config.database,
-			username: config.username,
+			id: source,
+			host: null,
+			port: null,
+			database: config.database || null,
+			username: null,
 			enabled: config.enabled,
-			syncIntervalSeconds: config.syncIntervalSeconds,
-			lastSyncAt: config.lastSyncAt,
-			lastError: config.lastError,
-			hasPassword: Boolean(config.encryptedPassword),
+			syncIntervalSeconds: config.intervalSeconds,
+			lastSyncAt: state?.lastSuccessAt ?? null,
+			lastError: state?.lastError ?? null,
+			hasPassword: Boolean(config.databaseUrl),
 		},
 		connection: {
 			ok: connectionOk,

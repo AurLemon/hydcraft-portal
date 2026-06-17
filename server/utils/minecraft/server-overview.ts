@@ -88,8 +88,6 @@ export const getMinecraftServerOverview = async (serverId: string) => {
 		},
 		include: {
 			portalBridge: true,
-			authMe: true,
-			luckPerms: true,
 		},
 	})
 

@@ -5,10 +5,6 @@ import { encryptConfigValue } from '../../../utils/security/encryption'
 import { toMinecraftServerSummary } from '../../../utils/minecraft/server-config'
 import { assertMinecraftServerId } from '../../../utils/minecraft/normalize'
 import { emitEvent } from '../../../utils/events/event-bus'
-import {
-	triggerAuthMeSyncForServer,
-	triggerLuckPermsSyncForServer,
-} from '../../../utils/external-sync/orchestrator'
 
 interface SourceConfigBody {
 	host?: string
@@ -63,14 +59,6 @@ const normalizePortalBridgeSyncIntervalMinutes = (
 ): number | undefined =>
 	value === undefined ? undefined : Math.max(1, Math.floor(value || 30))
 
-const hasSourceConnectionFields = (source: SourceConfigBody): boolean =>
-	source.host !== undefined ||
-	source.port !== undefined ||
-	source.database !== undefined ||
-	source.username !== undefined ||
-	source.password !== undefined ||
-	source.enabled !== undefined
-
 const hasPortalBridgeConnectionFields = (
 	config: PortalBridgeConfigBody,
 ): boolean =>
@@ -86,7 +74,6 @@ export default defineEventHandler(async (event) => {
 	await requireAdminUser(event)
 	const serverId = getRouterParam(event, 'serverId') ?? ''
 	const body = await readBody<UpdateMinecraftServerBody>(event)
-	const syncAfterSave: Array<() => Promise<unknown>> = []
 	const existing = await prisma.minecraftServer.findUnique({
 		where: {
 			serverId,
@@ -94,16 +81,6 @@ export default defineEventHandler(async (event) => {
 		select: {
 			id: true,
 			portalBridge: {
-				select: {
-					id: true,
-				},
-			},
-			authMe: {
-				select: {
-					id: true,
-				},
-			},
-			luckPerms: {
 				select: {
 					id: true,
 				},
@@ -194,90 +171,6 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	if (
-		body.authMe &&
-		(existing.authMe || hasSourceConnectionFields(body.authMe))
-	) {
-		const authMeConfig = await prisma.authMeSourceConfig.upsert({
-			where: {
-				minecraftServerId: existing.id,
-			},
-			create: {
-				minecraftServerId: existing.id,
-				host: body.authMe.host?.trim() || '127.0.0.1',
-				port: body.authMe.port ?? 3306,
-				database: body.authMe.database?.trim() || 'authme',
-				username: body.authMe.username?.trim() || 'readonly',
-				encryptedPassword: encryptConfigValue(body.authMe.password),
-				enabled: body.authMe.enabled ?? false,
-				syncIntervalSeconds: body.authMe.syncIntervalSeconds ?? 1800,
-			},
-			update: {
-				host: normalizeOptionalText(body.authMe.host) ?? undefined,
-				port: body.authMe.port,
-				database: normalizeOptionalText(body.authMe.database) ?? undefined,
-				username: normalizeOptionalText(body.authMe.username) ?? undefined,
-				encryptedPassword:
-					body.authMe.password === undefined
-						? undefined
-						: encryptConfigValue(body.authMe.password),
-				enabled: body.authMe.enabled,
-				syncIntervalSeconds: body.authMe.syncIntervalSeconds,
-			},
-		})
-
-		if (authMeConfig.enabled) {
-			syncAfterSave.push(() =>
-				triggerAuthMeSyncForServer({
-					serverId: nextServerId ?? serverId,
-					reason: 'CONFIG_SAVED',
-				}),
-			)
-		}
-	}
-
-	if (
-		body.luckPerms &&
-		(existing.luckPerms || hasSourceConnectionFields(body.luckPerms))
-	) {
-		const luckPermsConfig = await prisma.luckPermsSourceConfig.upsert({
-			where: {
-				minecraftServerId: existing.id,
-			},
-			create: {
-				minecraftServerId: existing.id,
-				host: body.luckPerms.host?.trim() || '127.0.0.1',
-				port: body.luckPerms.port ?? 3306,
-				database: body.luckPerms.database?.trim() || 'luckperms',
-				username: body.luckPerms.username?.trim() || 'readonly',
-				encryptedPassword: encryptConfigValue(body.luckPerms.password),
-				enabled: body.luckPerms.enabled ?? false,
-				syncIntervalSeconds: body.luckPerms.syncIntervalSeconds ?? 1800,
-			},
-			update: {
-				host: normalizeOptionalText(body.luckPerms.host) ?? undefined,
-				port: body.luckPerms.port,
-				database: normalizeOptionalText(body.luckPerms.database) ?? undefined,
-				username: normalizeOptionalText(body.luckPerms.username) ?? undefined,
-				encryptedPassword:
-					body.luckPerms.password === undefined
-						? undefined
-						: encryptConfigValue(body.luckPerms.password),
-				enabled: body.luckPerms.enabled,
-				syncIntervalSeconds: body.luckPerms.syncIntervalSeconds,
-			},
-		})
-
-		if (luckPermsConfig.enabled) {
-			syncAfterSave.push(() =>
-				triggerLuckPermsSyncForServer({
-					serverId: nextServerId ?? serverId,
-					reason: 'CONFIG_SAVED',
-				}),
-			)
-		}
-	}
-
 	const server = await prisma.minecraftServer.update({
 		where: {
 			serverId,
@@ -293,19 +186,8 @@ export default defineEventHandler(async (event) => {
 		},
 		include: {
 			portalBridge: true,
-			authMe: true,
-			luckPerms: true,
 		},
 	})
-
-	for (const triggerSync of syncAfterSave) {
-		void triggerSync().catch((error) => {
-			console.error(
-				'[sync] Failed to trigger source sync after config save',
-				error,
-			)
-		})
-	}
 
 	return {
 		server: toMinecraftServerSummary(server),

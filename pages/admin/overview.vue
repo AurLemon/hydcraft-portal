@@ -300,6 +300,7 @@ definePageMeta({
 
 const localePath = useLocalePath()
 const { notifyError } = useAdminToast()
+const { locale } = useI18n()
 
 const {
 	data: overview,
@@ -333,7 +334,7 @@ const formatSignedCount = (value: number): string =>
 	value > 0 ? `+${value}` : String(value)
 
 const formatDate = (value: string): string =>
-	new Intl.DateTimeFormat(undefined, {
+	new Intl.DateTimeFormat(locale.value, {
 		year: 'numeric',
 		month: '2-digit',
 		day: '2-digit',

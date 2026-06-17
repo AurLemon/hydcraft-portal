@@ -364,8 +364,17 @@ export const ingestPortalBridgeEnvelope = async (input: {
 				payload: input.envelope as unknown as Prisma.InputJsonValue,
 			},
 		})
-	} catch {
-		return { duplicate: true }
+	} catch (error) {
+		if (
+			error &&
+			typeof error === 'object' &&
+			'code' in error &&
+			(error as { code?: string }).code === 'P2002'
+		) {
+			return { duplicate: true }
+		}
+
+		throw error
 	}
 
 	await projectPortalBridgeEnvelope(input.serverId, input.envelope)

@@ -1,14 +1,10 @@
 import type {
-	AuthMeSourceConfig,
-	LuckPermsSourceConfig,
 	MinecraftServer,
 	PortalBridgeConfig,
 } from '~/generated/prisma/client'
 
 interface ServerWithConfigs extends MinecraftServer {
 	portalBridge: PortalBridgeConfig | null
-	authMe: AuthMeSourceConfig | null
-	luckPerms: LuckPermsSourceConfig | null
 }
 
 export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
@@ -40,32 +36,6 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 				hasSecret: Boolean(server.portalBridge.encryptedSecret),
 			}
 		: null,
-	authMe: server.authMe
-		? {
-				id: server.authMe.id,
-				host: server.authMe.host,
-				port: server.authMe.port,
-				database: server.authMe.database,
-				username: server.authMe.username,
-				enabled: server.authMe.enabled,
-				syncIntervalSeconds: server.authMe.syncIntervalSeconds,
-				lastSyncAt: server.authMe.lastSyncAt,
-				lastError: server.authMe.lastError,
-				hasPassword: Boolean(server.authMe.encryptedPassword),
-			}
-		: null,
-	luckPerms: server.luckPerms
-		? {
-				id: server.luckPerms.id,
-				host: server.luckPerms.host,
-				port: server.luckPerms.port,
-				database: server.luckPerms.database,
-				username: server.luckPerms.username,
-				enabled: server.luckPerms.enabled,
-				syncIntervalSeconds: server.luckPerms.syncIntervalSeconds,
-				lastSyncAt: server.luckPerms.lastSyncAt,
-				lastError: server.luckPerms.lastError,
-				hasPassword: Boolean(server.luckPerms.encryptedPassword),
-			}
-		: null,
+	authMe: null,
+	luckPerms: null,
 })

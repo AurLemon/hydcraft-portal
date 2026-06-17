@@ -26,7 +26,6 @@ import {
 import { RetryController } from './retry-controller'
 
 const RECONNECT_INTERVAL_MS = 60_000
-const MAX_RECONNECT_ATTEMPTS = 30
 const PORTAL_BRIDGE_PLAYER_SYNC_INTERVAL_SECONDS = 60
 
 const PORTAL_BRIDGE_PLAYER_SYNC_ACTION: {
@@ -45,6 +44,13 @@ const PORTAL_BRIDGE_CORE_SYNC_ACTIONS: Array<{
 	{ action: 'sync.stats.now', source: 'PORTAL_BRIDGE_STATS' },
 	{ action: 'sync.advancements.now', source: 'PORTAL_BRIDGE_ADVANCEMENTS' },
 ]
+
+// bridge 默认只回 statsHash 不回 payload（省带宽），portal 需要 payload 才能在前端展示
+// 每个玩家真实的统计数值 / 成就内容，所以这两类命令必须显式声明 includePayload。
+const PAYLOAD_REQUIRED_CORE_SYNC_ACTIONS = new Set<PortalBridgeCommandAction>([
+	'sync.stats.now',
+	'sync.advancements.now',
+])
 
 const normalizeCoreSyncIntervalMinutes = (value: number): number =>
 	Math.max(1, Math.floor(value || 30))
@@ -172,7 +178,7 @@ export interface PortalBridgeRuntimeStatus {
 	connected: boolean
 	readyState: string
 	reconnectAttempts: number
-	maxReconnectAttempts: number
+	maxReconnectAttempts: number | null
 	nextRetryAt: Date | null
 	manualRequired: boolean
 	lastRuntimeStateChangedAt: Date | null
@@ -187,7 +193,6 @@ class PortalBridgeConnection {
 	private playerSyncTimer: NodeJS.Timeout | null = null
 	private retryController = new RetryController({
 		intervalMs: RECONNECT_INTERVAL_MS,
-		maxAttempts: MAX_RECONNECT_ATTEMPTS,
 	})
 	private lastRuntimeStateChangedAt: Date | null = null
 	private lastHeartbeatAt: Date | null = null
@@ -195,6 +200,8 @@ class PortalBridgeConnection {
 	private lastHeartbeatPayload: unknown = null
 	private stopped = false
 	private closeReason: 'manual' | 'unexpected' = 'unexpected'
+	private closingSocket = false
+	private websocketErrorLogged = false
 
 	constructor(private readonly config: BridgeRuntimeConfig) {}
 
@@ -210,7 +217,7 @@ class PortalBridgeConnection {
 
 		this.stopCoreSync()
 		this.retryController.clear()
-		this.socket?.close()
+		this.closeSocket()
 		this.socket = null
 	}
 
@@ -304,6 +311,8 @@ class PortalBridgeConnection {
 		this.closeReason = 'unexpected'
 
 		this.lastRuntimeStateChangedAt = new Date()
+		this.closingSocket = false
+		this.websocketErrorLogged = false
 
 		void prisma.portalBridgeConfig.update({
 			where: { id: this.config.id },
@@ -313,13 +322,19 @@ class PortalBridgeConnection {
 			},
 		})
 
-		this.socket = new WebSocket(this.config.wsUrl)
+		const socket = new WebSocket(this.config.wsUrl)
+		this.socket = socket
 
-		this.socket.addEventListener('open', () => {
+		socket.addEventListener('open', () => {
+			if (this.socket !== socket) {
+				socket.close()
+				return
+			}
+
 			const secret = decryptConfigValue(this.config.encryptedSecret)
 
 			if (!secret) {
-				this.socket?.close()
+				this.closeSocket(socket)
 				void this.markError('PortalBridge secret is required')
 				return
 			}
@@ -339,11 +354,20 @@ class PortalBridgeConnection {
 			this.socket?.send(JSON.stringify(envelope))
 		})
 
-		this.socket.addEventListener('message', (event) => {
+		socket.addEventListener('message', (event) => {
+			if (this.socket !== socket) {
+				return
+			}
+
 			void this.handleMessage(event.data)
 		})
 
-		this.socket.addEventListener('close', () => {
+		socket.addEventListener('close', () => {
+			if (this.socket !== socket) {
+				return
+			}
+
+			this.closingSocket = false
 			this.stopCoreSync()
 			this.lastRuntimeStateChangedAt = new Date()
 			void prisma.portalBridgeConfig.update({
@@ -365,7 +389,13 @@ class PortalBridgeConnection {
 			this.scheduleReconnect()
 		})
 
-		this.socket.addEventListener('error', () => {
+		socket.addEventListener('error', () => {
+			if (this.socket !== socket || this.websocketErrorLogged) {
+				return
+			}
+
+			this.websocketErrorLogged = true
+			this.closeReason = 'unexpected'
 			logBridgeInfo(
 				`${describeBridgeContext({
 					serverId: this.config.minecraftServer.serverId,
@@ -375,8 +405,30 @@ class PortalBridgeConnection {
 				'error',
 			)
 			void this.markError('PortalBridge websocket error')
-			this.socket?.close()
+
+			if (socket.readyState === WebSocket.OPEN) {
+				setTimeout(() => this.closeSocket(socket), 0)
+			} else {
+				this.socket = null
+				this.closingSocket = false
+				this.lastRuntimeStateChangedAt = new Date()
+				this.scheduleReconnect()
+			}
 		})
+	}
+
+	private closeSocket(socket = this.socket): void {
+		if (
+			!socket ||
+			this.closingSocket ||
+			socket.readyState === WebSocket.CLOSING ||
+			socket.readyState === WebSocket.CLOSED
+		) {
+			return
+		}
+
+		this.closingSocket = true
+		socket.close()
 	}
 
 	private async handleMessage(rawData: unknown): Promise<void> {
@@ -445,17 +497,17 @@ class PortalBridgeConnection {
 				})} rejected ${JSON.stringify(envelope.payload)}`,
 				'error',
 			)
-			this.socket?.close()
+			this.closeSocket()
 			return
 		}
 
-		const result = await ingestPortalBridgeEnvelope({
+		await ingestPortalBridgeEnvelope({
 			bridgeConfigId: this.config.id,
 			serverId: this.config.minecraftServer.serverId,
 			envelope,
 		})
 
-		if (!result.duplicate && envelope.seq != null) {
+		if (envelope.seq != null) {
 			await prisma.portalBridgeConfig.update({
 				where: { id: this.config.id },
 				data: {
@@ -624,7 +676,12 @@ class PortalBridgeConnection {
 				source: item.source,
 				reason,
 			})
-			await this.sendCommand(item.action)
+			await this.sendCommand(
+				item.action,
+				PAYLOAD_REQUIRED_CORE_SYNC_ACTIONS.has(item.action)
+					? { includePayload: true }
+					: undefined,
+			)
 		} catch (error) {
 			const finishedAt = new Date()
 			await markPortalBridgeSyncFinished({
@@ -743,7 +800,7 @@ class PortalBridgeManager {
 				connected: false,
 				readyState: 'STOPPED',
 				reconnectAttempts: 0,
-				maxReconnectAttempts: MAX_RECONNECT_ATTEMPTS,
+				maxReconnectAttempts: null,
 				nextRetryAt: null,
 				manualRequired: false,
 				lastRuntimeStateChangedAt: null,

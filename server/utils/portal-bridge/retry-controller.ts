@@ -1,13 +1,12 @@
 export interface RetryControllerSnapshot {
 	attempts: number
-	maxAttempts: number
+	maxAttempts: number | null
 	nextRetryAt: Date | null
 	manualRequired: boolean
 }
 
 interface RetryControllerOptions {
 	intervalMs: number
-	maxAttempts: number
 }
 
 export class RetryController {
@@ -19,13 +18,7 @@ export class RetryController {
 	constructor(private readonly options: RetryControllerOptions) {}
 
 	schedule(callback: () => void): void {
-		if (this.timer || this.manualRequired) {
-			return
-		}
-
-		if (this.attempts >= this.options.maxAttempts) {
-			this.manualRequired = true
-			this.nextRetryAt = null
+		if (this.timer) {
 			return
 		}
 
@@ -41,7 +34,6 @@ export class RetryController {
 	reset(): void {
 		this.clear()
 		this.attempts = 0
-		this.manualRequired = false
 	}
 
 	clear(): void {
@@ -56,7 +48,7 @@ export class RetryController {
 	snapshot(): RetryControllerSnapshot {
 		return {
 			attempts: this.attempts,
-			maxAttempts: this.options.maxAttempts,
+			maxAttempts: null,
 			nextRetryAt: this.nextRetryAt,
 			manualRequired: this.manualRequired,
 		}

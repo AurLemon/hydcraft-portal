@@ -1,23 +1,22 @@
+import { requireAdminUser } from '../../../../utils/auth/session'
 import {
 	getOptionalQueryString,
 	getPaginationQuery,
 	getSortDirection,
-} from '../../../utils/admin/pagination'
-import { listAdminMinecraftAccounts } from '../../../utils/admin/players'
-import { requireAdminUser } from '../../../utils/auth/session'
+} from '../../../../utils/admin/pagination'
+import { listServerPlayerStatsSnapshots } from '../../../../utils/admin/server-player-stats'
 
 export default defineEventHandler(async (event) => {
 	await requireAdminUser(event)
 	const { query, page, pageSize } = getPaginationQuery(event)
 
-	return await listAdminMinecraftAccounts({
+	return await listServerPlayerStatsSnapshots({
 		page,
 		pageSize,
 		search: getOptionalQueryString(query.search),
-		linked: getOptionalQueryString(query.linked),
-		group: getOptionalQueryString(query.group),
-		totp: getOptionalQueryString(query.totp),
+		serverId: getOptionalQueryString(query.serverId),
 		sortField: getOptionalQueryString(query.sortField),
 		sortDirection: getSortDirection(query.sortDirection),
+		player: getOptionalQueryString(query.player),
 	})
 })

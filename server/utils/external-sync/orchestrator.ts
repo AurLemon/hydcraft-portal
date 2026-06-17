@@ -11,6 +11,10 @@ import {
 	logExternalSyncSucceeded,
 } from './logger'
 import { syncLuckPermsSource } from './luckperms'
+import {
+	readAuthMeSourceConfig,
+	readLuckPermsSourceConfig,
+} from './source-config'
 
 export interface ExternalSyncResult {
 	serversRead: number
@@ -30,9 +34,9 @@ export interface ExternalSyncTaskResult {
 
 interface ExternalSyncTaskInput {
 	taskKey: string
-	serverId: string
 	source: ExternalSyncSource
 	intervalSeconds: number
+	enabled: boolean
 	reason: ExternalSyncReason
 	handler: () => Promise<ExternalSyncTaskResult>
 }
@@ -43,18 +47,16 @@ const MIN_INTERVAL_SECONDS = 60
 const normalizeIntervalSeconds = (value: number): number =>
 	Math.max(MIN_INTERVAL_SECONDS, Math.floor(value || 1800))
 
-export const getExternalSyncTaskKey = (
-	serverId: string,
-	source: ExternalSyncSource,
-): string => `${serverId}:${source.toLowerCase()}`
+export const getExternalSyncTaskKey = (source: ExternalSyncSource): string =>
+	source.toLowerCase()
 
 const shouldRunTask = async (input: {
-	taskKey: string
+	source: ExternalSyncSource
 	intervalSeconds: number
 }): Promise<boolean> => {
-	const state = await prisma.externalSyncTaskState.findUnique({
+	const state = await prisma.externalSyncState.findUnique({
 		where: {
-			taskKey: input.taskKey,
+			source: input.source,
 		},
 	})
 
@@ -73,29 +75,28 @@ export const runExternalSyncTask = async (
 ): Promise<ExternalSyncTaskResult | null> => {
 	const intervalSeconds = normalizeIntervalSeconds(input.intervalSeconds)
 	const startedAt = new Date()
-	await prisma.externalSyncTaskState.upsert({
+	await prisma.externalSyncState.upsert({
 		where: {
-			taskKey: input.taskKey,
+			source: input.source,
 		},
 		create: {
-			taskKey: input.taskKey,
-			serverId: input.serverId,
 			source: input.source,
 			reason: input.reason,
 			running: false,
+			enabled: input.enabled,
 			intervalSeconds,
 		},
 		update: {
-			serverId: input.serverId,
 			source: input.source,
 			reason: input.reason,
+			enabled: input.enabled,
 			intervalSeconds,
 		},
 	})
 
-	const claimed = await prisma.externalSyncTaskState.updateMany({
+	const claimed = await prisma.externalSyncState.updateMany({
 		where: {
-			taskKey: input.taskKey,
+			source: input.source,
 			running: false,
 		},
 		data: {
@@ -116,7 +117,7 @@ export const runExternalSyncTask = async (
 	}
 
 	logExternalSyncStarted({
-		serverId: input.serverId,
+		scope: 'GLOBAL',
 		source: input.source,
 		reason: input.reason,
 	})
@@ -125,9 +126,9 @@ export const runExternalSyncTask = async (
 		const result = await input.handler()
 		const finishedAt = new Date()
 
-		await prisma.externalSyncTaskState.update({
+		await prisma.externalSyncState.update({
 			where: {
-				taskKey: input.taskKey,
+				source: input.source,
 			},
 			data: {
 				running: false,
@@ -142,7 +143,7 @@ export const runExternalSyncTask = async (
 		})
 
 		logExternalSyncSucceeded({
-			serverId: input.serverId,
+			scope: 'GLOBAL',
 			source: input.source,
 			reason: input.reason,
 			rowsRead: result.rowsRead,
@@ -158,9 +159,9 @@ export const runExternalSyncTask = async (
 	} catch (error) {
 		const finishedAt = new Date()
 
-		await prisma.externalSyncTaskState.update({
+		await prisma.externalSyncState.update({
 			where: {
-				taskKey: input.taskKey,
+				source: input.source,
 			},
 			data: {
 				running: false,
@@ -171,7 +172,7 @@ export const runExternalSyncTask = async (
 		})
 
 		logExternalSyncFailed({
-			serverId: input.serverId,
+			scope: 'GLOBAL',
 			source: input.source,
 			reason: input.reason,
 			startedAt,
@@ -187,134 +188,142 @@ export const syncAuthMeSources = async (
 	reason: ExternalSyncReason,
 	options: { onlyDue?: boolean } = {},
 ): Promise<ExternalSyncResult> => {
-	const configs = await prisma.authMeSourceConfig.findMany({
-		where: {
-			enabled: true,
-			minecraftServer: {
-				enabled: true,
+	const config = readAuthMeSourceConfig()
+	const taskKey = getExternalSyncTaskKey('AUTHME')
+
+	if (!config.enabled) {
+		await prisma.externalSyncState.upsert({
+			where: {
+				source: 'AUTHME',
 			},
-		},
-		include: {
-			minecraftServer: {
-				select: {
-					serverId: true,
-				},
+			create: {
+				source: 'AUTHME',
+				reason,
+				enabled: false,
+				intervalSeconds: config.intervalSeconds,
 			},
-		},
-	})
-	let rowsRead = 0
-	let rowsMatched = 0
-	let rowsChanged = 0
-	let rowsSkipped = 0
-	let serversRead = 0
-
-	for (const config of configs) {
-		const taskKey = getExternalSyncTaskKey(
-			config.minecraftServer.serverId,
-			'AUTHME',
-		)
-
-		if (
-			options.onlyDue &&
-			!(await shouldRunTask({
-				taskKey,
-				intervalSeconds: config.syncIntervalSeconds,
-			}))
-		) {
-			continue
-		}
-
-		const result = await heavySyncDispatcher.enqueue(
-			config.minecraftServer.serverId,
-			taskKey,
-			() =>
-				runExternalSyncTask({
-					taskKey,
-					serverId: config.minecraftServer.serverId,
-					source: 'AUTHME',
-					intervalSeconds: config.syncIntervalSeconds,
-					reason,
-					handler: () => syncAuthMeSource(config),
-				}),
-		)
-
-		if (result) {
-			serversRead += 1
-			rowsRead += result.rowsRead
-			rowsMatched += result.rowsMatched
-			rowsChanged += result.rowsChanged
-			rowsSkipped += result.rowsSkipped
+			update: {
+				reason,
+				enabled: false,
+				intervalSeconds: config.intervalSeconds,
+			},
+		})
+		return {
+			serversRead: 0,
+			rowsRead: 0,
+			rowsMatched: 0,
+			rowsChanged: 0,
+			rowsSkipped: 0,
 		}
 	}
 
-	return { serversRead, rowsRead, rowsMatched, rowsChanged, rowsSkipped }
+	if (
+		options.onlyDue &&
+		!(await shouldRunTask({
+			source: 'AUTHME',
+			intervalSeconds: config.intervalSeconds,
+		}))
+	) {
+		return {
+			serversRead: 0,
+			rowsRead: 0,
+			rowsMatched: 0,
+			rowsChanged: 0,
+			rowsSkipped: 0,
+		}
+	}
+
+	const result = await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
+		runExternalSyncTask({
+			taskKey,
+			source: 'AUTHME',
+			enabled: config.enabled,
+			intervalSeconds: config.intervalSeconds,
+			reason,
+			handler: () => syncAuthMeSource(),
+		}),
+	)
+
+	return result
+		? { serversRead: 1, ...result }
+		: {
+				serversRead: 0,
+				rowsRead: 0,
+				rowsMatched: 0,
+				rowsChanged: 0,
+				rowsSkipped: 0,
+			}
 }
 
 export const syncLuckPermsSources = async (
 	reason: ExternalSyncReason,
 	options: { onlyDue?: boolean } = {},
 ): Promise<ExternalSyncResult> => {
-	const configs = await prisma.luckPermsSourceConfig.findMany({
-		where: {
-			enabled: true,
-			minecraftServer: {
-				enabled: true,
+	const config = readLuckPermsSourceConfig()
+	const taskKey = getExternalSyncTaskKey('LUCKPERMS')
+
+	if (!config.enabled) {
+		await prisma.externalSyncState.upsert({
+			where: {
+				source: 'LUCKPERMS',
 			},
-		},
-		include: {
-			minecraftServer: {
-				select: {
-					serverId: true,
-				},
+			create: {
+				source: 'LUCKPERMS',
+				reason,
+				enabled: false,
+				intervalSeconds: config.intervalSeconds,
 			},
-		},
-	})
-	let rowsRead = 0
-	let rowsMatched = 0
-	let rowsChanged = 0
-	let rowsSkipped = 0
-	let serversRead = 0
-
-	for (const config of configs) {
-		const taskKey = getExternalSyncTaskKey(
-			config.minecraftServer.serverId,
-			'LUCKPERMS',
-		)
-
-		if (
-			options.onlyDue &&
-			!(await shouldRunTask({
-				taskKey,
-				intervalSeconds: config.syncIntervalSeconds,
-			}))
-		) {
-			continue
-		}
-
-		const result = await heavySyncDispatcher.enqueue(
-			config.minecraftServer.serverId,
-			taskKey,
-			() =>
-				runExternalSyncTask({
-					taskKey,
-					serverId: config.minecraftServer.serverId,
-					source: 'LUCKPERMS',
-					intervalSeconds: config.syncIntervalSeconds,
-					reason,
-					handler: () => syncLuckPermsSource(config),
-				}),
-		)
-
-		if (result) {
-			serversRead += 1
-			rowsRead += result.rowsRead
-			rowsMatched += result.rowsMatched
-			rowsChanged += result.rowsChanged
-			rowsSkipped += result.rowsSkipped
+			update: {
+				reason,
+				enabled: false,
+				intervalSeconds: config.intervalSeconds,
+			},
+		})
+		return {
+			serversRead: 0,
+			rowsRead: 0,
+			rowsMatched: 0,
+			rowsChanged: 0,
+			rowsSkipped: 0,
 		}
 	}
 
-	return { serversRead, rowsRead, rowsMatched, rowsChanged, rowsSkipped }
+	if (
+		options.onlyDue &&
+		!(await shouldRunTask({
+			source: 'LUCKPERMS',
+			intervalSeconds: config.intervalSeconds,
+		}))
+	) {
+		return {
+			serversRead: 0,
+			rowsRead: 0,
+			rowsMatched: 0,
+			rowsChanged: 0,
+			rowsSkipped: 0,
+		}
+	}
+
+	const result = await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
+		runExternalSyncTask({
+			taskKey,
+			source: 'LUCKPERMS',
+			enabled: config.enabled,
+			intervalSeconds: config.intervalSeconds,
+			reason,
+			handler: () => syncLuckPermsSource(),
+		}),
+	)
+
+	return result
+		? { serversRead: 1, ...result }
+		: {
+				serversRead: 0,
+				rowsRead: 0,
+				rowsMatched: 0,
+				rowsChanged: 0,
+				rowsSkipped: 0,
+			}
 }
 
 export const syncExternalSources = async (
@@ -337,37 +346,22 @@ export const triggerAuthMeSyncForServer = async (input: {
 	serverId: string
 	reason: ExternalSyncReason
 }): Promise<ExternalSyncTaskResult | null> => {
-	const config = await prisma.authMeSourceConfig.findFirst({
-		where: {
-			minecraftServer: {
-				serverId: input.serverId,
-				enabled: true,
-			},
-			enabled: true,
-		},
-		include: {
-			minecraftServer: {
-				select: {
-					serverId: true,
-				},
-			},
-		},
-	})
+	const config = readAuthMeSourceConfig()
 
-	if (!config) {
+	if (!config.enabled) {
 		return null
 	}
 
-	const taskKey = getExternalSyncTaskKey(input.serverId, 'AUTHME')
+	const taskKey = getExternalSyncTaskKey('AUTHME')
 
-	return await heavySyncDispatcher.enqueue(input.serverId, taskKey, () =>
+	return await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
 		runExternalSyncTask({
 			taskKey,
-			serverId: input.serverId,
 			source: 'AUTHME',
-			intervalSeconds: config.syncIntervalSeconds,
+			enabled: config.enabled,
+			intervalSeconds: config.intervalSeconds,
 			reason: input.reason,
-			handler: () => syncAuthMeSource(config),
+			handler: () => syncAuthMeSource(),
 		}),
 	)
 }
@@ -376,37 +370,22 @@ export const triggerLuckPermsSyncForServer = async (input: {
 	serverId: string
 	reason: ExternalSyncReason
 }): Promise<ExternalSyncTaskResult | null> => {
-	const config = await prisma.luckPermsSourceConfig.findFirst({
-		where: {
-			minecraftServer: {
-				serverId: input.serverId,
-				enabled: true,
-			},
-			enabled: true,
-		},
-		include: {
-			minecraftServer: {
-				select: {
-					serverId: true,
-				},
-			},
-		},
-	})
+	const config = readLuckPermsSourceConfig()
 
-	if (!config) {
+	if (!config.enabled) {
 		return null
 	}
 
-	const taskKey = getExternalSyncTaskKey(input.serverId, 'LUCKPERMS')
+	const taskKey = getExternalSyncTaskKey('LUCKPERMS')
 
-	return await heavySyncDispatcher.enqueue(input.serverId, taskKey, () =>
+	return await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
 		runExternalSyncTask({
 			taskKey,
-			serverId: input.serverId,
 			source: 'LUCKPERMS',
-			intervalSeconds: config.syncIntervalSeconds,
+			enabled: config.enabled,
+			intervalSeconds: config.intervalSeconds,
 			reason: input.reason,
-			handler: () => syncLuckPermsSource(config),
+			handler: () => syncLuckPermsSource(),
 		}),
 	)
 }

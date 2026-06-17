@@ -78,10 +78,32 @@
 		"servers": {
 			"title": "服务器",
 			"create": "新增服务器",
+			"viewDetail": "查看详情",
+			"fields": {
+				"server": "服务器",
+				"portalBridge": "Bridge",
+				"status": "状态",
+				"actions": "查看详情"
+			},
 			"loading": "正在读取服务器配置...",
 			"empty": {
 				"title": "还没有服务器配置",
-				"description": "新增一个服务器后，再配置 PortalBridge、AuthMe 和 LuckPerms。"
+				"description": "新增一个服务器后，再配置 PortalBridge。"
+			},
+			"externalSync": {
+				"authMe": "AuthMe 同步状态",
+				"luckPerms": "LuckPerms 同步状态",
+				"running": "同步中",
+				"error": "异常",
+				"notConfigured": "未配置",
+				"disabled": "已停用",
+				"synced": "已同步",
+				"pending": "待同步",
+				"lastSuccessAt": "最后成功",
+				"rowsRead": "读取行数",
+				"never": "从未",
+				"database": "数据库：{database}",
+				"databaseMissing": "数据库未配置"
 			}
 		},
 		"serverCreate": {
@@ -204,6 +226,7 @@
 				"runtimeState": "运行状态",
 				"latency": "延迟",
 				"reconnectAttempts": "重连次数",
+				"unlimited": "不限",
 				"nextRetryAt": "下次重试",
 				"manualRequired": "需要手动连接",
 				"notLoadedHint": "刷新后查看当前 Bridge runtime。",
@@ -262,7 +285,8 @@
 				"portalAccountSource": "Portal 账号来源",
 				"bridgeSyncedAt": "Bridge 同步时间",
 				"createdAt": "创建时间",
-				"updatedAt": "更新时间"
+				"updatedAt": "更新时间",
+				"dataEntries": "数据入口"
 			},
 			"states": {
 				"yes": "是",
@@ -270,7 +294,12 @@
 			},
 			"empty": {
 				"unknown": "暂无",
-				"notLinked": "未同步"
+				"notLinked": "未同步",
+				"unknownLocation": "未知位置"
+			},
+			"dataEntries": {
+				"stats": "统计",
+				"advancements": "成就"
 			},
 			"uuidSourceTooltip": "来源于 {source}",
 			"conflictTooltip": "存在冲突：{state}",
@@ -289,37 +318,90 @@
 				}
 			}
 		},
+		"serverStats": {
+			"title": "Stats 快照",
+			"back": "服务器列表",
+			"filters": {
+				"serverId": "serverId",
+				"player": "玩家 ID",
+				"playerSearch": "搜索玩家 ID"
+			},
+			"fields": {
+				"server": "服务器",
+				"category": "分类",
+				"key": "键",
+				"value": "值",
+				"observedAt": "观测时间",
+				"lastScannedAt": "扫描时间"
+			},
+			"valueModalTitle": "统计值详情"
+		},
+		"serverAdvancements": {
+			"title": "Advancements 快照",
+			"back": "服务器列表",
+			"filters": {
+				"serverId": "serverId",
+				"player": "玩家 ID",
+				"playerSearch": "搜索玩家 ID"
+			},
+			"fields": {
+				"server": "服务器",
+				"advancementKey": "成就键",
+				"done": "完成",
+				"criteria": "条件",
+				"observedAt": "观测时间",
+				"lastScannedAt": "扫描时间"
+			},
+			"empty": {
+				"noCriteria": "暂无完成条件"
+			},
+			"criteriaModalTitle": "成就条件详情"
+		},
 		"players": {
-			"title": "玩家账号",
+			"title": "Minecraft 账号",
 			"filters": {
 				"search": "搜索玩家、AuthMe 名称、绑定用户或邮箱",
 				"linked": "已绑定用户",
-				"unlinked": "未绑定用户"
+				"unlinked": "未绑定用户",
+				"group": "LuckPerms 组",
+				"totpEnabled": "已启用 TOTP",
+				"totpDisabled": "未启用 TOTP"
 			},
 			"fields": {
 				"player": "玩家",
 				"linkedUser": "绑定用户",
-				"status": "状态",
-				"source": "来源",
-				"observed": "观测记录",
-				"firstJoinedAt": "第一次加入",
-				"lastSeenAt": "最后出现",
+				"authMeRegisteredAt": "AuthMe 注册时间",
+				"authMeLastLoginAt": "AuthMe 最后登录",
+				"authMeRegisterIp": "AuthMe 注册 IP",
+				"authMeLastIp": "AuthMe 最后 IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe 同步时间",
+				"luckPermsPrimaryGroup": "LuckPerms 组",
+				"worldFirstJoinedAt": "世界首次加入",
+				"worldLastJoinedAt": "世界最近加入",
+				"uuid": "UUID",
+				"dataEntries": "数据入口",
 				"createdAt": "创建时间",
 				"updatedAt": "更新时间"
 			},
 			"states": {
-				"primary": "主账号"
+				"primary": "主账号",
+				"enabled": "已启用",
+				"disabled": "未启用"
 			},
 			"empty": {
 				"unknown": "暂无",
 				"notLinked": "未绑定",
-				"noAuthMe": "暂无 AuthMe 名称"
+				"noAuthMe": "暂无 AuthMe 名称",
+				"noGroup": "暂无权限组",
+				"noUuid": "暂无 UUID",
+				"unknownLocation": "未知位置",
+				"noDataEntries": "暂无"
 			},
-			"observed": {
-				"serverPlayers": "{count} 条观测",
-				"servers": "{count} 个服务器"
-			},
-			"sameNameSplitTooltip": "同名玩家在服务器观测层出现了 {count} 个不同 UUID，建议后续进入候选合并流程人工确认。"
+			"dataEntries": {
+				"stats": "统计",
+				"advancements": "成就"
+			}
 		},
 		"users": {
 			"title": "用户",
@@ -523,6 +605,13 @@
 				"createdAt": "创建时间",
 				"updatedAt": "更新时间"
 			}
+		},
+		"valueModal": {
+			"title": "值详情",
+			"parsed": "解析结果",
+			"raw": "原始值",
+			"empty": "暂无内容",
+			"showAll": "显示全部"
 		}
 	}
 }

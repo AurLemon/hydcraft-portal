@@ -18,6 +18,8 @@ model MinecraftAccount {
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
 
+  authMeAccount AuthMeAccount? @relation(fields: [authmeId], references: [authmeId], onDelete: SetNull, onUpdate: Cascade)
+
   @@index([userId])
   @@index([username])
   @@index([authmeName])
@@ -38,14 +40,11 @@ model MinecraftServer {
   updatedAt DateTime @updatedAt
 
   portalBridge PortalBridgeConfig?
-  authMe       AuthMeSourceConfig?
-  luckPerms    LuckPermsSourceConfig?
   snapshots    MinecraftServerSnapshot[]
   identities   ServerPlayerIdentity[]
   sessions     ServerPlayerSession[]
   players      MinecraftServerPlayer[]
   externalSyncTaskStates ExternalSyncTaskState[]
-  luckPermsGroups        MinecraftServerLuckPermsGroup[]
 }
 
 model PortalBridgeConfig {
@@ -74,44 +73,6 @@ model PortalBridgeConfig {
   @@unique([bridgeId, module])
   @@index([enabled])
   @@index([lastConnectionState])
-}
-
-model AuthMeSourceConfig {
-  id                String          @id @default(cuid())
-  minecraftServerId String          @unique
-  minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
-  host              String
-  port              Int             @default(3306)
-  database          String
-  username          String
-  encryptedPassword String?
-  enabled           Boolean         @default(false)
-  syncIntervalSeconds Int           @default(1800)
-  lastSyncAt        DateTime?
-  lastError         String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@index([enabled])
-}
-
-model LuckPermsSourceConfig {
-  id                String          @id @default(cuid())
-  minecraftServerId String          @unique
-  minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
-  host              String
-  port              Int             @default(3306)
-  database          String
-  username          String
-  encryptedPassword String?
-  enabled           Boolean         @default(false)
-  syncIntervalSeconds Int           @default(1800)
-  lastSyncAt        DateTime?
-  lastError         String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@index([enabled])
 }
 
 model MinecraftServerSnapshot {
@@ -191,7 +152,7 @@ model MinecraftServerPlayer {
   id                        String                            @id @default(cuid())
   serverId                  String
   server                    MinecraftServer                   @relation(fields: [serverId], references: [serverId], onDelete: Cascade, onUpdate: Cascade)
-  uuid                      String?
+  uuid                      String
   username                  String?
   normalizedUsername        String?
   uuidSource                String?
@@ -199,21 +160,6 @@ model MinecraftServerPlayer {
   lastSeenAt                DateTime?
   evidenceCount             Int                               @default(0)
   conflictState             ServerPlayerIdentityConflictState @default(NONE)
-  authmeId                  Int?
-  authmeUsername            String?
-  authmeRealname            String?
-  authmeEmail               String?
-  authmeRegisteredAt        DateTime?
-  authmeLastLoginAt         DateTime?
-  authmeRegisterIp          String?
-  authmeLastIp              String?
-  authmeHasTotp             Boolean                           @default(false)
-  authmeRaw                 Json?
-  authmeRawHash             String?
-  authmeSyncedAt            DateTime?
-  luckPermsUsername         String?
-  luckPermsPrimaryGroup     String?
-  luckPermsSyncedAt         DateTime?
   portalAccountId           String?
   portalUserId              String?
   portalAccountStatus       MinecraftAccountStatus?
@@ -222,7 +168,6 @@ model MinecraftServerPlayer {
   createdAt                 DateTime                          @default(now())
   updatedAt                 DateTime                          @updatedAt
 
-  authMeCredential          MinecraftServerPlayerAuthMeCredential?
   playerData                MinecraftServerPlayerData?
   statsSnapshot             MinecraftServerPlayerStatsSnapshot?
   advancementsSnapshot      MinecraftServerPlayerAdvancementsSnapshot?
@@ -230,22 +175,7 @@ model MinecraftServerPlayer {
   @@unique([serverId, uuid])
   @@index([serverId])
   @@index([serverId, normalizedUsername])
-  @@index([serverId, authmeId])
-  @@index([serverId, luckPermsPrimaryGroup])
   @@index([serverId, lastSeenAt])
-}
-
-model MinecraftServerPlayerAuthMeCredential {
-  id                      String                @id @default(cuid())
-  minecraftServerPlayerId String                @unique
-  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
-  passwordHash            String?
-  passwordAlgorithm       String?
-  rawPasswordHash         String?
-  credentialHash          String?
-  syncedAt                DateTime              @default(now())
-  createdAt               DateTime              @default(now())
-  updatedAt               DateTime              @updatedAt
 }
 
 model MinecraftServerPlayerData {

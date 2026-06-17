@@ -226,8 +226,8 @@ const formMode = computed(() => props.mode)
 const visibleSections = computed(() => ({
 	basic: formMode.value === 'all' || formMode.value === 'basic',
 	portalBridge: formMode.value === 'all' || formMode.value === 'portalBridge',
-	authMe: formMode.value === 'all' || formMode.value === 'authMe',
-	luckPerms: formMode.value === 'all' || formMode.value === 'luckPerms',
+	authMe: false,
+	luckPerms: false,
 	sync: formMode.value === 'sync',
 }))
 const fieldClass =
@@ -355,52 +355,6 @@ const buildPayload = () => ({
 			? {
 					portalBridge: {
 						coreSyncIntervalMinutes: form.portalBridge.coreSyncIntervalMinutes,
-					},
-				}
-			: {}),
-	...(visibleSections.value.authMe
-		? {
-				authMe: {
-					host: form.authMe.host,
-					port: form.authMe.port,
-					database: form.authMe.database,
-					username: form.authMe.username,
-					password: form.authMe.password || undefined,
-					enabled: form.authMe.enabled,
-					syncIntervalSeconds: minutesToSeconds(
-						form.authMe.syncIntervalMinutes,
-					),
-				},
-			}
-		: visibleSections.value.sync
-			? {
-					authMe: {
-						syncIntervalSeconds: minutesToSeconds(
-							form.authMe.syncIntervalMinutes,
-						),
-					},
-				}
-			: {}),
-	...(visibleSections.value.luckPerms
-		? {
-				luckPerms: {
-					host: form.luckPerms.host,
-					port: form.luckPerms.port,
-					database: form.luckPerms.database,
-					username: form.luckPerms.username,
-					password: form.luckPerms.password || undefined,
-					enabled: form.luckPerms.enabled,
-					syncIntervalSeconds: minutesToSeconds(
-						form.luckPerms.syncIntervalMinutes,
-					),
-				},
-			}
-		: visibleSections.value.sync
-			? {
-					luckPerms: {
-						syncIntervalSeconds: minutesToSeconds(
-							form.luckPerms.syncIntervalMinutes,
-						),
 					},
 				}
 			: {}),

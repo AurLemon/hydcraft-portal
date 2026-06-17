@@ -67,12 +67,6 @@
 				:items="serverInfoItems"
 			/>
 
-			<ServerDetailInfoCard
-				:title="t('admin.serverDetail.sections.dataSources')"
-				:items="dataSourceItems"
-				:actions="dataSourceStatusActions"
-			/>
-
 			<ServerDetailSyncStatusCard
 				:title="t('admin.serverDetail.sections.syncStatus')"
 				:tasks="syncTaskRows"
@@ -568,7 +562,7 @@ interface PortalBridgeStatusResponse {
 		connected: boolean
 		readyState: string
 		reconnectAttempts: number
-		maxReconnectAttempts: number
+		maxReconnectAttempts: number | null
 		nextRetryAt: string | null
 		manualRequired: boolean
 		lastRuntimeStateChangedAt: string | null
@@ -681,15 +675,6 @@ const formatDate = (value: string | null | undefined): string => {
 }
 const formatJson = (value: unknown): string =>
 	JSON.stringify(value ?? null, null, 2)
-const sourceState = (source: MysqlSourceSummary | null): string =>
-	!source
-		? t('admin.serverDetail.states.notConfigured')
-		: source.lastError
-			? t('admin.serverDetail.states.error')
-			: source.enabled
-				? t('admin.serverDetail.states.enabled')
-				: t('admin.serverDetail.states.disabled')
-
 const headerActions = computed(() => [
 	{
 		label: t('admin.serverDetail.actions.basic'),
@@ -702,18 +687,6 @@ const headerActions = computed(() => [
 		icon: 'i-lucide-radio-tower',
 		color: 'primary' as const,
 		onClick: () => (portalBridgeOpen.value = true),
-	},
-	{
-		label: t('admin.serverDetail.actions.authMe'),
-		icon: 'i-lucide-database',
-		color: 'primary' as const,
-		onClick: () => (authMeOpen.value = true),
-	},
-	{
-		label: t('admin.serverDetail.actions.luckPerms'),
-		icon: 'i-lucide-shield-check',
-		color: 'primary' as const,
-		onClick: () => (luckPermsOpen.value = true),
 	},
 	{
 		label: t('admin.serverDetail.actions.syncRate'),
@@ -775,22 +748,6 @@ const serverInfoItems = computed<ServerDetailMetaItem[]>(() => [
 		value: formatDate(server.value?.createdAt),
 	},
 ])
-const dataSourceItems = computed<ServerDetailMetaItem[]>(() => [
-	{ label: 'AuthMe', value: sourceState(server.value?.authMe ?? null) },
-	{
-		label: t('admin.serverDetail.fields.authMeDatabase'),
-		value:
-			server.value?.authMe?.database ??
-			t('admin.serverDetail.states.notConfigured'),
-	},
-	{ label: 'LuckPerms', value: sourceState(server.value?.luckPerms ?? null) },
-	{
-		label: t('admin.serverDetail.fields.luckPermsDatabase'),
-		value:
-			server.value?.luckPerms?.database ??
-			t('admin.serverDetail.states.notConfigured'),
-	},
-])
 const portalBridgeStatusActions = computed(() => [
 	{
 		label: t('admin.serverDetail.actions.bridgeStatus'),
@@ -800,18 +757,6 @@ const portalBridgeStatusActions = computed(() => [
 			void loadBridgeStatus()
 			void loadManualSyncStatus('portalBridge')
 		},
-	},
-])
-const dataSourceStatusActions = computed(() => [
-	{
-		label: t('admin.serverDetail.actions.authMeStatus'),
-		icon: 'i-lucide-database-zap',
-		onClick: () => openMysqlStatus('authme'),
-	},
-	{
-		label: t('admin.serverDetail.actions.luckPermsStatus'),
-		icon: 'i-lucide-shield-check',
-		onClick: () => openMysqlStatus('luckperms'),
 	},
 ])
 const playerDataItems = computed<ServerDetailMetaItem[]>(() => [
@@ -840,6 +785,13 @@ const formatBoolean = (value: boolean): string =>
 
 const formatLatency = (value: number | null | undefined): string =>
 	value == null ? t('admin.serverDetail.states.empty') : `${value} ms`
+const formatReconnectAttempts = (
+	attempts: number,
+	maxAttempts: number | null,
+): string =>
+	maxAttempts == null
+		? `${attempts} / ${t('admin.serverDetail.status.unlimited')}`
+		: `${attempts} / ${maxAttempts}`
 
 const bridgeConnectionLabel = computed(() => {
 	const status = bridgeStatus.value
@@ -993,7 +945,10 @@ const bridgeStatusItems = computed<ServerDetailMetaItem[]>(() => {
 		},
 		{
 			label: t('admin.serverDetail.status.reconnectAttempts'),
-			value: `${status.runtime.reconnectAttempts} / ${status.runtime.maxReconnectAttempts}`,
+			value: formatReconnectAttempts(
+				status.runtime.reconnectAttempts,
+				status.runtime.maxReconnectAttempts,
+			),
 		},
 		{
 			label: t('admin.serverDetail.status.nextRetryAt'),
@@ -1079,16 +1034,12 @@ const syncSourceOrder = [
 	'PORTAL_BRIDGE_PLAYERDATA',
 	'PORTAL_BRIDGE_STATS',
 	'PORTAL_BRIDGE_ADVANCEMENTS',
-	'AUTHME',
-	'LUCKPERMS',
 ] as const
 const syncSourceLabelKey: Record<(typeof syncSourceOrder)[number], string> = {
 	PORTAL_BRIDGE_PLAYERS: 'portalBridgePlayers',
 	PORTAL_BRIDGE_PLAYERDATA: 'portalBridgePlayerData',
 	PORTAL_BRIDGE_STATS: 'portalBridgeStats',
 	PORTAL_BRIDGE_ADVANCEMENTS: 'portalBridgeAdvancements',
-	AUTHME: 'authMe',
-	LUCKPERMS: 'luckPerms',
 }
 const formatSyncSource = (source: string): string => {
 	if (source in syncSourceLabelKey) {

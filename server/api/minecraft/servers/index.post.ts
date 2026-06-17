@@ -80,37 +80,9 @@ export default defineEventHandler(async (event) => {
 						},
 					}
 				: undefined,
-			authMe: body.authMe
-				? {
-						create: {
-							host: body.authMe.host.trim(),
-							port: body.authMe.port ?? 3306,
-							database: body.authMe.database.trim(),
-							username: body.authMe.username.trim(),
-							encryptedPassword: encryptConfigValue(body.authMe.password),
-							enabled: body.authMe.enabled ?? false,
-							syncIntervalSeconds: body.authMe.syncIntervalSeconds ?? 1800,
-						},
-					}
-				: undefined,
-			luckPerms: body.luckPerms
-				? {
-						create: {
-							host: body.luckPerms.host.trim(),
-							port: body.luckPerms.port ?? 3306,
-							database: body.luckPerms.database.trim(),
-							username: body.luckPerms.username.trim(),
-							encryptedPassword: encryptConfigValue(body.luckPerms.password),
-							enabled: body.luckPerms.enabled ?? false,
-							syncIntervalSeconds: body.luckPerms.syncIntervalSeconds ?? 1800,
-						},
-					}
-				: undefined,
 		},
 		include: {
 			portalBridge: true,
-			authMe: true,
-			luckPerms: true,
 		},
 	})
 

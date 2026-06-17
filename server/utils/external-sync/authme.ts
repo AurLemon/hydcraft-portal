@@ -1,11 +1,13 @@
 import type { RowDataPacket } from 'mysql2'
 import type { Prisma } from '~/generated/prisma/client'
+import { syncMinecraftAccountsFromAuthMeAccounts } from '../admin/players'
 import { prisma } from '../db/prisma'
-import { syncAuthMePlayerToServerPlayer } from '../minecraft/server-player'
+import { hashSyncValue } from '../minecraft/server-player'
+import { normalizeMinecraftUsername } from '../minecraft/normalize'
 import { closeExternalMysqlPool } from './mysql'
 import {
-	createMysqlPoolFromSourceConfig,
-	type EnabledAuthMeSourceConfig,
+	createMysqlPoolFromDatabaseUrl,
+	readAuthMeSourceConfig,
 } from './source-config'
 import { parseUnixTimestamp } from './time'
 
@@ -54,28 +56,8 @@ const normalizeOptionalString = (value: unknown): string | null => {
 	return trimmed || null
 }
 
-const detectPasswordAlgorithm = (hash: string | null): string | null => {
-	if (!hash) {
-		return null
-	}
-
-	if (hash.startsWith('$2a$') || hash.startsWith('$2b$')) {
-		return 'BCRYPT'
-	}
-
-	if (hash.startsWith('$argon2')) {
-		return 'ARGON2'
-	}
-
-	if (hash.includes('$SHA$')) {
-		return 'AUTHME_SHA'
-	}
-
-	return 'UNKNOWN'
-}
-
 const getAuthMeTableColumns = async (
-	pool: ReturnType<typeof createMysqlPoolFromSourceConfig>,
+	pool: ReturnType<typeof createMysqlPoolFromDatabaseUrl>,
 	database: string,
 ): Promise<Set<string>> => {
 	const [rows] = await pool.query<
@@ -110,10 +92,20 @@ const buildAuthMeSelect = (columns: Set<string>): string => {
 	return `SELECT ${fields.join(', ')} FROM authme`
 }
 
-export const syncAuthMeSource = async (
-	config: EnabledAuthMeSourceConfig,
-): Promise<ExternalSyncResult> => {
-	const pool = createMysqlPoolFromSourceConfig(config)
+export const syncAuthMeSource = async (): Promise<ExternalSyncResult> => {
+	const config = readAuthMeSourceConfig()
+
+	if (!config.enabled || !config.databaseUrl) {
+		return {
+			serversRead: 0,
+			rowsRead: 0,
+			rowsMatched: 0,
+			rowsChanged: 0,
+			rowsSkipped: 0,
+		}
+	}
+
+	const pool = createMysqlPoolFromDatabaseUrl(config.databaseUrl)
 	let latencyMs: number | null = null
 
 	try {
@@ -129,111 +121,87 @@ export const syncAuthMeSource = async (
 		for (const row of rows) {
 			const username = normalizeOptionalString(row.username)
 			const realname = normalizeOptionalString(row.realname)
+			const displayUsername = realname || username
+			const normalizedUsername = normalizeMinecraftUsername(displayUsername)
 			const raw = Object.fromEntries(Object.entries(row))
 
-			if (!username) {
+			if (!username || !normalizedUsername) {
 				continue
 			}
 
-			const passwordHash = normalizeOptionalString(row.password)
-			const result = await syncAuthMePlayerToServerPlayer({
-				serverId: config.minecraftServer.serverId,
-				authmeId: row.id,
-				username,
-				realname,
-				email: normalizeOptionalString(row.email),
-				registeredAt:
-					row.regdate == null ? null : parseUnixTimestamp(row.regdate),
-				lastLoginAt:
-					row.lastlogin == null ? null : parseUnixTimestamp(row.lastlogin),
-				registerIp: normalizeOptionalString(row.regip),
-				lastIp: normalizeOptionalString(row.ip),
-				hasTotp: row.hasTotp === 1,
-				passwordHash,
-				passwordAlgorithm: detectPasswordAlgorithm(passwordHash),
-				raw: raw as Prisma.InputJsonValue,
-				syncedAt,
+			const rawHash = hashSyncValue(raw)
+			const existing = await prisma.authMeAccount.findUnique({
+				where: {
+					authmeId: row.id,
+				},
+				select: {
+					id: true,
+					rawHash: true,
+				},
 			})
 
-			if (result.matched) {
-				rowsMatched += 1
+			rowsMatched += 1
+
+			if (existing?.rawHash === rawHash) {
+				continue
 			}
 
-			if (result.changed) {
-				rowsChanged += 1
-			}
+			await prisma.authMeAccount.upsert({
+				where: {
+					authmeId: row.id,
+				},
+				create: {
+					authmeId: row.id,
+					username,
+					realname,
+					normalizedUsername,
+					email: normalizeOptionalString(row.email),
+					registeredAt:
+						row.regdate == null ? null : parseUnixTimestamp(row.regdate),
+					lastLoginAt:
+						row.lastlogin == null ? null : parseUnixTimestamp(row.lastlogin),
+					registerIp: normalizeOptionalString(row.regip),
+					lastIp: normalizeOptionalString(row.ip),
+					hasTotp: row.hasTotp === 1,
+					raw: raw as Prisma.InputJsonValue,
+					rawHash,
+					syncedAt,
+				},
+				update: {
+					username,
+					realname,
+					normalizedUsername,
+					email: normalizeOptionalString(row.email),
+					registeredAt:
+						row.regdate == null ? null : parseUnixTimestamp(row.regdate),
+					lastLoginAt:
+						row.lastlogin == null ? null : parseUnixTimestamp(row.lastlogin),
+					registerIp: normalizeOptionalString(row.regip),
+					lastIp: normalizeOptionalString(row.ip),
+					hasTotp: row.hasTotp === 1,
+					raw: raw as Prisma.InputJsonValue,
+					rawHash,
+					syncedAt,
+				},
+			})
+			rowsChanged += 1
 		}
 
-		await prisma.authMeSourceConfig.update({
-			where: {
-				id: config.id,
-			},
-			data: {
-				lastSyncAt: syncedAt,
-				lastError: null,
-			},
-		})
+		const accountSync = await syncMinecraftAccountsFromAuthMeAccounts()
 
 		return {
 			serversRead: 1,
 			rowsRead: rows.length,
 			rowsMatched,
-			rowsChanged,
+			rowsChanged: rowsChanged + accountSync.changed,
 			rowsSkipped: Math.max(0, rowsMatched - rowsChanged),
 			latencyMs,
 		}
-	} catch (error) {
-		await prisma.authMeSourceConfig.update({
-			where: {
-				id: config.id,
-			},
-			data: {
-				lastError:
-					error instanceof Error ? error.message : 'Unknown AuthMe sync error',
-			},
-		})
-
-		throw error
 	} finally {
 		await closeExternalMysqlPool(pool)
 	}
 }
 
 export async function syncAuthMeSnapshots(): Promise<ExternalSyncResult> {
-	const configs = await prisma.authMeSourceConfig.findMany({
-		where: {
-			enabled: true,
-			minecraftServer: {
-				enabled: true,
-			},
-		},
-		include: {
-			minecraftServer: {
-				select: {
-					serverId: true,
-				},
-			},
-		},
-	})
-
-	let rowsRead = 0
-	let rowsMatched = 0
-	let rowsChanged = 0
-	let rowsSkipped = 0
-
-	for (const config of configs) {
-		const result = await syncAuthMeSource(config)
-		rowsRead += result.rowsRead
-		rowsMatched += result.rowsMatched
-		rowsChanged += result.rowsChanged
-		rowsSkipped += result.rowsSkipped
-	}
-
-	return {
-		serversRead: configs.length,
-		rowsRead,
-		rowsMatched,
-		rowsChanged,
-		rowsSkipped,
-	}
+	return await syncAuthMeSource()
 }

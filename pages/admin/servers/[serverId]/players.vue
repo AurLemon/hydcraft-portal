@@ -76,38 +76,51 @@
 				class="min-h-72"
 			>
 				<template #player-cell="{ row }">
-					<div class="min-w-0">
-						<p class="truncate font-medium text-slate-900 dark:text-white">
-							{{
-								row.original.username ?? t('admin.serverPlayers.empty.unknown')
-							}}
-						</p>
-						<p class="flex min-w-0 items-center gap-1 text-xs text-slate-500">
-							<UTooltip
-								v-if="row.original.uuidSource"
-								:text="getUuidSourceText(row.original.uuidSource)"
-							>
-								<span class="truncate font-mono">
+					<div class="flex min-w-0 items-center gap-3">
+						<SkeletonImage
+							v-if="row.original.username"
+							:src="getMinecraftHeadRendererUrl(row.original.username)"
+							:alt="row.original.username"
+							class="size-10 shrink-0 overflow-hidden rounded-md"
+							image-class="size-10 object-cover"
+							skeleton-class="rounded-md"
+						/>
+						<USkeleton v-else class="size-10 shrink-0 rounded-md" />
+						<div class="min-w-0">
+							<p class="truncate font-medium text-slate-900 dark:text-white">
+								{{
+									row.original.username ??
+									t('admin.serverPlayers.empty.unknown')
+								}}
+							</p>
+							<p class="flex min-w-0 items-center gap-1 text-xs text-slate-500">
+								<UTooltip
+									v-if="row.original.uuidSource"
+									:text="getUuidSourceText(row.original.uuidSource)"
+								>
+									<span class="truncate font-mono">
+										{{
+											row.original.uuid ??
+											t('admin.serverPlayers.empty.unknown')
+										}}
+									</span>
+								</UTooltip>
+								<span v-else class="truncate font-mono">
 									{{
 										row.original.uuid ?? t('admin.serverPlayers.empty.unknown')
 									}}
 								</span>
-							</UTooltip>
-							<span v-else class="truncate font-mono">
-								{{
-									row.original.uuid ?? t('admin.serverPlayers.empty.unknown')
-								}}
-							</span>
-							<UTooltip
-								v-if="hasConflict(row.original.conflictState)"
-								:text="getConflictMessage(row.original.conflictState)"
-							>
-								<UIcon
-									name="i-lucide-triangle-alert"
-									class="size-3.5 shrink-0 text-amber-500"
-								/>
-							</UTooltip>
-						</p>
+								<UTooltip
+									v-if="hasConflict(row.original.conflictState)"
+									:text="getConflictMessage(row.original.conflictState)"
+								>
+									<UIcon
+										name="i-lucide-triangle-alert"
+										class="size-3.5 shrink-0 text-amber-500"
+									/>
+								</UTooltip>
+							</p>
+						</div>
 					</div>
 				</template>
 				<template #firstSeenAt-cell="{ row }">
@@ -119,47 +132,43 @@
 				<template #authMeRegisteredAt-cell="{ row }">
 					{{ formatDate(row.original.authMe.registeredAt) }}
 				</template>
+				<template #authMeRegisterIp-cell="{ row }">
+					<div class="min-w-0">
+						<p class="truncate text-sm text-slate-900 dark:text-white">
+							{{ getIpLocationDisplay(row.original.authMe.registerIpLocation) }}
+						</p>
+						<p class="truncate text-xs text-slate-500">
+							{{ getIpAddressDisplay(row.original.authMe.registerIp) }}
+						</p>
+					</div>
+				</template>
 				<template #authMeLastLoginAt-cell="{ row }">
 					{{ formatDate(row.original.authMe.lastLoginAt) }}
 				</template>
-				<template #authMeRegisterIp-cell="{ row }">
-					<span class="font-mono text-xs">
-						{{
-							row.original.authMe.registerIp ??
-							t('admin.serverPlayers.empty.notLinked')
-						}}
-					</span>
-				</template>
 				<template #authMeLastIp-cell="{ row }">
-					<span class="font-mono text-xs">
-						{{
-							row.original.authMe.lastIp ??
-							t('admin.serverPlayers.empty.notLinked')
-						}}
-					</span>
-				</template>
-				<template #authMeHasTotp-cell="{ row }">
-					<UBadge
-						:color="row.original.authMe.hasTotp ? 'success' : 'neutral'"
-						variant="subtle"
-					>
-						{{
-							row.original.authMe.hasTotp
-								? t('admin.serverPlayers.states.yes')
-								: t('admin.serverPlayers.states.no')
-						}}
-					</UBadge>
+					<div class="min-w-0">
+						<p class="truncate text-sm text-slate-900 dark:text-white">
+							{{ getIpLocationDisplay(row.original.authMe.lastIpLocation) }}
+						</p>
+						<p class="truncate text-xs text-slate-500">
+							{{ getIpAddressDisplay(row.original.authMe.lastIp) }}
+						</p>
+					</div>
 				</template>
 				<template #authMeSyncedAt-cell="{ row }">
 					{{ formatDate(row.original.authMe.syncedAt) }}
 				</template>
 				<template #luckPermsPrimaryGroup-cell="{ row }">
-					<UBadge color="neutral" variant="subtle">
-						{{
-							row.original.luckPerms.primaryGroup ??
-							t('admin.serverPlayers.empty.notLinked')
-						}}
+					<UBadge
+						v-if="row.original.luckPerms.primaryGroup"
+						color="neutral"
+						variant="subtle"
+					>
+						{{ row.original.luckPerms.primaryGroup }}
 					</UBadge>
+					<span v-else class="text-sm text-slate-500">
+						{{ t('admin.serverPlayers.empty.notLinked') }}
+					</span>
 				</template>
 				<template #luckPermsSyncedAt-cell="{ row }">
 					{{ formatDate(row.original.luckPerms.syncedAt) }}
@@ -172,6 +181,36 @@
 				</template>
 				<template #updatedAt-cell="{ row }">
 					{{ formatDate(row.original.updatedAt) }}
+				</template>
+				<template #dataEntries-cell="{ row }">
+					<div class="inline-flex flex-nowrap gap-1 whitespace-nowrap">
+						<UButton
+							size="xs"
+							:color="row.original.hasAdvancements ? 'primary' : 'neutral'"
+							variant="soft"
+							:disabled="!row.original.hasAdvancements"
+							:to="
+								row.original.hasAdvancements
+									? getDataEntryRoute(row.original, 'advancements')
+									: undefined
+							"
+						>
+							{{ t('admin.serverPlayers.dataEntries.advancements') }}
+						</UButton>
+						<UButton
+							size="xs"
+							:color="row.original.hasStats ? 'primary' : 'neutral'"
+							variant="soft"
+							:disabled="!row.original.hasStats"
+							:to="
+								row.original.hasStats
+									? getDataEntryRoute(row.original, 'stats')
+									: undefined
+							"
+						>
+							{{ t('admin.serverPlayers.dataEntries.stats') }}
+						</UButton>
+					</div>
 				</template>
 			</UTable>
 
@@ -255,9 +294,15 @@
 </template>
 
 <script setup lang="ts">
+import { h } from 'vue'
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
-import type { MinecraftServerPlayersResponse } from '~/components/admin/types'
+import type {
+	IpLocationSummary,
+	MinecraftServerPlayerInfo,
+	MinecraftServerPlayersResponse,
+} from '~/components/admin/types'
 import { useAdminToast } from '~/composables/useAdminToast'
+import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -308,59 +353,64 @@ const canResetSync = computed(
 		resetSyncTargets.luckperms,
 )
 const { notifyError, notifySuccess } = useAdminToast()
+const tableHeader = (label: string) => () =>
+	h('span', { class: 'whitespace-nowrap' }, label)
 const columns = [
-	{ accessorKey: 'player', header: t('admin.serverPlayers.fields.player') },
+	{
+		accessorKey: 'player',
+		header: tableHeader(t('admin.serverPlayers.fields.player')),
+	},
 	{
 		accessorKey: 'firstSeenAt',
-		header: t('admin.serverPlayers.fields.firstSeenAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.firstSeenAt')),
 	},
 	{
 		accessorKey: 'lastSeenAt',
-		header: t('admin.serverPlayers.fields.lastSeenAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.lastSeenAt')),
 	},
 	{
 		accessorKey: 'authMeRegisteredAt',
-		header: t('admin.serverPlayers.fields.authMeRegisteredAt'),
-	},
-	{
-		accessorKey: 'authMeLastLoginAt',
-		header: t('admin.serverPlayers.fields.authMeLastLoginAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.authMeRegisteredAt')),
 	},
 	{
 		accessorKey: 'authMeRegisterIp',
-		header: t('admin.serverPlayers.fields.authMeRegisterIp'),
+		header: tableHeader(t('admin.serverPlayers.fields.authMeRegisterIp')),
+	},
+	{
+		accessorKey: 'authMeLastLoginAt',
+		header: tableHeader(t('admin.serverPlayers.fields.authMeLastLoginAt')),
 	},
 	{
 		accessorKey: 'authMeLastIp',
-		header: t('admin.serverPlayers.fields.authMeLastIp'),
-	},
-	{
-		accessorKey: 'authMeHasTotp',
-		header: t('admin.serverPlayers.fields.authMeHasTotp'),
+		header: tableHeader(t('admin.serverPlayers.fields.authMeLastIp')),
 	},
 	{
 		accessorKey: 'authMeSyncedAt',
-		header: t('admin.serverPlayers.fields.authMeSyncedAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.authMeSyncedAt')),
 	},
 	{
 		accessorKey: 'luckPermsPrimaryGroup',
-		header: t('admin.serverPlayers.fields.luckPermsPrimaryGroup'),
+		header: tableHeader(t('admin.serverPlayers.fields.luckPermsPrimaryGroup')),
 	},
 	{
 		accessorKey: 'luckPermsSyncedAt',
-		header: t('admin.serverPlayers.fields.luckPermsSyncedAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.luckPermsSyncedAt')),
 	},
 	{
 		accessorKey: 'bridgeSyncedAt',
-		header: t('admin.serverPlayers.fields.bridgeSyncedAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.bridgeSyncedAt')),
 	},
 	{
 		accessorKey: 'createdAt',
-		header: t('admin.serverPlayers.fields.createdAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.createdAt')),
 	},
 	{
 		accessorKey: 'updatedAt',
-		header: t('admin.serverPlayers.fields.updatedAt'),
+		header: tableHeader(t('admin.serverPlayers.fields.updatedAt')),
+	},
+	{
+		accessorKey: 'dataEntries',
+		header: tableHeader(t('admin.serverPlayers.fields.dataEntries')),
 	},
 ]
 const sortFieldItems = [
@@ -389,6 +439,14 @@ const formatDate = (value: string | null): string => {
 	}).format(new Date(value))
 }
 
+const getIpLocationDisplay = (
+	ipLocation: IpLocationSummary | null | undefined,
+): string =>
+	ipLocation?.display ?? t('admin.serverPlayers.empty.unknownLocation')
+
+const getIpAddressDisplay = (ipAddress: string | null): string =>
+	ipAddress ?? t('admin.serverPlayers.empty.notLinked')
+
 const hasConflict = (state: string): boolean => state !== 'NONE'
 
 const getUuidSourceText = (source: string): string =>
@@ -396,6 +454,18 @@ const getUuidSourceText = (source: string): string =>
 
 const getConflictMessage = (state: string): string =>
 	t('admin.serverPlayers.conflictTooltip', { state })
+
+const getDataEntryRoute = (
+	player: Pick<MinecraftServerPlayerInfo, 'normalizedUsername' | 'username'>,
+	type: 'stats' | 'advancements',
+) =>
+	localePath({
+		path: `/admin/servers/${type}`,
+		query: {
+			player: player.normalizedUsername || player.username || undefined,
+			serverId: serverId.value,
+		},
+	})
 
 const confirmResetSync = async (): Promise<void> => {
 	if (!canResetSync.value) {

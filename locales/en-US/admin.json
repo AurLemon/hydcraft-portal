@@ -78,10 +78,32 @@
 		"servers": {
 			"title": "Servers",
 			"create": "New Server",
+			"viewDetail": "View detail",
+			"fields": {
+				"server": "Server",
+				"portalBridge": "Bridge",
+				"status": "Status",
+				"actions": "View detail"
+			},
 			"loading": "Loading server configuration...",
 			"empty": {
 				"title": "No server configuration yet",
-				"description": "Create a server before configuring PortalBridge, AuthMe, and LuckPerms."
+				"description": "Create a server before configuring PortalBridge."
+			},
+			"externalSync": {
+				"authMe": "AuthMe Sync Status",
+				"luckPerms": "LuckPerms Sync Status",
+				"running": "Running",
+				"error": "Error",
+				"notConfigured": "Not configured",
+				"disabled": "Disabled",
+				"synced": "Synced",
+				"pending": "Pending",
+				"lastSuccessAt": "Last success",
+				"rowsRead": "Rows read",
+				"never": "Never",
+				"database": "Database: {database}",
+				"databaseMissing": "Database not configured"
 			}
 		},
 		"serverCreate": {
@@ -204,6 +226,7 @@
 				"runtimeState": "Runtime state",
 				"latency": "Latency",
 				"reconnectAttempts": "Reconnect attempts",
+				"unlimited": "Unlimited",
 				"nextRetryAt": "Next retry",
 				"manualRequired": "Manual connection required",
 				"notLoadedHint": "Refresh to inspect the current Bridge runtime.",
@@ -262,7 +285,8 @@
 				"portalAccountSource": "Portal account source",
 				"bridgeSyncedAt": "Bridge synced at",
 				"createdAt": "Created at",
-				"updatedAt": "Updated at"
+				"updatedAt": "Updated at",
+				"dataEntries": "Data entries"
 			},
 			"states": {
 				"yes": "Yes",
@@ -270,7 +294,12 @@
 			},
 			"empty": {
 				"unknown": "None",
-				"notLinked": "Not synced"
+				"notLinked": "Not synced",
+				"unknownLocation": "Unknown location"
+			},
+			"dataEntries": {
+				"stats": "Stats",
+				"advancements": "Advancements"
 			},
 			"uuidSourceTooltip": "Source: {source}",
 			"conflictTooltip": "Conflict detected: {state}",
@@ -289,37 +318,90 @@
 				}
 			}
 		},
+		"serverStats": {
+			"title": "Stats Snapshots",
+			"back": "Servers",
+			"filters": {
+				"serverId": "serverId",
+				"player": "Player ID",
+				"playerSearch": "Search player ID"
+			},
+			"fields": {
+				"server": "Server",
+				"category": "Category",
+				"key": "Key",
+				"value": "Value",
+				"observedAt": "Observed at",
+				"lastScannedAt": "Scanned at"
+			},
+			"valueModalTitle": "Stats value details"
+		},
+		"serverAdvancements": {
+			"title": "Advancements Snapshots",
+			"back": "Servers",
+			"filters": {
+				"serverId": "serverId",
+				"player": "Player ID",
+				"playerSearch": "Search player ID"
+			},
+			"fields": {
+				"server": "Server",
+				"advancementKey": "Advancement key",
+				"done": "Done",
+				"criteria": "Criteria",
+				"observedAt": "Observed at",
+				"lastScannedAt": "Scanned at"
+			},
+			"empty": {
+				"noCriteria": "No completed criteria"
+			},
+			"criteriaModalTitle": "Advancement criteria details"
+		},
 		"players": {
 			"title": "Minecraft Accounts",
 			"filters": {
 				"search": "Search player, AuthMe name, linked user, or email",
 				"linked": "Linked users",
-				"unlinked": "Unlinked users"
+				"unlinked": "Unlinked users",
+				"group": "LuckPerms group",
+				"totpEnabled": "TOTP enabled",
+				"totpDisabled": "TOTP disabled"
 			},
 			"fields": {
 				"player": "Player",
 				"linkedUser": "Linked user",
-				"status": "Status",
-				"source": "Source",
-				"observed": "Observed",
-				"firstJoinedAt": "First joined",
-				"lastSeenAt": "Last seen",
+				"authMeRegisteredAt": "AuthMe registered at",
+				"authMeLastLoginAt": "AuthMe last login",
+				"authMeRegisterIp": "AuthMe register IP",
+				"authMeLastIp": "AuthMe last IP",
+				"authMeHasTotp": "AuthMe TOTP",
+				"authMeSyncedAt": "AuthMe synced at",
+				"luckPermsPrimaryGroup": "LuckPerms group",
+				"worldFirstJoinedAt": "World first joined",
+				"worldLastJoinedAt": "World latest joined",
+				"uuid": "UUID",
+				"dataEntries": "Data entries",
 				"createdAt": "Created at",
 				"updatedAt": "Updated at"
 			},
 			"states": {
-				"primary": "Primary account"
+				"primary": "Primary account",
+				"enabled": "Enabled",
+				"disabled": "Disabled"
 			},
 			"empty": {
 				"unknown": "None",
 				"notLinked": "Not linked",
-				"noAuthMe": "No AuthMe name yet"
+				"noAuthMe": "No AuthMe name yet",
+				"noGroup": "No group",
+				"noUuid": "No UUID",
+				"unknownLocation": "Unknown location",
+				"noDataEntries": "None"
 			},
-			"observed": {
-				"serverPlayers": "{count} observations",
-				"servers": "{count} servers"
-			},
-			"sameNameSplitTooltip": "This name appears with {count} different UUIDs across server observations. It should go through a candidate merge review instead of being auto-merged."
+			"dataEntries": {
+				"stats": "Stats",
+				"advancements": "Advancements"
+			}
 		},
 		"users": {
 			"title": "Users",
@@ -523,6 +605,13 @@
 				"createdAt": "Created at",
 				"updatedAt": "Updated at"
 			}
+		},
+		"valueModal": {
+			"title": "Value details",
+			"parsed": "Parsed",
+			"raw": "Raw",
+			"empty": "No content",
+			"showAll": "Show all"
 		}
 	}
 }

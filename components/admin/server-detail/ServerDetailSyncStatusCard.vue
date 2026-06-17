@@ -1,6 +1,6 @@
 <template>
 	<InfoCard :title="title">
-		<div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
+		<div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
 			<div
 				v-for="task in tasks"
 				:key="task.source"
