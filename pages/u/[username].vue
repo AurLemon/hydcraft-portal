@@ -120,6 +120,24 @@
 									:label="t('profile.public.fields.onlineStatus')"
 									:value="minecraftStatusText"
 								/>
+								<ProfileInfoRow
+									v-if="profile.minecraftSummary.onlineLocation"
+									label="最近在线位置"
+									:value="
+										formatMinecraftLocation(
+											profile.minecraftSummary.onlineLocation,
+										)
+									"
+								/>
+								<ProfileInfoRow
+									v-if="profile.minecraftSummary.lastSavedLocation"
+									label="最后保存位置"
+									:value="
+										formatMinecraftLocation(
+											profile.minecraftSummary.lastSavedLocation,
+										)
+									"
+								/>
 								<div class="flex flex-wrap gap-2">
 									<UBadge
 										v-for="role in profile.minecraftSummary.minecraftRoles"
@@ -218,6 +236,8 @@ interface PublicProfile {
 		lastActiveAt: string | null
 	}
 	minecraftSummary?: {
+		lastSavedLocation: MinecraftLocationSummary | null
+		onlineLocation: MinecraftLocationSummary | null
 		minecraftName: string
 		javaUuid: string | null
 		bedrockXuid: string | null
@@ -230,6 +250,17 @@ interface PublicProfile {
 		status: string
 	} | null
 	isOwner: boolean
+}
+
+interface MinecraftLocationSummary {
+	worldName: string | null
+	dimension: string | null
+	x: number | null
+	y: number | null
+	z: number | null
+	yaw?: number | null
+	pitch?: number | null
+	observedAt: string | null
 }
 
 interface PublicProfileResponse {
@@ -276,6 +307,25 @@ const minecraftStatusText = computed(() => {
 
 	return t('profile.status.offline')
 })
+
+const formatMinecraftLocation = (
+	location: MinecraftLocationSummary | null,
+): string => {
+	if (!location) {
+		return '暂无数据'
+	}
+
+	const world = location.worldName || location.dimension || '未知世界'
+	const coords =
+		location.x == null || location.y == null || location.z == null
+			? '坐标未知'
+			: `${location.x.toFixed(1)}, ${location.y.toFixed(1)}, ${location.z.toFixed(1)}`
+	const observedAt = location.observedAt
+		? ` · ${dayjs(location.observedAt).format('YYYY.MM.DD HH:mm')}`
+		: ''
+
+	return `${world} @ ${coords}${observedAt}`
+}
 const socialLinks = computed<SocialLink[]>(() => {
 	const social = profile.value?.social
 

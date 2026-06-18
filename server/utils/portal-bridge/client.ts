@@ -308,6 +308,13 @@ class PortalBridgeConnection {
 			reject: (error: unknown) => void
 		}
 	>()
+	private readonly snapshotCompletionResolvers = new Map<
+		string,
+		{
+			resolve: (result: CommandResult) => void
+			reject: (error: unknown) => void
+		}
+	>()
 	// 两阶段增量同步轮次计数（P2-1）：每 N 轮强制全量一次防 hash 漂移。
 	private coreRoundCount = 0
 
@@ -350,6 +357,18 @@ class PortalBridgeConnection {
 		}
 
 		this.commandResolvers.clear()
+
+		for (const resolver of this.snapshotCompletionResolvers.values()) {
+			resolver.reject(
+				createApiError({
+					statusCode: 503,
+					code: 'PORTAL_BRIDGE_COMMAND_ABORTED',
+					data: { reason },
+				}),
+			)
+		}
+
+		this.snapshotCompletionResolvers.clear()
 	}
 
 	snapshot(): PortalBridgeRuntimeStatus {
@@ -468,6 +487,42 @@ class PortalBridgeConnection {
 				reject: (error) => {
 					clearTimeout(timer)
 					this.commandResolvers.delete(commandId)
+					reject(error)
+				},
+			})
+		})
+	}
+
+	async sendCommandWithSnapshotCompletion(
+		action: PortalBridgeCommandAction,
+		args?: Record<string, unknown>,
+	): Promise<CommandResult> {
+		const commandId = await this.sendCommand(action, args)
+
+		return await new Promise<CommandResult>((resolve, reject) => {
+			const timer = setTimeout(() => {
+				this.snapshotCompletionResolvers.delete(commandId)
+				reject(
+					createApiError({
+						statusCode: 504,
+						code: 'PORTAL_BRIDGE_COMMAND_TIMEOUT',
+						data: {
+							action,
+							timeoutMs: PORTAL_BRIDGE_COMMAND_RESULT_TIMEOUT_MS,
+						},
+					}),
+				)
+			}, PORTAL_BRIDGE_COMMAND_RESULT_TIMEOUT_MS)
+
+			this.snapshotCompletionResolvers.set(commandId, {
+				resolve: (result) => {
+					clearTimeout(timer)
+					this.snapshotCompletionResolvers.delete(commandId)
+					resolve(result)
+				},
+				reject: (error) => {
+					clearTimeout(timer)
+					this.snapshotCompletionResolvers.delete(commandId)
 					reject(error)
 				},
 			})
@@ -692,19 +747,20 @@ class PortalBridgeConnection {
 			return
 		}
 
-		await ingestPortalBridgeEnvelope({
-			bridgeConfigId: this.config.id,
-			serverId: this.config.minecraftServer.serverId,
-			streamEpoch: this.streamEpoch,
-			envelope,
-		})
-
 		// 两阶段增量同步的 hash 收集（P2-1）：阶段一 hash-only 轮次激活 collector 后，
 		// 从 chunk envelope 旁路收集 uuid→hash，供阶段二比对库筛变化玩家。不依赖 ingestion 副作用。
 		this.collectSnapshotHashes(envelope)
 
 		// 命令回执 resolve（P2-1）：sendCommandWithResult 注册的 resolver 在收到结果时触发。
 		this.resolveCommandResult(envelope)
+		this.resolveSnapshotCompletion(envelope)
+
+		await ingestPortalBridgeEnvelope({
+			bridgeConfigId: this.config.id,
+			serverId: this.config.minecraftServer.serverId,
+			streamEpoch: this.streamEpoch,
+			envelope,
+		})
 
 		// 游标内存化推进：用 Math.max 而非直接覆盖，防御性地自文档化"seq 单调"契约
 		// （即便 bridge 已保证升序重放）。落库交给 flush timer 批量处理，避免每条消息一次 UPDATE。
@@ -1075,6 +1131,64 @@ class PortalBridgeConnection {
 		})
 	}
 
+	private resolveSnapshotCompletion(envelope: PortalBridgeEnvelope): void {
+		if (
+			envelope.topic !== 'command.rejected' &&
+			envelope.topic !== 'command.result' &&
+			envelope.topic !== 'mc.stats.snapshot.completed' &&
+			envelope.topic !== 'mc.advancements.snapshot.completed'
+		) {
+			return
+		}
+
+		const commandId = readPlayerString(envelope.payload, 'commandId')
+
+		if (!commandId) {
+			return
+		}
+
+		const resolver = this.snapshotCompletionResolvers.get(commandId)
+
+		if (!resolver) {
+			return
+		}
+
+		if (envelope.topic === 'command.rejected') {
+			resolver.resolve({
+				commandId,
+				success: false,
+				status: 'REJECTED',
+				message:
+					readPlayerString(envelope.payload, 'message') ??
+					'PortalBridge command rejected',
+			})
+			return
+		}
+
+		if (envelope.topic === 'command.result') {
+			const status = readPlayerString(envelope.payload, 'status')
+			const success = readPlayerBoolean(envelope.payload, 'success')
+
+			if (success === false || status !== 'OK') {
+				resolver.resolve({
+					commandId,
+					success: false,
+					status: status ?? 'UNKNOWN',
+					message: readPlayerString(envelope.payload, 'message'),
+				})
+			}
+
+			return
+		}
+
+		resolver.resolve({
+			commandId,
+			success: true,
+			status: 'OK',
+			message: readPlayerString(envelope.payload, 'message'),
+		})
+	}
+
 	private startPlayerSync(): void {
 		if (this.playerSyncTimer) {
 			return
@@ -1153,7 +1267,7 @@ class PortalBridgeConnection {
 
 		try {
 			// 阶段一：发 hash-only 命令（显式 includePayload:false），等 completed 信号。
-			const phaseOne = await this.sendCoreSyncCommandWithResult(
+			const phaseOne = await this.sendCoreSyncCommandWithSnapshotCompletion(
 				item,
 				intervalSeconds,
 				{ includePayload: false },
@@ -1271,7 +1385,21 @@ class PortalBridgeConnection {
 			intervalSeconds,
 			'SCHEDULED',
 			args,
-			true,
+			'commandResult',
+		)
+	}
+
+	private async sendCoreSyncCommandWithSnapshotCompletion(
+		item: PortalBridgeCoreSyncAction,
+		intervalSeconds: number,
+		args?: Record<string, unknown>,
+	): Promise<CommandResult | null> {
+		return await this.sendCoreSyncCommandInner(
+			item,
+			intervalSeconds,
+			'SCHEDULED',
+			args,
+			'snapshotCompletion',
 		)
 	}
 
@@ -1280,7 +1408,7 @@ class PortalBridgeConnection {
 		intervalSeconds: number,
 		reason: ExternalSyncReason,
 		args: Record<string, unknown> | undefined,
-		awaitResult: boolean,
+		awaitResult: false | 'commandResult' | 'snapshotCompletion',
 	): Promise<CommandResult | null> {
 		const startedAt = new Date()
 		const latencyMs = this.lastHeartbeatLatencyMs
@@ -1321,15 +1449,20 @@ class PortalBridgeConnection {
 				reason,
 			})
 
-			// 阶段二带 uuid 时 bridge 自动 includePayload；其余按原 includePayload 规则。
-			const commandArgs =
-				args ??
-				(PAYLOAD_REQUIRED_CORE_SYNC_ACTIONS.has(item.action)
-					? { includePayload: true }
-					: undefined)
+			// stats/advancements 默认需要真实 payload；显式参数仍可覆盖。
+			const commandArgs = PAYLOAD_REQUIRED_CORE_SYNC_ACTIONS.has(item.action)
+				? { includePayload: true, ...args }
+				: args
 
-			if (awaitResult) {
+			if (awaitResult === 'commandResult') {
 				return await this.sendCommandWithResult(item.action, commandArgs)
+			}
+
+			if (awaitResult === 'snapshotCompletion') {
+				return await this.sendCommandWithSnapshotCompletion(
+					item.action,
+					commandArgs,
+				)
 			}
 
 			await this.sendCommand(item.action, commandArgs)

@@ -15,6 +15,44 @@ import type {
 } from './types'
 import { normalizeUsername, normalizeUsernameForComparison } from './validation'
 
+const readMinecraftPresence = async (uuid: string | null | undefined) => {
+	if (!uuid) {
+		return null
+	}
+
+	const player = await prisma.minecraftServerPlayer.findFirst({
+		where: {
+			uuid,
+		},
+		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
+		include: {
+			playerData: true,
+		},
+	})
+
+	if (!player) {
+		return null
+	}
+
+	return {
+		online: player.online,
+		lastOnlineAt: player.lastOnlineAt,
+		lastOnlineWorldName: player.lastOnlineWorldName,
+		lastOnlineDimension: player.lastOnlineDimension,
+		lastOnlineX: player.lastOnlineX,
+		lastOnlineY: player.lastOnlineY,
+		lastOnlineZ: player.lastOnlineZ,
+		lastSavedWorldName: player.playerData?.lastWorldName ?? null,
+		lastSavedDimension: player.playerData?.lastDimension ?? null,
+		lastSavedX: player.playerData?.lastX ?? null,
+		lastSavedY: player.playerData?.lastY ?? null,
+		lastSavedZ: player.playerData?.lastZ ?? null,
+		lastSavedYaw: player.playerData?.lastYaw ?? null,
+		lastSavedPitch: player.playerData?.lastPitch ?? null,
+		lastSavedObservedAt: player.playerData?.syncedAt ?? null,
+	}
+}
+
 export const getEditableUserProfile = async (
 	userId: string,
 ): Promise<EditableUserProfile> => {
@@ -28,8 +66,9 @@ export const getEditableUserProfile = async (
 			code: 'USER_NOT_FOUND',
 		})
 	}
+	const presence = await readMinecraftPresence(user.minecraftAccounts[0]?.uuid)
 
-	return toEditableProfile(user)
+	return toEditableProfile(user, presence)
 }
 
 export const getPublicUserProfile = async (
@@ -54,7 +93,8 @@ export const getPublicUserProfile = async (
 		})
 	}
 
-	return toPublicProfile(user, currentUserId)
+	const presence = await readMinecraftPresence(user.minecraftAccounts[0]?.uuid)
+	return toPublicProfile(user, currentUserId, presence)
 }
 
 export const getPublicMinecraftSummary = async (
@@ -78,7 +118,10 @@ export const getPublicMinecraftSummary = async (
 		})
 	}
 
-	const summary = toMinecraftSummary(user)
+	const summary = toMinecraftSummary(
+		user,
+		await readMinecraftPresence(user.minecraftAccounts[0]?.uuid),
+	)
 
 	if (!summary) {
 		throw createApiError({

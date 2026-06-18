@@ -165,6 +165,14 @@ model MinecraftServerPlayer {
   portalUserId              String?
   portalAccountStatus       MinecraftAccountStatus?
   portalAccountSource       MinecraftAccountSource?
+  online                    Boolean                           @default(false)
+  lastOnlineAt              DateTime?
+  lastOfflineAt             DateTime?
+  lastOnlineWorldName       String?
+  lastOnlineDimension       String?
+  lastOnlineX               Float?
+  lastOnlineY               Float?
+  lastOnlineZ               Float?
   bridgeSyncedAt            DateTime?
   createdAt                 DateTime                          @default(now())
   updatedAt                 DateTime                          @updatedAt
@@ -190,6 +198,13 @@ model MinecraftServerPlayerData {
   lastKnownName           String?
   firstPlayedAt           DateTime?
   lastPlayedAt            DateTime?
+  lastWorldName           String?
+  lastDimension           String?
+  lastX                   Float?
+  lastY                   Float?
+  lastZ                   Float?
+  lastYaw                 Float?
+  lastPitch               Float?
   syncedAt                DateTime              @default(now())
   createdAt               DateTime              @default(now())
   updatedAt               DateTime              @updatedAt

@@ -15,6 +15,7 @@ import { normalizeMinecraftUsername } from '../minecraft/normalize'
 import {
 	syncMinecraftServerPlayerAdvancementsSnapshot,
 	syncMinecraftServerPlayerData,
+	syncMinecraftServerPlayerOnlineState,
 	syncMinecraftServerPlayerStatsSnapshot,
 	upsertMinecraftServerPlayerFromIdentity,
 } from '../minecraft/server-player'
@@ -80,6 +81,21 @@ const readNumber = (payload: unknown, key: string): number | null => {
 	const value = (payload as Record<string, unknown>)[key]
 
 	return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+const readObject = (
+	payload: unknown,
+	key: string,
+): Record<string, unknown> | null => {
+	if (!payload || typeof payload !== 'object') {
+		return null
+	}
+
+	const value = (payload as Record<string, unknown>)[key]
+
+	return value && typeof value === 'object' && !Array.isArray(value)
+		? (value as Record<string, unknown>)
+		: null
 }
 
 const readArray = (payload: unknown, key: string): unknown[] => {
@@ -447,6 +463,35 @@ const projectPortalBridgeEnvelope = async (
 		}
 	}
 
+	if (envelope.topic === 'mc.player.online.snapshot') {
+		for (const player of readArray(envelope.payload, 'players')) {
+			const uuid = readString(player, 'uuid')
+
+			if (!uuid) {
+				continue
+			}
+
+			const position = readObject(player, 'position')
+
+			await syncMinecraftServerPlayerOnlineState({
+				serverId,
+				uuid,
+				username: readString(player, 'username'),
+				normalizedUsername: normalizeMinecraftUsername(
+					readString(player, 'username'),
+				),
+				uuidSource: 'ONLINE_SNAPSHOT',
+				observedAt,
+				online: true,
+				worldName: readString(player, 'worldName'),
+				dimension: readString(player, 'dimension'),
+				x: readNumber(position, 'x'),
+				y: readNumber(position, 'y'),
+				z: readNumber(position, 'z'),
+			})
+		}
+	}
+
 	if (envelope.topic === 'mc.playerdata.scan.chunk') {
 		let matchedRows = 0
 		let changedRows = 0
@@ -461,6 +506,13 @@ const projectPortalBridgeEnvelope = async (
 				lastKnownName: string | null
 				firstPlayedAt: Date | null
 				lastPlayedAt: Date | null
+				lastWorldName: string | null
+				lastDimension: string | null
+				lastX: number | null
+				lastY: number | null
+				lastZ: number | null
+				lastYaw: number | null
+				lastPitch: number | null
 			}
 		>()
 
@@ -485,6 +537,7 @@ const projectPortalBridgeEnvelope = async (
 
 			const existing = playersByUuid.get(uuid)
 			const lastModifiedAt = parseDate(readString(player, 'lastModifiedAt'))
+			const position = readObject(player, 'position')
 			const next = {
 				uuid,
 				playerDataFile:
@@ -513,6 +566,15 @@ const projectPortalBridgeEnvelope = async (
 					parseDate(readString(player, 'lastPlayedAt')) ??
 					existing?.lastPlayedAt ??
 					null,
+				lastWorldName:
+					readString(player, 'worldName') ?? existing?.lastWorldName ?? null,
+				lastDimension:
+					readString(player, 'dimension') ?? existing?.lastDimension ?? null,
+				lastX: readNumber(position, 'x') ?? existing?.lastX ?? null,
+				lastY: readNumber(position, 'y') ?? existing?.lastY ?? null,
+				lastZ: readNumber(position, 'z') ?? existing?.lastZ ?? null,
+				lastYaw: readNumber(player, 'yaw') ?? existing?.lastYaw ?? null,
+				lastPitch: readNumber(player, 'pitch') ?? existing?.lastPitch ?? null,
 			}
 
 			playersByUuid.set(uuid, next)
@@ -529,6 +591,13 @@ const projectPortalBridgeEnvelope = async (
 				lastKnownName: player.lastKnownName,
 				firstPlayedAt: player.firstPlayedAt,
 				lastPlayedAt: player.lastPlayedAt,
+				lastWorldName: player.lastWorldName,
+				lastDimension: player.lastDimension,
+				lastX: player.lastX,
+				lastY: player.lastY,
+				lastZ: player.lastZ,
+				lastYaw: player.lastYaw,
+				lastPitch: player.lastPitch,
 				syncedAt: observedAt,
 			})
 
@@ -782,6 +851,11 @@ const projectPortalBridgeEnvelope = async (
 		const sessionId = readString(envelope.payload, 'sessionId')
 		const uuid = readString(envelope.payload, 'uuid')
 		const username = readString(envelope.payload, 'username')
+		const openedAt =
+			parseDate(readString(envelope.payload, 'openedAt')) ??
+			parseDate(readString(envelope.payload, 'startedAt')) ??
+			observedAt
+		const position = readObject(envelope.payload, 'position')
 
 		if (uuid && sessionId) {
 			await prisma.serverPlayerSession.upsert({
@@ -797,18 +871,12 @@ const projectPortalBridgeEnvelope = async (
 					uuid,
 					username,
 					normalizedUsername: normalizeMinecraftUsername(username),
-					openedAt:
-						parseDate(readString(envelope.payload, 'openedAt')) ??
-						parseDate(readString(envelope.payload, 'startedAt')) ??
-						observedAt,
+					openedAt,
 				},
 				update: {
 					username,
 					normalizedUsername: normalizeMinecraftUsername(username),
-					openedAt:
-						parseDate(readString(envelope.payload, 'openedAt')) ??
-						parseDate(readString(envelope.payload, 'startedAt')) ??
-						observedAt,
+					openedAt,
 				},
 			})
 		} else if (uuid) {
@@ -818,11 +886,25 @@ const projectPortalBridgeEnvelope = async (
 					uuid,
 					username,
 					normalizedUsername: normalizeMinecraftUsername(username),
-					openedAt:
-						parseDate(readString(envelope.payload, 'openedAt')) ??
-						parseDate(readString(envelope.payload, 'startedAt')) ??
-						observedAt,
+					openedAt,
 				},
+			})
+		}
+
+		if (uuid) {
+			await syncMinecraftServerPlayerOnlineState({
+				serverId,
+				uuid,
+				username,
+				normalizedUsername: normalizeMinecraftUsername(username),
+				uuidSource: 'SESSION_OPENED',
+				observedAt: openedAt,
+				online: true,
+				worldName: readString(envelope.payload, 'worldName'),
+				dimension: readString(envelope.payload, 'dimension'),
+				x: readNumber(position, 'x'),
+				y: readNumber(position, 'y'),
+				z: readNumber(position, 'z'),
 			})
 		}
 	}
@@ -830,6 +912,10 @@ const projectPortalBridgeEnvelope = async (
 	if (envelope.topic === 'mc.player.session.closed') {
 		const sessionId = readString(envelope.payload, 'sessionId')
 		const uuid = readString(envelope.payload, 'uuid')
+		const closedAt =
+			parseDate(readString(envelope.payload, 'closedAt')) ??
+			parseDate(readString(envelope.payload, 'endedAt')) ??
+			observedAt
 
 		if (sessionId) {
 			await prisma.serverPlayerSession.updateMany({
@@ -838,10 +924,7 @@ const projectPortalBridgeEnvelope = async (
 					sessionId,
 				},
 				data: {
-					closedAt:
-						parseDate(readString(envelope.payload, 'closedAt')) ??
-						parseDate(readString(envelope.payload, 'endedAt')) ??
-						observedAt,
+					closedAt,
 					closeReason:
 						readString(envelope.payload, 'closeReason') ??
 						readString(envelope.payload, 'reason'),
@@ -855,11 +938,25 @@ const projectPortalBridgeEnvelope = async (
 					closedAt: null,
 				},
 				data: {
-					closedAt: observedAt,
+					closedAt,
 					closeReason:
 						readString(envelope.payload, 'closeReason') ??
 						readString(envelope.payload, 'reason'),
 				},
+			})
+		}
+
+		if (uuid) {
+			await syncMinecraftServerPlayerOnlineState({
+				serverId,
+				uuid,
+				username: readString(envelope.payload, 'username'),
+				normalizedUsername: normalizeMinecraftUsername(
+					readString(envelope.payload, 'username'),
+				),
+				uuidSource: 'SESSION_CLOSED',
+				observedAt: closedAt,
+				online: false,
 			})
 		}
 	}

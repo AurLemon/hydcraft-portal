@@ -1,5 +1,6 @@
 import type {
 	EditableUserProfile,
+	MinecraftPlayerLocationSummary,
 	MinecraftProfileSummary,
 	PublicUserProfile,
 	UserProfileBadgeSummary,
@@ -8,6 +9,24 @@ import type {
 } from './types'
 import { defaultProfilePrivacy } from './defaults'
 import type { ProfileUser } from './repository'
+
+interface MinecraftPresenceProjection {
+	online: boolean
+	lastOnlineAt: Date | null
+	lastOnlineWorldName: string | null
+	lastOnlineDimension: string | null
+	lastOnlineX: number | null
+	lastOnlineY: number | null
+	lastOnlineZ: number | null
+	lastSavedWorldName: string | null
+	lastSavedDimension: string | null
+	lastSavedX: number | null
+	lastSavedY: number | null
+	lastSavedZ: number | null
+	lastSavedYaw: number | null
+	lastSavedPitch: number | null
+	lastSavedObservedAt: Date | null
+}
 
 export const USERNAME_CHANGE_COOLDOWN_DAYS = 30
 
@@ -90,8 +109,44 @@ export const toPrivacySummary = (
 	...(user.privacy ?? {}),
 })
 
+const toLocationSummary = (input: {
+	worldName: string | null
+	dimension: string | null
+	x: number | null
+	y: number | null
+	z: number | null
+	yaw?: number | null
+	pitch?: number | null
+	observedAt: Date | null
+}): MinecraftPlayerLocationSummary | null => {
+	if (
+		!input.worldName &&
+		!input.dimension &&
+		input.x == null &&
+		input.y == null &&
+		input.z == null &&
+		input.yaw == null &&
+		input.pitch == null &&
+		!input.observedAt
+	) {
+		return null
+	}
+
+	return {
+		worldName: input.worldName,
+		dimension: input.dimension,
+		x: input.x,
+		y: input.y,
+		z: input.z,
+		yaw: input.yaw ?? null,
+		pitch: input.pitch ?? null,
+		observedAt: input.observedAt,
+	}
+}
+
 export const toMinecraftSummary = (
 	user: ProfileUser,
+	presence?: MinecraftPresenceProjection | null,
 ): MinecraftProfileSummary | null => {
 	const account = user.minecraftAccounts[0]
 
@@ -99,20 +154,42 @@ export const toMinecraftSummary = (
 		return null
 	}
 
-	const lastActiveAt = account.lastSeenAt ?? account.verifiedAt ?? null
-	const isOnline =
-		lastActiveAt !== null &&
-		Date.now() - lastActiveAt.getTime() < 15 * 60 * 1000
+	const lastActiveAt =
+		presence?.lastOnlineAt ?? account.lastSeenAt ?? account.verifiedAt ?? null
+	const isOnline = presence?.online ?? false
 	const isRecentlyActive =
 		lastActiveAt !== null &&
 		Date.now() - lastActiveAt.getTime() < 72 * 60 * 60 * 1000
 
 	return {
+		lastSavedLocation: toLocationSummary({
+			worldName: presence?.lastSavedWorldName ?? null,
+			dimension: presence?.lastSavedDimension ?? null,
+			x: presence?.lastSavedX ?? null,
+			y: presence?.lastSavedY ?? null,
+			z: presence?.lastSavedZ ?? null,
+			yaw: presence?.lastSavedYaw ?? null,
+			pitch: presence?.lastSavedPitch ?? null,
+			observedAt: presence?.lastSavedObservedAt ?? null,
+		}),
+		onlineLocation: toLocationSummary({
+			worldName: presence?.lastOnlineWorldName ?? null,
+			dimension: presence?.lastOnlineDimension ?? null,
+			x: presence?.lastOnlineX ?? null,
+			y: presence?.lastOnlineY ?? null,
+			z: presence?.lastOnlineZ ?? null,
+			observedAt: presence?.lastOnlineAt ?? null,
+		}),
 		minecraftName: account.username,
 		javaUuid: account.uuid,
 		bedrockXuid: null,
 		skinPreviewUrl: null,
-		currentServer: account.isPrimary ? 'HydCraft 主服' : null,
+		currentServer:
+			isOnline && account.isPrimary
+				? 'HydCraft 主服'
+				: account.isPrimary
+					? 'HydCraft 主服'
+					: null,
 		onlineStatus: isOnline
 			? 'ONLINE'
 			: isRecentlyActive
@@ -125,7 +202,10 @@ export const toMinecraftSummary = (
 	}
 }
 
-export const toEditableProfile = (user: ProfileUser): EditableUserProfile => ({
+export const toEditableProfile = (
+	user: ProfileUser,
+	presence?: MinecraftPresenceProjection | null,
+): EditableUserProfile => ({
 	id: user.id,
 	hydrolineId: user.hydrolineId,
 	username: user.username,
@@ -154,15 +234,16 @@ export const toEditableProfile = (user: ProfileUser): EditableUserProfile => ({
 	},
 	social: toSocialSummary(user),
 	privacy: toPrivacySummary(user),
-	minecraftSummary: toMinecraftSummary(user),
+	minecraftSummary: toMinecraftSummary(user, presence),
 })
 
 export const toPublicProfile = (
 	user: ProfileUser,
 	currentUserId?: string | null,
+	presence?: MinecraftPresenceProjection | null,
 ): PublicUserProfile => {
 	const privacy = toPrivacySummary(user)
-	const minecraftSummary = toMinecraftSummary(user)
+	const minecraftSummary = toMinecraftSummary(user, presence)
 	const profile: PublicUserProfile = {
 		username: user.username,
 		displayName: user.displayName,

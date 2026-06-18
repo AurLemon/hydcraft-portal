@@ -47,6 +47,21 @@
 							<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
 								{{ account.uuid ?? t('minecraftAccounts.fields.noUuid') }}
 							</p>
+							<div
+								v-if="account.presence"
+								class="mt-3 grid gap-2 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<p>
+									最近在线位置：{{
+										formatLocation(account.presence.onlineLocation)
+									}}
+								</p>
+								<p>
+									最后保存位置：{{
+										formatLocation(account.presence.lastSavedLocation)
+									}}
+								</p>
+							</div>
 						</div>
 
 						<div class="flex w-full flex-col gap-3 md:w-80">
@@ -98,6 +113,24 @@ interface MinecraftAccountSummary {
 	note: string | null
 	createdAt: string
 	updatedAt: string
+	presence: {
+		online: boolean
+		lastOnlineAt: string | null
+		lastOfflineAt: string | null
+		onlineLocation: MinecraftLocationSummary | null
+		lastSavedLocation: MinecraftLocationSummary | null
+	} | null
+}
+
+interface MinecraftLocationSummary {
+	worldName: string | null
+	dimension: string | null
+	x: number | null
+	y: number | null
+	z: number | null
+	yaw?: number | null
+	pitch?: number | null
+	observedAt: string | null
 }
 
 interface MinecraftAccountForm extends MinecraftAccountSummary {
@@ -146,5 +179,22 @@ const saveAccount = async (account: MinecraftAccountForm): Promise<void> => {
 	} finally {
 		savingId.value = null
 	}
+}
+
+const formatLocation = (location: MinecraftLocationSummary | null): string => {
+	if (!location) {
+		return '暂无数据'
+	}
+
+	const coords =
+		location.x == null || location.y == null || location.z == null
+			? '坐标未知'
+			: `${location.x.toFixed(1)}, ${location.y.toFixed(1)}, ${location.z.toFixed(1)}`
+	const world = location.worldName || location.dimension || '未知世界'
+	const observedAt = location.observedAt
+		? `（${new Date(location.observedAt).toLocaleString('zh-CN')}）`
+		: ''
+
+	return `${world} @ ${coords}${observedAt}`
 }
 </script>

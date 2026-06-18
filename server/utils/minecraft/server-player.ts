@@ -34,7 +34,29 @@ export interface SyncPlayerDataInput {
 	lastKnownName?: string | null
 	firstPlayedAt?: Date | null
 	lastPlayedAt?: Date | null
+	lastWorldName?: string | null
+	lastDimension?: string | null
+	lastX?: number | null
+	lastY?: number | null
+	lastZ?: number | null
+	lastYaw?: number | null
+	lastPitch?: number | null
 	syncedAt: Date
+}
+
+export interface SyncOnlineStateInput {
+	serverId: string
+	uuid: string
+	username?: string | null
+	normalizedUsername?: string | null
+	uuidSource?: string | null
+	observedAt: Date
+	online: boolean
+	worldName?: string | null
+	dimension?: string | null
+	x?: number | null
+	y?: number | null
+	z?: number | null
 }
 
 export interface SyncStatsSnapshotInput {
@@ -102,6 +124,11 @@ const datesEqual = (
 	left: Date | null | undefined,
 	right: Date | null | undefined,
 ): boolean => (left?.getTime() ?? null) === (right?.getTime() ?? null)
+
+const numbersEqual = (
+	left: number | null | undefined,
+	right: number | null | undefined,
+): boolean => (left ?? null) === (right ?? null)
 
 const isNearDate = (left: Date, right: Date, thresholdMs: number): boolean =>
 	Math.abs(left.getTime() - right.getTime()) <= thresholdMs
@@ -263,7 +290,14 @@ export const syncMinecraftServerPlayerData = async (
 		existing.hasAdvancementsFile === input.hasAdvancementsFile &&
 		existing.lastKnownName === input.lastKnownName &&
 		datesEqual(existing.firstPlayedAt, input.firstPlayedAt) &&
-		datesEqual(existing.lastPlayedAt, input.lastPlayedAt)
+		datesEqual(existing.lastPlayedAt, input.lastPlayedAt) &&
+		existing.lastWorldName === input.lastWorldName &&
+		existing.lastDimension === input.lastDimension &&
+		numbersEqual(existing.lastX, input.lastX) &&
+		numbersEqual(existing.lastY, input.lastY) &&
+		numbersEqual(existing.lastZ, input.lastZ) &&
+		numbersEqual(existing.lastYaw, input.lastYaw) &&
+		numbersEqual(existing.lastPitch, input.lastPitch)
 	const nextLastModifiedAt =
 		existing &&
 		samePlayerDataFields &&
@@ -283,7 +317,14 @@ export const syncMinecraftServerPlayerData = async (
 		existing.hasAdvancementsFile !== input.hasAdvancementsFile ||
 		existing.lastKnownName !== input.lastKnownName ||
 		!datesEqual(existing.firstPlayedAt, input.firstPlayedAt) ||
-		!datesEqual(existing.lastPlayedAt, input.lastPlayedAt)
+		!datesEqual(existing.lastPlayedAt, input.lastPlayedAt) ||
+		existing.lastWorldName !== input.lastWorldName ||
+		existing.lastDimension !== input.lastDimension ||
+		!numbersEqual(existing.lastX, input.lastX) ||
+		!numbersEqual(existing.lastY, input.lastY) ||
+		!numbersEqual(existing.lastZ, input.lastZ) ||
+		!numbersEqual(existing.lastYaw, input.lastYaw) ||
+		!numbersEqual(existing.lastPitch, input.lastPitch)
 
 	if (!changed) {
 		return matchedUnchangedResult
@@ -302,6 +343,13 @@ export const syncMinecraftServerPlayerData = async (
 			lastKnownName: input.lastKnownName,
 			firstPlayedAt: input.firstPlayedAt,
 			lastPlayedAt: input.lastPlayedAt,
+			lastWorldName: input.lastWorldName,
+			lastDimension: input.lastDimension,
+			lastX: input.lastX,
+			lastY: input.lastY,
+			lastZ: input.lastZ,
+			lastYaw: input.lastYaw,
+			lastPitch: input.lastPitch,
 			syncedAt: input.syncedAt,
 		},
 		update: {
@@ -312,6 +360,13 @@ export const syncMinecraftServerPlayerData = async (
 			lastKnownName: input.lastKnownName,
 			firstPlayedAt: input.firstPlayedAt,
 			lastPlayedAt: input.lastPlayedAt,
+			lastWorldName: input.lastWorldName,
+			lastDimension: input.lastDimension,
+			lastX: input.lastX,
+			lastY: input.lastY,
+			lastZ: input.lastZ,
+			lastYaw: input.lastYaw,
+			lastPitch: input.lastPitch,
 			syncedAt: input.syncedAt,
 		},
 	})
@@ -321,6 +376,77 @@ export const syncMinecraftServerPlayerData = async (
 		uuid: input.uuid,
 		playerId: player.id,
 		syncedAt: input.syncedAt,
+	})
+
+	return {
+		matched: true,
+		changed: true,
+	}
+}
+
+export const syncMinecraftServerPlayerOnlineState = async (
+	input: SyncOnlineStateInput,
+): Promise<SyncMutationResult> => {
+	const player = await ensurePlayerByUuid({
+		serverId: input.serverId,
+		uuid: input.uuid,
+		username: input.username,
+		normalizedUsername: input.normalizedUsername,
+		uuidSource: input.uuidSource,
+		observedAt: input.observedAt,
+	})
+	const existing = await getExistingPlayerByUuid({
+		serverId: input.serverId,
+		uuid: input.uuid,
+	})
+
+	if (!existing) {
+		throw new Error('Failed to read Minecraft server player online state.')
+	}
+
+	const changed =
+		existing.online !== input.online ||
+		!datesEqual(
+			existing.lastOnlineAt,
+			input.online ? input.observedAt : existing.lastOnlineAt,
+		) ||
+		!datesEqual(
+			existing.lastOfflineAt,
+			!input.online ? input.observedAt : existing.lastOfflineAt,
+		) ||
+		existing.lastOnlineWorldName !== (input.worldName ?? null) ||
+		existing.lastOnlineDimension !== (input.dimension ?? null) ||
+		!numbersEqual(existing.lastOnlineX, input.x) ||
+		!numbersEqual(existing.lastOnlineY, input.y) ||
+		!numbersEqual(existing.lastOnlineZ, input.z) ||
+		existing.username !== (input.username ?? existing.username)
+
+	if (!changed) {
+		return matchedUnchangedResult
+	}
+
+	await prisma.minecraftServerPlayer.update({
+		where: {
+			id: player.id,
+		},
+		data: {
+			username: input.username ?? existing.username,
+			normalizedUsername:
+				input.normalizedUsername ??
+				normalizeMinecraftUsername(input.username) ??
+				existing.normalizedUsername,
+			uuidSource: input.uuidSource ?? existing.uuidSource,
+			lastSeenAt: input.observedAt,
+			online: input.online,
+			lastOnlineAt: input.online ? input.observedAt : existing.lastOnlineAt,
+			lastOfflineAt: input.online ? existing.lastOfflineAt : input.observedAt,
+			lastOnlineWorldName: input.worldName ?? null,
+			lastOnlineDimension: input.dimension ?? null,
+			lastOnlineX: input.x ?? null,
+			lastOnlineY: input.y ?? null,
+			lastOnlineZ: input.z ?? null,
+			bridgeSyncedAt: input.observedAt,
+		},
 	})
 
 	return {

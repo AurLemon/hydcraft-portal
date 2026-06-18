@@ -59,6 +59,8 @@ export interface UserProfilePrivacySummary {
 }
 
 export interface MinecraftProfileSummary {
+	lastSavedLocation: MinecraftPlayerLocationSummary | null
+	onlineLocation: MinecraftPlayerLocationSummary | null
 	minecraftName: string
 	javaUuid: string | null
 	bedrockXuid: string | null
@@ -69,6 +71,17 @@ export interface MinecraftProfileSummary {
 	minecraftRoles: string[]
 	profileUrl: string
 	status: MinecraftAccountStatus
+}
+
+export interface MinecraftPlayerLocationSummary {
+	worldName: string | null
+	dimension: string | null
+	x: number | null
+	y: number | null
+	z: number | null
+	yaw?: number | null
+	pitch?: number | null
+	observedAt: Date | null
 }
 
 export interface EditableUserProfile {

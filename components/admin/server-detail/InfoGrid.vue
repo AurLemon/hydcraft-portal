@@ -1,10 +1,6 @@
 <template>
 	<div :class="gridClass">
-		<div
-			v-for="item in items"
-			:key="item.label"
-			class="rounded-md bg-slate-50 p-3 dark:bg-slate-900"
-		>
+		<div v-for="item in items" :key="item.label" :class="itemClass">
 			<p class="text-xs text-slate-500 dark:text-slate-400">
 				{{ item.label }}
 			</p>
@@ -23,10 +19,20 @@ import type { ServerDetailMetaItem } from './detail-types'
 interface Props {
 	items: ServerDetailMetaItem[]
 	columns?: 'one' | 'two' | 'three'
+	tone?: 'default' | 'modal'
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	columns: 'two',
+	tone: 'default',
+})
+
+const itemClass = computed(() => {
+	if (props.tone === 'modal') {
+		return 'rounded-md bg-slate-50 p-3 dark:bg-slate-950'
+	}
+
+	return 'rounded-md bg-slate-50 p-3 dark:bg-slate-900'
 })
 
 const gridClass = computed(() => {

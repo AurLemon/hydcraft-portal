@@ -180,9 +180,9 @@
 						/>
 					</div>
 					<div class="overflow-y-auto p-5">
-						<InfoGrid :items="selectedDetail?.meta ?? []" />
+						<InfoGrid :items="selectedDetail?.meta ?? []" tone="modal" />
 						<pre
-							class="mt-5 max-h-[56vh] overflow-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800"
+							class="mt-5 max-h-[56vh] overflow-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-700"
 						><code>{{ selectedDetail?.json ?? '' }}</code></pre>
 					</div>
 				</div>
@@ -226,9 +226,9 @@
 						</div>
 					</div>
 					<div class="overflow-y-auto p-5">
-						<InfoGrid :items="inspectorMetaItems" />
+						<InfoGrid :items="inspectorMetaItems" tone="modal" />
 						<pre
-							class="mt-5 max-h-[56vh] overflow-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-800"
+							class="mt-5 max-h-[56vh] overflow-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-100 dark:border-slate-700"
 						><code>{{ inspectorJson }}</code></pre>
 					</div>
 				</div>
@@ -278,7 +278,7 @@
 								</UButton>
 							</div>
 						</div>
-						<InfoGrid :items="bridgeStatusItems" />
+						<InfoGrid :items="bridgeStatusItems" tone="modal" />
 						<div class="mt-6">
 							<div class="flex items-center justify-between gap-3">
 								<h3
@@ -312,7 +312,7 @@
 								<div
 									v-for="task in manualSyncTasks.portalBridge"
 									:key="task.taskKey"
-									class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300"
+									class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-950 dark:text-slate-300"
 								>
 									<div class="flex items-center justify-between gap-3">
 										<span class="font-medium text-slate-900 dark:text-white">
@@ -387,7 +387,7 @@
 							<div
 								v-for="heartbeat in bridgeStatus?.heartbeats ?? []"
 								:key="heartbeat.id"
-								class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300"
+								class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-950 dark:text-slate-300"
 							>
 								<div class="flex items-center justify-between gap-3">
 									<span>#{{ heartbeat.seq ?? '-' }}</span>
@@ -453,7 +453,7 @@
 								<div
 									v-for="task in manualSyncTasks[mysqlStatusSource]"
 									:key="task.taskKey"
-									class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-900 dark:text-slate-300"
+									class="rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-950 dark:text-slate-300"
 								>
 									<div class="flex items-center justify-between gap-3">
 										<span class="font-medium text-slate-900 dark:text-white">
