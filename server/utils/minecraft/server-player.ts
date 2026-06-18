@@ -1,9 +1,19 @@
 import { createHash } from 'node:crypto'
-import { Prisma as PrismaRuntime } from '~/generated/prisma/client'
 import type { Prisma as PrismaTypes } from '~/generated/prisma/client'
 import { emitEvent } from '../events/event-bus'
 import { prisma } from '../db/prisma'
 import { normalizeMinecraftUsername } from './normalize'
+
+// playerdata 文件 mtime 抖动容差：bridge 扫描时 lastModifiedAt 可能因文件系统 mtime
+// 精度/写入抖动产生微小漂移，此窗口内的变化视为未变，避免无意义 upsert。可经 env 配置。
+const readPlayerDataMtimeToleranceMs = (): number => {
+	const parsed = Number.parseInt(
+		process.env.PLAYERDATA_MTIME_TOLERANCE_SECONDS ?? '',
+		10,
+	)
+
+	return Number.isFinite(parsed) && parsed >= 0 ? parsed * 1000 : 5 * 60 * 1000
+}
 
 export interface UpsertServerPlayerIdentityInput {
 	serverId: string
@@ -35,6 +45,8 @@ export interface SyncStatsSnapshotInput {
 	observedAt: Date
 	lastScannedAt?: Date | null
 	stats: PrismaTypes.InputJsonValue
+	// bridge 显式声明本轮 payload 是否省略（v2 协议）。省略时仅用 hash 比对，绝不写空 payload。
+	payloadOmitted?: boolean
 }
 
 export interface SyncAdvancementsSnapshotInput {
@@ -45,6 +57,7 @@ export interface SyncAdvancementsSnapshotInput {
 	observedAt: Date
 	lastScannedAt?: Date | null
 	advancements: PrismaTypes.InputJsonValue
+	payloadOmitted?: boolean
 }
 
 export interface SyncMutationResult {
@@ -55,18 +68,6 @@ export interface SyncMutationResult {
 const matchedUnchangedResult: SyncMutationResult = {
 	matched: true,
 	changed: false,
-}
-
-const isEmptyJsonValue = (value: unknown): boolean => {
-	if (value == null) {
-		return true
-	}
-
-	if (typeof value === 'object' && !Array.isArray(value)) {
-		return Object.keys(value).length === 0
-	}
-
-	return false
 }
 
 export const hashSyncValue = (value: unknown): string =>
@@ -148,23 +149,6 @@ const getExistingPlayerByUuid = async (input: {
 		},
 	})
 
-const isUniqueConstraintError = (error: unknown): boolean =>
-	error instanceof PrismaRuntime.PrismaClientKnownRequestError &&
-	error.code === 'P2002'
-
-const readPlayerByUuidOrThrow = async (input: {
-	serverId: string
-	uuid: string
-}) => {
-	const player = await getExistingPlayerByUuid(input)
-
-	if (!player) {
-		throw new Error('Failed to read Minecraft server player.')
-	}
-
-	return player
-}
-
 const ensurePlayerByUuid = async (input: {
 	serverId: string
 	uuid: string
@@ -175,43 +159,32 @@ const ensurePlayerByUuid = async (input: {
 }) => {
 	const normalizedUsername =
 		input.normalizedUsername ?? normalizeMinecraftUsername(input.username)
-	const existing = await getExistingPlayerByUuid({
-		serverId: input.serverId,
-		uuid: input.uuid,
-	})
-
-	if (existing) {
-		return existing
-	}
 
 	const portalAccountPatch = await getPortalAccountPatch({
 		uuid: input.uuid,
 	})
 
-	try {
-		await prisma.minecraftServerPlayer.create({
-			data: {
+	return await prisma.minecraftServerPlayer.upsert({
+		where: {
+			serverId_uuid: {
 				serverId: input.serverId,
 				uuid: input.uuid,
-				username: input.username,
-				normalizedUsername,
-				uuidSource: input.uuidSource,
-				firstSeenAt: input.observedAt,
-				lastSeenAt: input.observedAt,
-				evidenceCount: 1,
-				bridgeSyncedAt: input.observedAt,
-				...portalAccountPatch,
 			},
-		})
-	} catch (error) {
-		if (!isUniqueConstraintError(error)) {
-			throw error
-		}
-	}
-
-	return await readPlayerByUuidOrThrow({
-		serverId: input.serverId,
-		uuid: input.uuid,
+		},
+		create: {
+			serverId: input.serverId,
+			uuid: input.uuid,
+			username: input.username,
+			normalizedUsername,
+			uuidSource: input.uuidSource,
+			firstSeenAt: input.observedAt,
+			lastSeenAt: input.observedAt,
+			evidenceCount: 1,
+			bridgeSyncedAt: input.observedAt,
+			...portalAccountPatch,
+		},
+		// 仅保证玩家存在；snapshot/playerdata 路径不在此处推进业务字段，避免无意覆盖 identity 侧更新。
+		update: {},
 	})
 }
 
@@ -224,55 +197,37 @@ export const upsertMinecraftServerPlayerFromIdentity = async (
 		uuid: input.uuid,
 	})
 
-	const existing = await getExistingPlayerByUuid({
-		serverId: input.serverId,
-		uuid: input.uuid,
-	})
-
-	if (existing) {
-		return await prisma.minecraftServerPlayer.update({
-			where: {
-				id: existing.id,
-			},
-			data: {
-				username: input.username,
-				normalizedUsername,
-				uuidSource: input.uuidSource,
-				lastSeenAt: input.observedAt,
-				evidenceCount: {
-					increment: 1,
-				},
-				bridgeSyncedAt: input.observedAt,
-				...portalAccountPatch,
-			},
-		})
-	}
-
-	try {
-		return await prisma.minecraftServerPlayer.create({
-			data: {
+	return await prisma.minecraftServerPlayer.upsert({
+		where: {
+			serverId_uuid: {
 				serverId: input.serverId,
 				uuid: input.uuid,
-				username: input.username,
-				normalizedUsername,
-				uuidSource: input.uuidSource,
-				firstSeenAt: input.observedAt,
-				lastSeenAt: input.observedAt,
-				evidenceCount: 1,
-				bridgeSyncedAt: input.observedAt,
-				...portalAccountPatch,
 			},
-		})
-	} catch (error) {
-		if (!isUniqueConstraintError(error)) {
-			throw error
-		}
-
-		return await readPlayerByUuidOrThrow({
+		},
+		create: {
 			serverId: input.serverId,
 			uuid: input.uuid,
-		})
-	}
+			username: input.username,
+			normalizedUsername,
+			uuidSource: input.uuidSource,
+			firstSeenAt: input.observedAt,
+			lastSeenAt: input.observedAt,
+			evidenceCount: 1,
+			bridgeSyncedAt: input.observedAt,
+			...portalAccountPatch,
+		},
+		update: {
+			username: input.username,
+			normalizedUsername,
+			uuidSource: input.uuidSource,
+			lastSeenAt: input.observedAt,
+			evidenceCount: {
+				increment: 1,
+			},
+			bridgeSyncedAt: input.observedAt,
+			...portalAccountPatch,
+		},
+	})
 }
 
 export const syncMinecraftServerPlayerData = async (
@@ -313,7 +268,11 @@ export const syncMinecraftServerPlayerData = async (
 		existing &&
 		samePlayerDataFields &&
 		input.lastModifiedAt &&
-		isNearDate(input.lastModifiedAt, input.syncedAt, 5 * 60 * 1000)
+		isNearDate(
+			input.lastModifiedAt,
+			input.syncedAt,
+			readPlayerDataMtimeToleranceMs(),
+		)
 			? existing.lastModifiedAt
 			: input.lastModifiedAt
 	const changed =
@@ -395,15 +354,18 @@ export const syncMinecraftServerPlayerStatsSnapshot = async (
 	const statsHash = input.statsHash ?? hashSyncValue(input.stats)
 	const existing = playerWithStats.statsSnapshot
 
-	// bridge 的 statsHash 是玩家 stats 文件的字节哈希，与 portal 存储的 payload 解耦。
-	// 历史上 bridge 在未声明 includePayload 时发过「真 hash + 空 payload」，
-	// 库里因此留下 hash 命中但内容为空的脏行。这里在 hash 命中时额外校验：
-	// 仅当「存量已有内容」或「incoming 也为空（无内容可回填）」时才跳过，
-	// 否则（存量空 + incoming 非空）用新鲜 payload 回填。
-	if (
-		existing?.statsHash === statsHash &&
-		(!isEmptyJsonValue(existing.stats) || isEmptyJsonValue(input.stats))
-	) {
+	// v2 协议：bridge 显式声明 payloadOmitted 时，本轮仅用于 hash 比对，不带真实数据。
+	// 此时若 hash 命中则跳过；hash 不命中也不写空 payload（等下一轮带 payload 的同步覆盖）。
+	// 取代旧的「hash 命中 + 内容空」猜测式脏行回填 guard。
+	if (input.payloadOmitted) {
+		if (existing?.statsHash === statsHash) {
+			return matchedUnchangedResult
+		}
+		// payload 省略且 hash 变化：无法更新内容，记为 matched 未变更，等带 payload 的轮次。
+		return matchedUnchangedResult
+	}
+
+	if (existing?.statsHash === statsHash) {
 		return matchedUnchangedResult
 	}
 
@@ -470,13 +432,12 @@ export const syncMinecraftServerPlayerAdvancementsSnapshot = async (
 		input.advancementsHash ?? hashSyncValue(input.advancements)
 	const existing = playerWithAdvancements.advancementsSnapshot
 
-	// 同 stats：bridge 的 advancementsHash 是文件字节哈希，与 payload 解耦。
-	// hash 命中时仅当「存量已有内容」或「incoming 也为空」才跳过，否则回填脏行。
-	if (
-		existing?.advancementsHash === advancementsHash &&
-		(!isEmptyJsonValue(existing.advancements) ||
-			isEmptyJsonValue(input.advancements))
-	) {
+	// v2 协议：bridge 显式声明 payloadOmitted 时，仅 hash 比对，不写空 payload。
+	if (input.payloadOmitted) {
+		return matchedUnchangedResult
+	}
+
+	if (existing?.advancementsHash === advancementsHash) {
 		return matchedUnchangedResult
 	}
 

@@ -50,6 +50,11 @@ const normalizeIntervalSeconds = (value: number): number =>
 export const getExternalSyncTaskKey = (source: ExternalSyncSource): string =>
 	source.toLowerCase()
 
+// 按 source 分配 dispatcher lane：AuthMe 与 LuckPerms 数据源独立，
+// 分 lane 后二者可并行同步，互不阻塞（此前共用 'GLOBAL' lane 导致串行）。
+export const getExternalSyncLaneKey = (source: ExternalSyncSource): string =>
+	`EXTERNAL_SYNC:${source}`
+
 const shouldRunTask = async (input: {
 	source: ExternalSyncSource
 	intervalSeconds: number
@@ -233,15 +238,18 @@ export const syncAuthMeSources = async (
 		}
 	}
 
-	const result = await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
-		runExternalSyncTask({
-			taskKey,
-			source: 'AUTHME',
-			enabled: config.enabled,
-			intervalSeconds: config.intervalSeconds,
-			reason,
-			handler: () => syncAuthMeSource(),
-		}),
+	const result = await heavySyncDispatcher.enqueue(
+		getExternalSyncLaneKey('AUTHME'),
+		taskKey,
+		() =>
+			runExternalSyncTask({
+				taskKey,
+				source: 'AUTHME',
+				enabled: config.enabled,
+				intervalSeconds: config.intervalSeconds,
+				reason,
+				handler: () => syncAuthMeSource(),
+			}),
 	)
 
 	return result
@@ -304,15 +312,18 @@ export const syncLuckPermsSources = async (
 		}
 	}
 
-	const result = await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
-		runExternalSyncTask({
-			taskKey,
-			source: 'LUCKPERMS',
-			enabled: config.enabled,
-			intervalSeconds: config.intervalSeconds,
-			reason,
-			handler: () => syncLuckPermsSource(),
-		}),
+	const result = await heavySyncDispatcher.enqueue(
+		getExternalSyncLaneKey('LUCKPERMS'),
+		taskKey,
+		() =>
+			runExternalSyncTask({
+				taskKey,
+				source: 'LUCKPERMS',
+				enabled: config.enabled,
+				intervalSeconds: config.intervalSeconds,
+				reason,
+				handler: () => syncLuckPermsSource(),
+			}),
 	)
 
 	return result
@@ -354,15 +365,18 @@ export const triggerAuthMeSyncForServer = async (input: {
 
 	const taskKey = getExternalSyncTaskKey('AUTHME')
 
-	return await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
-		runExternalSyncTask({
-			taskKey,
-			source: 'AUTHME',
-			enabled: config.enabled,
-			intervalSeconds: config.intervalSeconds,
-			reason: input.reason,
-			handler: () => syncAuthMeSource(),
-		}),
+	return await heavySyncDispatcher.enqueue(
+		getExternalSyncLaneKey('AUTHME'),
+		taskKey,
+		() =>
+			runExternalSyncTask({
+				taskKey,
+				source: 'AUTHME',
+				enabled: config.enabled,
+				intervalSeconds: config.intervalSeconds,
+				reason: input.reason,
+				handler: () => syncAuthMeSource(),
+			}),
 	)
 }
 
@@ -378,15 +392,18 @@ export const triggerLuckPermsSyncForServer = async (input: {
 
 	const taskKey = getExternalSyncTaskKey('LUCKPERMS')
 
-	return await heavySyncDispatcher.enqueue('GLOBAL', taskKey, () =>
-		runExternalSyncTask({
-			taskKey,
-			source: 'LUCKPERMS',
-			enabled: config.enabled,
-			intervalSeconds: config.intervalSeconds,
-			reason: input.reason,
-			handler: () => syncLuckPermsSource(),
-		}),
+	return await heavySyncDispatcher.enqueue(
+		getExternalSyncLaneKey('LUCKPERMS'),
+		taskKey,
+		() =>
+			runExternalSyncTask({
+				taskKey,
+				source: 'LUCKPERMS',
+				enabled: config.enabled,
+				intervalSeconds: config.intervalSeconds,
+				reason: input.reason,
+				handler: () => syncLuckPermsSource(),
+			}),
 	)
 }
 

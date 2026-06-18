@@ -36,10 +36,20 @@ export interface BridgeHelloPayload {
 	loader: string
 	capabilities: string[]
 	requestedTopics: string[]
+	streamEpoch: string | null
 	resumeFromSeq: number
 	timestamp: number
 	nonce: string
 	signature: string
+}
+
+export interface BridgeAcceptedPayload {
+	sessionId: string
+	serverTime: string
+	heartbeatIntervalSeconds: number
+	allowedTopics: string[]
+	streamEpoch: string | null
+	resumeFromSeq: number | null
 }
 
 export interface BridgeAckPayload {
@@ -55,7 +65,9 @@ export interface CommandRequestPayload {
 	args?: Record<string, unknown>
 }
 
-export const PORTAL_BRIDGE_PROTOCOL_VERSION = 1
+// v3: streamEpoch 进入 durable stream 握手语义，portal/bridge 用 (epoch, seq)
+// 区分“同一条流的位置”和“新流重新起号”，避免 outbox 重建后的静默错位。
+export const PORTAL_BRIDGE_PROTOCOL_VERSION = 3
 
 export const DEFAULT_REQUESTED_TOPICS = [
 	'bridge.heartbeat',
@@ -130,6 +142,7 @@ export const createBridgeHelloEnvelope = (input: {
 	module: string
 	secret: string
 	requestedTopics: string[]
+	streamEpoch: string | null
 	resumeFromSeq: number
 }): PortalBridgeEnvelope<BridgeHelloPayload> => {
 	const timestamp = Date.now()
@@ -168,6 +181,7 @@ export const createBridgeHelloEnvelope = (input: {
 			loader: 'portal-backend',
 			capabilities: ['portal.bridge.ingestion'],
 			requestedTopics: input.requestedTopics,
+			streamEpoch: input.streamEpoch,
 			resumeFromSeq: input.resumeFromSeq,
 			timestamp,
 			nonce,

@@ -28,6 +28,7 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 				requestedTopics: server.portalBridge.requestedTopics,
 				allowedTopics: server.portalBridge.allowedTopics,
 				coreSyncIntervalMinutes: server.portalBridge.coreSyncIntervalMinutes,
+				streamEpoch: server.portalBridge.streamEpoch,
 				resumeFromSeq: server.portalBridge.resumeFromSeq.toString(),
 				lastConnectionState: server.portalBridge.lastConnectionState,
 				lastConnectedAt: server.portalBridge.lastConnectedAt,

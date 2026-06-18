@@ -126,6 +126,15 @@ const clearServerPlayerSyncState = async (serverId: string) => {
 			},
 		})
 		if (bridgeConfig) {
+			await tx.portalBridgeConfig.update({
+				where: {
+					id: bridgeConfig.id,
+				},
+				data: {
+					streamEpoch: null,
+					resumeFromSeq: BigInt(0),
+				},
+			})
 			await tx.portalBridgeMessageReceipt.deleteMany({
 				where: {
 					bridgeConfigId: bridgeConfig.id,

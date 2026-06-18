@@ -44,10 +44,13 @@ export default defineEventHandler(async (event) => {
 			lastDisconnectedAt: bridgeConfig.lastDisconnectedAt,
 			lastError: bridgeConfig.lastError,
 			coreSyncIntervalMinutes: bridgeConfig.coreSyncIntervalMinutes,
+			streamEpoch: bridgeConfig.streamEpoch,
+			resumeFromSeq: bridgeConfig.resumeFromSeq.toString(),
 		},
 		runtime: portalBridgeManager.getStatus(bridgeConfig.id),
 		heartbeats: latestHeartbeats.map((receipt) => ({
 			id: receipt.id,
+			streamEpoch: receipt.streamEpoch,
 			seq: receipt.seq?.toString() ?? null,
 			receivedAt: receipt.receivedAt,
 			ackedAt: receipt.ackedAt,

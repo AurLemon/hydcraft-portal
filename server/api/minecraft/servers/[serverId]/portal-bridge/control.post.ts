@@ -5,6 +5,7 @@ import {
 	createBadRequestError,
 } from '../../../../../utils/errors'
 import { portalBridgeManager } from '../../../../../utils/portal-bridge/client'
+import { invalidateMinecraftServerOverviewCache } from '../../../../../utils/minecraft/server-overview'
 
 interface PortalBridgeControlBody {
 	action: 'connect' | 'disconnect' | 'reconnect'
@@ -41,6 +42,9 @@ export default defineEventHandler(async (event) => {
 	} else {
 		await portalBridgeManager.connect(bridgeConfig.id)
 	}
+
+	// bridge 状态变化后立即失效 overview 缓存，避免页面看到陈旧的连接状态。
+	invalidateMinecraftServerOverviewCache(serverId)
 
 	return {
 		runtime: portalBridgeManager.getStatus(bridgeConfig.id),

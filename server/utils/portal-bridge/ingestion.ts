@@ -350,6 +350,7 @@ const updateCommandAndSyncTask = async (input: {
 export const ingestPortalBridgeEnvelope = async (input: {
 	bridgeConfigId: string
 	serverId: string
+	streamEpoch: string | null
 	envelope: PortalBridgeEnvelope
 }): Promise<{ duplicate: boolean }> => {
 	const seq = input.envelope.seq == null ? null : BigInt(input.envelope.seq)
@@ -359,6 +360,7 @@ export const ingestPortalBridgeEnvelope = async (input: {
 			data: {
 				bridgeConfigId: input.bridgeConfigId,
 				messageId: input.envelope.id,
+				streamEpoch: input.streamEpoch,
 				seq,
 				topic: input.envelope.topic,
 				payload: input.envelope as unknown as Prisma.InputJsonValue,
@@ -599,6 +601,7 @@ const projectPortalBridgeEnvelope = async (
 						parseDate(readString(player, 'lastScannedAt')) ?? observedAt,
 					lastScannedAt: parseDate(readString(player, 'lastScannedAt')),
 					stats: (stats ?? {}) as Prisma.InputJsonValue,
+					payloadOmitted: readBoolean(player, 'payloadOmitted') ?? false,
 				})
 
 				if (result.matched) {
@@ -671,6 +674,7 @@ const projectPortalBridgeEnvelope = async (
 						parseDate(readString(player, 'lastScannedAt')) ?? observedAt,
 					lastScannedAt: parseDate(readString(player, 'lastScannedAt')),
 					advancements: (advancements ?? {}) as Prisma.InputJsonValue,
+					payloadOmitted: readBoolean(player, 'payloadOmitted') ?? false,
 				})
 
 				if (result.matched) {

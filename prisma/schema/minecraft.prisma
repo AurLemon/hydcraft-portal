@@ -59,6 +59,7 @@ model PortalBridgeConfig {
   requestedTopics     String[]                    @default([])
   allowedTopics       String[]                    @default([])
   coreSyncIntervalMinutes Int                     @default(30)
+  streamEpoch         String?
   resumeFromSeq       BigInt                      @default(0)
   lastConnectionState PortalBridgeConnectionState @default(DISCONNECTED)
   lastConnectedAt     DateTime?
@@ -229,6 +230,7 @@ model PortalBridgeMessageReceipt {
   bridgeConfigId String
   bridgeConfig   PortalBridgeConfig @relation(fields: [bridgeConfigId], references: [id], onDelete: Cascade)
   messageId      String
+  streamEpoch    String?
   seq            BigInt?
   topic          String
   receivedAt     DateTime           @default(now())
@@ -236,7 +238,7 @@ model PortalBridgeMessageReceipt {
   payload        Json?
 
   @@unique([messageId])
-  @@unique([bridgeConfigId, seq])
+  @@unique([bridgeConfigId, streamEpoch, seq])
   @@index([topic])
   @@index([receivedAt])
 }

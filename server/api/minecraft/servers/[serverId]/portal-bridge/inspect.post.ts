@@ -96,6 +96,7 @@ const waitForBridgeReceipt = async (input: {
 			return {
 				id: receipt.id,
 				topic: receipt.topic,
+				streamEpoch: receipt.streamEpoch,
 				seq: receipt.seq?.toString() ?? null,
 				receivedAt: receipt.receivedAt,
 				ackedAt: receipt.ackedAt,

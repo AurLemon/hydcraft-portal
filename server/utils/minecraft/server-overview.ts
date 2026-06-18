@@ -81,7 +81,46 @@ const readPlayerSnapshotPlayers = (payload: unknown): PlayerSnapshotItem[] => {
 	})
 }
 
+// overview 内存缓存（P2-2）：admin 详情页每次打开触发 11 个并发 Prisma 查询，
+// 加短期内存缓存降低 DB 压力。可被 bridge 状态变化/control 操作主动失效。
+const OVERVIEW_CACHE_TTL_MS = 5_000
+const overviewCache = new Map<
+	string,
+	{
+		data: Awaited<ReturnType<typeof computeMinecraftServerOverview>>
+		expiresAt: number
+	}
+>()
+
+export const invalidateMinecraftServerOverviewCache = (
+	serverId?: string,
+): void => {
+	if (serverId) {
+		overviewCache.delete(serverId)
+		return
+	}
+
+	overviewCache.clear()
+}
+
 export const getMinecraftServerOverview = async (serverId: string) => {
+	const cached = overviewCache.get(serverId)
+
+	if (cached && cached.expiresAt > Date.now()) {
+		return cached.data
+	}
+
+	const data = await computeMinecraftServerOverview(serverId)
+
+	overviewCache.set(serverId, {
+		data,
+		expiresAt: Date.now() + OVERVIEW_CACHE_TTL_MS,
+	})
+
+	return data
+}
+
+const computeMinecraftServerOverview = async (serverId: string) => {
 	const server = await prisma.minecraftServer.findUnique({
 		where: {
 			serverId,
