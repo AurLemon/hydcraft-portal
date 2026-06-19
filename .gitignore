@@ -34,4 +34,12 @@ logs
 *.sw?
 
 # Agent files
+.claude
 .codex
+.cursor
+.windsurf
+.cline
+.roo
+.continue
+.gemini
+.aider*
