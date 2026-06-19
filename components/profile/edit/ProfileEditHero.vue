@@ -148,7 +148,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
-import defaultCover from '~/assets/resources/content/timeline/timeline_cover.webp'
+import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
 import type {
 	EditableProfile,
 	ProfileBadge,

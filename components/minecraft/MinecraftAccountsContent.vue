@@ -13,8 +13,10 @@
 				/>
 			</div>
 
-			<div class="absolute left-3 top-3 z-999 flex flex-col items-end gap-2">
-				<div class="flex items-center gap-2">
+			<div
+				class="absolute left-3 top-3 z-999 flex flex-col items-end gap-2 sm:flex-row"
+			>
+				<div class="flex flex-col items-start gap-2">
 					<UBadge
 						class="gap-1.5"
 						:color="isOnline ? 'success' : 'neutral'"
@@ -50,17 +52,19 @@
 			</div>
 
 			<div
-				class="pointer-events-none absolute inset-x-0 top-3 z-999 flex justify-center px-18 sm:px-24"
+				class="pointer-events-none absolute inset-x-0 top-16 z-999 flex justify-center px-18 sm:top-3 sm:px-24"
 			>
-				<Transition name="hover-coords">
+				<Transition name="hover-coords" mode="out-in">
 					<div
 						v-if="hoverCoordsVisible && hoveredBlockPoint"
-						class="pointer-events-none inline-flex max-w-full items-center gap-3 overflow-hidden rounded-full border border-white/15 bg-slate-950/72 px-3 py-2 text-white shadow-[0_1.5rem_3rem_rgba(0,0,0,0.35)] backdrop-blur-md"
+						key="hover-coords"
+						class="pointer-events-none inline-flex max-w-full items-center gap-1.5 text-sm text-white"
+						style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
 						aria-live="polite"
 					>
-						<div class="flex items-center gap-1.5 whitespace-nowrap">
+						<div class="flex items-center gap-1 whitespace-nowrap">
 							<span
-								class="text-[11px] font-medium tracking-[0.24em] text-white/55"
+								class="text-[11px] font-medium tracking-[0.24em] text-white/55 translate-y-0.5"
 							>
 								X
 							</span>
@@ -102,11 +106,9 @@
 							</span>
 						</div>
 
-						<div class="h-4 w-px bg-white/12" />
-
-						<div class="flex items-center gap-1.5 whitespace-nowrap">
+						<div class="flex items-center gap-1 whitespace-nowrap">
 							<span
-								class="text-[11px] font-medium tracking-[0.24em] text-white/55"
+								class="text-[11px] font-medium tracking-[0.24em] text-white/55 translate-y-0.5"
 							>
 								Z
 							</span>
@@ -148,6 +150,17 @@
 							</span>
 						</div>
 					</div>
+					<div
+						v-else-if="hoverDisplayVisible"
+						key="hover-dimension"
+						class="pointer-events-none inline-flex max-w-full items-center text-sm text-white"
+						style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
+						aria-live="polite"
+					>
+						<span class="truncate font-semibold uppercase">
+							{{ displayDimensionLabel }}
+						</span>
+					</div>
 				</Transition>
 			</div>
 
@@ -160,14 +173,14 @@
 
 				<div
 					v-if="bodyRendererUrl"
-					class="absolute bottom-0 left-4 w-26 shrink-0"
+					class="absolute bottom-0 left-4 w-22 sm:w-26 shrink-0"
 					aria-hidden="true"
 				>
 					<img
 						ref="bodyImageElement"
 						:src="bodyRendererUrl"
 						:alt="displayName"
-						class="block w-full translate-y-20 transition-opacity duration-500 ease-out drop-shadow-sm"
+						class="block w-full translate-y-16 sm:translate-y-20 transition-opacity duration-500 ease-out drop-shadow-sm"
 						:class="bodyImageLoaded ? 'opacity-100' : 'opacity-0'"
 						@load="bodyImageLoaded = true"
 						@error="bodyImageLoaded = true"
@@ -178,59 +191,83 @@
 					class="relative flex w-full items-end justify-between gap-3 text-white"
 					style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
 				>
-					<div class="min-w-0 pl-30">
-						<div class="flex items-center gap-2 translate-y-1">
-							<span class="text-[42px] leading-[normal] font-arkpixel truncate">
+					<div class="min-w-0 pl-24 sm:pl-30">
+						<div class="flex items-baseline gap-2 sm:translate-y-1">
+							<span
+								class="text-3xl sm:text-[42px] leading-[normal] font-arkpixel truncate"
+							>
 								{{ displayName }}
 							</span>
+							<UBadge
+								v-if="displayPrimaryGroup"
+								style="text-shadow: none"
+								class="-translate-y-1"
+								color="neutral"
+								variant="solid"
+								size="xs"
+							>
+								{{ displayPrimaryGroup }}
+							</UBadge>
 						</div>
-						<div>
-							<span class="mr-1 text-xs text-white/80">
-								{{ t('minecraftAccounts.overlay.lastLogin') }}
-							</span>
-							<span class="text-[17px] font-medium">{{ coordsText }}</span>
+						<div class="flex flex-wrap items-baseline gap-x-2">
+							<div class="flex items-baseline gap-1">
+								<span class="text-xs text-white/80">
+									{{ t('minecraftAccounts.overlay.lastLogin') }}
+								</span>
+								<span class="text-[17px] font-medium">{{ coordsText }}</span>
+							</div>
+							<div class="flex items-baseline gap-1">
+								<UTooltip
+									v-if="playTimeHoursLabel !== notAvailableLabel"
+									:text="playTimeTooltip"
+									class="flex items-baseline gap-1"
+								>
+									<span class="text-xs text-white/80">
+										{{ t('minecraftAccounts.summary.playTime') }}
+									</span>
+									<span class="text-[17px] font-medium">{{
+										playTimeHoursLabel
+									}}</span>
+								</UTooltip>
+							</div>
+						</div>
+
+						<div v-if="isMobileViewport" class="sm:hidden">
+							<Transition name="stats-fade" mode="out-in">
+								<div
+									:key="statsCarouselIndex"
+									class="inline-flex items-baseline gap-1.5 text-xs text-white/90"
+								>
+									<span class="inline-flex items-baseline gap-1 text-white/70">
+										<UIcon
+											:name="currentStat.icon"
+											class="size-3 translate-y-0.5"
+										/>
+										{{ currentStat.label }}
+									</span>
+									<span class="text-[17px] font-medium">{{
+										currentStat.value
+									}}</span>
+								</div>
+							</Transition>
 						</div>
 					</div>
 
-					<div
-						class="shrink-0 space-y-0.5 text-right text-[11px] text-white/90"
-					>
-						<div class="flex gap-1 items-baseline justify-end">
-							<span class="text-white/70">
-								{{ t('minecraftAccounts.summary.lastSeen') }}
-							</span>
-							<span class="text-base font-medium">
-								{{ formatDateTime(displayLastSeenAt) }}</span
+					<div class="hidden shrink-0 sm:block">
+						<div class="space-y-0.5 text-right text-[11px] text-white/90">
+							<div
+								v-for="item in summaryItems"
+								:key="item.key"
+								class="flex items-baseline justify-end gap-2"
 							>
-						</div>
-						<div class="flex gap-1 items-baseline justify-end">
-							<span class="text-white/70">
-								{{ t('minecraftAccounts.summary.firstJoined') }}
-							</span>
-							<span class="text-base font-medium">
-								{{ formatDateTime(displayFirstJoinedAt) }}</span
-							>
-						</div>
-						<div class="flex gap-1 items-baseline justify-end">
-							<span class="text-white/70">
-								{{ t('minecraftAccounts.summary.statsCount') }}
-							</span>
-							<span class="text-base font-medium">
-								{{ displayPlayerProfile.statsCount }}</span
-							>
-						</div>
-						<div class="flex gap-1 items-baseline justify-end">
-							<span class="text-white/70">
-								{{ t('minecraftAccounts.summary.advancements') }}
-							</span>
-							<span class="text-base font-medium">
-								{{
-									t('minecraftAccounts.summary.advancementsValue', {
-										completed: displayPlayerProfile.advancementsCompletedCount,
-										total: displayPlayerProfile.advancementsTotalCount,
-									})
-								}}</span
-							>
+								<span class="inline-flex items-baseline gap-1 text-white/70">
+									<UIcon :name="item.icon" class="size-3 translate-y-0.5" />
+									{{ item.label }}
+								</span>
+								<span class="text-base font-medium">
+									{{ item.value }}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -285,6 +322,13 @@ interface MinecraftAccountsContentProps {
 	savingId: string | null
 }
 
+interface SummaryItem {
+	key: string
+	label: string
+	value: string
+	icon: string
+}
+
 const props = defineProps<MinecraftAccountsContentProps>()
 
 const emit = defineEmits<{
@@ -298,8 +342,10 @@ const bodyImageLoaded = ref(false)
 const bodyImageElement = useTemplateRef<HTMLImageElement>('bodyImageElement')
 const hoveredBlockPoint = ref<{ x: number; z: number } | null>(null)
 const hoverCoordsVisible = ref(false)
+const isMobileViewport = ref(false)
 let bodyImageAnimationFrameId: number | null = null
 let hoverCoordsHideTimer: ReturnType<typeof setTimeout> | null = null
+let mobileViewportMediaQuery: MediaQueryList | null = null
 const HOVER_COORDS_HIDE_DELAY = 5000
 const digitCharacters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 const digitStepEm = 1.2
@@ -391,6 +437,9 @@ const hoverZText = computed(() =>
 const hoverXCharacters = computed(() => hoverXText.value.split(''))
 const hoverZCharacters = computed(() => hoverZText.value.split(''))
 const isDigitCharacter = (character: string) => /\d/.test(character)
+const hoverDisplayVisible = computed(
+	() => Boolean(displayDimensionLabel.value) || hoverCoordsVisible.value,
+)
 
 const isOnline = computed(
 	() =>
@@ -405,6 +454,14 @@ const displayLocation = computed<MinecraftLocationSummary | null>(
 		props.selectedAccount?.presence?.lastSavedLocation ??
 		null,
 )
+const displayDimensionLabel = computed(() => {
+	const dimension = displayLocation.value?.dimension?.trim()
+	if (!dimension) {
+		return ''
+	}
+
+	return dimension.toUpperCase()
+})
 
 const coordsText = computed(() => {
 	const location = displayLocation.value
@@ -447,8 +504,162 @@ const displayPlayerProfile = computed(
 			statsCount: 0,
 			advancementsTotalCount: 0,
 			advancementsCompletedCount: 0,
+			distanceTraveledCm: 0,
+			deaths: 0,
+			leaveCount: 0,
+			playTimeTicks: 0,
 		},
 )
+
+const notAvailableLabel = computed(() =>
+	t('minecraftAccounts.fields.notAvailable'),
+)
+
+const displayPrimaryGroup = computed(
+	() =>
+		selectedObservedPlayer.value?.luckPermsPrimaryGroup ??
+		props.selectedAccount?.luckPermsPrimaryGroup ??
+		null,
+)
+
+const advancementsDisplayValue = computed(() =>
+	t('minecraftAccounts.summary.advancementsValue', {
+		completed: displayPlayerProfile.value.advancementsCompletedCount,
+		total: displayPlayerProfile.value.advancementsTotalCount,
+	}),
+)
+
+const distanceLabel = computed(() => {
+	if (!displayPlayerProfile.value.hasStats) {
+		return notAvailableLabel.value
+	}
+	return `${(displayPlayerProfile.value.distanceTraveledCm / 100000).toFixed(1)}km`
+})
+
+const deathsLabel = computed(() =>
+	displayPlayerProfile.value.hasStats
+		? String(displayPlayerProfile.value.deaths)
+		: notAvailableLabel.value,
+)
+
+const leaveCountLabel = computed(() =>
+	displayPlayerProfile.value.hasStats
+		? String(displayPlayerProfile.value.leaveCount)
+		: notAvailableLabel.value,
+)
+
+const TICKS_PER_SECOND = 20
+const playTimeHoursLabel = computed(() => {
+	const ticks = displayPlayerProfile.value.playTimeTicks
+	if (!displayPlayerProfile.value.hasStats || !ticks) {
+		return notAvailableLabel.value
+	}
+	const hours = ticks / TICKS_PER_SECOND / 3600
+	return `${Math.round(hours * 10) / 10}h`
+})
+
+const playTimeTooltip = computed(() => {
+	const ticks = displayPlayerProfile.value.playTimeTicks
+	if (!displayPlayerProfile.value.hasStats || !ticks) {
+		return notAvailableLabel.value
+	}
+	const totalSeconds = Math.floor(ticks / TICKS_PER_SECOND)
+	const days = Math.floor(totalSeconds / 86400)
+	const hours = Math.floor((totalSeconds % 86400) / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const seconds = totalSeconds % 60
+	return [
+		`${days}${t('minecraftAccounts.summary.durationDay')}`,
+		`${hours}${t('minecraftAccounts.summary.durationHour')}`,
+		`${minutes}${t('minecraftAccounts.summary.durationMinute')}`,
+		`${seconds}${t('minecraftAccounts.summary.durationSecond')}`,
+	].join('')
+})
+
+const summaryItems = computed<SummaryItem[]>(() => [
+	{
+		key: 'deaths',
+		label: t('minecraftAccounts.summary.deaths'),
+		value: deathsLabel.value,
+		icon: 'i-lucide-skull',
+	},
+	{
+		key: 'leave-count',
+		label: t('minecraftAccounts.summary.leaveCount'),
+		value: leaveCountLabel.value,
+		icon: 'i-lucide-log-out',
+	},
+	{
+		key: 'advancements',
+		label: t('minecraftAccounts.summary.advancements'),
+		value: advancementsDisplayValue.value,
+		icon: 'i-lucide-trophy',
+	},
+	{
+		key: 'distance',
+		label: t('minecraftAccounts.summary.distance'),
+		value: distanceLabel.value,
+		icon: 'i-lucide-footprints',
+	},
+	{
+		key: 'last-seen',
+		label: t('minecraftAccounts.summary.lastSeen'),
+		value: formatDateTime(displayLastSeenAt.value),
+		icon: 'i-lucide-clock-3',
+	},
+	{
+		key: 'first-joined',
+		label: t('minecraftAccounts.summary.firstJoined'),
+		value: formatDateTime(displayFirstJoinedAt.value),
+		icon: 'i-lucide-calendar-plus-2',
+	},
+])
+
+const statsCarouselIndex = ref(0)
+let statsCarouselTimer: ReturnType<typeof setInterval> | null = null
+const STATS_CAROUSEL_INTERVAL = 3000
+
+const stopStatsCarousel = () => {
+	if (statsCarouselTimer) {
+		clearInterval(statsCarouselTimer)
+		statsCarouselTimer = null
+	}
+}
+
+const startStatsCarousel = () => {
+	stopStatsCarousel()
+
+	if (
+		!import.meta.client ||
+		!isMobileViewport.value ||
+		summaryItems.value.length <= 1
+	) {
+		return
+	}
+
+	statsCarouselTimer = setInterval(() => {
+		statsCarouselIndex.value =
+			(statsCarouselIndex.value + 1) % summaryItems.value.length
+	}, STATS_CAROUSEL_INTERVAL)
+}
+
+const currentStat = computed(
+	() =>
+		summaryItems.value[statsCarouselIndex.value] ??
+		summaryItems.value[0] ?? { key: '', label: '', value: '', icon: '' },
+)
+
+const syncMobileViewportState = () => {
+	isMobileViewport.value = mobileViewportMediaQuery?.matches ?? false
+}
+
+watch(summaryItems, (items) => {
+	if (statsCarouselIndex.value >= items.length) {
+		statsCarouselIndex.value = 0
+	}
+
+	startStatsCarousel()
+})
 
 const uuidItems = computed(() =>
 	(props.selectedAccount?.playerIdentity.observedPlayers ?? []).map(
@@ -496,6 +707,18 @@ watch(
 
 onMounted(() => {
 	syncBodyImageLoadedState()
+
+	if (import.meta.client) {
+		mobileViewportMediaQuery = window.matchMedia('(max-width: 639px)')
+		syncMobileViewportState()
+		mobileViewportMediaQuery.addEventListener('change', syncMobileViewportState)
+	}
+
+	startStatsCarousel()
+})
+
+watch(isMobileViewport, () => {
+	startStatsCarousel()
 })
 
 onBeforeUnmount(() => {
@@ -504,6 +727,12 @@ onBeforeUnmount(() => {
 	}
 
 	clearHoverCoordsHideTimer()
+	stopStatsCarousel()
+	mobileViewportMediaQuery?.removeEventListener(
+		'change',
+		syncMobileViewportState,
+	)
+	mobileViewportMediaQuery = null
 })
 </script>
 
@@ -528,6 +757,28 @@ onBeforeUnmount(() => {
 	opacity: 1;
 	filter: blur(0);
 	transform: translateY(0) scale(1);
+}
+
+.stats-fade-enter-active,
+.stats-fade-leave-active {
+	transition:
+		opacity 280ms ease-out,
+		transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+		filter 280ms ease-out;
+}
+
+.stats-fade-enter-from,
+.stats-fade-leave-to {
+	opacity: 0;
+	filter: blur(2px);
+	transform: translateY(6px);
+}
+
+.stats-fade-enter-to,
+.stats-fade-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	transform: translateY(0);
 }
 
 .digit-flip {

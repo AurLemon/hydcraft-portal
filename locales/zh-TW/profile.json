@@ -96,6 +96,7 @@
 			}
 		},
 		"public": {
+			"pageTitle": "使用者 {name}",
 			"sections": {
 				"about": "個人簡介",
 				"social": "社交連結",

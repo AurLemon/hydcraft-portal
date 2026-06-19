@@ -4,17 +4,13 @@
 
 		<div
 			v-if="!hasMapLocation"
-			class="absolute inset-0 flex items-center justify-center bg-slate-950/60 px-6 text-center text-sm text-white backdrop-blur-sm"
-		>
-			{{ t('minecraftAccounts.map.locationUnavailable') }}
-		</div>
+			class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+		/>
 
 		<div
 			v-else-if="!providerConfigured"
 			class="absolute inset-0 flex items-center justify-center bg-slate-950/60 px-6 text-center text-sm text-white backdrop-blur-sm"
-		>
-			{{ t('minecraftAccounts.map.providerUnavailable') }}
-		</div>
+		/>
 	</div>
 </template>
 
@@ -72,6 +68,17 @@ const providerConfigured = computed(
 	() => providerRef.value?.isConfigured ?? false,
 )
 
+// 用坐标键（维度+x+z）而非 displayLocation 对象本身做 watch 依据：
+// 上游每分钟 refresh 会产生新的 displayLocation 对象引用，但坐标往往未变，
+// 直接 watch 对象会误触发 updateMarker → centerOnBlock 导致地图跳动。
+const displayLocationKey = computed(() => {
+	const location = displayLocation.value
+	if (!location) {
+		return ''
+	}
+	return `${location.dimension ?? ''}|${location.x ?? ''}|${location.z ?? ''}`
+})
+
 const updateMarker = () => {
 	const controller = controllerRef.value
 	const provider = providerRef.value
@@ -103,8 +110,8 @@ const updateMarker = () => {
 		className: 'minecraft-presence-marker',
 		html: `
 			<div style="position: relative; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
-				<div style="position: absolute; inset: 0; border-radius: 9999px; background: rgba(14, 165, 233, 0.22); box-shadow: 0 0 18px 4px rgba(125, 211, 252, 0.45);"></div>
-				<div style="position: absolute; width: 10px; height: 10px; border-radius: 9999px; background: #ffffff; box-shadow: 0 0 0 4px #0ea5e9;"></div>
+				<div style="position: absolute; inset: 0; border-radius: 9999px; background: rgba(255, 255, 255, 0.32); box-shadow: 0 0 18px 4px rgba(255, 255, 255, 0.3);"></div>
+				<div style="position: absolute; width: 10px; height: 10px; border-radius: 9999px; background: #0ea5e9; box-shadow: 0 0 0 4px #ffffff;"></div>
 			</div>
 		`,
 		iconSize: [18, 18],
@@ -224,7 +231,7 @@ watch(
 	},
 )
 
-watch(displayLocation, () => {
+watch(displayLocationKey, () => {
 	updateMarker()
 })
 

@@ -1,4 +1,13 @@
 {
+	"players": {
+		"title": "プレイヤープロフィール",
+		"pageTitle": "プレイヤー {name}",
+		"notFound": "プレイヤーが見つかりません",
+		"notPublic": "このプレイヤーはMinecraftプロフィールを公開していません",
+		"loadFailed": "プレイヤー情報の読み込みに失敗しました",
+		"boundToPrefix": "このプレイヤーは",
+		"boundToSuffix": "に紐付けられています"
+	},
 	"minecraftAccounts": {
 		"badges": {
 			"primary": "メイン表示アカウント"
@@ -25,7 +34,15 @@
 			"lastSeen": "最終参加",
 			"statsCount": "統計項目",
 			"advancements": "実績進捗",
-			"advancementsValue": "{completed}/{total}"
+			"advancementsValue": "{completed}/{total}",
+			"playTime": "プレイ時間",
+			"distance": "移動距離",
+			"deaths": "死亡回数",
+			"leaveCount": "切断回数",
+			"durationDay": "日",
+			"durationHour": "時間",
+			"durationMinute": "分",
+			"durationSecond": "秒"
 		},
 		"map": {
 			"locationUnavailable": "このアカウントにはまだ表示できる最近の座標がありません。",

@@ -1,9 +1,21 @@
 <template>
 	<div class="site-shell -mt-2 pb-16">
 		<div class="flex flex-col gap-4">
-			<div v-if="pending" class="grid gap-4">
-				<USkeleton class="h-12 rounded-2xl" />
-				<USkeleton class="h-115 rounded-3xl" />
+			<div v-if="initialLoading" class="grid gap-4">
+				<div class="flex items-center justify-between gap-3 px-6">
+					<div class="flex items-center gap-2">
+						<USkeleton
+							v-for="index in 2"
+							:key="`minecraft-toolbar-skeleton-${index}`"
+							class="size-6 rounded-md"
+						/>
+					</div>
+					<div class="flex items-center gap-2">
+						<USkeleton class="size-8 rounded-md" />
+						<USkeleton class="size-8 rounded-md" />
+					</div>
+				</div>
+				<USkeleton class="h-160 rounded-3xl" />
 			</div>
 			<UAlert
 				v-else-if="error"
@@ -59,14 +71,59 @@ const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
 const selectedAccountId = ref<string | null>(null)
 const minecraftAccountsEndpoint = '/api/users/me/minecraft-accounts' as string
-const { data, pending, error, refresh } =
-	await useFetch<MinecraftAccountsResponse>(minecraftAccountsEndpoint)
-
-const accounts = computed<MinecraftAccountForm[]>(() =>
-	(data.value?.accounts ?? []).map((account) => ({
-		...account,
-	})),
+const { data, error, refresh } = await useFetch<MinecraftAccountsResponse>(
+	minecraftAccountsEndpoint,
 )
+const accountsState = ref<MinecraftAccountForm[]>([])
+let refreshTimer: ReturnType<typeof setInterval> | null = null
+
+// 区分「首次加载」与「静默刷新」：useFetch 的 refresh() 会把 pending 置 true，
+// 若用 pending 控制 skeleton，每分钟刷新都会 unmount 整个内容区，导致内部状态
+// （hover 坐标、body 图加载态、carousel）重置与动画重放。仅首次拿到 data/error
+// 前显示 skeleton，之后刷新静默 diff 更新。
+const initialLoading = ref(true)
+watch(
+	[data, error],
+	() => {
+		if (initialLoading.value && (data.value || error.value)) {
+			initialLoading.value = false
+		}
+	},
+	{ immediate: true },
+)
+
+const reconcileAccountList = (
+	currentAccounts: MinecraftAccountForm[],
+	nextAccounts: MinecraftAccountForm[],
+): MinecraftAccountForm[] => {
+	const currentAccountMap = new Map(
+		currentAccounts.map((account) => [account.id, account]),
+	)
+
+	return nextAccounts.map((nextAccount) => {
+		const currentAccount = currentAccountMap.get(nextAccount.id)
+
+		if (!currentAccount) {
+			return nextAccount
+		}
+
+		Object.assign(currentAccount, nextAccount)
+		return currentAccount
+	})
+}
+
+watch(
+	data,
+	(value) => {
+		accountsState.value = reconcileAccountList(
+			accountsState.value,
+			value?.accounts ?? [],
+		)
+	},
+	{ immediate: true },
+)
+
+const accounts = computed<MinecraftAccountForm[]>(() => accountsState.value)
 const primaryAccount = computed<MinecraftAccountForm | null>(
 	() =>
 		accounts.value.find((account) => account.isPrimary) ??
@@ -146,4 +203,19 @@ const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
 		binding.value = false
 	}
 }
+
+onMounted(() => {
+	refreshTimer = setInterval(() => {
+		void refresh()
+	}, 60_000)
+})
+
+onBeforeUnmount(() => {
+	if (!refreshTimer) {
+		return
+	}
+
+	clearInterval(refreshTimer)
+	refreshTimer = null
+})
 </script>

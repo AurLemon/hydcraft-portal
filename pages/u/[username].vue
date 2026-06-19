@@ -172,6 +172,10 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import {
+	useExplicitRouteTitle,
+	useHeaderRouteBadge,
+} from '~/utils/layout/route-display'
+import {
 	createSocialPreviewLink,
 	extractBilibiliId,
 	extractPathSegment,
@@ -285,6 +289,25 @@ const { data, pending, error } = await useFetch<PublicProfileResponse>(
 )
 
 const profile = computed(() => data.value?.profile ?? null)
+const headerRouteBadgeFallbackText = computed(() => {
+	const source =
+		profile.value?.username?.trim() ||
+		profile.value?.displayName?.trim() ||
+		username.value.trim()
+
+	return source.slice(0, 1).toUpperCase() || 'U'
+})
+const headerRouteBadge = computed(() => ({
+	type: 'user-profile' as const,
+	labelKey: 'routes.userPage',
+	avatarUrl: profile.value?.avatarUrl ?? null,
+	fallbackText: headerRouteBadgeFallbackText.value,
+}))
+const pageTitle = computed(() =>
+	t('profile.public.pageTitle', {
+		name: profile.value?.username || username.value,
+	}),
+)
 const locationText = computed(() => {
 	if (!profile.value) {
 		return ''
@@ -422,4 +445,7 @@ function formatDate(value: string): string {
 function stripProtocol(value: string): string {
 	return value.replace(/^https?:\/\//, '').replace(/\/$/, '')
 }
+
+useHeaderRouteBadge(headerRouteBadge)
+useExplicitRouteTitle(pageTitle)
 </script>

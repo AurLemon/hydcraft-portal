@@ -54,6 +54,98 @@ model LuckPermsGroup {
   @@index([syncedAt])
 }
 
+model LuckPermsUserPermission {
+  id         String   @id @default(cuid())
+  sourceId   Int      @unique
+  uuid       String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  expiry     BigInt
+  contexts   String
+  raw        Json?
+  rawHash    String?
+  syncedAt   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([uuid])
+  @@index([permission])
+  @@index([syncedAt])
+}
+
+model LuckPermsGroupPermission {
+  id         String   @id @default(cuid())
+  sourceId   Int      @unique
+  name       String
+  permission String
+  value      Boolean
+  server     String
+  world      String
+  expiry     BigInt
+  contexts   String
+  raw        Json?
+  rawHash    String?
+  syncedAt   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([name])
+  @@index([permission])
+  @@index([syncedAt])
+}
+
+model LuckPermsAction {
+  id        String   @id @default(cuid())
+  sourceId  Int      @unique
+  time      BigInt
+  actorUuid String
+  actorName String
+  type      String
+  actedUuid String
+  actedName String
+  action    String
+  raw       Json?
+  rawHash   String?
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([time])
+  @@index([actorUuid])
+  @@index([actedUuid])
+  @@index([syncedAt])
+}
+
+model LuckPermsTrack {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  groups    String
+  raw       Json?
+  rawHash   String?
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([syncedAt])
+}
+
+model LuckPermsMessenger {
+  id        String   @id @default(cuid())
+  sourceId  Int      @unique
+  time      DateTime
+  message   String
+  raw       Json?
+  rawHash   String?
+  syncedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([time])
+  @@index([syncedAt])
+}
+
 model ExternalSyncState {
   id              String             @id @default(cuid())
   source          ExternalSyncSource @unique

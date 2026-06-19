@@ -96,6 +96,7 @@
 			}
 		},
 		"public": {
+			"pageTitle": "用户 {name}",
 			"sections": {
 				"about": "个人简介",
 				"social": "社交链接",

@@ -97,6 +97,7 @@
 			}
 		},
 		"public": {
+			"pageTitle": "User {name}",
 			"sections": {
 				"about": "Bio",
 				"social": "Social links",

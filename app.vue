@@ -6,6 +6,10 @@ import PageContainer from '~/components/layout/PageContainer.vue'
 import PageHeader from '~/components/layout/PageHeader.vue'
 import PageStatusBar from '~/components/layout/PageStatusBar.vue'
 import {
+	useExplicitRouteTitleState,
+	useResolvedRouteTitleDefinition,
+} from '~/utils/layout/route-display'
+import {
 	profileLanguageToLocaleCode,
 	type ProfileLanguage,
 } from '~/utils/profile-edit'
@@ -23,7 +27,10 @@ const nuxtApp = useNuxtApp()
 const route = useRoute()
 const switchLocalePath = useSwitchLocalePath()
 const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
+const { t } = useI18n()
 const { user, resolved } = usePortalAuth()
+const explicitRouteTitle = useExplicitRouteTitleState()
+const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
 const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const MANUAL_LOCALE_SWITCH_GRACE_MS = 1500
 const DEFAULT_LOCALE: LocaleCode = 'zh-CN'
@@ -302,6 +309,16 @@ if (import.meta.client) {
 }
 
 useHead(() => ({
+	title:
+		route.path === '/'
+			? 'HydCraft Portal'
+			: `${
+					explicitRouteTitle.value ||
+					t(
+						resolvedRouteTitleDefinition.value?.labelKey ??
+							'header.nav.currentPage',
+					)
+				} / HydCraft Portal`,
 	htmlAttrs: {
 		lang: locale.value,
 	},

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useHeaderMenuState } from '~/composables/useHeaderMenuState'
+import HeaderMenuRouteBadge from '~/components/layout/HeaderMenuRouteBadge.vue'
 
 const props = defineProps<{
 	activeNavItemClass: string
@@ -123,6 +124,13 @@ onBeforeUnmount(() => {
 
 	mobileRouteListResizeObserver?.disconnect()
 })
+
+const renderMenuItemBadge = (item: {
+	badgeType?: 'minecraft-player' | 'user-profile'
+	badgeAvatarUrl?: string | null
+	badgeFallbackText?: string | null
+	label: string
+}) => item.badgeType === 'minecraft-player' || item.badgeType === 'user-profile'
 </script>
 
 <template>
@@ -134,9 +142,16 @@ onBeforeUnmount(() => {
 		<span
 			v-for="item in displayNavItems"
 			:key="item.key"
-			class="rounded-full p-2 text-[16px] leading-none whitespace-nowrap"
+			class="inline-flex items-center gap-1.5 rounded-full p-2 text-[16px] leading-none whitespace-nowrap"
 			:class="{ 'font-semibold': isPathActive(item) || item.isFallback }"
 		>
+			<HeaderMenuRouteBadge
+				v-if="renderMenuItemBadge(item)"
+				:badge-type="item.badgeType"
+				:src="item.badgeAvatarUrl || undefined"
+				:alt="item.label"
+				:fallback-text="item.badgeFallbackText"
+			/>
 			{{ item.label }}
 		</span>
 	</div>
@@ -219,8 +234,18 @@ onBeforeUnmount(() => {
 							aria-hidden="true"
 						/>
 						<Transition name="header-current-page-label" mode="out-in">
-							<span :key="currentFallback.label" class="inline-block">
-								{{ currentFallback.label }}
+							<span
+								:key="currentFallback.label"
+								class="inline-flex items-center gap-1.5"
+							>
+								<HeaderMenuRouteBadge
+									v-if="renderMenuItemBadge(currentFallback)"
+									:badge-type="currentFallback.badgeType"
+									:src="currentFallback.badgeAvatarUrl || undefined"
+									:alt="currentFallback.label"
+									:fallback-text="currentFallback.badgeFallbackText"
+								/>
+								<span class="inline-block">{{ currentFallback.label }}</span>
 							</span>
 						</Transition>
 					</NuxtLink>
@@ -248,8 +273,18 @@ onBeforeUnmount(() => {
 				aria-hidden="true"
 			/>
 			<Transition name="header-current-page-label" mode="out-in">
-				<span :key="activeDisplayNavItem.label" class="inline-block">
-					{{ activeDisplayNavItem.label }}
+				<span
+					:key="activeDisplayNavItem.label"
+					class="inline-flex items-center gap-1.5"
+				>
+					<HeaderMenuRouteBadge
+						v-if="renderMenuItemBadge(activeDisplayNavItem)"
+						:badge-type="activeDisplayNavItem.badgeType"
+						:src="activeDisplayNavItem.badgeAvatarUrl || undefined"
+						:alt="activeDisplayNavItem.label"
+						:fallback-text="activeDisplayNavItem.badgeFallbackText"
+					/>
+					<span class="inline-block">{{ activeDisplayNavItem.label }}</span>
 				</span>
 			</Transition>
 		</UButton>
@@ -294,8 +329,20 @@ onBeforeUnmount(() => {
 								aria-hidden="true"
 							/>
 							<Transition name="header-current-page-label" mode="out-in">
-								<span :key="activeDisplayNavItem.label" class="inline-block">
-									{{ activeDisplayNavItem.label }}
+								<span
+									:key="activeDisplayNavItem.label"
+									class="inline-flex items-center gap-1.5"
+								>
+									<HeaderMenuRouteBadge
+										v-if="renderMenuItemBadge(activeDisplayNavItem)"
+										:badge-type="activeDisplayNavItem.badgeType"
+										:src="activeDisplayNavItem.badgeAvatarUrl || undefined"
+										:alt="activeDisplayNavItem.label"
+										:fallback-text="activeDisplayNavItem.badgeFallbackText"
+									/>
+									<span class="inline-block">{{
+										activeDisplayNavItem.label
+									}}</span>
 								</span>
 							</Transition>
 						</UButton>

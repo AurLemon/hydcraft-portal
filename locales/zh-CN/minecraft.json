@@ -1,4 +1,13 @@
 {
+	"players": {
+		"title": "玩家档案",
+		"pageTitle": "玩家 {name}",
+		"notFound": "未找到该玩家",
+		"notPublic": "该玩家未公开 Minecraft 档案",
+		"loadFailed": "加载玩家信息失败",
+		"boundToPrefix": "该玩家被",
+		"boundToSuffix": "绑定"
+	},
 	"minecraftAccounts": {
 		"badges": {
 			"primary": "主展示账号"
@@ -25,7 +34,15 @@
 			"lastSeen": "最近进入",
 			"statsCount": "统计条目",
 			"advancements": "成就进度",
-			"advancementsValue": "{completed}/{total}"
+			"advancementsValue": "{completed}/{total}",
+			"playTime": "游戏时间",
+			"distance": "移动距离",
+			"deaths": "死亡次数",
+			"leaveCount": "退出次数",
+			"durationDay": "天",
+			"durationHour": "时",
+			"durationMinute": "分",
+			"durationSecond": "秒"
 		},
 		"map": {
 			"locationUnavailable": "当前账号还没有可展示的最近坐标。",

@@ -4,6 +4,8 @@ import {
 	lookupIpLocation,
 	normalizeIpAddressForDisplay,
 } from '../ip-location/ip-location'
+import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 
 const SORT_FIELDS = new Set([
 	'username',
@@ -216,26 +218,10 @@ const readAccountEnrichment = async (
 	const accountUuids = [
 		...new Set(accounts.flatMap((account) => account.uuid ?? [])),
 	]
-	const [luckPermsPlayers, serverPlayers] = await Promise.all([
-		prisma.luckPermsPlayer.findMany({
-			where: {
-				OR: [
-					{
-						normalizedUsername: {
-							in: normalizedUsernames,
-						},
-					},
-					...(accountUuids.length
-						? [
-								{
-									uuid: {
-										in: accountUuids,
-									},
-								},
-							]
-						: []),
-				],
-			},
+	const [luckPermsSnapshot, serverPlayers] = await Promise.all([
+		readLuckPermsSnapshotBundle({
+			uuids: accountUuids,
+			normalizedUsernames,
 		}),
 		prisma.minecraftServerPlayer.findMany({
 			where: {
@@ -281,23 +267,28 @@ const readAccountEnrichment = async (
 			orderBy: [{ serverId: 'asc' }, { updatedAt: 'desc' }],
 		}),
 	])
-	const luckPermsByUuid = new Map(
-		luckPermsPlayers.map((player) => [player.uuid, player]),
-	)
-	const luckPermsByName = new Map(
-		luckPermsPlayers.flatMap((player) =>
-			player.normalizedUsername ? [[player.normalizedUsername, player]] : [],
-		),
-	)
+	const luckPermsResolver =
+		createLuckPermsPrimaryGroupResolver(luckPermsSnapshot)
 
 	return new Map(
 		accounts.map((account) => {
 			const normalizedUsername =
 				account.authMeAccount?.normalizedUsername ?? account.normalizedUsername
-			const luckPerms =
-				(account.uuid ? luckPermsByUuid.get(account.uuid) : undefined) ??
-				luckPermsByName.get(normalizedUsername) ??
-				null
+			const luckPermsPlayer = luckPermsResolver.resolvePlayer({
+				uuid: account.uuid,
+				normalizedUsername,
+			})
+			const luckPerms = luckPermsPlayer
+				? {
+						uuid: luckPermsPlayer.uuid,
+						username: luckPermsPlayer.username,
+						primaryGroup: luckPermsResolver.resolveEffectivePrimaryGroup({
+							uuid: account.uuid,
+							normalizedUsername,
+						}),
+						syncedAt: luckPermsPlayer.syncedAt,
+					}
+				: null
 			const matchedPlayers = serverPlayers.filter(
 				(player) =>
 					(account.uuid && player.uuid === account.uuid) ||
@@ -365,19 +356,38 @@ const readAccountEnrichment = async (
 }
 
 const findGroupMatchedNames = async (group: string): Promise<string[]> => {
-	const luckPermsPlayers = await prisma.luckPermsPlayer.findMany({
-		where: {
-			primaryGroup: {
-				contains: group,
-				mode: 'insensitive',
+	const luckPermsPlayers = await prisma.luckPermsPlayer.findMany()
+	const resolver = createLuckPermsPrimaryGroupResolver({
+		players: luckPermsPlayers,
+		userPermissions: await prisma.luckPermsUserPermission.findMany({
+			where: {
+				uuid: {
+					in: luckPermsPlayers.map((player) => player.uuid),
+				},
+				permission: {
+					startsWith: 'group.',
+				},
 			},
-		},
-		select: {
-			uuid: true,
-			normalizedUsername: true,
-		},
+		}),
+		groupPermissions: await prisma.luckPermsGroupPermission.findMany({
+			where: {
+				permission: {
+					startsWith: 'weight.',
+				},
+			},
+		}),
 	})
-	const groupUuids = luckPermsPlayers.map((player) => player.uuid)
+	const matchedLuckPermsPlayers = luckPermsPlayers.filter((player) =>
+		(
+			resolver.resolveEffectivePrimaryGroup({
+				uuid: player.uuid,
+				normalizedUsername: player.normalizedUsername,
+			}) ?? ''
+		)
+			.toLowerCase()
+			.includes(group.toLowerCase()),
+	)
+	const groupUuids = matchedLuckPermsPlayers.map((player) => player.uuid)
 	const serverPlayers = groupUuids.length
 		? await prisma.minecraftServerPlayer.findMany({
 				where: {
@@ -397,7 +407,9 @@ const findGroupMatchedNames = async (group: string): Promise<string[]> => {
 
 	return [
 		...new Set([
-			...luckPermsPlayers.flatMap((player) => player.normalizedUsername ?? []),
+			...matchedLuckPermsPlayers.flatMap(
+				(player) => player.normalizedUsername ?? [],
+			),
 			...serverPlayers.flatMap((player) => player.normalizedUsername ?? []),
 		]),
 	]

@@ -15,6 +15,7 @@ export interface MinecraftObservedPlayerSummary {
 	online: boolean
 	lastSeenAt: string | null
 	lastPlayedAt: string | null
+	luckPermsPrimaryGroup: string | null
 	playerProfile: {
 		firstPlayedAt: string | null
 		lastPlayedAt: string | null
@@ -23,6 +24,10 @@ export interface MinecraftObservedPlayerSummary {
 		statsCount: number
 		advancementsTotalCount: number
 		advancementsCompletedCount: number
+		distanceTraveledCm: number
+		deaths: number
+		leaveCount: number
+		playTimeTicks: number
 	}
 	lastSavedLocation: MinecraftLocationSummary | null
 }
@@ -53,6 +58,7 @@ export interface MinecraftAccountSummary {
 		hasUuidConflict: boolean
 		observedPlayers: MinecraftObservedPlayerSummary[]
 	}
+	luckPermsPrimaryGroup: string | null
 	playerProfile: {
 		firstPlayedAt: string | null
 		lastPlayedAt: string | null
@@ -61,6 +67,10 @@ export interface MinecraftAccountSummary {
 		statsCount: number
 		advancementsTotalCount: number
 		advancementsCompletedCount: number
+		distanceTraveledCm: number
+		deaths: number
+		leaveCount: number
+		playTimeTicks: number
 	}
 	presence: {
 		online: boolean
@@ -72,6 +82,10 @@ export interface MinecraftAccountSummary {
 		reason: string | null
 		createdAt: string
 	}>
+	boundPortalUser?: {
+		username: string
+		avatarUrl: string | null
+	} | null
 }
 
 export interface MinecraftAccountForm extends MinecraftAccountSummary {}

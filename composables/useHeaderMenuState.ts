@@ -2,7 +2,6 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
 	findHeaderMenuGroupByKey,
 	findHeaderMenuGroupByPath,
-	headerMenuFallbackLabelKeys,
 	headerMenuGroups,
 	isPathInHeaderMenuGroup,
 	mainHeaderMenuGroup,
@@ -10,6 +9,10 @@ import {
 	type HeaderMenuGroup,
 	type HeaderMenuItem,
 } from '~/utils/layout/header-menu'
+import {
+	useHeaderRouteBadgeState,
+	useResolvedRouteTitleDefinition,
+} from '~/utils/layout/route-display'
 
 interface HeaderMenuStateOptions {
 	activeNavItemClass: () => string
@@ -24,12 +27,17 @@ interface MenuItem {
 	to: string
 	icon?: string
 	isFallback?: boolean
+	badgeType?: 'minecraft-player' | 'user-profile'
+	badgeAvatarUrl?: string | null
+	badgeFallbackText?: string | null
 }
 
 export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 	const route = useRoute()
 	const error = useError()
 	const localePath = useLocalePath()
+	const headerRouteBadge = useHeaderRouteBadgeState()
+	const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
 	const menuMeasure = ref<HTMLElement | null>(null)
 	const mobileActiveButton = ref<HTMLElement | null>(null)
 	const mobileMenuOpen = ref(false)
@@ -110,14 +118,17 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			}
 		}
 
-		const normalizedPath = normalizePath(route.path)
-		const labelKey = headerMenuFallbackLabelKeys[normalizedPath]
-
 		return {
 			key: route.fullPath || route.path,
-			label: labelKey ? t(labelKey) : t('header.nav.currentPage'),
+			label: t(
+				resolvedRouteTitleDefinition.value?.labelKey ??
+					'header.nav.currentPage',
+			),
 			to: route.fullPath || route.path,
 			isFallback: true,
+			badgeType: headerRouteBadge.value?.type,
+			badgeAvatarUrl: headerRouteBadge.value?.avatarUrl ?? null,
+			badgeFallbackText: headerRouteBadge.value?.fallbackText ?? null,
 		}
 	})
 	const currentFallback = computed<MenuItem | null>(() => {

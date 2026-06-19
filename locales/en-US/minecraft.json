@@ -1,4 +1,13 @@
 {
+	"players": {
+		"title": "Player Profile",
+		"pageTitle": "Player {name}",
+		"notFound": "Player not found",
+		"notPublic": "This player has not made their Minecraft profile public",
+		"loadFailed": "Failed to load player info",
+		"boundToPrefix": "This player is bound to",
+		"boundToSuffix": ""
+	},
 	"minecraftAccounts": {
 		"badges": {
 			"primary": "Primary display account"
@@ -25,7 +34,15 @@
 			"lastSeen": "Last seen",
 			"statsCount": "Stat entries",
 			"advancements": "Advancements",
-			"advancementsValue": "{completed}/{total}"
+			"advancementsValue": "{completed}/{total}",
+			"playTime": "Playtime",
+			"distance": "Distance",
+			"deaths": "Deaths",
+			"leaveCount": "Disconnects",
+			"durationDay": "d",
+			"durationHour": "h",
+			"durationMinute": "m",
+			"durationSecond": "s"
 		},
 		"map": {
 			"locationUnavailable": "No recent coordinates are available for this account yet.",

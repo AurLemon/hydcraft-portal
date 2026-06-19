@@ -4,6 +4,8 @@ import {
 	lookupIpLocation,
 	normalizeIpAddressForDisplay,
 } from '../ip-location/ip-location'
+import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 
 const SORT_FIELDS = new Set([
 	'username',
@@ -32,6 +34,7 @@ interface ServerPlayerEnrichment {
 		syncedAt: Date
 	} | null
 	luckPerms?: {
+		uuid: string
 		username: string | null
 		primaryGroup: string | null
 		syncedAt: Date
@@ -119,7 +122,7 @@ const readServerPlayerEnrichment = async (players: ServerPlayerEntity[]) => {
 		...new Set(players.flatMap((player) => player.normalizedUsername ?? [])),
 	]
 	const uuids = [...new Set(players.map((player) => player.uuid))]
-	const [authMeAccounts, luckPermsPlayers] = await Promise.all([
+	const [authMeAccounts, luckPermsSnapshot] = await Promise.all([
 		prisma.authMeAccount.findMany({
 			where: {
 				normalizedUsername: {
@@ -127,34 +130,16 @@ const readServerPlayerEnrichment = async (players: ServerPlayerEntity[]) => {
 				},
 			},
 		}),
-		prisma.luckPermsPlayer.findMany({
-			where: {
-				OR: [
-					{
-						uuid: {
-							in: uuids,
-						},
-					},
-					{
-						normalizedUsername: {
-							in: normalizedUsernames,
-						},
-					},
-				],
-			},
+		readLuckPermsSnapshotBundle({
+			uuids,
+			normalizedUsernames,
 		}),
 	])
 	const authMeByName = new Map(
 		authMeAccounts.map((account) => [account.normalizedUsername, account]),
 	)
-	const luckPermsByUuid = new Map(
-		luckPermsPlayers.map((player) => [player.uuid, player]),
-	)
-	const luckPermsByName = new Map(
-		luckPermsPlayers.flatMap((player) =>
-			player.normalizedUsername ? [[player.normalizedUsername, player]] : [],
-		),
-	)
+	const luckPermsResolver =
+		createLuckPermsPrimaryGroupResolver(luckPermsSnapshot)
 
 	return new Map(
 		players.map((player) => [
@@ -163,11 +148,26 @@ const readServerPlayerEnrichment = async (players: ServerPlayerEntity[]) => {
 				authMe: player.normalizedUsername
 					? authMeByName.get(player.normalizedUsername)
 					: null,
-				luckPerms:
-					luckPermsByUuid.get(player.uuid) ??
-					(player.normalizedUsername
-						? luckPermsByName.get(player.normalizedUsername)
-						: null),
+				luckPerms: (() => {
+					const luckPermsPlayer = luckPermsResolver.resolvePlayer({
+						uuid: player.uuid,
+						normalizedUsername: player.normalizedUsername ?? null,
+					})
+
+					if (!luckPermsPlayer) {
+						return null
+					}
+
+					return {
+						uuid: luckPermsPlayer.uuid,
+						username: luckPermsPlayer.username,
+						primaryGroup: luckPermsResolver.resolveEffectivePrimaryGroup({
+							uuid: player.uuid,
+							normalizedUsername: player.normalizedUsername ?? null,
+						}),
+						syncedAt: luckPermsPlayer.syncedAt,
+					}
+				})(),
 			},
 		]),
 	)
@@ -295,22 +295,51 @@ export const listServerPlayers = async (input: {
 	sortField?: string
 	sortDirection?: 'asc' | 'desc'
 }) => {
-	const groupUuidRows = input.group
-		? await prisma.luckPermsPlayer.findMany({
-				where: {
-					primaryGroup: input.group,
-				},
-				select: {
-					uuid: true,
-				},
-			})
-		: []
+	const allLuckPermsPlayers =
+		input.group || input.sortField === 'luckPermsPrimaryGroup'
+			? await prisma.luckPermsPlayer.findMany()
+			: []
+	const groupResolver =
+		input.group || input.sortField === 'luckPermsPrimaryGroup'
+			? createLuckPermsPrimaryGroupResolver({
+					players: allLuckPermsPlayers,
+					userPermissions: await prisma.luckPermsUserPermission.findMany({
+						where: {
+							uuid: {
+								in: allLuckPermsPlayers.map((player) => player.uuid),
+							},
+							permission: {
+								startsWith: 'group.',
+							},
+						},
+					}),
+					groupPermissions: await prisma.luckPermsGroupPermission.findMany({
+						where: {
+							permission: {
+								startsWith: 'weight.',
+							},
+						},
+					}),
+				})
+			: null
+	const groupUuids =
+		input.group && groupResolver
+			? allLuckPermsPlayers
+					.filter(
+						(player) =>
+							groupResolver.resolveEffectivePrimaryGroup({
+								uuid: player.uuid,
+								normalizedUsername: player.normalizedUsername,
+							}) === input.group,
+					)
+					.map((player) => player.uuid)
+			: []
 	const where: Prisma.MinecraftServerPlayerWhereInput = {
 		serverId: input.serverId,
 		...(input.group
 			? {
 					uuid: {
-						in: groupUuidRows.map((row) => row.uuid),
+						in: groupUuids,
 					},
 				}
 			: {}),

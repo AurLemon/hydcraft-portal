@@ -1,6 +1,6 @@
 {
 	"routes": {
-		"entry": "Hydroline ID",
+		"entry": "Portal",
 		"intro": "紹介",
 		"server": "サーバー",
 		"serverOverview": "サーバー",
@@ -10,6 +10,8 @@
 		"about": "私たちについて",
 		"links": "リンク",
 		"partners": "パートナー",
+		"playerPage": "プレイヤーページ",
+		"userPage": "ユーザーページ",
 		"admin": "管理",
 		"adminOverview": "概要",
 		"adminServers": "サーバー",
