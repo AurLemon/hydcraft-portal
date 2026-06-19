@@ -19,8 +19,8 @@
 			"pageSize": "{size} / page"
 		},
 		"overview": {
-			"title": "Portal Overview",
-			"loading": "Loading Portal configuration...",
+			"title": "Hydroline ID Overview",
+			"loading": "Loading Hydroline ID configuration...",
 			"metrics": {
 				"servers": "Servers",
 				"users": "Users",
@@ -47,7 +47,7 @@
 			"services": {
 				"postgresql": {
 					"label": "PostgreSQL Database",
-					"description": "Portal primary database"
+					"description": "Hydroline ID primary database"
 				},
 				"authme": {
 					"label": "AuthMe Database",
@@ -70,7 +70,7 @@
 				"servers": "Go to servers",
 				"serversDescription": "Manage server access and data sources",
 				"users": "Open users",
-				"usersDescription": "View and manage Portal users",
+				"usersDescription": "View and manage Hydroline ID accounts",
 				"attachments": "Open attachments",
 				"attachmentsDescription": "Review avatar and cover assets"
 			}
@@ -279,10 +279,10 @@
 				"authMeSyncedAt": "AuthMe synced at",
 				"luckPermsPrimaryGroup": "LuckPerms primary group",
 				"luckPermsSyncedAt": "LuckPerms synced at",
-				"portalAccountId": "Portal account ID",
-				"portalUserId": "Portal user ID",
-				"portalAccountStatus": "Portal account status",
-				"portalAccountSource": "Portal account source",
+				"portalAccountId": "Hydroline ID account ID",
+				"portalUserId": "Hydroline ID user ID",
+				"portalAccountStatus": "Hydroline ID account status",
+				"portalAccountSource": "Hydroline ID account source",
 				"bridgeSyncedAt": "Bridge synced at",
 				"createdAt": "Created at",
 				"updatedAt": "Updated at",
@@ -306,7 +306,7 @@
 			"resetSync": {
 				"eyebrow": "Danger zone",
 				"title": "Reset player sync data and pull again",
-				"description": "This clears player sync projections, identity events, playerdata snapshots, sync task state, and Bridge receipts for this server, then pulls from the selected sources again. Portal users and Minecraft account bindings are not deleted.",
+				"description": "This clears player sync projections, identity events, playerdata snapshots, sync task state, and Bridge receipts for this server, then pulls from the selected sources again. Hydroline ID accounts and Minecraft account bindings are not deleted.",
 				"confirm": "Reset and resync",
 				"successTitle": "Resync started",
 				"successDescription": "Player sync data was reset and the selected sources were triggered again.",
@@ -460,6 +460,11 @@
 				"coverEmpty": "No cover URL",
 				"avatarReset": "Avatar will reset after saving",
 				"coverReset": "Cover will reset after saving"
+			},
+			"edit": {
+				"back": "Back to users",
+				"fallbackTitle": "User",
+				"loadFailed": "Failed to load user"
 			}
 		},
 		"attachments": {

@@ -1,27 +1,76 @@
 {
 	"minecraftAccounts": {
-		"title": "ゲームプロフィール",
 		"badges": {
-			"primary": "メイン"
+			"primary": "メイン表示アカウント"
 		},
 		"fields": {
-			"note": "メモ",
-			"primary": "メインアカウントにする",
-			"noUuid": "UUID はまだありません"
+			"noUuid": "UUID なし",
+			"notAvailable": "データなし",
+			"unknownCoords": "座標不明",
+			"unknownWorld": "不明なワールド",
+			"authmeUsername": "AuthMe アカウント",
+			"authmeRealname": "ゲーム ID"
+		},
+		"identity": {
+			"title": "プレイヤー ID プロフィール",
+			"boundUuid": "紐付け済み UUID",
+			"observedUuid": "観測 UUID",
+			"uuidConflictValue": "{count} 個の UUID を観測",
+			"uuidPending": "UUID はまだ未確定",
+			"online": "オンライン",
+			"offline": "オフライン"
+		},
+		"summary": {
+			"firstJoined": "初回参加",
+			"lastSeen": "最終参加",
+			"statsCount": "統計項目",
+			"advancements": "実績進捗",
+			"advancementsValue": "{completed}/{total}"
+		},
+		"map": {
+			"locationUnavailable": "このアカウントにはまだ表示できる最近の座標がありません。",
+			"providerUnavailable": "ベースマップが未設定です。先に Dynmap tiles の環境変数を設定してください。"
+		},
+		"toolbar": {
+			"bindTip": "バインドを追加",
+			"setPrimaryTip": "メイン設定"
+		},
+		"settings": {
+			"title": "メインアカウントを設定"
+		},
+		"overlay": {
+			"lastLogin": "前回ログイン"
+		},
+		"bind": {
+			"title": "別の Minecraft アカウントをバインド",
+			"description": "HydCraft サーバーで使用しているゲームアカウントを入力してください。ここでは Minecraft 正規版アカウントの確認は行わず、HydCraft 内で登録済みかつ過去にログインしたことがあるゲームアカウントのみを認識します。2022 年 2 月 17 日に第6周目が始まって以降に登録されたアカウントはバインドできます。HydCraft 内で登録済みかつ過去にログインしたことがない場合は、バインドできません。",
+			"fields": {
+				"username": "Minecraft ID",
+				"password": "ログインパスワード"
+			},
+			"actions": {
+				"submit": "バインドを開始"
+			},
+			"notifications": {
+				"successTitle": "バインドしました",
+				"successDescription": "Minecraft アカウントが現在の Hydroline ID アカウントにバインドされました。",
+				"failedTitle": "バインドに失敗しました",
+				"failedDescription": "Minecraft ID、ログインパスワード、または既存のバインド状態を確認してください。"
+			}
 		},
 		"actions": {
-			"save": "保存"
+			"setPrimary": "メインに設定"
 		},
 		"empty": {
-			"title": "連携済み Minecraft アカウントはありません",
-			"description": "連携またはサーバーデータソースからインポートされたアカウントがここに表示されます。",
-			"loadFailed": "ゲームプロフィールの読み込みに失敗しました"
+			"title": "まだ Minecraft アカウントがバインドされていません",
+			"description": "最初に認証とバインドを完了すると、同期されたプレイヤー情報がここに表示されます。",
+			"loadFailed": "Minecraft アカウントの読み込みに失敗しました",
+			"bindAction": "バインドを開始"
 		},
 		"notifications": {
-			"saved": "ゲームプロフィールを保存しました",
-			"savedDescription": "メモとメインアカウント状態を更新しました。",
-			"saveFailed": "ゲームプロフィールの保存に失敗しました",
-			"saveFailedDescription": "ログイン状態とアカウントの所有関係を確認してください。"
+			"primarySet": "メインアカウントを設定しました",
+			"primarySetFailed": "メインアカウントの設定に失敗しました",
+			"primarySetFailedDescription": "セッションまたはアカウントの所有権を確認してください。"
 		}
 	}
 }

@@ -324,7 +324,9 @@
 				"SECONDARY_EMAIL_REMOVED": "Secondary email removed",
 				"PASSWORD_CHANGED": "Password changed",
 				"OAUTH_LINKED": "External account linked",
-				"OAUTH_UNLINKED": "External account unlinked"
+				"OAUTH_UNLINKED": "External account unlinked",
+				"MINECRAFT_ACCOUNT_BOUND": "Minecraft account bound",
+				"UNKNOWN": "Unknown security event"
 			},
 			"modals": {
 				"passwordReset": {

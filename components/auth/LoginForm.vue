@@ -33,7 +33,7 @@
 				v-if="authMode === 'password'"
 				key="password"
 				class="space-y-5 overflow-hidden"
-				@submit.prevent="submit"
+				@submit.prevent="submitPasswordLogin"
 			>
 				<div class="space-y-4">
 					<label
@@ -41,7 +41,7 @@
 					>
 						<span>{{ t('login.fields.handleOrEmail') }}</span>
 						<UInput
-							v-model="form.handleOrEmail"
+							v-model="passwordForm.handleOrEmail"
 							required
 							autocomplete="username"
 							:placeholder="t('login.placeholders.handleOrEmail')"
@@ -54,7 +54,7 @@
 					>
 						<span>{{ t('login.fields.password') }}</span>
 						<UInput
-							v-model="form.password"
+							v-model="passwordForm.password"
 							:type="passwordVisible ? 'text' : 'password'"
 							required
 							autocomplete="current-password"
@@ -86,6 +86,13 @@
 						<button
 							type="button"
 							class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+							@click="authMode = 'game'"
+						>
+							{{ t('login.actions.minecraftLogin') }}
+						</button>
+						<button
+							type="button"
+							class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
 							@click="authMode = 'email'"
 						>
 							{{ t('login.actions.emailCodeLogin') }}
@@ -110,24 +117,97 @@
 					type="submit"
 					icon="i-lucide-log-in"
 					:loading="submitting"
-					:disabled="submitDisabled"
+					:disabled="passwordSubmitDisabled"
 					size="lg"
 					class="w-full justify-center"
 				>
 					{{ t('login.actions.submit') }}
 				</UButton>
 
-				<p class="text-center text-sm text-slate-600 dark:text-slate-300/80">
-					{{ t('login.registerPrompt.text') }}
-					<NuxtLink
-						:to="registerRoute"
-						class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
-					>
-						{{ t('login.registerPrompt.action') }}
-					</NuxtLink>
-				</p>
+				<div
+					class="space-y-2 text-center text-sm text-slate-600 dark:text-slate-300/80"
+				>
+					<p>
+						{{ t('login.registerPrompt.text') }}
+						<NuxtLink
+							:to="registerRoute"
+							class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+						>
+							{{ t('login.registerPrompt.action') }}
+						</NuxtLink>
+					</p>
+				</div>
 
 				<AuthProviderList />
+			</form>
+			<form
+				v-else-if="authMode === 'game'"
+				key="game"
+				class="space-y-5 overflow-hidden"
+				@submit.prevent="submitMinecraftLogin"
+			>
+				<div class="space-y-4">
+					<label
+						class="flex flex-col gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100"
+					>
+						<span>{{ t('minecraftLogin.fields.username') }}</span>
+						<UInput
+							v-model="minecraftForm.username"
+							required
+							autocomplete="username"
+							size="lg"
+							variant="outline"
+						/>
+					</label>
+					<label
+						class="flex flex-col gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100"
+					>
+						<span>{{ t('minecraftLogin.fields.password') }}</span>
+						<UInput
+							v-model="minecraftForm.password"
+							:type="gamePasswordVisible ? 'text' : 'password'"
+							required
+							autocomplete="current-password"
+							size="lg"
+							variant="outline"
+						>
+							<template #trailing>
+								<UButton
+									type="button"
+									color="neutral"
+									variant="ghost"
+									size="xs"
+									:icon="
+										gamePasswordVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'
+									"
+									:aria-label="t('auth.actions.togglePassword')"
+									@click="gamePasswordVisible = !gamePasswordVisible"
+								/>
+							</template>
+						</UInput>
+					</label>
+				</div>
+
+				<UButton
+					type="submit"
+					icon="i-lucide-gamepad-2"
+					:loading="submitting"
+					:disabled="minecraftSubmitDisabled"
+					size="lg"
+					class="w-full justify-center"
+				>
+					{{ t('minecraftLogin.actions.submit') }}
+				</UButton>
+
+				<p class="text-center text-sm text-slate-600 dark:text-slate-300/80">
+					{{ t('minecraftLogin.registerPrompt.text') }}
+					<NuxtLink
+						:to="gameRegisterRoute"
+						class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+					>
+						{{ t('minecraftLogin.registerPrompt.action') }}
+					</NuxtLink>
+				</p>
 			</form>
 			<EmailCodeLoginForm v-else-if="authMode === 'email'" key="email" />
 			<ForgotPasswordForm v-else key="forgot-password" embedded />
@@ -143,46 +223,107 @@ interface LoginFormState {
 	password: string
 }
 
+interface MinecraftLoginFormState {
+	username: string
+	password: string
+}
+
+type LoginAuthMode = 'password' | 'game' | 'email' | 'forgotPassword'
+
+interface ApiErrorWithData {
+	data?: {
+		registrationToken?: unknown
+	}
+}
+
+const parseAuthMode = (value: unknown): LoginAuthMode =>
+	value === 'game' || value === 'email' ? value : 'password'
+
 const route = useRoute()
 const localePath = useLocalePath()
-const { login } = usePortalAuth()
+const { t } = useI18n()
+const { login, loginWithMinecraft } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
 const { getErrorCode } = useApiError()
 const submitting = ref(false)
 const rememberMe = ref(true)
 const passwordVisible = ref(false)
-const authMode = ref<'password' | 'email' | 'forgotPassword'>('password')
+const gamePasswordVisible = ref(false)
+const authMode = ref<LoginAuthMode>(parseAuthMode(route.query.mode))
 const captcha = useCap(false)
 const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
-const form = reactive<LoginFormState>({
+const passwordForm = reactive<LoginFormState>({
 	handleOrEmail: '',
 	password: '',
 })
+const minecraftForm = reactive<MinecraftLoginFormState>({
+	username: '',
+	password: '',
+})
 
-const authTitleKey = computed(() =>
-	authMode.value === 'email'
-		? 'emailCodeLogin.title'
-		: authMode.value === 'forgotPassword'
-			? 'forgotPassword.title'
-			: 'login.title',
+watch(
+	() => route.query.mode,
+	(mode) => {
+		authMode.value = parseAuthMode(mode)
+	},
 )
-const authDescriptionKey = computed(() =>
-	authMode.value === 'email'
-		? 'emailCodeLogin.description'
-		: authMode.value === 'forgotPassword'
-			? 'forgotPassword.description'
-			: 'login.description',
+
+watch(
+	authMode,
+	(mode, previousMode) => {
+		if (previousMode === 'game') {
+			captcha.reset(false)
+		}
+	},
+	{
+		immediate: true,
+	},
 )
+
+const authTitleKey = computed(() => {
+	switch (authMode.value) {
+		case 'email':
+			return 'emailCodeLogin.title'
+		case 'forgotPassword':
+			return 'forgotPassword.title'
+		case 'game':
+			return 'minecraftLogin.title'
+		default:
+			return 'login.title'
+	}
+})
+const authDescriptionKey = computed(() => {
+	switch (authMode.value) {
+		case 'email':
+			return 'emailCodeLogin.description'
+		case 'forgotPassword':
+			return 'forgotPassword.description'
+		case 'game':
+			return 'minecraftLogin.description'
+		default:
+			return 'login.description'
+	}
+})
 const registerRoute = computed(() => ({
 	path: localePath('/register'),
 	query: route.query.redirect ? { redirect: route.query.redirect } : {},
 }))
-const submitDisabled = computed(
+const gameRegisterRoute = computed(() => ({
+	path: localePath('/register'),
+	query: {
+		...(route.query.redirect ? { redirect: route.query.redirect } : {}),
+		mode: 'game',
+	},
+}))
+const passwordSubmitDisabled = computed(
 	() =>
-		!form.handleOrEmail ||
-		!form.password ||
+		!passwordForm.handleOrEmail ||
+		!passwordForm.password ||
 		submitting.value ||
 		(captcha.required.value && !captcha.token.value),
+)
+const minecraftSubmitDisabled = computed(
+	() => !minecraftForm.username || !minecraftForm.password || submitting.value,
 )
 
 const getRedirectPath = (): string => {
@@ -197,8 +338,40 @@ const resetCaptcha = (): void => {
 	captchaWidgetRef.value?.reset()
 }
 
-const submit = async (): Promise<void> => {
-	if (submitDisabled.value) {
+const handleAuthFailure = (
+	error: unknown,
+	fallbackTitle: string,
+	fallbackDescription: string,
+): void => {
+	if (getErrorCode(error) === 'CAPTCHA_REQUIRED') {
+		captcha.markRequired()
+	}
+
+	if (captcha.required.value) {
+		resetCaptcha()
+	}
+
+	notifyError(error, {
+		title: fallbackTitle,
+		description: fallbackDescription,
+	})
+}
+
+const navigateToGameRegistration = async (
+	registrationToken: string,
+): Promise<void> => {
+	await navigateTo({
+		path: localePath('/register'),
+		query: {
+			...(route.query.redirect ? { redirect: route.query.redirect } : {}),
+			mode: 'game',
+			ticket: registrationToken,
+		},
+	})
+}
+
+const submitPasswordLogin = async (): Promise<void> => {
+	if (passwordSubmitDisabled.value) {
 		return
 	}
 
@@ -206,7 +379,7 @@ const submit = async (): Promise<void> => {
 
 	try {
 		await login({
-			...form,
+			...passwordForm,
 			captchaToken: captcha.consumeToken(),
 		})
 		notifySuccess({
@@ -214,18 +387,59 @@ const submit = async (): Promise<void> => {
 		})
 		await navigateTo(getRedirectPath())
 	} catch (error) {
-		if (getErrorCode(error) === 'CAPTCHA_REQUIRED') {
-			captcha.markRequired()
-		}
+		handleAuthFailure(
+			error,
+			t('login.notifications.failedTitle'),
+			t('login.notifications.failedDescription'),
+		)
+	} finally {
+		submitting.value = false
+	}
+}
 
-		if (captcha.required.value) {
-			resetCaptcha()
-		}
+const submitMinecraftLogin = async (): Promise<void> => {
+	if (minecraftSubmitDisabled.value) {
+		return
+	}
 
-		notifyError(error, {
-			title: t('login.notifications.failedTitle'),
-			description: t('login.notifications.failedDescription'),
+	submitting.value = true
+
+	try {
+		await loginWithMinecraft({
+			...minecraftForm,
 		})
+		notifySuccess({
+			title: t('minecraftLogin.notifications.successTitle'),
+		})
+		await navigateTo(getRedirectPath())
+	} catch (error) {
+		const errorCode = getErrorCode(error)
+		const registrationTokenCandidate = (error as ApiErrorWithData | null)?.data
+			?.registrationToken
+		const registrationToken =
+			typeof registrationTokenCandidate === 'string'
+				? registrationTokenCandidate
+				: null
+
+		if (errorCode === 'MINECRAFT_ACCOUNT_NOT_BOUND' && registrationToken) {
+			if (captcha.required.value) {
+				resetCaptcha()
+			}
+			notifySuccess({
+				title: t('minecraftLogin.notifications.registrationRequiredTitle'),
+				description: t(
+					'minecraftLogin.notifications.registrationRequiredDescription',
+				),
+			})
+			await navigateToGameRegistration(registrationToken)
+			return
+		}
+
+		handleAuthFailure(
+			error,
+			t('minecraftLogin.notifications.failedTitle'),
+			t('minecraftLogin.notifications.failedDescription'),
+		)
 	} finally {
 		submitting.value = false
 	}

@@ -374,6 +374,7 @@ export type AdminUserStatus = 'PENDING' | 'ACTIVE' | 'DISABLED' | 'BANNED'
 export interface AdminUser {
 	id: string
 	username: string
+	handle: string
 	hydrolineId: string
 	displayName: string | null
 	email: string | null
@@ -416,6 +417,21 @@ export interface AdminUser {
 		label: string | null
 		color: string | null
 		sortOrder: number
+	}>
+	minecraftAccounts: Array<{
+		id: string
+		username: string
+		normalizedUsername: string
+		uuid: string | null
+		status: string
+		source: string
+		authmeName: string | null
+		authmeId: number | null
+		isPrimary: boolean
+		verifiedAt: string | null
+		unlinkedAt: string | null
+		createdAt: string
+		updatedAt: string
 	}>
 }
 

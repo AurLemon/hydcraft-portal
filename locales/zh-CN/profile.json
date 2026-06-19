@@ -329,7 +329,9 @@
 				"SECONDARY_EMAIL_REMOVED": "已移除辅助邮箱",
 				"PASSWORD_CHANGED": "密码已变更",
 				"OAUTH_LINKED": "已绑定外部授权",
-				"OAUTH_UNLINKED": "已解绑外部授权"
+				"OAUTH_UNLINKED": "已解绑外部授权",
+				"MINECRAFT_ACCOUNT_BOUND": "已绑定 Minecraft 账号",
+				"UNKNOWN": "未知安全事件"
 			},
 			"modals": {
 				"passwordReset": {

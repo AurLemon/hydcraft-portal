@@ -1,27 +1,76 @@
 {
 	"minecraftAccounts": {
-		"title": "Minecraft Accounts",
 		"badges": {
-			"primary": "Primary"
+			"primary": "Primary display account"
 		},
 		"fields": {
-			"note": "Note",
-			"primary": "Set as primary account",
-			"noUuid": "No UUID yet"
+			"noUuid": "UUID unavailable",
+			"notAvailable": "No data",
+			"unknownCoords": "Unknown coordinates",
+			"unknownWorld": "Unknown world",
+			"authmeUsername": "AuthMe account",
+			"authmeRealname": "Game ID"
+		},
+		"identity": {
+			"title": "Player ID profile",
+			"boundUuid": "Bound UUID",
+			"observedUuid": "Observed UUID",
+			"uuidConflictValue": "{count} UUIDs observed",
+			"uuidPending": "UUID pending observation",
+			"online": "Online",
+			"offline": "Offline"
+		},
+		"summary": {
+			"firstJoined": "First joined",
+			"lastSeen": "Last seen",
+			"statsCount": "Stat entries",
+			"advancements": "Advancements",
+			"advancementsValue": "{completed}/{total}"
+		},
+		"map": {
+			"locationUnavailable": "No recent coordinates are available for this account yet.",
+			"providerUnavailable": "The base map is not configured yet. Set the Dynmap tiles env first."
+		},
+		"toolbar": {
+			"bindTip": "Add binding",
+			"setPrimaryTip": "Set primary"
+		},
+		"settings": {
+			"title": "Set primary account"
+		},
+		"overlay": {
+			"lastLogin": "Last login"
+		},
+		"bind": {
+			"title": "Bind another Minecraft account",
+			"description": "Enter the game account you use on the HydCraft server. This does not verify a premium Minecraft account. It only recognizes game accounts that were registered within HydCraft and have logged in before. Accounts registered after Season 6 began on February 17, 2022 can be bound. If you have not registered within HydCraft and logged in before, binding is not possible.",
+			"fields": {
+				"username": "Minecraft ID",
+				"password": "Login password"
+			},
+			"actions": {
+				"submit": "Start binding"
+			},
+			"notifications": {
+				"successTitle": "Binding successful",
+				"successDescription": "The Minecraft account is now bound to this Hydroline ID account.",
+				"failedTitle": "Binding failed",
+				"failedDescription": "Check the Minecraft ID, login password, or whether the account is already bound."
+			}
 		},
 		"actions": {
-			"save": "Save Account"
+			"setPrimary": "Set as primary"
 		},
 		"empty": {
-			"title": "No linked Minecraft accounts",
-			"description": "Linked or imported server accounts will appear here.",
-			"loadFailed": "Failed to load Minecraft accounts"
+			"title": "No Minecraft account is bound yet",
+			"description": "Finish one verification and binding flow first, then synced player details will show up here.",
+			"loadFailed": "Failed to load Minecraft accounts",
+			"bindAction": "Start binding"
 		},
 		"notifications": {
-			"saved": "Minecraft account saved",
-			"savedDescription": "The note and primary account state have been updated.",
-			"saveFailed": "Failed to save Minecraft account",
-			"saveFailedDescription": "Check your login status and account ownership."
+			"primarySet": "Primary account updated",
+			"primarySetFailed": "Failed to set primary account",
+			"primarySetFailedDescription": "Check your session or account ownership."
 		}
 	}
 }

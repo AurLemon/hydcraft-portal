@@ -19,8 +19,8 @@
 			"pageSize": "{size} / ページ"
 		},
 		"overview": {
-			"title": "Portal 概要",
-			"loading": "Portal 設定を読み込んでいます...",
+			"title": "Hydroline ID 概要",
+			"loading": "Hydroline ID 設定を読み込んでいます...",
 			"metrics": {
 				"servers": "サーバー",
 				"users": "ユーザー",
@@ -47,7 +47,7 @@
 			"services": {
 				"postgresql": {
 					"label": "PostgreSQL データベース",
-					"description": "Portal メインデータベース"
+					"description": "Hydroline ID メインデータベース"
 				},
 				"authme": {
 					"label": "AuthMe データベース",
@@ -70,7 +70,7 @@
 				"servers": "サーバーページへ移動",
 				"serversDescription": "サーバー接続とデータソース設定を管理",
 				"users": "ユーザーを開く",
-				"usersDescription": "Portal ユーザーを表示・管理",
+				"usersDescription": "Hydroline ID アカウントを表示・管理",
 				"attachments": "添付ファイルを開く",
 				"attachmentsDescription": "アバターとカバー画像を確認"
 			}
@@ -289,10 +289,10 @@
 				"luckPermsUsername": "LuckPerms ユーザー名",
 				"luckPermsPrimaryGroup": "LuckPerms プライマリグループ",
 				"luckPermsSyncedAt": "LuckPerms 同期日時",
-				"portalAccountId": "Portal アカウント ID",
-				"portalUserId": "Portal ユーザー ID",
-				"portalAccountStatus": "Portal アカウント状態",
-				"portalAccountSource": "Portal アカウントソース",
+				"portalAccountId": "Hydroline ID アカウント ID",
+				"portalUserId": "Hydroline ID ユーザー ID",
+				"portalAccountStatus": "Hydroline ID アカウント状態",
+				"portalAccountSource": "Hydroline ID アカウントソース",
 				"bridgeSyncedAt": "Bridge 同期日時",
 				"createdAt": "作成日時",
 				"updatedAt": "更新日時",
@@ -316,7 +316,7 @@
 			"resetSync": {
 				"eyebrow": "危険な操作",
 				"title": "プレイヤー同期データを消去して再取得",
-				"description": "このサーバーのプレイヤー同期投影、身元イベント、playerdata スナップショット、同期状態、Bridge 受信履歴を消去し、選択したデータソースから再取得します。Portal ユーザーと Minecraft アカウントの紐付け本体は削除しません。",
+				"description": "このサーバーのプレイヤー同期投影、身元イベント、playerdata スナップショット、同期状態、Bridge 受信履歴を消去し、選択したデータソースから再取得します。Hydroline ID アカウントと Minecraft アカウントの紐付け本体は削除しません。",
 				"confirm": "消去して再同期",
 				"successTitle": "再同期を開始しました",
 				"successDescription": "プレイヤー同期データをリセットし、選択したソースの再取得を開始しました。",
@@ -470,6 +470,11 @@
 				"coverEmpty": "カバー URL はありません",
 				"avatarReset": "保存後にアバターをリセットします",
 				"coverReset": "保存後にカバーをリセットします"
+			},
+			"edit": {
+				"back": "ユーザー一覧に戻る",
+				"fallbackTitle": "ユーザー",
+				"loadFailed": "ユーザー情報の読み込みに失敗しました"
 			}
 		},
 		"attachments": {
@@ -551,7 +556,7 @@
 			"host": "Host",
 			"port": "Port",
 			"database": "Database",
-			"username": "Username",
+			"username": "ユーザー名",
 			"password": "Password",
 			"enabled": "データソースを有効化"
 		},

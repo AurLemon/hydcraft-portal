@@ -3,20 +3,7 @@ import { requireCurrentUser } from '../../../../utils/auth/session'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
 
 interface UpdateMinecraftAccountBody {
-	note?: string | null
 	isPrimary?: boolean
-}
-
-const normalizeOptionalText = (
-	value: string | null | undefined,
-): string | null | undefined => {
-	if (value === undefined) {
-		return undefined
-	}
-
-	const normalized = value?.trim()
-
-	return normalized || null
 }
 
 export default defineEventHandler(async (event) => {
@@ -44,27 +31,28 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const updatedAccount = await prisma.$transaction(async (tx) => {
-		if (body.isPrimary) {
-			await tx.minecraftAccount.updateMany({
-				where: {
-					userId: currentUser.id,
-					id: {
-						not: accountId,
-					},
-				},
-				data: {
-					isPrimary: false,
-				},
-			})
+		if (!body.isPrimary) {
+			throw createBadRequestError('MINECRAFT_PRIMARY_ACCOUNT_REQUIRED')
 		}
+
+		await tx.minecraftAccount.updateMany({
+			where: {
+				userId: currentUser.id,
+				id: {
+					not: accountId,
+				},
+			},
+			data: {
+				isPrimary: false,
+			},
+		})
 
 		return tx.minecraftAccount.update({
 			where: {
 				id: accountId,
 			},
 			data: {
-				note: normalizeOptionalText(body.note),
-				isPrimary: body.isPrimary,
+				isPrimary: true,
 			},
 		})
 	})

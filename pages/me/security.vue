@@ -740,6 +740,7 @@ type SecurityEventType =
 	| 'PASSWORD_CHANGED'
 	| 'OAUTH_LINKED'
 	| 'OAUTH_UNLINKED'
+	| 'MINECRAFT_ACCOUNT_BOUND'
 
 interface AccountSecurityEmail {
 	id: string
@@ -925,7 +926,15 @@ const securityEventDisplayMap: Record<SecurityEventType, SecurityEventDisplay> =
 			label: 'profile.security.events.OAUTH_UNLINKED',
 			icon: 'i-lucide-unplug',
 		},
+		MINECRAFT_ACCOUNT_BOUND: {
+			label: 'profile.security.events.MINECRAFT_ACCOUNT_BOUND',
+			icon: 'i-lucide-gamepad-2',
+		},
 	}
+const defaultSecurityEventDisplay: SecurityEventDisplay = {
+	label: 'profile.security.events.UNKNOWN',
+	icon: 'i-lucide-circle-help',
+}
 
 const roleLabel = computed(() =>
 	currentUser.value
@@ -1037,11 +1046,16 @@ const parseDeviceFromUA = (ua: string | null): DeviceInfo => {
 	}
 }
 
+const getSecurityEventDisplay = (
+	type: SecurityEventType,
+): SecurityEventDisplay =>
+	securityEventDisplayMap[type] ?? defaultSecurityEventDisplay
+
 const getSecurityEventLabel = (type: SecurityEventType): string =>
-	t(securityEventDisplayMap[type].label)
+	t(getSecurityEventDisplay(type).label)
 
 const getSecurityEventIcon = (type: SecurityEventType): string =>
-	securityEventDisplayMap[type].icon
+	getSecurityEventDisplay(type).icon
 
 const resetPasswordCaptcha = (): void => {
 	passwordResetCaptcha.reset(true)

@@ -245,6 +245,23 @@ model OAuthStateToken {
   @@index([expiresAt])
 }
 
+model AuthRegistrationTicket {
+  id                String                    @id @default(cuid())
+  tokenHash         String                    @unique
+  kind              AuthRegistrationTicketKind
+  minecraftAccountId String?
+  minecraftAccount  MinecraftAccount?         @relation(fields: [minecraftAccountId], references: [id], onDelete: Cascade)
+  oauthProvider     ExternalProvider?
+  payload           Json?
+  expiresAt         DateTime
+  consumedAt        DateTime?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  @@index([kind, expiresAt])
+  @@index([consumedAt])
+}
+
 model SecurityEvent {
   id          String            @id @default(cuid())
   userId      String

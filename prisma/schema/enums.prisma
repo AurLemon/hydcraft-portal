@@ -91,6 +91,21 @@ enum MinecraftAccountSource {
   OTHER
 }
 
+enum MinecraftAccountBindingAction {
+  VERIFICATION_PASSED
+  BIND_CREATED
+  BIND_REJECTED_ALREADY_BOUND
+  BIND_REJECTED_CURRENT_USER
+  PRIMARY_SET
+  UNBOUND
+  TRANSFERRED
+}
+
+enum AuthRegistrationTicketKind {
+  GAME_ACCOUNT
+  OAUTH
+}
+
 enum ExternalProvider {
   GITHUB
   GOOGLE
@@ -132,6 +147,7 @@ enum SecurityEventType {
   PASSWORD_CHANGED
   OAUTH_LINKED
   OAUTH_UNLINKED
+  MINECRAFT_ACCOUNT_BOUND
 }
 
 enum ExternalSyncSource {

@@ -120,6 +120,21 @@ interface EventMap {
 		avatarUrl: string | null
 		updatedAt: Date
 	}
+	'minecraft.account.bound': {
+		userId: string
+		minecraftAccountId: string
+		occurredAt: Date
+	}
+	'minecraft.account.primary-set': {
+		userId: string
+		minecraftAccountId: string
+		occurredAt: Date
+	}
+	'minecraft.account.unbound': {
+		userId: string
+		minecraftAccountId: string
+		occurredAt: Date
+	}
 }
 
 const handlers = new Map<

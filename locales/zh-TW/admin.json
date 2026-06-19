@@ -19,8 +19,8 @@
 			"pageSize": "{size} / 頁"
 		},
 		"overview": {
-			"title": "Portal 總覽",
-			"loading": "正在讀取 Portal 設定...",
+			"title": "Hydroline ID 總覽",
+			"loading": "正在讀取 Hydroline ID 設定...",
 			"metrics": {
 				"servers": "伺服器",
 				"users": "使用者",
@@ -47,7 +47,7 @@
 			"services": {
 				"postgresql": {
 					"label": "PostgreSQL 資料庫",
-					"description": "Portal 主資料庫"
+					"description": "Hydroline ID 主資料庫"
 				},
 				"authme": {
 					"label": "AuthMe 資料庫",
@@ -70,7 +70,7 @@
 				"servers": "切換到伺服器頁面",
 				"serversDescription": "管理伺服器接入與資料源設定",
 				"users": "切換到使用者頁面",
-				"usersDescription": "查看和管理 Portal 使用者",
+				"usersDescription": "查看和管理 Hydroline ID 帳號",
 				"attachments": "切換到附件頁面",
 				"attachmentsDescription": "查看頭像與封面附件"
 			}
@@ -289,10 +289,10 @@
 				"luckPermsUsername": "LuckPerms 使用者名稱",
 				"luckPermsPrimaryGroup": "LuckPerms 主群組",
 				"luckPermsSyncedAt": "LuckPerms 同步時間",
-				"portalAccountId": "Portal 帳號 ID",
-				"portalUserId": "Portal 使用者 ID",
-				"portalAccountStatus": "Portal 帳號狀態",
-				"portalAccountSource": "Portal 帳號來源",
+				"portalAccountId": "Hydroline ID 帳號 ID",
+				"portalUserId": "Hydroline ID 使用者 ID",
+				"portalAccountStatus": "Hydroline ID 帳號狀態",
+				"portalAccountSource": "Hydroline ID 帳號來源",
 				"bridgeSyncedAt": "Bridge 同步時間",
 				"createdAt": "建立時間",
 				"updatedAt": "更新時間",
@@ -316,7 +316,7 @@
 			"resetSync": {
 				"eyebrow": "危險操作",
 				"title": "清空玩家同步資料並重新拉取",
-				"description": "這會清空目前伺服器的玩家同步投影、身分事件、playerdata 快照、同步狀態與 Bridge 收據，然後依照所選資料源重新拉取。Portal 使用者與 Minecraft 帳號綁定主表不會被刪除。",
+				"description": "這會清空目前伺服器的玩家同步投影、身分事件、playerdata 快照、同步狀態與 Bridge 收據，然後依照所選資料源重新拉取。Hydroline ID 帳號與 Minecraft 帳號綁定主表不會被刪除。",
 				"confirm": "清空並重新同步",
 				"successTitle": "已開始重新同步",
 				"successDescription": "玩家同步資料已重置，已依選擇的資料源觸發重新拉取。",
@@ -470,6 +470,11 @@
 				"coverEmpty": "暫無封面 URL",
 				"avatarReset": "儲存後將重置頭像",
 				"coverReset": "儲存後將重置封面"
+			},
+			"edit": {
+				"back": "返回使用者列表",
+				"fallbackTitle": "使用者",
+				"loadFailed": "載入使用者資訊失敗"
 			}
 		},
 		"attachments": {
@@ -551,7 +556,7 @@
 			"host": "Host",
 			"port": "Port",
 			"database": "Database",
-			"username": "Username",
+			"username": "使用者名稱",
 			"password": "Password",
 			"enabled": "啟用資料來源"
 		},

@@ -11,6 +11,16 @@ import { createApiError, createBadRequestError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from '../profile/defaults'
 import {
+	normalizeAuthMeUsername,
+	readVerifiedAuthMeAccountByUsername,
+} from '../authme/verification'
+import {
+	bindMinecraftAccountToUser,
+	recordMinecraftAccountVerification,
+	syncMinecraftAccountFromVerifiedAuthMe,
+	unbindMinecraftAccountFromUser,
+} from '../minecraft/account-binding'
+import {
 	normalizeBio,
 	normalizeBirthday,
 	normalizeBoolean,
@@ -457,6 +467,105 @@ export const getAdminUser = async (userId: string) => {
 	}
 
 	return serializeAdminUser(user)
+}
+
+export const adminBindMinecraftAccountToUser = async (input: {
+	actingUser: User
+	userId: string
+	username: string
+}) => {
+	const normalizedUsername = normalizeAuthMeUsername(input.username)
+	const targetUser = await prisma.user.findUnique({
+		where: {
+			id: input.userId,
+		},
+		select: {
+			id: true,
+		},
+	})
+
+	if (!targetUser) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'USER_NOT_FOUND',
+		})
+	}
+
+	const existingAccount = await prisma.minecraftAccount.findUnique({
+		where: {
+			normalizedUsername,
+		},
+	})
+	const minecraftAccount =
+		existingAccount ??
+		(await prisma.$transaction(async (tx) => {
+			const verifiedAccount =
+				await readVerifiedAuthMeAccountByUsername(normalizedUsername)
+
+			if (!verifiedAccount) {
+				throw createApiError({
+					statusCode: 404,
+					code: 'AUTHME_ACCOUNT_NOT_FOUND',
+				})
+			}
+
+			return await syncMinecraftAccountFromVerifiedAuthMe(verifiedAccount, tx)
+		}))
+
+	if (minecraftAccount.userId && minecraftAccount.userId !== input.userId) {
+		throw createApiError({
+			statusCode: 409,
+			code: 'MINECRAFT_ACCOUNT_ALREADY_BOUND',
+		})
+	}
+
+	await recordMinecraftAccountVerification({
+		minecraftAccountId: minecraftAccount.id,
+		actorUserId: input.actingUser.id,
+		targetUserId: input.userId,
+		reason: 'admin-bind',
+		metadata: {
+			username: minecraftAccount.username,
+			normalizedUsername: minecraftAccount.normalizedUsername,
+		},
+	})
+
+	return await bindMinecraftAccountToUser({
+		minecraftAccountId: minecraftAccount.id,
+		userId: input.userId,
+		actorUserId: input.actingUser.id,
+		reason: 'admin-bind',
+	})
+}
+
+export const adminUnbindMinecraftAccountFromUser = async (input: {
+	actingUser: User
+	userId: string
+	minecraftAccountId: string
+}) => {
+	const account = await prisma.minecraftAccount.findFirst({
+		where: {
+			id: input.minecraftAccountId,
+			userId: input.userId,
+			unlinkedAt: null,
+		},
+		select: {
+			id: true,
+		},
+	})
+
+	if (!account) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
+		})
+	}
+
+	return await unbindMinecraftAccountFromUser({
+		minecraftAccountId: input.minecraftAccountId,
+		actorUserId: input.actingUser.id,
+		reason: 'admin-unbind',
+	})
 }
 
 interface AdminUserUpdateBody {

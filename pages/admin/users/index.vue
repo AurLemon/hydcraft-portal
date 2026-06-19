@@ -120,22 +120,12 @@
 				@update:page-size="setPageSize"
 			/>
 		</div>
-
-		<AdminUserEditModal
-			v-model:open="modalOpen"
-			:user="selectedUser"
-			:available-badges="availableBadges"
-			:role-items="roleItemsWithoutAll"
-			:status-items="statusItemsWithoutAll"
-			@saved="handleUserSaved"
-		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
 import type {
-	AdminAchievementsResponse,
 	AdminUser,
 	AdminUsersResponse,
 	AdminUserStatus,
@@ -148,6 +138,7 @@ definePageMeta({
 
 const { notifyError } = useAdminToast()
 const { locale } = useI18n()
+const localePath = useLocalePath()
 const ALL_FILTER_VALUE = '__all__'
 const page = ref(1)
 const pageSize = ref(20)
@@ -158,8 +149,6 @@ const filters = reactive({
 	sortField: 'createdAt',
 	sortDirection: 'desc',
 })
-const modalOpen = ref(false)
-const selectedUser = ref<AdminUser | null>(null)
 const getFilterQueryValue = (value: string): string | undefined =>
 	value === ALL_FILTER_VALUE ? undefined : value
 const query = computed(() => ({
@@ -171,19 +160,13 @@ const query = computed(() => ({
 	sortField: filters.sortField,
 	sortDirection: filters.sortDirection,
 }))
-const { data, pending, error, refresh } = await useFetch<AdminUsersResponse>(
+const { data, pending, error } = await useFetch<AdminUsersResponse>(
 	'/api/admin/users',
 	{
 		query,
 	},
 )
-const { data: achievementsData } = await useFetch<AdminAchievementsResponse>(
-	'/api/admin/achievements',
-)
 const users = computed(() => data.value?.items ?? [])
-const availableBadges = computed(() =>
-	(achievementsData.value?.badges ?? []).filter((badge) => badge.enabled),
-)
 const pageMeta = computed(() => ({
 	total: data.value?.total ?? 0,
 	pageCount: data.value?.pageCount ?? 1,
@@ -196,25 +179,19 @@ const columns = [
 	{ accessorKey: 'createdAt', header: t('admin.users.fields.createdAt') },
 	{ id: 'actions', header: '' },
 ]
-const roleItemsWithoutAll = [
+const roleItems = [
+	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	{ label: 'USER', value: 'USER' },
 	{ label: 'MEMBER', value: 'MEMBER' },
 	{ label: 'ADMIN', value: 'ADMIN' },
 	{ label: 'OWNER', value: 'OWNER' },
 ]
-const statusItemsWithoutAll = [
+const statusItems = [
+	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	{ label: 'PENDING', value: 'PENDING' },
 	{ label: 'ACTIVE', value: 'ACTIVE' },
 	{ label: 'DISABLED', value: 'DISABLED' },
 	{ label: 'BANNED', value: 'BANNED' },
-]
-const roleItems = [
-	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	...roleItemsWithoutAll,
-]
-const statusItems = [
-	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	...statusItemsWithoutAll,
 ]
 const sortFieldItems = [
 	{ label: t('admin.users.fields.createdAt'), value: 'createdAt' },
@@ -262,12 +239,6 @@ const setPageSize = (value: number): void => {
 }
 
 const openUser = (user: AdminUser): void => {
-	selectedUser.value = user
-	modalOpen.value = true
-}
-
-const handleUserSaved = async (user: AdminUser): Promise<void> => {
-	selectedUser.value = user
-	await refresh()
+	navigateTo(localePath(`/admin/users/${user.id}`))
 }
 </script>

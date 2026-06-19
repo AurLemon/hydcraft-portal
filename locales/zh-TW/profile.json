@@ -312,7 +312,9 @@
 				"SECONDARY_EMAIL_REMOVED": "已移除輔助信箱",
 				"PASSWORD_CHANGED": "密碼已變更",
 				"OAUTH_LINKED": "已綁定外部授權",
-				"OAUTH_UNLINKED": "已解除外部授權"
+				"OAUTH_UNLINKED": "已解除外部授權",
+				"MINECRAFT_ACCOUNT_BOUND": "已綁定 Minecraft 帳號",
+				"UNKNOWN": "未知安全事件"
 			},
 			"modals": {
 				"passwordReset": {

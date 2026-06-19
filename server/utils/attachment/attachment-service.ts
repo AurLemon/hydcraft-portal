@@ -53,6 +53,8 @@ interface UploadAttachmentInput {
 	ownerType?: AttachmentOwnerType
 	category?: AttachmentCategory
 	visibility?: AttachmentVisibility
+	createdById?: string | null
+	expiresAt?: Date
 }
 
 const badRequest = (code: string) => createBadRequestError(code)
@@ -110,7 +112,7 @@ const requireOwnedAttachment = async (
 }
 
 const resolveUploadContext = (
-	user: User,
+	actorUserId: string | null,
 	input: UploadAttachmentInput,
 	policy: AttachmentPolicy,
 ): {
@@ -119,9 +121,10 @@ const resolveUploadContext = (
 	ownerType: AttachmentOwnerType
 	ownerId: string | null
 	visibility: AttachmentVisibility
+	createdById: string | null
 } => {
 	const ownerType = input.ownerType ?? 'user'
-	const ownerId = input.ownerId ?? (ownerType === 'user' ? user.id : null)
+	const ownerId = input.ownerId ?? (ownerType === 'user' ? actorUserId : null)
 
 	if (!ownerId) {
 		throw badRequest('INVALID_ATTACHMENT_INPUT')
@@ -133,6 +136,7 @@ const resolveUploadContext = (
 		ownerType,
 		ownerId,
 		visibility: input.visibility ?? policy.visibility,
+		createdById: input.createdById ?? actorUserId,
 	}
 }
 
@@ -259,9 +263,22 @@ export class AttachmentService {
 		user: User,
 		input: UploadAttachmentInput,
 	): Promise<AttachmentPublicSummary> {
+		return await this.uploadAttachmentInternal(user.id, input)
+	}
+
+	async uploadSystemAttachment(
+		input: UploadAttachmentInput,
+	): Promise<AttachmentPublicSummary> {
+		return await this.uploadAttachmentInternal(null, input)
+	}
+
+	private async uploadAttachmentInternal(
+		actorUserId: string | null,
+		input: UploadAttachmentInput,
+	): Promise<AttachmentPublicSummary> {
 		const purpose = normalizePurpose(input.purpose)
 		const policy = getAttachmentPolicy(purpose)
-		const uploadContext = resolveUploadContext(user, input, policy)
+		const uploadContext = resolveUploadContext(actorUserId, input, policy)
 		const contentType = parseString(input.contentType, 'contentType')
 		const sizeBytes = parseSizeBytes(input.buffer.byteLength)
 
@@ -285,7 +302,8 @@ export class AttachmentService {
 				bucketProfile: 'publicAssets',
 				contentType,
 				sizeBytes,
-				createdById: user.id,
+				createdById: uploadContext.createdById,
+				expiresAt: input.expiresAt,
 			},
 		})
 
@@ -440,6 +458,63 @@ export class AttachmentService {
 			purpose: 'external-account-avatar',
 			activeAttachmentId: input.activeAttachmentId,
 		})
+	}
+
+	async reassignAttachmentOwner(input: {
+		attachmentId: string
+		ownerType: AttachmentOwnerType
+		ownerId: string
+		expiresAt?: Date | null
+	}): Promise<void> {
+		await prisma.attachment.update({
+			where: {
+				id: input.attachmentId,
+			},
+			data: {
+				ownerType: input.ownerType,
+				ownerId: input.ownerId,
+				expiresAt: input.expiresAt ?? null,
+			},
+		})
+	}
+
+	async expireAttachments(input: {
+		ownerType: AttachmentOwnerType
+		ownerId: string
+		purpose: AttachmentPurpose
+	}): Promise<void> {
+		const attachments = await prisma.attachment.findMany({
+			where: {
+				ownerType: input.ownerType,
+				ownerId: input.ownerId,
+				purpose: input.purpose,
+				status: {
+					notIn: ['DELETED', 'EXPIRED'],
+				},
+			},
+			include: {
+				variants: true,
+			},
+		})
+
+		if (!attachments.length) {
+			return
+		}
+
+		await prisma.attachment.updateMany({
+			where: {
+				id: {
+					in: attachments.map((attachment) => attachment.id),
+				},
+			},
+			data: {
+				status: 'EXPIRED',
+			},
+		})
+
+		for (const attachment of attachments) {
+			this.deleteAttachmentObjects(attachment, 'replaced attachment object')
+		}
 	}
 
 	private async deleteAttachmentsExcept(input: {

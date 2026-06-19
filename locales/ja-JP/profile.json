@@ -317,7 +317,9 @@
 				"SECONDARY_EMAIL_REMOVED": "予備メールを削除しました",
 				"PASSWORD_CHANGED": "パスワードを変更しました",
 				"OAUTH_LINKED": "外部アカウントを連携しました",
-				"OAUTH_UNLINKED": "外部アカウントの連携を解除しました"
+				"OAUTH_UNLINKED": "外部アカウントの連携を解除しました",
+				"MINECRAFT_ACCOUNT_BOUND": "Minecraft アカウントを連携しました",
+				"UNKNOWN": "不明なセキュリティイベント"
 			},
 			"modals": {
 				"passwordReset": {

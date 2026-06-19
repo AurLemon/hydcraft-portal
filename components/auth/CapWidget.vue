@@ -1,7 +1,7 @@
 <template>
 	<div class="overflow-hidden">
 		<ClientOnly>
-			<USkeleton v-if="loading" class="h-14 w-full rounded-2xl" />
+			<USkeleton v-if="loading" :class="resolvedSkeletonClass" />
 			<div
 				v-else-if="loadFailed"
 				class="flex min-h-20 items-center justify-center rounded-2xl border border-red-200/70 bg-red-50 px-4 text-sm text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-300"
@@ -20,7 +20,7 @@
 				v-bind="capI18nAttrs"
 			/>
 			<template #fallback>
-				<USkeleton class="h-20 w-full rounded-2xl" />
+				<USkeleton :class="resolvedSkeletonClass" />
 			</template>
 		</ClientOnly>
 	</div>
@@ -31,6 +31,7 @@ import { applyCapWidgetPatch } from '~/utils/cap/widget-patch'
 
 interface CapWidgetProps {
 	modelValue?: string
+	skeletonClass?: string
 }
 
 interface CapSolveDetail {
@@ -58,6 +59,7 @@ let capScriptPromise: Promise<void> | null = null
 
 const props = withDefaults(defineProps<CapWidgetProps>(), {
 	modelValue: '',
+	skeletonClass: 'h-14 w-full rounded-2xl',
 })
 
 const emit = defineEmits<{
@@ -228,6 +230,9 @@ const capWidgetPatchOptions = computed(() => ({
 	fullWidth: true,
 	disableHoverLift: true,
 }))
+const resolvedSkeletonClass = computed(
+	() => props.skeletonClass.trim() || 'h-14 w-full rounded-2xl',
+)
 
 const loadScript = async (src: string, key: string): Promise<void> => {
 	const existingScript = document.querySelector<HTMLScriptElement>(

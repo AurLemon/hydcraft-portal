@@ -1,27 +1,76 @@
 {
 	"minecraftAccounts": {
-		"title": "遊戲檔案",
 		"badges": {
-			"primary": "主帳號"
+			"primary": "主要展示帳號"
 		},
 		"fields": {
-			"note": "備註",
-			"primary": "設為主帳號",
-			"noUuid": "暫無 UUID"
+			"noUuid": "暫無 UUID",
+			"notAvailable": "暫無資料",
+			"unknownCoords": "座標未知",
+			"unknownWorld": "未知世界",
+			"authmeUsername": "AuthMe 帳號",
+			"authmeRealname": "遊戲 ID"
+		},
+		"identity": {
+			"title": "玩家 ID 檔案",
+			"boundUuid": "已綁定 UUID",
+			"observedUuid": "觀測 UUID",
+			"uuidConflictValue": "觀測到 {count} 個 UUID",
+			"uuidPending": "UUID 尚待觀測",
+			"online": "在線",
+			"offline": "離線"
+		},
+		"summary": {
+			"firstJoined": "首次進入",
+			"lastSeen": "最近進入",
+			"statsCount": "統計條目",
+			"advancements": "成就進度",
+			"advancementsValue": "{completed}/{total}"
+		},
+		"map": {
+			"locationUnavailable": "目前這個帳號還沒有可展示的最近座標。",
+			"providerUnavailable": "地圖底圖尚未設定，請先在環境變數中補上 Dynmap tiles。"
+		},
+		"toolbar": {
+			"bindTip": "新增綁定",
+			"setPrimaryTip": "設定主檔案"
+		},
+		"settings": {
+			"title": "設定主檔案"
+		},
+		"overlay": {
+			"lastLogin": "上次登入"
+		},
+		"bind": {
+			"title": "綁定新的 Minecraft 帳號",
+			"description": "請填寫您在氫氣工藝伺服器中使用的遊戲帳號。這裡不會校驗 Minecraft 正版帳號，只識別在氫氣工藝內註冊且登入過的遊戲帳號。2022 年 2 月 17 日六周目開啟後註冊的帳號均可綁定。如果您沒有在氫氣工藝內註冊且登入過，則無法綁定。",
+			"fields": {
+				"username": "Minecraft ID",
+				"password": "登入密碼"
+			},
+			"actions": {
+				"submit": "開始綁定"
+			},
+			"notifications": {
+				"successTitle": "綁定成功",
+				"successDescription": "Minecraft 帳號已綁定到目前的 Hydroline ID 帳號。",
+				"failedTitle": "綁定失敗",
+				"failedDescription": "請檢查 Minecraft ID、登入密碼，或帳號是否已被其他使用者綁定。"
+			}
 		},
 		"actions": {
-			"save": "儲存檔案"
+			"setPrimary": "設為主檔案"
 		},
 		"empty": {
-			"title": "尚未綁定 Minecraft 帳號",
-			"description": "完成綁定或從伺服器資料源匯入後，帳號會顯示在這裡。",
-			"loadFailed": "讀取遊戲檔案失敗"
+			"title": "還沒有綁定的 Minecraft 帳號",
+			"description": "先完成一次帳號核驗與綁定，後續同步到的玩家資料就會集中顯示在這裡。",
+			"loadFailed": "讀取 Minecraft 帳號失敗",
+			"bindAction": "開始綁定"
 		},
 		"notifications": {
-			"saved": "遊戲檔案已儲存",
-			"savedDescription": "帳號備註與主帳號狀態已更新。",
-			"saveFailed": "儲存遊戲檔案失敗",
-			"saveFailedDescription": "請檢查登入狀態與帳號歸屬。"
+			"primarySet": "主檔案設定成功",
+			"primarySetFailed": "設定主檔案失敗",
+			"primarySetFailedDescription": "請檢查登入狀態與帳號歸屬。"
 		}
 	}
 }

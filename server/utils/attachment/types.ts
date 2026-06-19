@@ -9,7 +9,10 @@ export type AttachmentPurpose =
 	| 'user-avatar'
 	| 'user-cover'
 	| 'external-account-avatar'
-export type AttachmentOwnerType = 'user' | 'external-account'
+export type AttachmentOwnerType =
+	| 'user'
+	| 'external-account'
+	| 'registration-ticket'
 export type StorageProfileName = 'publicAssets' | 'privateUploads'
 export type AttachmentOutputFormat = 'webp' | 'original'
 

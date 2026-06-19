@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { sendRedirect } from 'h3'
 import type { Prisma, User } from '~/generated/prisma/client'
+import { createRegistrationTicket } from '../../../../utils/auth/registration-ticket'
 import { issueAuthCookies } from '../../../../utils/auth/session'
 import { normalizeEmail } from '../../../../utils/auth/validation'
 import { prisma } from '../../../../utils/db/prisma'
@@ -15,10 +16,6 @@ import {
 	syncOAuthAvatarAttachment,
 } from '../../../../utils/oauth/avatar'
 import { oauthProxyFetch } from '../../../../utils/oauth/proxy'
-import {
-	createUniqueHydrolineId,
-	ensureUserProfileDefaults,
-} from '../../../../utils/profile/defaults'
 import { recordSecurityEvent } from '../../../../utils/security/security-events'
 
 interface TokenResponse {
@@ -38,75 +35,17 @@ const normalizeOAuthEmail = (email: string | null): string | null => {
 		: null
 }
 
-const createHandleBase = (
-	provider: string,
-	profile: { id: string; username: string | null; email: string | null },
-): string => {
-	const raw = profile.username ?? profile.email?.split('@')[0] ?? profile.id
-	const normalized = raw
-		.toLowerCase()
-		.replace(/[^a-z0-9_-]/g, '-')
-		.replace(/-+/g, '-')
-		.replace(/^-+|-+$/g, '')
-		.slice(0, 24)
-	const base = /^[a-z0-9_]/.test(normalized)
-		? normalized
-		: `${provider.toLowerCase()}-${normalized}`
-
-	return base.length >= 3 ? base : `${provider.toLowerCase()}-${profile.id}`
-}
-
-const createUniqueOAuthHandle = async (
-	provider: string,
-	profile: { id: string; username: string | null; email: string | null },
-): Promise<string> => {
-	const base = createHandleBase(provider, profile).slice(0, 24)
-
-	for (let attempt = 0; attempt < 8; attempt += 1) {
-		const suffix =
-			attempt === 0 ? '' : `-${Math.floor(1000 + Math.random() * 9000)}`
-		const handle = `${base.slice(0, 32 - suffix.length)}${suffix}`
-		const exists = await prisma.user.findFirst({
-			where: {
-				OR: [{ handle }, { username: handle }],
-			},
-			select: {
-				id: true,
-			},
-		})
-
-		if (!exists) {
-			return handle
-		}
+const getLocalizedRegisterPath = (locale: string): string => {
+	switch (locale) {
+		case 'ZH_TW':
+			return '/zh-TW/register'
+		case 'EN_US':
+			return '/en-US/register'
+		case 'JA_JP':
+			return '/ja-JP/register'
+		default:
+			return '/register'
 	}
-
-	throw createApiError({
-		statusCode: 500,
-		code: 'OAUTH_USER_HANDLE_CREATE_FAILED',
-	})
-}
-
-const resolveAvailableOAuthEmail = async (
-	email: string | null,
-): Promise<string | null> => {
-	const normalized = normalizeOAuthEmail(email)
-
-	if (!normalized) {
-		return null
-	}
-
-	const [user, userEmail] = await Promise.all([
-		prisma.user.findUnique({
-			where: { email: normalized },
-			select: { id: true },
-		}),
-		prisma.userEmail.findUnique({
-			where: { email: normalized },
-			select: { id: true },
-		}),
-	])
-
-	return user || userEmail ? null : normalized
 }
 
 const parseTokenResponse = (value: unknown): TokenResponse => {
@@ -199,12 +138,14 @@ const fetchQQOpenId = async (accessToken: string): Promise<string> => {
 }
 
 const syncExternalAccountAvatar = async (input: {
-	user: User
+	user?: User
 	account: { id: string }
 	provider: NonNullable<ReturnType<typeof parseOAuthProvider>>
 	accessToken: string
 	profileAvatarUrl: string | null
 	proxyEnabled: boolean
+	ownerType?: 'external-account' | 'registration-ticket'
+	expiresAt?: Date
 }): Promise<{
 	synced: boolean
 	avatarAttachmentId: string | null
@@ -220,6 +161,8 @@ const syncExternalAccountAvatar = async (input: {
 		const result = await syncOAuthAvatarAttachment({
 			user: input.user,
 			account: input.account,
+			ownerType: input.ownerType,
+			expiresAt: input.expiresAt,
 			asset,
 		})
 
@@ -398,103 +341,68 @@ export default defineEventHandler(async (event) => {
 	}
 
 	if (!stateToken.userId) {
-		const handle = await createUniqueOAuthHandle(provider, profile)
-		const email = await resolveAvailableOAuthEmail(profile.email)
-		const hydrolineId = await createUniqueHydrolineId()
-		const user = await prisma.user.create({
-			data: {
-				handle,
-				username: handle,
-				hydrolineId,
-				displayName: profile.username,
-				email,
-				avatarUrl: profile.avatarUrl,
-				role: 'USER',
-				status: 'ACTIVE',
-				externalAccounts: {
-					create: {
-						provider,
-						providerAccountId: profile.id,
-						providerUsername: profile.username,
-						providerEmail: profile.email,
-						avatarUrl: profile.avatarUrl,
-						scope: token.scope ?? config.scopes.join(' '),
-						rawProfile: profile.raw,
-						lastUsedAt: new Date(),
-					},
+		const { ticket, token: registrationToken } = await createRegistrationTicket(
+			{
+				kind: 'OAUTH',
+				oauthProvider: provider,
+				payload: {
+					providerAccountId: profile.id,
+					providerUsername: profile.username,
+					providerEmail: normalizeOAuthEmail(profile.email),
+					avatarUrl: profile.avatarUrl,
+					accessToken,
+					scope: token.scope ?? config.scopes.join(' '),
+					rawProfile: profile.raw,
 				},
-				emails: email
-					? {
-							create: {
-								email,
-								kind: 'PRIMARY',
-								verifiedAt: null,
-							},
-						}
-					: undefined,
 			},
-			include: {
-				externalAccounts: true,
-			},
-		})
-		const account = user.externalAccounts[0]
-
-		if (!account) {
-			throw createApiError({
-				statusCode: 500,
-				code: 'OAUTH_ACCOUNT_CREATE_FAILED',
-			})
-		}
-
+		)
 		const syncedAvatar = await syncExternalAccountAvatar({
-			user,
-			account,
+			account: {
+				id: ticket.id,
+			},
 			provider,
 			accessToken,
 			profileAvatarUrl: profile.avatarUrl,
 			proxyEnabled: config.proxyEnabled,
+			ownerType: 'registration-ticket',
+			expiresAt: ticket.expiresAt,
 		})
 
 		if (syncedAvatar.synced) {
-			await prisma.externalAccount.update({
+			await prisma.authRegistrationTicket.update({
 				where: {
-					id: account.id,
+					id: ticket.id,
 				},
 				data: {
-					avatarAttachmentId: syncedAvatar.avatarAttachmentId,
-					avatarUrl: syncedAvatar.avatarUrl,
+					payload: {
+						providerAccountId: profile.id,
+						providerUsername: profile.username,
+						providerEmail: normalizeOAuthEmail(profile.email),
+						avatarAttachmentId: syncedAvatar.avatarAttachmentId,
+						avatarUrl: syncedAvatar.avatarUrl,
+						accessToken,
+						scope: token.scope ?? config.scopes.join(' '),
+						rawProfile: profile.raw,
+					},
 				},
 			})
-			await emitEvent('user.oauth.attachment-replaced', {
-				userId: user.id,
-				externalAccountId: account.id,
-				activeAttachmentId: syncedAvatar.avatarAttachmentId,
-				updatedAt: new Date(),
-			})
 		}
-
-		await ensureUserProfileDefaults(user.id)
 		await prisma.oAuthStateToken.update({
 			where: { id: stateToken.id },
 			data: { consumedAt: new Date() },
 		})
-		await issueAuthCookies(event, user)
-		await recordSecurityEvent({
-			event,
-			userId: user.id,
-			type: 'LOGIN_SUCCESS',
-			title: `${provider} OAuth registration`,
-			description: profile.username,
-		})
-		await emitEvent('user.oauth.linked', {
-			userId: user.id,
-			provider,
-			providerAccountId: profile.id,
-			externalAccountId: account.id,
-			updatedAt: new Date(),
+		const redirectTo = stateToken.redirectTo?.trim() || ''
+		const registerPath = getLocalizedRegisterPath(stateToken.locale)
+		const params = new URLSearchParams({
+			mode: 'oauth',
+			ticket: registrationToken,
 		})
 
-		return sendRedirect(event, stateToken.redirectTo || '/me/profile', 302)
+		if (redirectTo) {
+			params.set('redirect', redirectTo)
+		}
+
+		return sendRedirect(event, `${registerPath}?${params.toString()}`, 302)
 	}
 
 	if (!stateToken.user) {

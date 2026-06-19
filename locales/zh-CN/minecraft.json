@@ -1,27 +1,76 @@
 {
 	"minecraftAccounts": {
-		"title": "游戏档案",
 		"badges": {
-			"primary": "主账号"
+			"primary": "主展示账号"
 		},
 		"fields": {
-			"note": "备注",
-			"primary": "设为主账号",
-			"noUuid": "暂无 UUID"
+			"noUuid": "暂无 UUID",
+			"notAvailable": "暂无数据",
+			"unknownCoords": "坐标未知",
+			"unknownWorld": "未知世界",
+			"authmeUsername": "AuthMe 账号",
+			"authmeRealname": "游戏 ID"
+		},
+		"identity": {
+			"title": "玩家 ID 档案",
+			"boundUuid": "绑定 UUID",
+			"observedUuid": "观测 UUID",
+			"uuidConflictValue": "观测到 {count} 个 UUID",
+			"uuidPending": "UUID 待观测",
+			"online": "在线",
+			"offline": "离线"
+		},
+		"summary": {
+			"firstJoined": "首次进入",
+			"lastSeen": "最近进入",
+			"statsCount": "统计条目",
+			"advancements": "成就进度",
+			"advancementsValue": "{completed}/{total}"
+		},
+		"map": {
+			"locationUnavailable": "当前账号还没有可展示的最近坐标。",
+			"providerUnavailable": "地图底图尚未配置，请先在环境变量中设置 Dynmap tiles。"
+		},
+		"toolbar": {
+			"bindTip": "新建绑定",
+			"setPrimaryTip": "设置主档案"
+		},
+		"settings": {
+			"title": "设置主档案"
+		},
+		"overlay": {
+			"lastLogin": "上次登录"
+		},
+		"bind": {
+			"title": "绑定新的 Minecraft 账号",
+			"description": "请填写您在氢气工艺服务器中使用的游戏账号。这里不会校验 Minecraft 正版账号，只识别在氢气工艺内注册且登录过的游戏账号。2022 年 2 月 17 日六周目开启后注册的账号均可绑定。如果您没有在氢气工艺内注册且登录过，则无法绑定。",
+			"fields": {
+				"username": "Minecraft ID",
+				"password": "登录密码"
+			},
+			"actions": {
+				"submit": "开始绑定"
+			},
+			"notifications": {
+				"successTitle": "绑定成功",
+				"successDescription": "Minecraft 账号已绑定到当前 Hydroline ID 账号。",
+				"failedTitle": "绑定失败",
+				"failedDescription": "请检查 Minecraft ID、登录密码，或账号是否已被其他用户绑定。"
+			}
 		},
 		"actions": {
-			"save": "保存档案"
+			"setPrimary": "设为主档案"
 		},
 		"empty": {
 			"title": "还没有绑定的 Minecraft 账号",
-			"description": "当账号完成绑定或从服务器数据源导入后，会显示在这里。",
-			"loadFailed": "读取游戏档案失败"
+			"description": "先完成一次账号核验与绑定，后续同步到的玩家资料就会集中展示在这里。",
+			"loadFailed": "读取 Minecraft 账号失败",
+			"bindAction": "开始绑定"
 		},
 		"notifications": {
-			"saved": "游戏档案已保存",
-			"savedDescription": "账号备注与主账号状态已经更新。",
-			"saveFailed": "保存游戏档案失败",
-			"saveFailedDescription": "请检查登录状态与账号归属。"
+			"primarySet": "主档案设置成功",
+			"primarySetFailed": "设置主档案失败",
+			"primarySetFailedDescription": "请检查登录状态与账号归属。"
 		}
 	}
 }

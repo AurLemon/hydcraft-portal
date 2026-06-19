@@ -34,7 +34,7 @@ const copyByLocale: Record<MailLocale, PasswordResetRequestedCopy> = {
 			'如果这不是你本人发起的操作，可以忽略本邮件；你的密码不会因为这封邮件而被修改。',
 			'为了账号安全，请不要把后续收到的验证码、令牌或链接转发给任何人。',
 		],
-		footerNote: 'HydCraft Portal 团队',
+		footerNote: 'HydCraft Hydroline ID 团队',
 		systemFooter: '本邮件由系统自动发送，请勿直接回复。',
 		textIntro: (name) => `${name}，我们收到了你的 Hydroline ID 密码重置请求。`,
 	},
@@ -50,7 +50,7 @@ const copyByLocale: Record<MailLocale, PasswordResetRequestedCopy> = {
 			'如果這不是你本人發起的操作，可以忽略本郵件；你的密碼不會因為這封郵件而被修改。',
 			'為了帳號安全，請不要把後續收到的驗證碼、令牌或連結轉發給任何人。',
 		],
-		footerNote: 'HydCraft Portal 團隊',
+		footerNote: 'HydCraft Hydroline ID 團隊',
 		systemFooter: '本郵件由系統自動傳送，請勿直接回覆。',
 		textIntro: (name) => `${name}，我們收到了你的 Hydroline ID 密碼重設請求。`,
 	},
@@ -67,7 +67,7 @@ const copyByLocale: Record<MailLocale, PasswordResetRequestedCopy> = {
 			'If you did not request this, you can ignore this email. Your password will not be changed by this message.',
 			'For account security, never forward verification codes, tokens, or links to anyone.',
 		],
-		footerNote: 'HydCraft Portal Team',
+		footerNote: 'HydCraft Hydroline ID Team',
 		systemFooter: 'This email was sent automatically. Please do not reply.',
 		textIntro: (name) =>
 			`${name}, we received a password reset request for your Hydroline ID.`,
@@ -85,7 +85,7 @@ const copyByLocale: Record<MailLocale, PasswordResetRequestedCopy> = {
 			'この操作に心当たりがない場合は、このメールを無視してください。このメールだけでパスワードが変更されることはありません。',
 			'アカウント保護のため、認証コード、トークン、リンクを他人に転送しないでください。',
 		],
-		footerNote: 'HydCraft Portal Team',
+		footerNote: 'HydCraft Hydroline ID Team',
 		systemFooter:
 			'このメールは自動送信されています。直接返信しないでください。',
 		textIntro: (name) =>

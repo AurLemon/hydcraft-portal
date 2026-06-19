@@ -3,6 +3,7 @@ import type {
 	ExternalProvider,
 	User,
 } from '~/generated/prisma/client'
+import type { AttachmentOwnerType } from '../attachment/types'
 import { getAttachmentService } from '../attachment/runtime'
 import { oauthProxyFetch } from './proxy'
 
@@ -101,8 +102,10 @@ const getPreferredAvatarUrl = (
 	null
 
 export const syncOAuthAvatarAttachment = async (input: {
-	user: User
-	account: Pick<ExternalAccount, 'id'>
+	user?: User
+	account: Pick<ExternalAccount, 'id'> | { id: string }
+	ownerType?: AttachmentOwnerType
+	expiresAt?: Date
 	asset: OAuthAvatarAsset | null
 }): Promise<{
 	avatarAttachmentId: string | null
@@ -115,14 +118,25 @@ export const syncOAuthAvatarAttachment = async (input: {
 		}
 	}
 
-	const summary = await getAttachmentService().uploadAttachment(input.user, {
-		purpose: 'external-account-avatar',
-		category: 'oauth',
-		ownerType: 'external-account',
-		ownerId: input.account.id,
-		contentType: input.asset.contentType,
-		buffer: input.asset.buffer,
-	})
+	const summary = input.user
+		? await getAttachmentService().uploadAttachment(input.user, {
+				purpose: 'external-account-avatar',
+				category: 'oauth',
+				ownerType: input.ownerType ?? 'external-account',
+				ownerId: input.account.id,
+				expiresAt: input.expiresAt,
+				contentType: input.asset.contentType,
+				buffer: input.asset.buffer,
+			})
+		: await getAttachmentService().uploadSystemAttachment({
+				purpose: 'external-account-avatar',
+				category: 'oauth',
+				ownerType: input.ownerType ?? 'external-account',
+				ownerId: input.account.id,
+				expiresAt: input.expiresAt,
+				contentType: input.asset.contentType,
+				buffer: input.asset.buffer,
+			})
 
 	return {
 		avatarAttachmentId: summary.id,

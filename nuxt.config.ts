@@ -1,5 +1,16 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const INVALID_MDC_OPTIMIZE_DEPS = new Set([
+	'@nuxtjs/mdc > remark-gfm',
+	'@nuxtjs/mdc > remark-emoji',
+	'@nuxtjs/mdc > remark-mdc',
+	'@nuxtjs/mdc > remark-rehype',
+	'@nuxtjs/mdc > rehype-raw',
+	'@nuxtjs/mdc > unist-util-visit',
+	'@nuxtjs/mdc > unified',
+	'@nuxtjs/mdc > extend',
+])
+
 export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
@@ -223,6 +234,16 @@ export default defineNuxtConfig({
 		public: {
 			siteUrl: process.env.NUXT_SITE_URL ?? '',
 			capBaseUrl: process.env.CAP_BASE_URL ?? '',
+			minecraftMap: {
+				dynmapTileBaseUrl: process.env.MINECRAFT_MAP_DYNMAP_TILE_BASE_URL ?? '',
+				dynmapWorldName: process.env.MINECRAFT_MAP_DYNMAP_WORLD_NAME ?? 'world',
+				dynmapMapName: process.env.MINECRAFT_MAP_DYNMAP_MAP_NAME ?? 'flat',
+				dynmapTileExtension:
+					process.env.MINECRAFT_MAP_DYNMAP_TILE_EXTENSION ?? 'jpg',
+				defaultCenterX: process.env.MINECRAFT_MAP_DEFAULT_CENTER_X ?? '811',
+				defaultCenterZ: process.env.MINECRAFT_MAP_DEFAULT_CENTER_Z ?? '2933',
+				defaultZoom: process.env.MINECRAFT_MAP_DEFAULT_ZOOM ?? '0',
+			},
 		},
 	},
 	content: {
@@ -286,5 +307,24 @@ export default defineNuxtConfig({
 	typescript: {
 		strict: true,
 		typeCheck: process.env.NODE_ENV === 'production',
+	},
+	hooks: {
+		'vite:extendConfig'(config, { isClient }) {
+			if (!isClient) {
+				return
+			}
+
+			const include = config.optimizeDeps?.include
+			if (!Array.isArray(include)) {
+				return
+			}
+
+			config.optimizeDeps = {
+				...config.optimizeDeps,
+				include: include.filter(
+					(entry) => !INVALID_MDC_OPTIMIZE_DEPS.has(entry),
+				),
+			}
+		},
 	},
 })

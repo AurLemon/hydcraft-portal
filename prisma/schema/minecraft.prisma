@@ -14,17 +14,35 @@ model MinecraftAccount {
   isPrimary          Boolean                @default(false)
   verifiedAt         DateTime?
   unlinkedAt         DateTime?
-  note               String?
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
 
   authMeAccount AuthMeAccount? @relation(fields: [authmeId], references: [authmeId], onDelete: SetNull, onUpdate: Cascade)
+  bindingHistory MinecraftAccountBindingHistory[]
+  registrationTickets AuthRegistrationTicket[]
 
   @@index([userId])
   @@index([username])
   @@index([authmeName])
   @@index([status])
   @@index([source])
+}
+
+model MinecraftAccountBindingHistory {
+  id                 String                       @id @default(cuid())
+  minecraftAccountId String
+  minecraftAccount   MinecraftAccount             @relation(fields: [minecraftAccountId], references: [id], onDelete: Cascade)
+  action             MinecraftAccountBindingAction
+  actorUserId        String?
+  targetUserId       String?
+  previousUserId     String?
+  reason             String?
+  metadata           Json?
+  createdAt          DateTime                     @default(now())
+
+  @@index([minecraftAccountId, createdAt])
+  @@index([targetUserId, createdAt])
+  @@index([action, createdAt])
 }
 
 model MinecraftServer {
