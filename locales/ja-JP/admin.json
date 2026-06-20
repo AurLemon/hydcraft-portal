@@ -19,7 +19,7 @@
 			"pageSize": "{size} / ページ"
 		},
 		"overview": {
-			"title": "Hydroline ID 概要",
+			"title": "Portal 概要",
 			"loading": "Hydroline ID 設定を読み込んでいます...",
 			"metrics": {
 				"servers": "サーバー",

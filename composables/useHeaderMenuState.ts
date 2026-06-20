@@ -294,7 +294,7 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			? options.activeNavItemClass()
 			: options.inactiveNavItemClass()
 	const resolveHighlightClass = (item: MenuItem): string =>
-		isPathActive(item) ? 'translate-y-[0px] scale-y-[1] opacity-100' : ''
+		isPathActive(item) ? 'opacity-100' : ''
 	const hiddenMenuClass = computed(() =>
 		options.hidden?.()
 			? 'pointer-events-none translate-y-1 opacity-0 select-none'

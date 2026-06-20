@@ -19,7 +19,7 @@
 			"pageSize": "{size} / 页"
 		},
 		"overview": {
-			"title": "Hydroline ID 总览",
+			"title": "Portal 概览",
 			"loading": "正在读取 Hydroline ID 配置...",
 			"metrics": {
 				"servers": "服务器",

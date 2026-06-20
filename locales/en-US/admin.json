@@ -19,7 +19,7 @@
 			"pageSize": "{size} / page"
 		},
 		"overview": {
-			"title": "Hydroline ID Overview",
+			"title": "Portal Overview",
 			"loading": "Loading Hydroline ID configuration...",
 			"metrics": {
 				"servers": "Servers",
