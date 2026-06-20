@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
 						/>
 						<Transition name="header-current-page-label" mode="out-in">
 							<span
-								:key="currentFallback.label"
+								:key="currentFallback.key"
 								class="inline-flex items-center gap-1.5"
 							>
 								<HeaderMenuRouteBadge
@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
 			/>
 			<Transition name="header-current-page-label" mode="out-in">
 				<span
-					:key="activeDisplayNavItem.label"
+					:key="activeDisplayNavItem.key"
 					class="inline-flex items-center gap-1.5"
 				>
 					<HeaderMenuRouteBadge
@@ -320,7 +320,7 @@ onBeforeUnmount(() => {
 							/>
 							<Transition name="header-current-page-label" mode="out-in">
 								<span
-									:key="activeDisplayNavItem.label"
+									:key="activeDisplayNavItem.key"
 									class="inline-flex items-center gap-1.5"
 								>
 									<HeaderMenuRouteBadge

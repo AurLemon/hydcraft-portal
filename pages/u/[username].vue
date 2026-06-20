@@ -235,10 +235,7 @@ import qqLogo from '~/assets/resources/brands/logo_QQ.svg?raw'
 import wechatLogo from '~/assets/resources/brands/logo_WeChat.svg?raw'
 import dayjs from 'dayjs'
 import { useToast } from '@nuxt/ui/composables'
-import {
-	useExplicitRouteTitle,
-	useHeaderRouteBadge,
-} from '~/utils/layout/route-display'
+import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 import {
 	countryItems,
 	createSocialPreviewLink,
@@ -404,20 +401,6 @@ const { data, pending, error } = await useFetch<PublicProfileResponse>(
 )
 
 const profile = computed(() => data.value?.profile ?? null)
-const headerRouteBadgeFallbackText = computed(() => {
-	const source =
-		profile.value?.username?.trim() ||
-		profile.value?.displayName?.trim() ||
-		username.value.trim()
-
-	return source.slice(0, 1).toUpperCase() || 'U'
-})
-const headerRouteBadge = computed(() => ({
-	type: 'user-profile' as const,
-	labelKey: 'routes.userPage',
-	avatarUrl: profile.value?.avatarUrl ?? null,
-	fallbackText: headerRouteBadgeFallbackText.value,
-}))
 const pageTitle = computed(() =>
 	t('profile.public.pageTitle', {
 		name: profile.value?.username || username.value,
@@ -812,6 +795,5 @@ async function handleSocialAction(action: SocialAction): Promise<void> {
 	}
 }
 
-useHeaderRouteBadge(headerRouteBadge)
 useExplicitRouteTitle(pageTitle)
 </script>

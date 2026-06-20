@@ -50,11 +50,7 @@
 
 <script setup lang="ts">
 import type { MinecraftAccountForm } from '~/utils/minecraft/accounts'
-import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
-import {
-	useExplicitRouteTitle,
-	useHeaderRouteBadge,
-} from '~/utils/layout/route-display'
+import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -116,12 +112,6 @@ const pageTitle = computed(() =>
 		name: account.value?.username || mcid.value,
 	}),
 )
-const headerRouteBadge = computed(() => ({
-	type: 'minecraft-player' as const,
-	labelKey: 'routes.playerPage',
-	avatarUrl: getMinecraftHeadRendererUrl(mcid.value),
-	fallbackText: mcid.value.slice(0, 1).toUpperCase() || 'P',
-}))
 
 const hasError = computed(() => Boolean(error.value) || !account.value)
 
@@ -155,7 +145,6 @@ const errorTitle = computed(() => {
 			return t('players.loadFailed')
 	}
 })
-useHeaderRouteBadge(headerRouteBadge)
 useExplicitRouteTitle(pageTitle)
 
 onMounted(() => {

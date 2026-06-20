@@ -9,13 +9,6 @@ export interface RouteDisplayTitleDefinition {
 	labelKey: string
 }
 
-export interface HeaderRouteBadge {
-	type: 'minecraft-player' | 'user-profile'
-	labelKey: string
-	avatarUrl: string | null
-	fallbackText?: string | null
-}
-
 const dynamicRouteTitleDefinitions: ReadonlyArray<RouteDisplayTitleDefinition> =
 	[
 		{
@@ -82,31 +75,10 @@ export const resolveRouteTitleDefinition = (
 	return null
 }
 
-const defaultHeaderRouteBadge = (): HeaderRouteBadge | null => null
 const defaultExplicitRouteTitle = (): string | null => null
-
-export const useHeaderRouteBadgeState = () =>
-	useState<HeaderRouteBadge | null>(
-		'header-route-badge',
-		defaultHeaderRouteBadge,
-	)
 
 export const useExplicitRouteTitleState = () =>
 	useState<string | null>('explicit-route-title', defaultExplicitRouteTitle)
-
-export const useHeaderRouteBadge = (
-	badge: Ref<HeaderRouteBadge | null> | ComputedRef<HeaderRouteBadge | null>,
-): void => {
-	const state = useHeaderRouteBadgeState()
-
-	watch(
-		badge,
-		(value) => {
-			state.value = value
-		},
-		{ immediate: true },
-	)
-}
 
 export const useExplicitRouteTitle = (
 	title: Ref<string | null> | ComputedRef<string | null>,

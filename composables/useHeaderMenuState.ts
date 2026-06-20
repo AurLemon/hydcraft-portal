@@ -9,10 +9,8 @@ import {
 	type HeaderMenuGroup,
 	type HeaderMenuItem,
 } from '~/utils/layout/header-menu'
-import {
-	useHeaderRouteBadgeState,
-	useResolvedRouteTitleDefinition,
-} from '~/utils/layout/route-display'
+import { useResolvedRouteTitleDefinition } from '~/utils/layout/route-display'
+import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 
 interface HeaderMenuStateOptions {
 	activeNavItemClass: () => string
@@ -36,7 +34,6 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 	const route = useRoute()
 	const error = useError()
 	const localePath = useLocalePath()
-	const headerRouteBadge = useHeaderRouteBadgeState()
 	const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
 	const menuMeasure = ref<HTMLElement | null>(null)
 	const mobileActiveButton = ref<HTMLElement | null>(null)
@@ -53,6 +50,44 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 	const resolveTo = (item: MenuItem | HeaderMenuItem): string =>
 		localePath(item.to)
 	const normalizePath = (path: string): string => normalizeHeaderMenuPath(path)
+	const userProfileRouteUsername = computed(() => {
+		const normalizedRoutePath = normalizePath(route.path)
+
+		if (!/^\/u\/[^/]+$/.test(normalizedRoutePath)) {
+			return ''
+		}
+
+		return String(route.params.username ?? '').trim()
+	})
+	const { data: userProfileRouteBadge } = useAsyncData(
+		() =>
+			userProfileRouteUsername.value
+				? `header-route-user-profile:${userProfileRouteUsername.value}`
+				: 'header-route-user-profile:idle',
+		async () => {
+			if (!userProfileRouteUsername.value) {
+				return null
+			}
+
+			const response = await $fetch<{
+				profile: {
+					username: string
+					displayName: string | null
+					avatarUrl: string | null
+				} | null
+			}>(
+				`/api/public/users/${encodeURIComponent(
+					userProfileRouteUsername.value,
+				)}`,
+			).catch(() => null)
+
+			return response?.profile ?? null
+		},
+		{
+			default: () => null,
+			watch: [userProfileRouteUsername],
+		},
+	)
 	const pathGroup = computed<HeaderMenuGroup | undefined>(() =>
 		findHeaderMenuGroupByPath(route.path),
 	)
@@ -108,6 +143,48 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 
 		return currentPath === target || currentPath.startsWith(`${target}/`)
 	}
+	const routeBadge = computed(() => {
+		const normalizedRoutePath = normalizePath(route.path)
+
+		if (/^\/players\/[^/]+$/.test(normalizedRoutePath)) {
+			const mcid = String(route.params.mcid ?? '').trim()
+
+			if (!mcid) {
+				return null
+			}
+
+			return {
+				type: 'minecraft-player' as const,
+				avatarUrl: getMinecraftHeadRendererUrl(mcid),
+				fallbackText: mcid.slice(0, 1).toUpperCase() || 'P',
+			}
+		}
+
+		if (/^\/u\/[^/]+$/.test(normalizedRoutePath)) {
+			const username = String(route.params.username ?? '').trim()
+
+			if (!username) {
+				return null
+			}
+
+			return {
+				type: 'user-profile' as const,
+				avatarUrl: userProfileRouteBadge.value?.avatarUrl ?? null,
+				fallbackText:
+					(
+						userProfileRouteBadge.value?.username?.trim() ||
+						userProfileRouteBadge.value?.displayName?.trim() ||
+						username
+					)
+						.slice(0, 1)
+						.toUpperCase() ||
+					username.slice(0, 1).toUpperCase() ||
+					'U',
+			}
+		}
+
+		return null
+	})
 	const currentRouteFallback = computed<MenuItem>(() => {
 		if (error.value) {
 			return {
@@ -131,9 +208,9 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 					),
 			to: route.fullPath || route.path,
 			isFallback: true,
-			badgeType: headerRouteBadge.value?.type,
-			badgeAvatarUrl: headerRouteBadge.value?.avatarUrl ?? null,
-			badgeFallbackText: headerRouteBadge.value?.fallbackText ?? null,
+			badgeType: routeBadge.value?.type,
+			badgeAvatarUrl: routeBadge.value?.avatarUrl ?? null,
+			badgeFallbackText: routeBadge.value?.fallbackText ?? null,
 		}
 	})
 	const currentFallback = computed<MenuItem | null>(() => {

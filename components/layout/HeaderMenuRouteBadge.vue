@@ -11,25 +11,27 @@
 			class="relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-full bg-slate-500/18 text-[10px] font-semibold text-current ring-1 ring-white/10"
 		>
 			<USkeleton
-				v-if="showSkeleton"
+				v-show="showSkeleton"
 				class="absolute inset-0 h-full w-full rounded-full"
 			/>
 			<img
-				v-if="hasImageSource"
+				v-show="hasImageSource"
 				ref="imageRef"
 				:src="src ?? undefined"
 				:alt="alt"
 				class="h-full w-full object-cover transition-opacity duration-200"
-				:class="[showImage ? 'opacity-100' : 'opacity-0', playerImageClass]"
+				:class="[
+					showImage ? 'opacity-100' : 'pointer-events-none opacity-0',
+					playerImageClass,
+				]"
 				decoding="async"
 				loading="eager"
 				@load="markImageReady"
 				@error="markImageFailed"
 			/>
 			<span
-				v-if="showFallback"
-				class="leading-none transition-opacity duration-200"
-				:class="showFallback ? 'opacity-100' : 'opacity-0'"
+				class="absolute inset-0 flex items-center justify-center leading-none transition-opacity duration-200"
+				:class="showFallback ? 'opacity-100' : 'pointer-events-none opacity-0'"
 			>
 				{{ fallbackText }}
 			</span>
