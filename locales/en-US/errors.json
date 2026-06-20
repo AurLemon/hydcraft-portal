@@ -97,6 +97,7 @@
 			"MINECRAFT_ACCOUNT_ID_REQUIRED": "The Minecraft account ID is missing.",
 			"MINECRAFT_ACCOUNT_NOT_FOUND": "The Minecraft account was not found.",
 			"MINECRAFT_PRIMARY_ACCOUNT_REQUIRED": "Please choose a primary Minecraft account.",
+			"MINECRAFT_USERNAME_REQUIRED": "Please enter a Minecraft ID, UUID, or AuthMe account.",
 			"MINECRAFT_USERNAME_INVALID": "The game username format is invalid.",
 			"MINECRAFT_ACCOUNT_NOT_BOUND": "This game account is not bound to a Hydroline ID account yet.",
 			"MINECRAFT_ACCOUNT_ALREADY_BOUND": "This game account is already bound.",

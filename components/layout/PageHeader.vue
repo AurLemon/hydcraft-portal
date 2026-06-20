@@ -207,14 +207,16 @@ onMounted(() => {
 </script>
 
 <template>
-	<header class="sticky top-0 z-100 pt-6 pb-8 lg:px-8 lg:pt-10 lg:pb-16">
+	<header
+		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:px-8 lg:pt-10 lg:pb-16"
+	>
 		<div
 			class="pointer-events-none absolute top-0 right-0 -bottom-4/5 left-0 z-10 backdrop-blur-[48px] mask-[linear-gradient(to_bottom,black_0%,rgba(0,0,0,0.98)_30%,rgba(0,0,0,0.92)_45%,rgba(0,0,0,0.8)_55%,rgba(0,0,0,0.58)_65%,rgba(0,0,0,0.35)_75%,rgba(0,0,0,0.15)_85%,transparent_100%)] lg:-bottom-3/5"
 			:class="headerScrimClass"
 		/>
 
 		<div
-			class="site-shell relative z-40 mx-auto flex items-center justify-between px-6 lg:px-0"
+			class="site-shell pointer-events-auto relative z-40 mx-auto flex items-center justify-between px-6 lg:px-0"
 		>
 			<NuxtLink
 				:to="localePath('/')"

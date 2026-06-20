@@ -461,6 +461,41 @@
 				"avatarReset": "Avatar will reset after saving",
 				"coverReset": "Cover will reset after saving"
 			},
+			"minecraft": {
+				"fields": {
+					"bindIdentity": "Minecraft ID / UUID",
+					"uuid": "UUID",
+					"source": "Source",
+					"authmeName": "AuthMe Name",
+					"verifiedAt": "Verified At"
+				},
+				"placeholders": {
+					"bindUsername": "Enter a Minecraft ID, UUID, or AuthMe account"
+				},
+				"actions": {
+					"bind": "Bind directly",
+					"setPrimary": "Set primary",
+					"unbind": "Unbind"
+				},
+				"states": {
+					"primary": "Primary"
+				},
+				"empty": {
+					"title": "No Minecraft account is bound yet",
+					"description": "You can bind an account for this user directly without entering a password.",
+					"none": "None",
+					"noUuid": "UUID pending observation",
+					"uuidConflict": "{count} UUIDs observed"
+				},
+				"notifications": {
+					"bindSuccess": "Minecraft account bound",
+					"bindFailed": "Failed to bind Minecraft account",
+					"primarySetSuccess": "Primary account updated",
+					"primarySetFailed": "Failed to update primary account",
+					"unbindSuccess": "Minecraft account unbound",
+					"unbindFailed": "Failed to unbind Minecraft account"
+				}
+			},
 			"edit": {
 				"back": "Back to users",
 				"fallbackTitle": "User",

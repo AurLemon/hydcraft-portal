@@ -97,6 +97,7 @@
 			"MINECRAFT_ACCOUNT_ID_REQUIRED": "Minecraft アカウント ID が不足しています。",
 			"MINECRAFT_ACCOUNT_NOT_FOUND": "Minecraft アカウントが見つかりません。",
 			"MINECRAFT_PRIMARY_ACCOUNT_REQUIRED": "メインの Minecraft アカウントを選択してください。",
+			"MINECRAFT_USERNAME_REQUIRED": "Minecraft ID、UUID、または AuthMe アカウントを入力してください。",
 			"MINECRAFT_USERNAME_INVALID": "Minecraft ID の形式が無効です。",
 			"MINECRAFT_ACCOUNT_NOT_BOUND": "このゲームアカウントはまだ Hydroline ID アカウントにバインドされていません。",
 			"MINECRAFT_ACCOUNT_ALREADY_BOUND": "このゲームアカウントは既にバインドされています。",

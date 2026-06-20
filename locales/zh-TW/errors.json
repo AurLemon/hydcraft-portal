@@ -97,6 +97,7 @@
 			"MINECRAFT_ACCOUNT_ID_REQUIRED": "缺少 Minecraft 帳號 ID。",
 			"MINECRAFT_ACCOUNT_NOT_FOUND": "Minecraft 帳號不存在。",
 			"MINECRAFT_PRIMARY_ACCOUNT_REQUIRED": "請選擇一個 Minecraft 主檔案。",
+			"MINECRAFT_USERNAME_REQUIRED": "請填寫 Minecraft ID、UUID 或 AuthMe 帳號。",
 			"MINECRAFT_USERNAME_INVALID": "Minecraft ID 格式無效。",
 			"MINECRAFT_ACCOUNT_NOT_BOUND": "該遊戲帳號尚未綁定 Hydroline ID 帳號。",
 			"MINECRAFT_ACCOUNT_ALREADY_BOUND": "該遊戲帳號已被綁定。",

@@ -97,7 +97,7 @@
 					<span class="font-mono text-xs">{{ row.original.hydrolineId }}</span>
 				</template>
 				<template #createdAt-cell="{ row }">
-					{{ formatDate(row.original.createdAt) }}
+					{{ formatDate(row.original.joinedAt) }}
 				</template>
 				<template #actions-cell="{ row }">
 					<UButton
@@ -146,7 +146,7 @@ const filters = reactive({
 	search: '',
 	role: ALL_FILTER_VALUE,
 	status: ALL_FILTER_VALUE,
-	sortField: 'createdAt',
+	sortField: 'joinedAt',
 	sortDirection: 'desc',
 })
 const getFilterQueryValue = (value: string): string | undefined =>
@@ -194,7 +194,7 @@ const statusItems = [
 	{ label: 'BANNED', value: 'BANNED' },
 ]
 const sortFieldItems = [
-	{ label: t('admin.users.fields.createdAt'), value: 'createdAt' },
+	{ label: t('admin.users.fields.createdAt'), value: 'joinedAt' },
 	{ label: t('admin.sort.fields.updatedAt'), value: 'updatedAt' },
 	{ label: t('admin.users.fields.username'), value: 'username' },
 	{ label: t('admin.users.fields.displayName'), value: 'displayName' },
@@ -229,7 +229,7 @@ const resetFilters = (): void => {
 	filters.search = ''
 	filters.role = ALL_FILTER_VALUE
 	filters.status = ALL_FILTER_VALUE
-	filters.sortField = 'createdAt'
+	filters.sortField = 'joinedAt'
 	filters.sortDirection = 'desc'
 }
 

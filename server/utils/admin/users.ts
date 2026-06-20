@@ -17,9 +17,13 @@ import {
 import {
 	bindMinecraftAccountToUser,
 	recordMinecraftAccountVerification,
+	setPrimaryMinecraftAccount,
 	syncMinecraftAccountFromVerifiedAuthMe,
 	unbindMinecraftAccountFromUser,
 } from '../minecraft/account-binding'
+import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
+import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 import {
 	normalizeBio,
 	normalizeBirthday,
@@ -44,6 +48,7 @@ const USER_STATUSES = new Set<UserStatus>([
 	'BANNED',
 ])
 const USER_SORT_FIELDS = new Set([
+	'joinedAt',
 	'createdAt',
 	'updatedAt',
 	'username',
@@ -53,6 +58,8 @@ const USER_SORT_FIELDS = new Set([
 	'status',
 ])
 const HYDROLINE_RANDOM_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const MINECRAFT_UUID_PATTERN =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 const pickDefined = <TData extends Record<string, unknown>>(
 	data: TData,
@@ -62,6 +69,11 @@ const pickDefined = <TData extends Record<string, unknown>>(
 	) as Partial<TData>
 
 const badRequest = (code: string) => createBadRequestError(code)
+
+const normalizeMinecraftUuidLookup = (value: string): string | null => {
+	const normalized = value.trim().toLowerCase()
+	return MINECRAFT_UUID_PATTERN.test(normalized) ? normalized : null
+}
 
 const ownerRoleError = () =>
 	createApiError({
@@ -386,7 +398,7 @@ export const serializeAdminUser = (user: AdminUserEntity) => ({
 	preferences: user.preferences,
 	privacy: user.privacy,
 	badges: user.badges,
-	minecraftAccounts: user.minecraftAccounts,
+	minecraftAccounts: [],
 	attachments: user.createdAttachments.map((attachment) => ({
 		id: attachment.id,
 		category: attachment.category,
@@ -397,6 +409,91 @@ export const serializeAdminUser = (user: AdminUserEntity) => ({
 		variantCount: attachment.variants.length,
 	})),
 })
+
+const readAdminMinecraftAccountSummaries = async (userId: string) => {
+	const accounts = await prisma.minecraftAccount.findMany({
+		where: {
+			userId,
+			unlinkedAt: null,
+		},
+		include: {
+			authMeAccount: true,
+		},
+		orderBy: [
+			{
+				isPrimary: 'desc',
+			},
+			{
+				updatedAt: 'desc',
+			},
+		],
+	})
+
+	if (!accounts.length) {
+		return []
+	}
+
+	const players = await prisma.minecraftServerPlayer.findMany({
+		where: {
+			OR: [
+				{
+					uuid: {
+						in: accounts
+							.map((account) => account.uuid)
+							.filter((uuid): uuid is string => Boolean(uuid)),
+					},
+				},
+				{
+					normalizedUsername: {
+						in: accounts.map((account) => account.normalizedUsername),
+					},
+				},
+			],
+		},
+		include: {
+			playerData: true,
+			statsSnapshot: true,
+			advancementsSnapshot: true,
+		},
+		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
+	})
+	const histories = await prisma.minecraftAccountBindingHistory.findMany({
+		where: {
+			minecraftAccountId: {
+				in: accounts.map((account) => account.id),
+			},
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+	})
+	const historyByAccountId = new Map<string, typeof histories>()
+
+	for (const history of histories) {
+		const bucket = historyByAccountId.get(history.minecraftAccountId) ?? []
+		bucket.push(history)
+		historyByAccountId.set(history.minecraftAccountId, bucket)
+	}
+
+	const accountNormalizedUsernames = [
+		...new Set(accounts.map((account) => account.normalizedUsername)),
+	]
+	const luckPermsResolver = createLuckPermsPrimaryGroupResolver(
+		await readLuckPermsSnapshotBundle({
+			uuids: accounts.flatMap((account) => account.uuid ?? []),
+			normalizedUsernames: accountNormalizedUsernames,
+		}),
+	)
+
+	return accounts.map((account) =>
+		buildMinecraftAccountSummary(
+			account,
+			players,
+			historyByAccountId.get(account.id) ?? [],
+			luckPermsResolver,
+		),
+	)
+}
 
 export const listAdminUsers = async (input: {
 	page: number
@@ -466,7 +563,10 @@ export const getAdminUser = async (userId: string) => {
 		})
 	}
 
-	return serializeAdminUser(user)
+	return {
+		...serializeAdminUser(user),
+		minecraftAccounts: await readAdminMinecraftAccountSummaries(userId),
+	}
 }
 
 export const adminBindMinecraftAccountToUser = async (input: {
@@ -474,7 +574,16 @@ export const adminBindMinecraftAccountToUser = async (input: {
 	userId: string
 	username: string
 }) => {
-	const normalizedUsername = normalizeAuthMeUsername(input.username)
+	const bindingKey = input.username.trim()
+
+	if (!bindingKey) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'MINECRAFT_USERNAME_REQUIRED',
+		})
+	}
+
+	const uuidLookup = normalizeMinecraftUuidLookup(bindingKey)
 	const targetUser = await prisma.user.findUnique({
 		where: {
 			id: input.userId,
@@ -491,16 +600,68 @@ export const adminBindMinecraftAccountToUser = async (input: {
 		})
 	}
 
-	const existingAccount = await prisma.minecraftAccount.findUnique({
-		where: {
-			normalizedUsername,
-		},
-	})
+	const observedPlayer = uuidLookup
+		? await prisma.minecraftServerPlayer.findFirst({
+				where: {
+					uuid: uuidLookup,
+				},
+				select: {
+					normalizedUsername: true,
+				},
+			})
+		: null
+	const normalizedUsername = uuidLookup
+		? (observedPlayer?.normalizedUsername ?? null)
+		: normalizeAuthMeUsername(bindingKey)
+	const resolvedNormalizedUsername =
+		observedPlayer?.normalizedUsername ?? normalizedUsername
+
+	const existingAccount =
+		(await prisma.minecraftAccount.findFirst({
+			where: {
+				OR: [
+					...(uuidLookup
+						? [
+								{
+									uuid: uuidLookup,
+								},
+							]
+						: []),
+					...(resolvedNormalizedUsername
+						? [
+								{
+									normalizedUsername: resolvedNormalizedUsername,
+								},
+							]
+						: []),
+				],
+			},
+		})) ??
+		(resolvedNormalizedUsername
+			? await prisma.minecraftAccount.findFirst({
+					where: {
+						authMeAccount: {
+							username: {
+								equals: resolvedNormalizedUsername,
+								mode: 'insensitive',
+							},
+						},
+					},
+				})
+			: null)
 	const minecraftAccount =
 		existingAccount ??
 		(await prisma.$transaction(async (tx) => {
-			const verifiedAccount =
-				await readVerifiedAuthMeAccountByUsername(normalizedUsername)
+			if (!resolvedNormalizedUsername) {
+				throw createApiError({
+					statusCode: 404,
+					code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
+				})
+			}
+
+			const verifiedAccount = await readVerifiedAuthMeAccountByUsername(
+				resolvedNormalizedUsername,
+			)
 
 			if (!verifiedAccount) {
 				throw createApiError({
@@ -535,6 +696,35 @@ export const adminBindMinecraftAccountToUser = async (input: {
 		userId: input.userId,
 		actorUserId: input.actingUser.id,
 		reason: 'admin-bind',
+	})
+}
+
+export const adminSetPrimaryMinecraftAccount = async (input: {
+	actingUser: User
+	userId: string
+	minecraftAccountId: string
+}) => {
+	const targetUser = await prisma.user.findUnique({
+		where: {
+			id: input.userId,
+		},
+		select: {
+			id: true,
+		},
+	})
+
+	if (!targetUser) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'USER_NOT_FOUND',
+		})
+	}
+
+	return await setPrimaryMinecraftAccount({
+		minecraftAccountId: input.minecraftAccountId,
+		userId: input.userId,
+		actorUserId: input.actingUser.id,
+		reason: 'admin-primary-set',
 	})
 }
 

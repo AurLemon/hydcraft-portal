@@ -101,7 +101,7 @@ model UserProfilePrivacy {
   showJoinedAt                   Boolean  @default(true)
   showLocation                   Boolean  @default(true)
   showCountryOrRegion            Boolean  @default(true)
-  showBirthday                   Boolean  @default(false)
+  showBirthday                   Boolean  @default(true)
   showBadges                     Boolean  @default(true)
   showBio                        Boolean  @default(true)
   showMinecraftProfileLink       Boolean  @default(true)

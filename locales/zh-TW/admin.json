@@ -471,6 +471,41 @@
 				"avatarReset": "儲存後將重置頭像",
 				"coverReset": "儲存後將重置封面"
 			},
+			"minecraft": {
+				"fields": {
+					"bindIdentity": "Minecraft ID / UUID",
+					"uuid": "UUID",
+					"source": "來源",
+					"authmeName": "AuthMe 名稱",
+					"verifiedAt": "驗證時間"
+				},
+				"placeholders": {
+					"bindUsername": "輸入 Minecraft ID、UUID 或 AuthMe 帳號"
+				},
+				"actions": {
+					"bind": "直接綁定",
+					"setPrimary": "設為主帳號",
+					"unbind": "解除綁定"
+				},
+				"states": {
+					"primary": "主帳號"
+				},
+				"empty": {
+					"title": "還沒有綁定 Minecraft 帳號",
+					"description": "可以直接輸入使用者名稱為該使用者代綁帳號，無需輸入密碼。",
+					"none": "暫無",
+					"noUuid": "UUID 尚待觀測",
+					"uuidConflict": "觀測到 {count} 個 UUID"
+				},
+				"notifications": {
+					"bindSuccess": "Minecraft 帳號已綁定",
+					"bindFailed": "綁定 Minecraft 帳號失敗",
+					"primarySetSuccess": "主帳號已更新",
+					"primarySetFailed": "設定主帳號失敗",
+					"unbindSuccess": "Minecraft 帳號已解除綁定",
+					"unbindFailed": "解除綁定 Minecraft 帳號失敗"
+				}
+			},
 			"edit": {
 				"back": "返回使用者列表",
 				"fallbackTitle": "使用者",

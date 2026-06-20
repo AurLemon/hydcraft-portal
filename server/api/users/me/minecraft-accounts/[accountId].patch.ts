@@ -1,6 +1,6 @@
-import { prisma } from '../../../../utils/db/prisma'
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
+import { setPrimaryMinecraftAccount } from '../../../../utils/minecraft/account-binding'
 
 interface UpdateMinecraftAccountBody {
 	isPrimary?: boolean
@@ -30,31 +30,15 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	const updatedAccount = await prisma.$transaction(async (tx) => {
-		if (!body.isPrimary) {
-			throw createBadRequestError('MINECRAFT_PRIMARY_ACCOUNT_REQUIRED')
-		}
+	if (!body.isPrimary) {
+		throw createBadRequestError('MINECRAFT_PRIMARY_ACCOUNT_REQUIRED')
+	}
 
-		await tx.minecraftAccount.updateMany({
-			where: {
-				userId: currentUser.id,
-				id: {
-					not: accountId,
-				},
-			},
-			data: {
-				isPrimary: false,
-			},
-		})
-
-		return tx.minecraftAccount.update({
-			where: {
-				id: accountId,
-			},
-			data: {
-				isPrimary: true,
-			},
-		})
+	const updatedAccount = await setPrimaryMinecraftAccount({
+		minecraftAccountId: accountId,
+		userId: currentUser.id,
+		actorUserId: currentUser.id,
+		reason: 'self-service-primary-set',
 	})
 
 	return {

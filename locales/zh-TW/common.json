@@ -17,6 +17,7 @@
 		"adminServers": "伺服器",
 		"adminPlayers": "玩家",
 		"adminUsers": "使用者",
+		"adminUserEdit": "編輯使用者",
 		"adminAttachments": "附件",
 		"login": "登入",
 		"register": "註冊",

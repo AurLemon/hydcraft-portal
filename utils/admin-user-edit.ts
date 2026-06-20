@@ -17,7 +17,7 @@ export interface AdminUserForm {
 	username: string
 	hydrolineId: string
 	displayName: string
-	createdAt: string
+	joinedAt: string
 	bio: string
 	location: string
 	countryOrRegion: string
@@ -83,7 +83,7 @@ export const createEmptyAdminUserForm = (): AdminUserForm => ({
 	username: '',
 	hydrolineId: '',
 	displayName: '',
-	createdAt: '',
+	joinedAt: '',
 	bio: '',
 	location: '',
 	countryOrRegion: '',
@@ -123,7 +123,7 @@ export const assignAdminUserForm = (
 	form.username = user.username
 	form.hydrolineId = user.hydrolineId
 	form.displayName = user.displayName ?? ''
-	form.createdAt = dayjs(user.createdAt).format('YYYY-MM-DD')
+	form.joinedAt = dayjs(user.joinedAt).format('YYYY-MM-DD')
 	form.bio = user.bio ?? ''
 	form.location = user.location ?? ''
 	form.countryOrRegion = user.countryOrRegion ?? ''

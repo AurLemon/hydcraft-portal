@@ -17,6 +17,7 @@
 		"adminServers": "Servers",
 		"adminPlayers": "Players",
 		"adminUsers": "Users",
+		"adminUserEdit": "Edit User",
 		"adminAttachments": "Attachments",
 		"login": "Log In",
 		"register": "Register",

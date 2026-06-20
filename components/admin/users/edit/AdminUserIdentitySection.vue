@@ -27,7 +27,7 @@
 			</label>
 			<label :class="adminFieldClass">
 				<span>{{ t('admin.users.fields.createdAt') }}</span>
-				<AdminDatePartsField v-model="form.createdAt" :allow-empty="false" />
+				<AdminDatePartsField v-model="form.joinedAt" :allow-empty="false" />
 			</label>
 			<label :class="adminFieldClass">
 				<span>{{ t('admin.users.fields.hydrolineId') }}</span>

@@ -26,6 +26,10 @@ const dynamicRouteTitleDefinitions: ReadonlyArray<RouteDisplayTitleDefinition> =
 			key: '/u/[username]',
 			labelKey: 'routes.userPage',
 		},
+		{
+			key: '/admin/users/[id]',
+			labelKey: 'routes.adminUserEdit',
+		},
 	]
 
 export const resolveRouteTitleDefinition = (
@@ -65,6 +69,13 @@ export const resolveRouteTitleDefinition = (
 		return {
 			key: '/u/[username]',
 			labelKey: 'routes.userPage',
+		}
+	}
+
+	if (/^\/admin\/users\/[^/]+$/.test(normalizedPath)) {
+		return {
+			key: '/admin/users/[id]',
+			labelKey: 'routes.adminUserEdit',
 		}
 	}
 

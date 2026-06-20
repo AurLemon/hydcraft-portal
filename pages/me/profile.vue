@@ -96,6 +96,7 @@ const submittingSection = ref<ProfileSubmitSection | null>(null)
 const originalProfile = ref<EditableProfile | null>(null)
 const preferencesSnapshot = ref('')
 const privacySnapshot = ref('')
+const skipProfileWatchSync = ref(false)
 const form = reactive(createEmptyProfileForm())
 const { data, pending, error, refresh } = await useFetch<ProfileResponse>(
 	'/api/users/me/profile',
@@ -181,6 +182,14 @@ watch(
 			return
 		}
 
+		if (skipProfileWatchSync.value) {
+			skipProfileWatchSync.value = false
+			originalProfile.value = value
+			preferencesSnapshot.value = JSON.stringify(form.preferences)
+			privacySnapshot.value = JSON.stringify(form.privacy)
+			return
+		}
+
 		originalProfile.value = value
 		assignProfileForm(form, value)
 		preferencesSnapshot.value = JSON.stringify(form.preferences)
@@ -212,8 +221,61 @@ const pickPayload = (
 		keys.flatMap((key) => (key in payload ? [[key, payload[key]]] : [])),
 	)
 
-const applyProfileResponse = (response: ProfileResponse): void => {
+const syncProfileSection = (
+	nextProfile: EditableProfile,
+	section:
+		| 'username'
+		| 'basic'
+		| 'social'
+		| 'preferences'
+		| 'privacy'
+		| 'media',
+): void => {
+	const nextForm = createEmptyProfileForm()
+	assignProfileForm(nextForm, nextProfile)
+
+	switch (section) {
+		case 'username':
+			form.username = nextForm.username
+			return
+		case 'basic':
+			form.displayName = nextForm.displayName
+			form.bio = nextForm.bio
+			form.schoolOrCompany = nextForm.schoolOrCompany
+			form.occupationOrMajor = nextForm.occupationOrMajor
+			form.location = nextForm.location
+			form.countryOrRegion = nextForm.countryOrRegion
+			form.gender = nextForm.gender
+			form.birthday = nextForm.birthday
+			return
+		case 'social':
+			form.social = nextForm.social
+			return
+		case 'preferences':
+			form.preferences = nextForm.preferences
+			return
+		case 'privacy':
+			form.privacy = nextForm.privacy
+			return
+		case 'media':
+			form.avatarUrl = nextForm.avatarUrl
+			return
+	}
+}
+
+const applyProfileResponse = (
+	response: ProfileResponse,
+	section:
+		| 'username'
+		| 'basic'
+		| 'social'
+		| 'preferences'
+		| 'privacy'
+		| 'media',
+): void => {
+	skipProfileWatchSync.value = true
 	data.value = response
+	syncProfileSection(response.profile, section)
 
 	if (currentUser.value) {
 		currentUser.value = {
@@ -258,7 +320,7 @@ const submitProfileSection = async (
 	submittingSection.value = section
 
 	try {
-		applyProfileResponse(await patchProfile(payload))
+		applyProfileResponse(await patchProfile(payload), section)
 		toast.add({
 			title: t('profile.notifications.saved'),
 			color: 'success',
@@ -290,7 +352,7 @@ const patchProfileAttachment = async (
 	title: string,
 ): Promise<void> => {
 	try {
-		applyProfileResponse(await patchProfile(payload))
+		applyProfileResponse(await patchProfile(payload), 'media')
 		toast.add({
 			title,
 			color: 'success',
@@ -355,7 +417,7 @@ const savePreferencesLater = (): void => {
 
 		void patchProfile(payload)
 			.then((response) => {
-				applyProfileResponse(response)
+				applyProfileResponse(response, 'preferences')
 				toast.add({
 					title: t('profile.notifications.preferencesSaved'),
 					color: 'success',
@@ -388,7 +450,7 @@ const savePrivacyLater = (): void => {
 
 		void patchProfile(payload)
 			.then((response) => {
-				applyProfileResponse(response)
+				applyProfileResponse(response, 'privacy')
 				toast.add({
 					title: t('profile.notifications.privacySaved'),
 					color: 'success',

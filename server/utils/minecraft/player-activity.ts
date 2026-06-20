@@ -33,7 +33,7 @@ export interface PublicPlayerActivityEvent {
 	occurredAt: string
 }
 
-const ACTIVITY_EVENT_LIMIT = 10
+const ACTIVITY_EVENT_LIMIT = 6
 
 const BINDING_ACTION_PUBLIC_LABEL_KEY: Record<string, string> = {
 	VERIFICATION_PASSED: 'binding.verificationPassed',

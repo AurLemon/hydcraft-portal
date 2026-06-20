@@ -280,6 +280,94 @@ export const bindMinecraftAccountToUser = async (input: {
 			return result.account
 		})
 
+export const setPrimaryMinecraftAccountInTx = async (
+	tx: DbClient,
+	input: {
+		minecraftAccountId: string
+		userId: string
+		actorUserId?: string | null
+		reason?: string | null
+	},
+) => {
+	const account = await tx.minecraftAccount.findUnique({
+		where: {
+			id: input.minecraftAccountId,
+		},
+	})
+
+	if (!account || account.userId !== input.userId || account.unlinkedAt) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
+		})
+	}
+
+	if (account.isPrimary) {
+		return {
+			account,
+			changed: false,
+		}
+	}
+
+	await tx.minecraftAccount.updateMany({
+		where: {
+			userId: input.userId,
+			unlinkedAt: null,
+			id: {
+				not: account.id,
+			},
+		},
+		data: {
+			isPrimary: false,
+		},
+	})
+
+	const updatedAccount = await tx.minecraftAccount.update({
+		where: {
+			id: account.id,
+		},
+		data: {
+			isPrimary: true,
+		},
+	})
+
+	await createBindingHistory(tx, {
+		minecraftAccountId: account.id,
+		action: 'PRIMARY_SET',
+		actorUserId: input.actorUserId ?? input.userId,
+		targetUserId: input.userId,
+		previousUserId: input.userId,
+		reason: input.reason,
+	})
+
+	return {
+		account: updatedAccount,
+		changed: true,
+	}
+}
+
+export const setPrimaryMinecraftAccount = async (input: {
+	minecraftAccountId: string
+	userId: string
+	actorUserId?: string | null
+	reason?: string | null
+}) =>
+	await prisma
+		.$transaction(async (tx) => {
+			return await setPrimaryMinecraftAccountInTx(tx, input)
+		})
+		.then(async (result) => {
+			if (result.changed) {
+				await emitEvent('minecraft.account.primary-set', {
+					userId: input.userId,
+					minecraftAccountId: result.account.id,
+					occurredAt: new Date(),
+				})
+			}
+
+			return result.account
+		})
+
 export const unbindMinecraftAccountFromUserInTx = async (
 	tx: DbClient,
 	input: {

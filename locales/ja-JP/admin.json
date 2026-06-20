@@ -471,6 +471,41 @@
 				"avatarReset": "保存後にアバターをリセットします",
 				"coverReset": "保存後にカバーをリセットします"
 			},
+			"minecraft": {
+				"fields": {
+					"bindIdentity": "Minecraft ID / UUID",
+					"uuid": "UUID",
+					"source": "ソース",
+					"authmeName": "AuthMe 名称",
+					"verifiedAt": "認証日時"
+				},
+				"placeholders": {
+					"bindUsername": "Minecraft ID、UUID、または AuthMe アカウントを入力"
+				},
+				"actions": {
+					"bind": "直接紐付け",
+					"setPrimary": "メインに設定",
+					"unbind": "紐付け解除"
+				},
+				"states": {
+					"primary": "主アカウント"
+				},
+				"empty": {
+					"title": "Minecraft アカウントはまだ紐付けられていません",
+					"description": "パスワードなしで、このユーザーにアカウントを直接紐付けできます。",
+					"none": "なし",
+					"noUuid": "UUID はまだ未観測です",
+					"uuidConflict": "{count} 個の UUID を観測"
+				},
+				"notifications": {
+					"bindSuccess": "Minecraft アカウントを紐付けました",
+					"bindFailed": "Minecraft アカウントの紐付けに失敗しました",
+					"primarySetSuccess": "主アカウントを更新しました",
+					"primarySetFailed": "主アカウントの設定に失敗しました",
+					"unbindSuccess": "Minecraft アカウントの紐付けを解除しました",
+					"unbindFailed": "Minecraft アカウントの紐付け解除に失敗しました"
+				}
+			},
 			"edit": {
 				"back": "ユーザー一覧に戻る",
 				"fallbackTitle": "ユーザー",

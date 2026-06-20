@@ -8,7 +8,7 @@
 		<div :class="profileCardClass" class="grid gap-4">
 			<div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
 				<UFormField
-					:label="t('admin.users.minecraft.fields.bindUsername')"
+					:label="t('admin.users.minecraft.fields.bindIdentity')"
 					name="minecraft-bind-username"
 				>
 					<UInput
@@ -29,10 +29,6 @@
 					{{ t('admin.users.minecraft.actions.bind') }}
 				</UButton>
 			</div>
-
-			<p class="text-sm text-slate-500 dark:text-slate-400">
-				{{ t('admin.users.minecraft.description') }}
-			</p>
 
 			<div v-if="accounts.length" class="grid gap-3">
 				<div
@@ -61,17 +57,31 @@
 								{{ account.id }}
 							</p>
 						</div>
-						<UButton
-							type="button"
-							color="error"
-							variant="soft"
-							icon="i-lucide-unlink"
-							:loading="unbindingAccountId === account.id"
-							:disabled="binding"
-							@click="$emit('unbind', account.id)"
-						>
-							{{ t('admin.users.minecraft.actions.unbind') }}
-						</UButton>
+						<div class="flex items-center gap-2">
+							<UButton
+								v-if="!account.isPrimary"
+								type="button"
+								color="primary"
+								variant="soft"
+								icon="i-lucide-star"
+								:loading="primaryAccountId === account.id"
+								:disabled="binding || unbindingAccountId !== null"
+								@click="$emit('set-primary', account.id)"
+							>
+								{{ t('admin.users.minecraft.actions.setPrimary') }}
+							</UButton>
+							<UButton
+								type="button"
+								color="error"
+								variant="soft"
+								icon="i-lucide-unlink"
+								:loading="unbindingAccountId === account.id"
+								:disabled="binding || primaryAccountId !== null"
+								@click="$emit('unbind', account.id)"
+							>
+								{{ t('admin.users.minecraft.actions.unbind') }}
+							</UButton>
+						</div>
 					</div>
 
 					<div
@@ -82,7 +92,7 @@
 								{{ t('admin.users.minecraft.fields.uuid') }}
 							</span>
 							<p class="mt-1 break-all font-mono text-xs">
-								{{ account.uuid || t('admin.users.minecraft.empty.noUuid') }}
+								{{ describeUuid(account) }}
 							</p>
 						</div>
 						<div>
@@ -137,12 +147,14 @@ interface AdminUserMinecraftSectionProps {
 	accounts: AdminUser['minecraftAccounts']
 	binding: boolean
 	unbindingAccountId: string | null
+	primaryAccountId: string | null
 }
 
 const props = defineProps<AdminUserMinecraftSectionProps>()
 const emit = defineEmits<{
 	bind: [username: string]
 	unbind: [accountId: string]
+	'set-primary': [accountId: string]
 }>()
 
 const { t } = useI18n()
@@ -163,6 +175,25 @@ const formatDateTime = (value: string | null): string =>
 	value
 		? dayjs(value).format('YYYY-MM-DD HH:mm:ss')
 		: t('admin.users.minecraft.empty.none')
+
+const describeUuid = (
+	account: AdminUser['minecraftAccounts'][number],
+): string => {
+	if (account.uuid) {
+		return account.uuid
+	}
+
+	if (account.playerIdentity.hasUuidConflict) {
+		return t('admin.users.minecraft.empty.uuidConflict', {
+			count: account.playerIdentity.observedUuidCount,
+		})
+	}
+
+	return (
+		account.playerIdentity.resolvedUuid ||
+		t('admin.users.minecraft.empty.noUuid')
+	)
+}
 
 watch(
 	() => props.binding,

@@ -209,7 +209,7 @@ export const createEmptyProfileForm = (): ProfileForm => ({
 		showJoinedAt: true,
 		showLocation: true,
 		showCountryOrRegion: true,
-		showBirthday: false,
+		showBirthday: true,
 		showBadges: true,
 		showBio: true,
 		showMinecraftProfileLink: true,

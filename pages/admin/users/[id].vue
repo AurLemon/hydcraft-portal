@@ -87,7 +87,9 @@
 				:accounts="user.minecraftAccounts"
 				:binding="savingSection === 'minecraft-bind'"
 				:unbinding-account-id="unbindingMinecraftAccountId"
+				:primary-account-id="primaryMinecraftAccountId"
 				@bind="bindMinecraftAccount"
+				@set-primary="setPrimaryMinecraftAccount"
 				@unbind="unbindMinecraftAccount"
 			/>
 			<AdminUserPreferencesSection
@@ -156,7 +158,9 @@ const availableBadges = computed(() =>
 const form = reactive<AdminUserForm>(createEmptyAdminUserForm())
 const savingSection = ref<AdminUserSaveSection | null>(null)
 const unbindingMinecraftAccountId = ref<string | null>(null)
+const primaryMinecraftAccountId = ref<string | null>(null)
 const privacySnapshot = ref('')
+const skipUserWatchSync = ref(false)
 let privacySaveTimer: ReturnType<typeof setTimeout> | null = null
 
 const roleItems: AdminUserSelectItem[] = [
@@ -182,6 +186,12 @@ watch(
 			return
 		}
 
+		if (skipUserWatchSync.value) {
+			skipUserWatchSync.value = false
+			privacySnapshot.value = JSON.stringify(form.privacy)
+			return
+		}
+
 		assignAdminUserForm(form, value)
 		privacySnapshot.value = JSON.stringify(form.privacy)
 	},
@@ -193,6 +203,58 @@ onBeforeUnmount(() => {
 		clearTimeout(privacySaveTimer)
 	}
 })
+
+const syncAdminFormSection = (
+	nextUser: AdminUser,
+	section: AdminUserSaveSection,
+): void => {
+	const nextForm = createEmptyAdminUserForm()
+	assignAdminUserForm(nextForm, nextUser)
+
+	switch (section) {
+		case 'identity':
+			form.username = nextForm.username
+			form.hydrolineId = nextForm.hydrolineId
+			form.displayName = nextForm.displayName
+			form.joinedAt = nextForm.joinedAt
+			form.role = nextForm.role
+			form.status = nextForm.status
+			form.statusReason = nextForm.statusReason
+			return
+		case 'hydroline':
+			form.hydrolineId = nextForm.hydrolineId
+			return
+		case 'profile':
+			form.bio = nextForm.bio
+			form.location = nextForm.location
+			form.countryOrRegion = nextForm.countryOrRegion
+			form.birthday = nextForm.birthday
+			return
+		case 'avatar':
+			return
+		case 'cover':
+			return
+		case 'minecraft-bind':
+			return
+		case 'preferences':
+			form.preferences = nextForm.preferences
+			return
+		case 'social':
+			form.social = nextForm.social
+			return
+		case 'achievements':
+			form.verified = nextForm.verified
+			form.verifiedTextZhCn = nextForm.verifiedTextZhCn
+			form.verifiedTextZhTw = nextForm.verifiedTextZhTw
+			form.verifiedTextEnUs = nextForm.verifiedTextEnUs
+			form.verifiedTextJaJp = nextForm.verifiedTextJaJp
+			form.badgeIds = nextForm.badgeIds
+			return
+		case 'privacy':
+			form.privacy = nextForm.privacy
+			return
+	}
+}
 
 const patchAdminUser = async (
 	section: AdminUserSaveSection,
@@ -216,8 +278,9 @@ const patchAdminUser = async (
 				body,
 			},
 		)
+		skipUserWatchSync.value = true
 		user.value = updated
-		assignAdminUserForm(form, updated)
+		syncAdminFormSection(updated, section)
 
 		if (!options.silentSuccess) {
 			notifySuccess({
@@ -240,7 +303,7 @@ const saveIdentity = async (): Promise<void> => {
 	await patchAdminUser('identity', {
 		username: form.username,
 		displayName: form.displayName,
-		createdAt: form.createdAt,
+		joinedAt: form.joinedAt,
 		role: form.role,
 		status: form.status,
 		statusReason: form.statusReason,
@@ -369,8 +432,8 @@ const bindMinecraftAccount = async (username: string): Promise<void> => {
 				},
 			},
 		)
+		skipUserWatchSync.value = true
 		user.value = updated
-		assignAdminUserForm(form, updated)
 		notifySuccess({
 			title: t('admin.users.minecraft.notifications.bindSuccess'),
 		})
@@ -397,8 +460,8 @@ const unbindMinecraftAccount = async (accountId: string): Promise<void> => {
 				method: 'DELETE',
 			},
 		)
+		skipUserWatchSync.value = true
 		user.value = updated
-		assignAdminUserForm(form, updated)
 		notifySuccess({
 			title: t('admin.users.minecraft.notifications.unbindSuccess'),
 		})
@@ -408,6 +471,37 @@ const unbindMinecraftAccount = async (accountId: string): Promise<void> => {
 		})
 	} finally {
 		unbindingMinecraftAccountId.value = null
+	}
+}
+
+const setPrimaryMinecraftAccount = async (accountId: string): Promise<void> => {
+	if (!user.value || !accountId || primaryMinecraftAccountId.value) {
+		return
+	}
+
+	primaryMinecraftAccountId.value = accountId
+
+	try {
+		const updated = await $fetch<AdminUser>(
+			`/api/admin/users/${user.value.id}/minecraft-accounts/${accountId}`,
+			{
+				method: 'PATCH',
+				body: {
+					isPrimary: true,
+				},
+			},
+		)
+		skipUserWatchSync.value = true
+		user.value = updated
+		notifySuccess({
+			title: t('admin.users.minecraft.notifications.primarySetSuccess'),
+		})
+	} catch (setPrimaryError) {
+		notifyError(setPrimaryError, {
+			title: t('admin.users.minecraft.notifications.primarySetFailed'),
+		})
+	} finally {
+		primaryMinecraftAccountId.value = null
 	}
 }
 </script>

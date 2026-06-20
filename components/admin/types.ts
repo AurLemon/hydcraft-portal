@@ -3,6 +3,7 @@ import type {
 	ProfileLanguage,
 	TimezoneMode,
 } from '~/utils/profile-edit'
+import type { MinecraftAccountSummary } from '~/utils/minecraft/accounts'
 
 export interface PortalBridgeSummary {
 	id: string
@@ -394,6 +395,7 @@ export interface AdminUser {
 	verifiedTextZhTw: string | null
 	verifiedTextEnUs: string | null
 	verifiedTextJaJp: string | null
+	joinedAt: string
 	createdAt: string
 	updatedAt: string
 	profile: {
@@ -418,21 +420,7 @@ export interface AdminUser {
 		color: string | null
 		sortOrder: number
 	}>
-	minecraftAccounts: Array<{
-		id: string
-		username: string
-		normalizedUsername: string
-		uuid: string | null
-		status: string
-		source: string
-		authmeName: string | null
-		authmeId: number | null
-		isPrimary: boolean
-		verifiedAt: string | null
-		unlinkedAt: string | null
-		createdAt: string
-		updatedAt: string
-	}>
+	minecraftAccounts: MinecraftAccountSummary[]
 }
 
 export interface AdminUsersResponse {

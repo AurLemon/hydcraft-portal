@@ -463,19 +463,19 @@
 				"coverReset": "保存后将重置封面"
 			},
 			"minecraft": {
-				"description": "管理员可以直接管理该用户的 Minecraft 绑定关系。代绑会优先复用现有账号记录，若不存在则尝试从 AuthMe 导入后再绑定。",
 				"fields": {
-					"bindUsername": "Minecraft ID",
+					"bindIdentity": "Minecraft ID / UUID",
 					"uuid": "UUID",
 					"source": "来源",
 					"authmeName": "AuthMe 名称",
 					"verifiedAt": "验证时间"
 				},
 				"placeholders": {
-					"bindUsername": "输入 Minecraft ID 或 AuthMe 账号"
+					"bindUsername": "输入 Minecraft ID、UUID 或 AuthMe 账号"
 				},
 				"actions": {
 					"bind": "直接绑定",
+					"setPrimary": "设为主账号",
 					"unbind": "解除绑定"
 				},
 				"states": {
@@ -485,11 +485,14 @@
 					"title": "还没有绑定 Minecraft 账号",
 					"description": "可以直接输入用户名为该用户代绑账号，无需输入密码。",
 					"none": "暂无",
-					"noUuid": "暂无 UUID"
+					"noUuid": "UUID 待观测",
+					"uuidConflict": "观测到 {count} 个 UUID"
 				},
 				"notifications": {
 					"bindSuccess": "Minecraft 账号已绑定",
 					"bindFailed": "绑定 Minecraft 账号失败",
+					"primarySetSuccess": "主账号已更新",
+					"primarySetFailed": "设置主账号失败",
 					"unbindSuccess": "Minecraft 账号已解绑",
 					"unbindFailed": "解绑 Minecraft 账号失败"
 				}

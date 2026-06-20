@@ -2,7 +2,7 @@
 	<div>
 		<section
 			v-if="selectedAccount"
-			class="relative min-h-160 w-full overflow-hidden rounded-3xl shadow-sm bg-slate-900"
+			class="relative isolate min-h-160 w-full overflow-hidden rounded-3xl shadow-sm bg-slate-900"
 		>
 			<div class="absolute inset-0">
 				<MinecraftPresenceMap
@@ -168,88 +168,94 @@
 				class="pointer-events-none absolute inset-x-0 bottom-0 z-998 flex items-end p-4"
 			>
 				<div
-					class="absolute inset-x-0 bottom-0 h-54 bg-linear-to-t from-slate-950/62 via-slate-950/24 to-transparent backdrop-blur-[32px] mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.96)_18%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0.38)_56%,transparent_100%)]"
+					class="absolute inset-x-0 bottom-0 z-0 h-54 bg-linear-to-t from-slate-950/62 via-slate-950/24 to-transparent backdrop-blur-[32px] mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.96)_18%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0.38)_56%,transparent_100%)]"
 				/>
 
 				<div
-					v-if="bodyRendererUrl"
-					class="absolute bottom-0 left-4 w-22 sm:w-26 shrink-0"
-					aria-hidden="true"
-				>
-					<img
-						ref="bodyImageElement"
-						:src="bodyRendererUrl"
-						:alt="displayName"
-						class="block w-full translate-y-16 sm:translate-y-20 transition-opacity duration-500 ease-out drop-shadow-sm"
-						:class="bodyImageLoaded ? 'opacity-100' : 'opacity-0'"
-						@load="bodyImageLoaded = true"
-						@error="bodyImageLoaded = true"
-					/>
-				</div>
-
-				<div
-					class="relative flex w-full items-end justify-between gap-3 text-white"
+					class="relative z-20 flex w-full min-w-0 flex-col gap-3 text-white sm:flex-row sm:items-end sm:justify-between"
 					style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
 				>
-					<div class="min-w-0 pl-24 sm:pl-30">
-						<div class="flex items-baseline gap-2 sm:translate-y-1">
-							<span
-								class="text-3xl sm:text-[42px] leading-[normal] font-arkpixel truncate"
-							>
-								{{ displayName }}
-							</span>
-							<UBadge
-								v-if="displayPrimaryGroup"
-								style="text-shadow: none"
-								class="-translate-y-1"
-								color="neutral"
-								variant="solid"
-								size="xs"
-							>
-								{{ displayPrimaryGroup }}
-							</UBadge>
-						</div>
-						<div class="flex flex-wrap items-baseline gap-x-2">
-							<div class="flex items-baseline gap-1">
-								<span class="text-xs text-white/80">
-									{{ t('minecraftAccounts.overlay.lastLogin') }}
-								</span>
-								<span class="text-[17px] font-medium">{{ coordsText }}</span>
-							</div>
-							<div class="flex items-baseline gap-1">
-								<UTooltip
-									v-if="playTimeHoursLabel !== notAvailableLabel"
-									:text="playTimeTooltip"
-									class="flex items-baseline gap-1"
-								>
-									<span class="text-xs text-white/80">
-										{{ t('minecraftAccounts.summary.playTime') }}
-									</span>
-									<span class="text-[17px] font-medium">{{
-										playTimeHoursLabel
-									}}</span>
-								</UTooltip>
-							</div>
+					<div class="min-w-0 flex-1">
+						<div
+							v-if="bodyRendererUrl"
+							class="relative z-10 mb-3 w-22 shrink-0 sm:absolute sm:bottom-0 sm:left-4 sm:mb-0 sm:w-26"
+							aria-hidden="true"
+						>
+							<img
+								ref="bodyImageElement"
+								:src="bodyRendererUrl"
+								:alt="displayName"
+								class="block w-full transition-opacity duration-500 ease-out drop-shadow-sm translate-y-0 sm:translate-y-20"
+								:class="bodyImageLoaded ? 'opacity-100' : 'opacity-0'"
+								@load="bodyImageLoaded = true"
+								@error="bodyImageLoaded = true"
+							/>
 						</div>
 
-						<div v-if="isMobileViewport" class="sm:hidden">
-							<Transition name="stats-fade" mode="out-in">
-								<div
-									:key="statsCarouselIndex"
-									class="inline-flex items-baseline gap-1.5 text-xs text-white/90"
+						<div class="min-w-0 sm:pl-30">
+							<div
+								class="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:translate-y-1"
+							>
+								<span
+									class="block max-w-full truncate text-3xl sm:text-[42px] leading-[normal] font-arkpixel"
 								>
-									<span class="inline-flex items-baseline gap-1 text-white/70">
-										<UIcon
-											:name="currentStat.icon"
-											class="size-3 translate-y-0.5"
-										/>
-										{{ currentStat.label }}
+									{{ displayName }}
+								</span>
+								<UBadge
+									v-if="displayPrimaryGroup"
+									style="text-shadow: none"
+									class="sm:-translate-y-1"
+									color="neutral"
+									variant="solid"
+									size="xs"
+								>
+									{{ displayPrimaryGroup }}
+								</UBadge>
+							</div>
+							<div class="flex flex-wrap items-baseline gap-x-2">
+								<div class="flex items-baseline gap-1">
+									<span class="text-xs text-white/80">
+										{{ t('minecraftAccounts.overlay.lastLogin') }}
 									</span>
-									<span class="text-[17px] font-medium">{{
-										currentStat.value
-									}}</span>
+									<span class="text-[17px] font-medium">{{ coordsText }}</span>
 								</div>
-							</Transition>
+								<div class="flex items-baseline gap-1">
+									<UTooltip
+										v-if="playTimeHoursLabel !== notAvailableLabel"
+										:text="playTimeTooltip"
+										class="flex items-baseline gap-1"
+									>
+										<span class="text-xs text-white/80">
+											{{ t('minecraftAccounts.summary.playTime') }}
+										</span>
+										<span class="text-[17px] font-medium">{{
+											playTimeHoursLabel
+										}}</span>
+									</UTooltip>
+								</div>
+							</div>
+
+							<div v-if="isMobileViewport" class="sm:hidden">
+								<Transition name="stats-fade" mode="out-in">
+									<div
+										:key="statsCarouselIndex"
+										class="inline-flex items-baseline gap-1.5 text-xs text-white/90"
+									>
+										<span
+											class="inline-flex items-baseline gap-1 text-white/70"
+										>
+											<UIcon
+												:name="currentStat.icon"
+												class="size-3 translate-y-0.5"
+											/>
+											{{ currentStat.label }}
+										</span>
+										<span class="text-[17px] font-medium">{{
+											currentStat.value
+										}}</span>
+									</div>
+								</Transition>
+							</div>
 						</div>
 					</div>
 

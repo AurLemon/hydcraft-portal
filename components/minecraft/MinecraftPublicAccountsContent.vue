@@ -37,7 +37,7 @@
 						/>
 					</div>
 					<div
-						class="flex min-h-full min-w-0 items-end"
+						class="flex min-w-0 items-end sm:min-h-full"
 						:class="skinRendererUrl ? 'pl-0 sm:pl-[112px] lg:pl-[124px]' : ''"
 					>
 						<div class="flex min-w-0 flex-1 flex-col gap-3">
