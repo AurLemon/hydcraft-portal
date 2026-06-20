@@ -5,6 +5,7 @@ import PageFooter from '~/components/layout/PageFooter.vue'
 import PageContainer from '~/components/layout/PageContainer.vue'
 import PageHeader from '~/components/layout/PageHeader.vue'
 import PageStatusBar from '~/components/layout/PageStatusBar.vue'
+import { normalizeHeaderMenuPath } from '~/utils/layout/header-menu'
 import {
 	useExplicitRouteTitleState,
 	useResolvedRouteTitleDefinition,
@@ -31,6 +32,7 @@ const { t } = useI18n()
 const { user, resolved } = usePortalAuth()
 const explicitRouteTitle = useExplicitRouteTitleState()
 const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
+const normalizedRoutePath = computed(() => normalizeHeaderMenuPath(route.path))
 const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const MANUAL_LOCALE_SWITCH_GRACE_MS = 1500
 const DEFAULT_LOCALE: LocaleCode = 'zh-CN'
@@ -310,7 +312,7 @@ if (import.meta.client) {
 
 useHead(() => ({
 	title:
-		route.path === '/'
+		normalizedRoutePath.value === '/'
 			? 'HydCraft Portal'
 			: `${
 					explicitRouteTitle.value ||
@@ -328,6 +330,10 @@ useHead(() => ({
 <template>
 	<UApp
 		:locale="nuxtUiLocale"
+		:tooltip="{
+			delayDuration: 50,
+			skipDelayDuration: 0,
+		}"
 		:toaster="{
 			position: 'top-right',
 			ui: {

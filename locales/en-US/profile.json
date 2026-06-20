@@ -11,6 +11,8 @@
 			"displayName": "Display name",
 			"avatarUrl": "Avatar URL",
 			"bio": "Bio",
+			"schoolOrCompany": "School / Organization",
+			"occupationOrMajor": "Occupation / Major",
 			"createdAt": "Registered at",
 			"joinedAt": "Joined at",
 			"location": "Location",
@@ -100,12 +102,19 @@
 			"pageTitle": "User {name}",
 			"sections": {
 				"about": "Bio",
+				"birthday": "Birthday",
+				"profile": "Profile",
 				"social": "Social links",
-				"minecraft": "Minecraft profile"
+				"minecraft": "Minecraft profile",
+				"activity": "Recent activity"
 			},
 			"fields": {
+				"countryOrRegion": "Country / Region",
 				"location": "Location",
+				"schoolOrCompany": "School / Organization",
+				"occupationOrMajor": "Occupation / Major",
 				"joinedAt": "Joined at",
+				"registeredAt": "Registered at",
 				"timezone": "Timezone",
 				"minecraftName": "Game name",
 				"currentServer": "Current server",
@@ -121,13 +130,39 @@
 				"unavailable": "This profile is not accessible",
 				"bio": "This user has not added a bio yet.",
 				"social": "No public social links yet.",
-				"minecraft": "No public Minecraft profile yet."
+				"minecraft": "No public Minecraft profile yet.",
+				"activity": "No recent activity yet."
 			},
 			"social": {
 				"website": "Website",
 				"qqNumber": "QQ",
 				"wechatId": "WeChat",
 				"publicEmail": "Public email"
+			},
+			"minecraft": {
+				"accountCount": "{count} bound account(s)"
+			},
+			"birthday": {
+				"ageShort": "{count} y.o.",
+				"bornOn": "Born on {date}",
+				"zodiacLabel": "Year of the {zodiac}",
+				"daysUntil": "{count} day(s) until next birthday",
+				"daysSince": "{count} day(s) since last birthday"
+			},
+			"activity": {
+				"userRegistered": "Registered a Hydroline ID",
+				"sessionOpened": "Joined server",
+				"sessionClosed": "Left server",
+				"advancementUnlocked": "Unlocked an advancement",
+				"binding": {
+					"verificationPassed": "Minecraft account verified",
+					"bindCreated": "Bound Minecraft account",
+					"primarySet": "Set primary profile",
+					"unbound": "Unbound Minecraft account",
+					"transferred": "Transferred Minecraft account",
+					"unknown": "Account binding changed"
+				},
+				"unknown": "Activity updated"
 			}
 		},
 		"badges": {

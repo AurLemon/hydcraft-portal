@@ -9,6 +9,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import { PrismaClient } from '../generated/prisma/client'
 import { hashPassword } from '../server/utils/auth/password'
+import { upsertUserActivityEvent } from '../server/utils/profile/user-activity'
 
 const ALGORITHM = 'aes-256-gcm'
 const IV_BYTES = 12
@@ -347,6 +348,12 @@ async function main() {
 			color: null,
 			sortOrder: 0,
 		},
+	})
+
+	await upsertUserActivityEvent(prisma, {
+		userId: owner.id,
+		type: 'REGISTERED',
+		occurredAt: defaultOwner.createdAt,
 	})
 
 	console.log(`Seed profile ensured: ${defaultOwner.username}`)

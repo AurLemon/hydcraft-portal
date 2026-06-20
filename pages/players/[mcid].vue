@@ -4,24 +4,11 @@
 			<div v-if="initialLoading" class="grid gap-4">
 				<USkeleton class="h-160 rounded-3xl" />
 			</div>
-			<section
+			<PageInlineException
 				v-else-if="hasError"
-				class="rounded-3xl bg-slate-50/80 dark:bg-slate-900/60"
-			>
-				<div
-					class="mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center"
-				>
-					<UIcon
-						:name="errorIcon"
-						class="size-16 text-slate-400 dark:text-slate-500"
-					/>
-					<p
-						class="mt-6 text-lg font-medium text-slate-700 dark:text-slate-200"
-					>
-						{{ errorTitle }}
-					</p>
-				</div>
-			</section>
+				:icon="errorIcon"
+				:title="errorTitle"
+			/>
 			<template v-else-if="account">
 				<div class="flex flex-col gap-3">
 					<div

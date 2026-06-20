@@ -89,6 +89,20 @@
 					</div>
 				</div>
 			</ProfileField>
+			<ProfileField :label="t('profile.fields.schoolOrCompany')">
+				<UInput
+					v-model="form.schoolOrCompany"
+					class="w-full text-sm"
+					maxlength="120"
+				/>
+			</ProfileField>
+			<ProfileField :label="t('profile.fields.occupationOrMajor')">
+				<UInput
+					v-model="form.occupationOrMajor"
+					class="w-full text-sm"
+					maxlength="120"
+				/>
+			</ProfileField>
 			<ProfileField :label="t('profile.fields.location')">
 				<UInput v-model="form.location" class="w-full text-sm" />
 			</ProfileField>

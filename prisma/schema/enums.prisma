@@ -150,6 +150,16 @@ enum SecurityEventType {
   MINECRAFT_ACCOUNT_BOUND
 }
 
+enum UserActivityEventType {
+  REGISTERED
+}
+
+enum UserAuthActivitySource {
+  LOGIN
+  REFRESH
+  AUTHENTICATED_REQUEST
+}
+
 enum ExternalSyncSource {
   AUTHME
   LUCKPERMS

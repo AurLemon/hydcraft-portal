@@ -17,7 +17,9 @@ import {
 	normalizeGender,
 	normalizeLanguage,
 	normalizeOptionalText,
+	normalizeOccupationOrMajor,
 	normalizePublicEmail,
+	normalizeSchoolOrCompany,
 	normalizeTimezone,
 	normalizeTimezoneMode,
 	normalizeUrl,
@@ -31,6 +33,8 @@ interface ProfilePatchBody {
 	avatarAttachmentId?: unknown
 	coverAttachmentId?: unknown
 	bio?: unknown
+	schoolOrCompany?: unknown
+	occupationOrMajor?: unknown
 	location?: unknown
 	countryOrRegion?: unknown
 	gender?: unknown
@@ -293,6 +297,8 @@ export const updateEditableUserProfile = async (
 	)
 	const displayName = normalizeDisplayName(body.displayName)
 	const bio = normalizeBio(body.bio)
+	const schoolOrCompany = normalizeSchoolOrCompany(body.schoolOrCompany)
+	const occupationOrMajor = normalizeOccupationOrMajor(body.occupationOrMajor)
 	const location = normalizeOptionalText(body.location, 80, 'location')
 	const countryOrRegion = normalizeCountryOrRegion(body.countryOrRegion)
 	const gender = normalizeGender(body.gender)
@@ -328,6 +334,8 @@ export const updateEditableUserProfile = async (
 	collectChangedField(changedFields, 'coverAttachmentId', coverAttachmentId)
 	collectChangedField(changedFields, 'displayName', displayName)
 	collectChangedField(changedFields, 'bio', bio)
+	collectChangedField(changedFields, 'schoolOrCompany', schoolOrCompany)
+	collectChangedField(changedFields, 'occupationOrMajor', occupationOrMajor)
 	collectChangedField(changedFields, 'location', location)
 	collectChangedField(changedFields, 'countryOrRegion', countryOrRegion)
 	collectChangedField(changedFields, 'gender', gender)
@@ -344,6 +352,8 @@ export const updateEditableUserProfile = async (
 		...(coverAttachmentId !== undefined ? { coverAttachmentId, coverUrl } : {}),
 		...(displayName !== undefined ? { displayName } : {}),
 		...(bio !== undefined ? { bio } : {}),
+		...(schoolOrCompany !== undefined ? { schoolOrCompany } : {}),
+		...(occupationOrMajor !== undefined ? { occupationOrMajor } : {}),
 		...(location !== undefined ? { location } : {}),
 		...(countryOrRegion !== undefined ? { countryOrRegion } : {}),
 		...(gender !== undefined ? { gender } : {}),

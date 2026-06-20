@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import hydcraftLogo from '~/assets/resources/brand/logo_HydCraft.png'
+import hydcraftLogo from '~/assets/resources/brands/logo_HydCraft.png'
 import { getPortalRedirectQuery } from '~/utils/auth/redirect'
 import { hasHeroVideoBackground } from '~/utils/layout/hero-video'
 

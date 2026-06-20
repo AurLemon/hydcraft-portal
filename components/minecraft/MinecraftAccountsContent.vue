@@ -275,22 +275,15 @@
 		</section>
 
 		<section v-else class="rounded-3xl bg-slate-50/80 p-8 dark:bg-slate-900/60">
-			<div class="flex flex-col items-center gap-5 text-center">
-				<div class="space-y-2">
-					<UBadge color="neutral" variant="soft">
-						{{ t('minecraftAccounts.empty.title') }}
-					</UBadge>
-					<h2
-						class="mt-4 text-2xl font-semibold text-slate-950 dark:text-white"
-					>
-						{{ t('minecraftAccounts.bind.title') }}
-					</h2>
-					<p
-						class="mx-auto max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300/80"
-					>
-						{{ t('minecraftAccounts.empty.description') }}
-					</p>
-				</div>
+			<PageInlineException
+				icon="i-lucide-link"
+				:title="t('minecraftAccounts.bind.title')"
+			>
+				<p
+					class="max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300/80"
+				>
+					{{ t('minecraftAccounts.empty.description') }}
+				</p>
 				<UButton
 					type="button"
 					size="xl"
@@ -300,7 +293,7 @@
 				>
 					{{ t('minecraftAccounts.empty.bindAction') }}
 				</UButton>
-			</div>
+			</PageInlineException>
 		</section>
 	</div>
 </template>

@@ -124,13 +124,6 @@ onBeforeUnmount(() => {
 
 	mobileRouteListResizeObserver?.disconnect()
 })
-
-const renderMenuItemBadge = (item: {
-	badgeType?: 'minecraft-player' | 'user-profile'
-	badgeAvatarUrl?: string | null
-	badgeFallbackText?: string | null
-	label: string
-}) => item.badgeType === 'minecraft-player' || item.badgeType === 'user-profile'
 </script>
 
 <template>
@@ -146,7 +139,6 @@ const renderMenuItemBadge = (item: {
 			:class="{ 'font-semibold': isPathActive(item) || item.isFallback }"
 		>
 			<HeaderMenuRouteBadge
-				v-if="renderMenuItemBadge(item)"
 				:badge-type="item.badgeType"
 				:src="item.badgeAvatarUrl || undefined"
 				:alt="item.label"
@@ -239,7 +231,6 @@ const renderMenuItemBadge = (item: {
 								class="inline-flex items-center gap-1.5"
 							>
 								<HeaderMenuRouteBadge
-									v-if="renderMenuItemBadge(currentFallback)"
 									:badge-type="currentFallback.badgeType"
 									:src="currentFallback.badgeAvatarUrl || undefined"
 									:alt="currentFallback.label"
@@ -278,7 +269,6 @@ const renderMenuItemBadge = (item: {
 					class="inline-flex items-center gap-1.5"
 				>
 					<HeaderMenuRouteBadge
-						v-if="renderMenuItemBadge(activeDisplayNavItem)"
 						:badge-type="activeDisplayNavItem.badgeType"
 						:src="activeDisplayNavItem.badgeAvatarUrl || undefined"
 						:alt="activeDisplayNavItem.label"
@@ -334,7 +324,6 @@ const renderMenuItemBadge = (item: {
 									class="inline-flex items-center gap-1.5"
 								>
 									<HeaderMenuRouteBadge
-										v-if="renderMenuItemBadge(activeDisplayNavItem)"
 										:badge-type="activeDisplayNavItem.badgeType"
 										:src="activeDisplayNavItem.badgeAvatarUrl || undefined"
 										:alt="activeDisplayNavItem.label"

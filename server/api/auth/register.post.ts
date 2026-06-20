@@ -13,6 +13,7 @@ import {
 } from '../../utils/profile/defaults'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
+import { emitEvent } from '../../utils/events/event-bus'
 
 interface RegisterBody {
 	handle: string
@@ -69,6 +70,10 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 	await ensureUserProfileDefaults(user.id)
+	await emitEvent('user.registered', {
+		userId: user.id,
+		occurredAt: user.createdAt,
+	})
 	const token = await issueAuthCookies(event, user)
 	await recordSecurityEvent({
 		event,

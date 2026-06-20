@@ -1,6 +1,5 @@
 <template>
 	<div class="-mt-2">
-		<!-- header 区：移植自原 Modal 顶部 -->
 		<div
 			class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
 		>

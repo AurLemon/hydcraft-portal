@@ -7,7 +7,9 @@ import {
 import { recordSecurityEvent } from '../../utils/security/security-events'
 
 export default defineEventHandler(async (event) => {
-	const user = await requireCurrentUser(event).catch(() => null)
+	const user = await requireCurrentUser(event, {
+		observeActivity: false,
+	}).catch(() => null)
 
 	await revokeRefreshToken(getRefreshTokenFromEvent(event))
 	clearAuthCookies(event)

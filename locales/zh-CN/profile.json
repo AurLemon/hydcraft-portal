@@ -11,6 +11,8 @@
 			"displayName": "显示名称",
 			"avatarUrl": "头像 URL",
 			"bio": "个人简介",
+			"schoolOrCompany": "学校 / 单位",
+			"occupationOrMajor": "职业 / 所学专业",
 			"createdAt": "注册时间",
 			"joinedAt": "加入时间",
 			"location": "现居地",
@@ -99,12 +101,19 @@
 			"pageTitle": "用户 {name}",
 			"sections": {
 				"about": "个人简介",
+				"birthday": "生日",
+				"profile": "个人档案",
 				"social": "社交链接",
-				"minecraft": "Minecraft 档案"
+				"minecraft": "Minecraft 档案",
+				"activity": "最近活动"
 			},
 			"fields": {
+				"countryOrRegion": "国家 / 地区",
 				"location": "所在地",
+				"schoolOrCompany": "学校 / 单位",
+				"occupationOrMajor": "职业 / 所学专业",
 				"joinedAt": "加入时间",
+				"registeredAt": "注册时间",
 				"timezone": "时区",
 				"minecraftName": "游戏名称",
 				"currentServer": "当前服务器",
@@ -120,13 +129,39 @@
 				"unavailable": "个人主页不可访问",
 				"bio": "这个用户还没有填写个人简介。",
 				"social": "暂无公开社交链接。",
-				"minecraft": "暂无公开 Minecraft 档案。"
+				"minecraft": "暂无公开 Minecraft 档案。",
+				"activity": "暂无最近活动记录。"
 			},
 			"social": {
 				"website": "个人网站",
 				"qqNumber": "QQ",
 				"wechatId": "微信",
 				"publicEmail": "公开邮箱"
+			},
+			"minecraft": {
+				"accountCount": "已绑定 {count} 个账号"
+			},
+			"birthday": {
+				"ageShort": "{count}岁",
+				"bornOn": "出生于 {date}",
+				"zodiacLabel": "生肖{zodiac}",
+				"daysUntil": "距下次生日还有 {count} 天",
+				"daysSince": "距上次生日已过 {count} 天"
+			},
+			"activity": {
+				"userRegistered": "注册 Hydroline ID",
+				"sessionOpened": "上线服务器",
+				"sessionClosed": "下线服务器",
+				"advancementUnlocked": "解锁一个成就",
+				"binding": {
+					"verificationPassed": "Minecraft 账号验证通过",
+					"bindCreated": "绑定 Minecraft 账号",
+					"primarySet": "设置主档案",
+					"unbound": "解绑 Minecraft 账号",
+					"transferred": "转移 Minecraft 账号",
+					"unknown": "账号绑定变更"
+				},
+				"unknown": "活动已更新"
 			}
 		},
 		"badges": {

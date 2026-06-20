@@ -1,6 +1,11 @@
 type EventHandler<TPayload> = (payload: TPayload) => Promise<void> | void
 
 interface EventMap {
+	'user.auth-activity.observed': {
+		userId: string
+		observedAt: Date
+		source: 'LOGIN' | 'REFRESH' | 'AUTHENTICATED_REQUEST'
+	}
 	'server-player-identity-evidence.created': {
 		serverId: string
 		uuid?: string | null
@@ -133,6 +138,10 @@ interface EventMap {
 	'minecraft.account.unbound': {
 		userId: string
 		minecraftAccountId: string
+		occurredAt: Date
+	}
+	'user.registered': {
+		userId: string
 		occurredAt: Date
 	}
 }

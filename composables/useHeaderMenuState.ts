@@ -118,12 +118,17 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			}
 		}
 
+		const normalizedRoutePath = normalizePath(route.path)
+		const isEntryRoute = normalizedRoutePath === '/'
+
 		return {
 			key: route.fullPath || route.path,
-			label: t(
-				resolvedRouteTitleDefinition.value?.labelKey ??
-					'header.nav.currentPage',
-			),
+			label: isEntryRoute
+				? 'HydCraft Portal'
+				: t(
+						resolvedRouteTitleDefinition.value?.labelKey ??
+							'header.nav.currentPage',
+					),
 			to: route.fullPath || route.path,
 			isFallback: true,
 			badgeType: headerRouteBadge.value?.type,

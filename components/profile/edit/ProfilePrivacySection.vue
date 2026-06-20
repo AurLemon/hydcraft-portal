@@ -27,22 +27,17 @@ import {
 	privacyItems,
 	profileCardClass,
 	profileSectionTitleClass,
-	type PrivacyKey,
 	type ProfileForm,
 } from '~/utils/profile-edit'
 
 const form = defineModel<ProfileForm>('form', { required: true })
 const { t } = useI18n()
-const disabledPrivacyKeys: PrivacyKey[] = [
-	'searchableInUserDirectory',
-	'allowMinecraftProfileDiscovery',
-]
 
 const localizedPrivacyItems = computed(() =>
 	privacyItems.map((item) => ({
 		...item,
 		label: t(`profile.privacy.${item.key}`),
-		disabled: disabledPrivacyKeys.includes(item.key),
+		disabled: item.key === 'searchableInUserDirectory',
 	})),
 )
 </script>

@@ -79,6 +79,19 @@ const runtimeConfig = useRuntimeConfig()
 const { user: currentUser } = usePortalAuth()
 const { notifyError } = useAdminToast()
 type ProfileSubmitSection = 'username' | 'basic' | 'social'
+const USERNAME_SECTION_FIELDS = ['username'] as const
+// Keep in sync with editable controls rendered in ProfileBasicSection.
+const BASIC_SECTION_FIELDS = [
+	'displayName',
+	'bio',
+	'schoolOrCompany',
+	'occupationOrMajor',
+	'location',
+	'countryOrRegion',
+	'gender',
+	'birthday',
+] as const
+const SOCIAL_SECTION_FIELDS = ['social'] as const
 const submittingSection = ref<ProfileSubmitSection | null>(null)
 const originalProfile = ref<EditableProfile | null>(null)
 const preferencesSnapshot = ref('')
@@ -261,21 +274,15 @@ const submitProfileSection = async (
 }
 
 const submitUsername = async (): Promise<void> => {
-	await submitProfileSection('username', ['username'])
+	await submitProfileSection('username', [...USERNAME_SECTION_FIELDS])
 }
 
 const submitBasicProfile = async (): Promise<void> => {
-	await submitProfileSection('basic', [
-		'displayName',
-		'bio',
-		'location',
-		'countryOrRegion',
-		'birthday',
-	])
+	await submitProfileSection('basic', [...BASIC_SECTION_FIELDS])
 }
 
 const submitSocialProfile = async (): Promise<void> => {
-	await submitProfileSection('social', ['social'])
+	await submitProfileSection('social', [...SOCIAL_SECTION_FIELDS])
 }
 
 const patchProfileAttachment = async (

@@ -198,6 +198,7 @@ model MinecraftServerPlayer {
   playerData                MinecraftServerPlayerData?
   statsSnapshot             MinecraftServerPlayerStatsSnapshot?
   advancementsSnapshot      MinecraftServerPlayerAdvancementsSnapshot?
+  advancementUnlockEvents   PlayerAdvancementUnlockEvent[]
 
   @@unique([serverId, uuid])
   @@index([serverId])
@@ -256,6 +257,26 @@ model MinecraftServerPlayerAdvancementsSnapshot {
 
   @@index([snapshotId])
   @@index([observedAt])
+}
+
+/// 玩家成就解锁事件。advancements 快照覆盖式写入会丢失历史，
+/// 故在每次快照同步时做差分：对比新旧快照，对「本次新变为 done」的成就落一条事件，
+/// 用于公开主页「最近活动」卡片展示「最近解锁的成就」。
+model PlayerAdvancementUnlockEvent {
+  id                      String                @id @default(cuid())
+  minecraftServerPlayerId String
+  player                  MinecraftServerPlayer @relation(fields: [minecraftServerPlayerId], references: [id], onDelete: Cascade)
+  serverId                String
+  uuid                    String
+  advancementKey          String
+  /// 触发该事件的快照 observedAt，近似为解锁时间。
+  unlockedAt              DateTime
+  observedAt              DateTime
+  createdAt               DateTime              @default(now())
+
+  @@unique([minecraftServerPlayerId, advancementKey])
+  @@index([minecraftServerPlayerId, unlockedAt])
+  @@index([uuid, unlockedAt])
 }
 
 model PortalBridgeMessageReceipt {

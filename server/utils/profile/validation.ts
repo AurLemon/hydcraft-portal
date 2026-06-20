@@ -114,6 +114,16 @@ export const normalizeDisplayName = (value: unknown): string | undefined =>
 export const normalizeBio = (value: unknown): string | null | undefined =>
 	normalizeOptionalText(value, 300, 'bio')
 
+export const normalizeSchoolOrCompany = (
+	value: unknown,
+): string | null | undefined =>
+	normalizeOptionalText(value, 120, 'schoolOrCompany')
+
+export const normalizeOccupationOrMajor = (
+	value: unknown,
+): string | null | undefined =>
+	normalizeOptionalText(value, 120, 'occupationOrMajor')
+
 export const normalizeCountryOrRegion = (
 	value: unknown,
 ): string | null | undefined => {

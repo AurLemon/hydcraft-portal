@@ -2,6 +2,7 @@ import type {
 	EditableUserProfile,
 	MinecraftPlayerLocationSummary,
 	MinecraftProfileSummary,
+	ProfileActivityOnlineStatus,
 	PublicUserProfile,
 	UserProfileBadgeSummary,
 	UserProfilePrivacySummary,
@@ -82,6 +83,37 @@ const toRoleBadgeSummary = (
 			}
 		: null
 
+const COUNTRY_OR_REGION_TO_TIMEZONE: Record<string, string> = {
+	中国内地: 'Asia/Shanghai',
+	中国香港: 'Asia/Shanghai',
+	中国澳门: 'Asia/Shanghai',
+	中国台湾: 'Asia/Taipei',
+	海外地区: 'UTC',
+}
+
+/**
+ * 解析用于展示的时区（IANA 名）。
+ *
+ * MANUAL 模式直接取用户手填的 timezone；AUTO 模式按国家/地区推导，
+ * 退路 Asia/Shanghai。时区本身低敏感，恒定下发（与 /u 页原本就恒定显示
+ * 一个默认时区行一致），仅是把假默认换成真实值，故不挂隐私开关。
+ */
+const resolveDisplayTimezone = (user: ProfileUser): string | null => {
+	const preferences = user.preferences
+
+	if (preferences?.timezoneMode === 'MANUAL') {
+		return preferences.timezone ?? null
+	}
+
+	const countryOrRegion = user.countryOrRegion
+
+	if (countryOrRegion && countryOrRegion in COUNTRY_OR_REGION_TO_TIMEZONE) {
+		return COUNTRY_OR_REGION_TO_TIMEZONE[countryOrRegion] ?? 'Asia/Shanghai'
+	}
+
+	return 'Asia/Shanghai'
+}
+
 const toVerifiedSummary = (user: ProfileUser) => ({
 	enabled: user.verified,
 	textZhCn: user.verifiedTextZhCn,
@@ -141,6 +173,33 @@ const toLocationSummary = (input: {
 		yaw: input.yaw ?? null,
 		pitch: input.pitch ?? null,
 		observedAt: input.observedAt,
+	}
+}
+
+const PROFILE_ONLINE_WINDOW_MS = 10 * 60 * 1000
+const PROFILE_RECENT_ACTIVITY_WINDOW_MS = 72 * 60 * 60 * 1000
+
+const resolveProfileActivityStatus = (
+	user: ProfileUser,
+): NonNullable<PublicUserProfile['activityStatus']> => {
+	const lastActiveAt = user.lastAuthActivityAt ?? user.lastLoginAt ?? null
+	let onlineStatus: ProfileActivityOnlineStatus = 'OFFLINE'
+
+	if (lastActiveAt) {
+		const ageMs = Date.now() - lastActiveAt.getTime()
+
+		if (ageMs < PROFILE_ONLINE_WINDOW_MS) {
+			onlineStatus = 'ONLINE'
+		} else if (ageMs < PROFILE_RECENT_ACTIVITY_WINDOW_MS) {
+			onlineStatus = 'RECENTLY_ACTIVE'
+		}
+	}
+
+	return {
+		onlineStatus,
+		lastActiveAt,
+		source:
+			user.lastAuthActivitySource ?? (user.lastLoginAt ? 'LEGACY_LOGIN' : null),
 	}
 }
 
@@ -223,6 +282,8 @@ export const toEditableProfile = (
 	roleBadge: toRoleBadgeSummary(user),
 	verified: toVerifiedSummary(user),
 	bio: user.bio,
+	schoolOrCompany: user.schoolOrCompany,
+	occupationOrMajor: user.occupationOrMajor,
 	location: user.location,
 	countryOrRegion: user.countryOrRegion,
 	gender: user.gender,
@@ -257,6 +318,7 @@ export const toPublicProfile = (
 	}
 	if (privacy.showJoinedAt) {
 		profile.joinedAt = user.joinedAt
+		profile.createdAt = user.createdAt
 	}
 	if (privacy.showBadges) {
 		profile.badges = user.badges.map(toBadgeSummary)
@@ -265,6 +327,8 @@ export const toPublicProfile = (
 	profile.verified = toVerifiedSummary(user)
 	if (privacy.showBio) {
 		profile.bio = user.bio
+		profile.schoolOrCompany = user.schoolOrCompany
+		profile.occupationOrMajor = user.occupationOrMajor
 	}
 	if (privacy.showLocation) {
 		profile.location = user.location
@@ -276,14 +340,12 @@ export const toPublicProfile = (
 	if (privacy.showBirthday) {
 		profile.birthday = user.birthday
 	}
+	profile.timezone = resolveDisplayTimezone(user)
 	if (privacy.showSocialLinks) {
 		profile.social = toSocialSummary(user)
 	}
-	if (privacy.showActivityStatus && minecraftSummary) {
-		profile.activityStatus = {
-			onlineStatus: minecraftSummary.onlineStatus,
-			lastActiveAt: minecraftSummary.lastActiveAt,
-		}
+	if (privacy.showActivityStatus) {
+		profile.activityStatus = resolveProfileActivityStatus(user)
 	}
 	if (privacy.showMinecraftProfileLink) {
 		profile.minecraftSummary = minecraftSummary

@@ -2,12 +2,14 @@ import { deleteCookie, getCookie, getHeader, setCookie, type H3Event } from 'h3'
 import { createHash, randomBytes } from 'node:crypto'
 import type {
 	User,
+	UserAuthActivitySource,
 	UserProfileLanguage,
 	UserRole,
 	UserStatus,
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
+import { emitEvent } from '../events/event-bus'
 import { getClientIpAddress } from '../ip-location/ip-normalizer'
 import { signAuthToken, verifyAuthToken } from './jwt'
 
@@ -160,15 +162,32 @@ export const issueRefreshToken = async (
 	return refreshToken
 }
 
+export const observeUserAuthActivity = async (input: {
+	userId: string
+	source: UserAuthActivitySource
+	observedAt?: Date
+}): Promise<void> => {
+	await emitEvent('user.auth-activity.observed', {
+		userId: input.userId,
+		source: input.source,
+		observedAt: input.observedAt ?? new Date(),
+	})
+}
+
 export const issueAuthCookies = async (
 	event: H3Event,
 	user: User,
+	source: UserAuthActivitySource = 'LOGIN',
 ): Promise<string> => {
 	const token = issueAuthToken(user)
 	const refreshToken = await issueRefreshToken(event, user)
 
 	setAuthCookie(event, token)
 	setRefreshCookie(event, refreshToken)
+	await observeUserAuthActivity({
+		userId: user.id,
+		source,
+	})
 
 	return token
 }
@@ -256,7 +275,7 @@ export const rotateRefreshToken = async (
 		},
 	})
 
-	const token = await issueAuthCookies(event, session.user)
+	const token = await issueAuthCookies(event, session.user, 'REFRESH')
 
 	return {
 		token,
@@ -266,6 +285,9 @@ export const rotateRefreshToken = async (
 
 export const requireCurrentUser = async (
 	event: H3Event,
+	options?: {
+		observeActivity?: boolean
+	},
 ): Promise<UserForSummary> => {
 	const token = getAuthTokenFromEvent(event)
 
@@ -294,6 +316,13 @@ export const requireCurrentUser = async (
 		throw createApiError({
 			statusCode: 401,
 			code: 'AUTHENTICATION_REQUIRED',
+		})
+	}
+
+	if (options?.observeActivity !== false) {
+		await observeUserAuthActivity({
+			userId: user.id,
+			source: 'AUTHENTICATED_REQUEST',
 		})
 	}
 

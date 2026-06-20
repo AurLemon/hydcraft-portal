@@ -95,6 +95,76 @@ const matchedUnchangedResult: SyncMutationResult = {
 export const hashSyncValue = (value: unknown): string =>
 	createHash('sha256').update(stableStringify(value)).digest('hex')
 
+const isAdvancementRecord = (
+	value: unknown,
+): value is Record<string, unknown> =>
+	typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const isAdvancementDone = (value: unknown): boolean =>
+	isAdvancementRecord(value) && value.done === true
+
+/**
+ * 对比新旧 advancements 快照，返回「本次新变为 done」的 advancement key 列表。
+ *
+ * vanilla advancements 结构为 `{ [key]: { done: boolean, criteria: {...} } }`，
+ * `done` 由服务端在所有 criteria 完成时置 true。旧快照里不存在或非 done，
+ * 新快照里 done===true 即视为本次解锁。旧快照缺失时返回空（无法判定）。
+ */
+export const diffNewlyCompletedAdvancements = (
+	previous: unknown,
+	next: unknown,
+): string[] => {
+	if (!isAdvancementRecord(next)) {
+		return []
+	}
+
+	if (!isAdvancementRecord(previous)) {
+		return []
+	}
+
+	const keys: string[] = []
+
+	for (const [key, nextEntry] of Object.entries(next)) {
+		if (!isAdvancementDone(nextEntry)) {
+			continue
+		}
+
+		const prevEntry = previous[key]
+		const wasDone = isAdvancementDone(prevEntry)
+
+		if (!wasDone) {
+			keys.push(key)
+		}
+	}
+
+	return keys
+}
+
+const persistAdvancementUnlockEvents = async (input: {
+	serverId: string
+	uuid: string
+	playerId: string
+	observedAt: Date
+	keys: string[]
+}): Promise<void> => {
+	if (input.keys.length === 0) {
+		return
+	}
+
+	// 单玩家同一成就仅落一条（@@unique），upsert 保证重复差分不会产生重复事件。
+	await prisma.playerAdvancementUnlockEvent.createMany({
+		data: input.keys.map((key) => ({
+			minecraftServerPlayerId: input.playerId,
+			serverId: input.serverId,
+			uuid: input.uuid,
+			advancementKey: key,
+			unlockedAt: input.observedAt,
+			observedAt: input.observedAt,
+		})),
+		skipDuplicates: true,
+	})
+}
+
 const stableStringify = (value: unknown): string => {
 	if (value === undefined) {
 		return 'undefined'
@@ -566,6 +636,21 @@ export const syncMinecraftServerPlayerAdvancementsSnapshot = async (
 	if (existing?.advancementsHash === advancementsHash) {
 		return matchedUnchangedResult
 	}
+
+	// 差分持久化：对比旧快照与新快照，把「本次新变为 done」的成就落一条解锁事件，
+	// 供公开主页「最近活动」展示。旧快照缺失时不落事件（无法判定是否新解锁）。
+	const newlyUnlockedKeys = diffNewlyCompletedAdvancements(
+		existing?.advancements,
+		input.advancements,
+	)
+
+	await persistAdvancementUnlockEvents({
+		serverId: input.serverId,
+		uuid: input.uuid,
+		playerId: player.id,
+		observedAt: input.observedAt,
+		keys: newlyUnlockedKeys,
+	})
 
 	await prisma.minecraftServerPlayerAdvancementsSnapshot.upsert({
 		where: {

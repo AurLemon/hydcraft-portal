@@ -11,6 +11,8 @@
 			"displayName": "表示名",
 			"avatarUrl": "アバター URL",
 			"bio": "自己紹介",
+			"schoolOrCompany": "学校 / 所属",
+			"occupationOrMajor": "職業 / 専攻",
 			"createdAt": "登録日",
 			"joinedAt": "参加日",
 			"location": "所在地",
@@ -99,12 +101,19 @@
 			"pageTitle": "ユーザー {name}",
 			"sections": {
 				"about": "自己紹介",
+				"birthday": "誕生日",
+				"profile": "プロフィール",
 				"social": "ソーシャルリンク",
-				"minecraft": "Minecraft プロフィール"
+				"minecraft": "Minecraft プロフィール",
+				"activity": "最近のアクティビティ"
 			},
 			"fields": {
+				"countryOrRegion": "国 / 地域",
 				"location": "所在地",
+				"schoolOrCompany": "学校 / 所属",
+				"occupationOrMajor": "職業 / 専攻",
 				"joinedAt": "参加日",
+				"registeredAt": "登録日",
 				"timezone": "タイムゾーン",
 				"minecraftName": "ゲーム名",
 				"currentServer": "現在のサーバー",
@@ -120,13 +129,39 @@
 				"unavailable": "このプロフィールにはアクセスできません",
 				"bio": "このユーザーはまだ自己紹介を書いていません。",
 				"social": "公開ソーシャルリンクはまだありません。",
-				"minecraft": "公開 Minecraft プロフィールはまだありません。"
+				"minecraft": "公開 Minecraft プロフィールはまだありません。",
+				"activity": "最近のアクティビティはまだありません。"
 			},
 			"social": {
 				"website": "個人サイト",
 				"qqNumber": "QQ",
 				"wechatId": "WeChat",
 				"publicEmail": "公開メール"
+			},
+			"minecraft": {
+				"accountCount": "{count} 個のアカウントを紐付け済み"
+			},
+			"birthday": {
+				"ageShort": "{count}歳",
+				"bornOn": "{date} 生まれ",
+				"zodiacLabel": "干支{zodiac}",
+				"daysUntil": "次の誕生日まであと {count} 日",
+				"daysSince": "前回の誕生日から {count} 日経過"
+			},
+			"activity": {
+				"userRegistered": "Hydroline ID を登録",
+				"sessionOpened": "サーバーに参加",
+				"sessionClosed": "サーバーから退出",
+				"advancementUnlocked": "進捗を 1 件解除",
+				"binding": {
+					"verificationPassed": "Minecraft アカウント認証完了",
+					"bindCreated": "Minecraft アカウントを紐付け",
+					"primarySet": "メインプロフィールを設定",
+					"unbound": "Minecraft アカウントの紐付けを解除",
+					"transferred": "Minecraft アカウントを移管",
+					"unknown": "アカウント紐付けの変更"
+				},
+				"unknown": "アクティビティが更新されました"
 			}
 		},
 		"badges": {

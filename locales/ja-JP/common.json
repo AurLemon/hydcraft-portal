@@ -1,6 +1,6 @@
 {
 	"routes": {
-		"entry": "Portal",
+		"entry": "ポータル",
 		"intro": "紹介",
 		"server": "サーバー",
 		"serverOverview": "サーバー",

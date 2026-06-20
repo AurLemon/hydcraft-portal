@@ -70,6 +70,8 @@ export interface EditableProfile {
 	roleBadge: ProfileBadge | null
 	verified: ProfileVerified
 	bio: string | null
+	schoolOrCompany: string | null
+	occupationOrMajor: string | null
 	location: string | null
 	countryOrRegion: string | null
 	gender: ProfileGender
@@ -96,6 +98,8 @@ export interface ProfileForm {
 	displayName: string
 	avatarUrl: string
 	bio: string
+	schoolOrCompany: string
+	occupationOrMajor: string
 	location: string
 	countryOrRegion: ProfileCountryOrRegion | undefined
 	gender: ProfileGender
@@ -179,6 +183,8 @@ export const createEmptyProfileForm = (): ProfileForm => ({
 	displayName: '',
 	avatarUrl: '',
 	bio: '',
+	schoolOrCompany: '',
+	occupationOrMajor: '',
 	location: '',
 	countryOrRegion: undefined,
 	gender: 'UNSPECIFIED',
@@ -348,6 +354,8 @@ export const assignProfileForm = (
 	form.displayName = value.displayName ?? ''
 	form.avatarUrl = value.avatarUrl ?? ''
 	form.bio = value.bio ?? ''
+	form.schoolOrCompany = value.schoolOrCompany ?? ''
+	form.occupationOrMajor = value.occupationOrMajor ?? ''
 	form.location = value.location ?? ''
 	const countryOrRegion = normalizeCountryOrRegionOption(value.countryOrRegion)
 	form.countryOrRegion = countryItems.find(
@@ -396,6 +404,12 @@ export const buildProfilePatchPayload = (
 		['username', form.username, original.username],
 		['displayName', form.displayName, original.displayName ?? ''],
 		['bio', form.bio, original.bio ?? ''],
+		['schoolOrCompany', form.schoolOrCompany, original.schoolOrCompany ?? ''],
+		[
+			'occupationOrMajor',
+			form.occupationOrMajor,
+			original.occupationOrMajor ?? '',
+		],
 		['location', form.location, original.location ?? ''],
 		[
 			'countryOrRegion',

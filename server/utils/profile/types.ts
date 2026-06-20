@@ -2,8 +2,14 @@ import type {
 	MinecraftAccountStatus,
 	TimezoneMode,
 	UserGender,
+	UserAuthActivitySource,
 	UserProfileLanguage,
 } from '~/generated/prisma/client'
+
+export type ProfileActivityOnlineStatus =
+	| 'ONLINE'
+	| 'OFFLINE'
+	| 'RECENTLY_ACTIVE'
 
 export interface UserProfileBadgeSummary {
 	id: string
@@ -66,7 +72,7 @@ export interface MinecraftProfileSummary {
 	bedrockXuid: string | null
 	skinPreviewUrl: string | null
 	currentServer: string | null
-	onlineStatus: 'ONLINE' | 'OFFLINE' | 'RECENTLY_ACTIVE'
+	onlineStatus: ProfileActivityOnlineStatus
 	lastActiveAt: Date | null
 	minecraftRoles: string[]
 	profileUrl: string
@@ -102,6 +108,8 @@ export interface EditableUserProfile {
 	roleBadge: UserProfileBadgeSummary | null
 	verified: UserVerifiedSummary
 	bio: string | null
+	schoolOrCompany: string | null
+	occupationOrMajor: string | null
 	location: string | null
 	countryOrRegion: string | null
 	gender: UserGender
@@ -119,18 +127,23 @@ export interface PublicUserProfile {
 	avatarUrl: string | null
 	coverUrl: string | null
 	joinedAt?: Date
+	createdAt?: Date
 	badges?: UserProfileBadgeSummary[]
 	roleBadge?: UserProfileBadgeSummary | null
 	verified?: UserVerifiedSummary
 	bio?: string | null
+	schoolOrCompany?: string | null
+	occupationOrMajor?: string | null
 	location?: string | null
 	countryOrRegion?: string | null
 	gender?: UserGender
 	birthday?: Date | null
+	timezone?: string | null
 	social?: UserProfileSocialSummary
 	activityStatus?: {
-		onlineStatus: MinecraftProfileSummary['onlineStatus']
+		onlineStatus: ProfileActivityOnlineStatus
 		lastActiveAt: Date | null
+		source: UserAuthActivitySource | 'LEGACY_LOGIN' | null
 	}
 	minecraftSummary?: MinecraftProfileSummary | null
 	isOwner: boolean

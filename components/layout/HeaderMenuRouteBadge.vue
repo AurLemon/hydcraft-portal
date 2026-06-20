@@ -50,10 +50,11 @@ const expanded = ref(false)
 const imageReady = ref(false)
 const imageFailed = ref(false)
 
-const fallbackText = computed(() => props.fallbackText?.trim() || '?')
+const fallbackText = computed(() => props.fallbackText?.trim() || '')
+const hasFallbackText = computed(() => Boolean(fallbackText.value))
 const hasImageSource = computed(() => Boolean(props.src?.trim()))
 const hasBadgeContent = computed(
-	() => hasImageSource.value || Boolean(fallbackText.value),
+	() => hasImageSource.value || hasFallbackText.value,
 )
 const showSkeleton = computed(
 	() => hasImageSource.value && !imageReady.value && !imageFailed.value,
@@ -61,7 +62,9 @@ const showSkeleton = computed(
 const showImage = computed(
 	() => hasImageSource.value && imageReady.value && !imageFailed.value,
 )
-const showFallback = computed(() => !hasImageSource.value || imageFailed.value)
+const showFallback = computed(
+	() => hasFallbackText.value && (!hasImageSource.value || imageFailed.value),
+)
 const playerImageClass = computed(() =>
 	props.badgeType === 'minecraft-player' ? 'drop-shadow' : '',
 )

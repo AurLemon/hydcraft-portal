@@ -40,7 +40,7 @@ const readAssetAsDataUri = (relativePath: string, mimeType: string): string => {
 }
 
 const logoDataUri = readAssetAsDataUri(
-	'assets/resources/brand/logo_HydCraft.png',
+	'assets/resources/brands/logo_HydCraft.png',
 	'image/png',
 )
 

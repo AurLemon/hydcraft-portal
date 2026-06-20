@@ -283,7 +283,7 @@
 					<div :class="[profileCardClass, 'grid gap-4']">
 						<div
 							v-if="!securityPending && !securityEvents.length"
-							class="rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800"
+							class="text-sm"
 						>
 							{{ t('profile.security.empty.securityEvents') }}
 						</div>

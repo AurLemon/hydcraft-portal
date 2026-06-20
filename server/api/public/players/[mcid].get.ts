@@ -64,7 +64,8 @@ export default defineEventHandler(async (event) => {
 		],
 	})
 
-	// 命中 minecraftAccount：若已绑定 portal 账户，受隐私开关约束；
+	// 命中 minecraftAccount：若已绑定 portal 账户，仅顶部“绑定到 Portal 用户”
+	// 提示受 allowMinecraftProfileDiscovery 约束；玩家页本身仍可按游戏身份公开展示。
 	// 若仅是 AuthMe/导入账号未绑定 portal，也允许按游戏身份公开展示。
 	if (account) {
 		let boundPortalUser: { username: string; avatarUrl: string | null } | null =
@@ -82,16 +83,11 @@ export default defineEventHandler(async (event) => {
 
 			const privacy = toPrivacySummary(user)
 
-			if (!privacy.allowMinecraftProfileDiscovery) {
-				throw createApiError({
-					statusCode: 404,
-					code: 'MINECRAFT_PROFILE_NOT_PUBLIC',
-				})
-			}
-
-			boundPortalUser = {
-				username: user.username,
-				avatarUrl: user.avatarUrl,
+			if (privacy.allowMinecraftProfileDiscovery) {
+				boundPortalUser = {
+					username: user.username,
+					avatarUrl: user.avatarUrl,
+				}
 			}
 		}
 

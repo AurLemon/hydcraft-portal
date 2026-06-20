@@ -41,6 +41,10 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 	const token = await issueAuthCookies(event, userWithPreferences)
+	await emitEvent('user.registered', {
+		userId: user.id,
+		occurredAt: user.createdAt,
+	})
 
 	if (ticket.kind === 'GAME_ACCOUNT' && ticket.minecraftAccountId) {
 		await emitEvent('minecraft.account.bound', {
