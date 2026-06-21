@@ -448,6 +448,19 @@ export class AttachmentService {
 		})
 	}
 
+	async deletePartnerAttachmentsExcept(input: {
+		partnerId: string
+		purpose: 'partner-avatar' | 'partner-cover'
+		activeAttachmentId: string | null
+	}): Promise<void> {
+		await this.deleteAttachmentsExcept({
+			ownerType: 'partner',
+			ownerId: input.partnerId,
+			purpose: input.purpose,
+			activeAttachmentId: input.activeAttachmentId,
+		})
+	}
+
 	async deleteExternalAccountAvatarAttachmentsExcept(input: {
 		externalAccountId: string
 		activeAttachmentId: string | null

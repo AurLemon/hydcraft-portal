@@ -109,7 +109,11 @@ const accept = computed(() => policy.value?.allowedContentTypes.join(',') ?? '')
 const cropperTitle = computed(() =>
 	props.purpose === 'user-avatar'
 		? t('attachments.crop.avatarTitle')
-		: t('attachments.crop.coverTitle'),
+		: props.purpose === 'partner-avatar'
+			? t('attachments.crop.partnerAvatarTitle')
+			: props.purpose === 'partner-cover'
+				? t('attachments.crop.partnerCoverTitle')
+				: t('attachments.crop.coverTitle'),
 )
 
 const resetSelection = (): void => {
@@ -123,6 +127,10 @@ const resetSelection = (): void => {
 const openFilePicker = (): void => {
 	fileInput.value?.click()
 }
+
+defineExpose({
+	openFilePicker,
+})
 
 const validateFile = (file: File): boolean => {
 	if (!policy.value) {

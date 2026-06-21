@@ -83,6 +83,13 @@
 			"ATTACHMENT_NOT_FOUND": "添付ファイルが見つからないか利用できません。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "利用可能な画像バージョンがありません。",
 			"ATTACHMENT_NOT_OWNED": "この添付ファイルを操作する権限がありません。",
+			"PARTNER_NOT_FOUND": "パートナープロフィールが見つかりません。",
+			"INVALID_PARTNER_INPUT": "パートナープロフィールの入力が無効です。",
+			"INVALID_PARTNER_KIND": "パートナー種別が無効です。",
+			"INVALID_PARTNER_SECTION": "パートナー分類が無効です。",
+			"INVALID_PARTNER_SLUG": "パートナー Slug の形式が無効です。",
+			"PARTNER_EDIT_PERMISSION_REQUIRED": "このパートナープロフィールを編集する権限がありません。",
+			"PARTNER_CORE_MEMBER_PUBLIC_PROFILE_REQUIRED": "コアメンバーは公開プロフィールを閲覧できるユーザーである必要があります。",
 			"COS_CONFIG_MISSING": "オブジェクトストレージ設定が不足しています。",
 			"COS_PUBLIC_BASE_URL_MISSING": "オブジェクトストレージの公開 URL が不足しています。",
 			"OWNER_ROLE_REQUIRES_OWNER": "OWNER ロールの付与または削除は OWNER のみ可能です。",
@@ -119,6 +126,7 @@
 			"JWT_SECRET_MISSING": "JWT 設定が不足しています。",
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID の作成に失敗しました。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID の生成に失敗しました。"
-		}
+		},
+		"INVALID_PARTNER_REORDER": "並び順の入力が無効です。"
 	}
 }

@@ -62,6 +62,7 @@ model MinecraftServer {
   identities   ServerPlayerIdentity[]
   sessions     ServerPlayerSession[]
   players      MinecraftServerPlayer[]
+  partnerEntries PartnerEntry[]
   externalSyncTaskStates ExternalSyncTaskState[]
 }
 

@@ -6,6 +6,40 @@
 		"timeline": {
 			"title": "氢气是怎么走到现在的?"
 		},
+		"partners": {
+			"hero": {
+				"line1": "在氢气工艺之外",
+				"line2": "也有一路并肩同行的朋友",
+				"subtitle": "常联系也好，少往来也好，不常聊天，不常合作，也不妨碍我们为彼此留一个坐标 👊"
+			},
+			"sections": {
+				"community": "社区伙伴",
+				"communityDescription": "和我们保持联系的服务器与玩家组织。",
+				"supportAcknowledgements": "支持与鸣谢"
+			},
+			"kinds": {
+				"ALL": "全部",
+				"SERVER": "服务器",
+				"ORGANIZATION": "玩家组织"
+			},
+			"actions": {
+				"visit": "访问链接"
+			},
+			"archived": {
+				"label": "已归档",
+				"tooltip": "公开入口已失效或长期未确认活跃。",
+				"description": "该伙伴的公开访问入口目前已无法正常访问，或其公开社群、站点与相关运营信息长期未见更新。在无法确认其仍处于持续运营状态的情况下，暂时将其转入历史归档。"
+			},
+			"relationshipEstablishedAt": "于 {year} 年 {month} 月 {day} 日建立社区伙伴关系",
+			"coreMembers": {
+				"title": "{name} 在 HydCraft 内的核心成员"
+			},
+			"empty": {
+				"community": "这里暂时还没有公开的社区伙伴。",
+				"supportAcknowledgements": "这里暂时还没有公开的支持与鸣谢。",
+				"unavailable": "这个伙伴页面暂时无法访问。"
+			}
+		},
 		"charter": {
 			"title": "服务器章程"
 		},

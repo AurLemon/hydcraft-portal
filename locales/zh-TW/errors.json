@@ -83,6 +83,13 @@
 			"ATTACHMENT_NOT_FOUND": "附件不存在或不可用。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "附件缺少可用圖片版本。",
 			"ATTACHMENT_NOT_OWNED": "你無權操作該附件。",
+			"PARTNER_NOT_FOUND": "夥伴資料不存在。",
+			"INVALID_PARTNER_INPUT": "夥伴資料參數不正確。",
+			"INVALID_PARTNER_KIND": "夥伴類型無效。",
+			"INVALID_PARTNER_SECTION": "夥伴分類無效。",
+			"INVALID_PARTNER_SLUG": "夥伴 Slug 格式無效。",
+			"PARTNER_EDIT_PERMISSION_REQUIRED": "你沒有權限編輯該夥伴資料。",
+			"PARTNER_CORE_MEMBER_PUBLIC_PROFILE_REQUIRED": "核心成員必須是公開個人主頁可訪問的使用者。",
 			"COS_CONFIG_MISSING": "物件儲存配置缺失。",
 			"COS_PUBLIC_BASE_URL_MISSING": "物件儲存公開訪問地址缺失。",
 			"OWNER_ROLE_REQUIRES_OWNER": "只有 OWNER 可以授予或移除 OWNER 角色。",
@@ -119,6 +126,7 @@
 			"JWT_SECRET_MISSING": "JWT 配置缺失。",
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID 建立失敗。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID 產生失敗。"
-		}
+		},
+		"INVALID_PARTNER_REORDER": "排序資料無效。"
 	}
 }

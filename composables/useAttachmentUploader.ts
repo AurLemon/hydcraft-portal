@@ -1,5 +1,9 @@
-export type AttachmentPurpose = 'user-avatar' | 'user-cover'
-export type AttachmentOwnerType = 'user'
+export type AttachmentPurpose =
+	| 'user-avatar'
+	| 'user-cover'
+	| 'partner-avatar'
+	| 'partner-cover'
+export type AttachmentOwnerType = 'user' | 'partner'
 
 export interface AttachmentUploadVariant {
 	name: string

@@ -182,3 +182,13 @@ enum ExternalSyncStatus {
   SUCCESS
   FAILED
 }
+
+enum PartnerKind {
+  SERVER
+  ORGANIZATION
+}
+
+enum PartnerSection {
+  COMMUNITY
+  SUPPORT_ACKNOWLEDGEMENTS
+}

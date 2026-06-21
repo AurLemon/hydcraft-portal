@@ -6,6 +6,40 @@
 		"timeline": {
 			"title": "氫氣是怎麼走到現在的?"
 		},
+		"partners": {
+			"hero": {
+				"line1": "在氫氣工藝之外",
+				"line2": "也有一路並肩同行的朋友",
+				"subtitle": "常聯繫也好，少往來也好，不常聊天，不常合作，也不妨礙我們為彼此留一個座標 👊"
+			},
+			"sections": {
+				"community": "社群夥伴",
+				"communityDescription": "和我們保持聯繫的伺服器與玩家組織。",
+				"supportAcknowledgements": "支持與鳴謝"
+			},
+			"kinds": {
+				"ALL": "全部",
+				"SERVER": "伺服器",
+				"ORGANIZATION": "玩家組織"
+			},
+			"actions": {
+				"visit": "造訪連結"
+			},
+			"archived": {
+				"label": "已歸檔",
+				"tooltip": "公開入口已失效或長期未確認活躍。",
+				"description": "該夥伴的公開訪問入口目前已無法正常訪問，或其公開社群、站點與相關營運資訊長期未見更新。在無法確認其仍處於持續營運狀態的情況下，暫時將其轉入歷史歸檔。"
+			},
+			"relationshipEstablishedAt": "於 {year} 年 {month} 月 {day} 日建立社群夥伴關係",
+			"coreMembers": {
+				"title": "{name} 在 HydCraft 內的核心成員"
+			},
+			"empty": {
+				"community": "這裡暫時還沒有公開的社群夥伴。",
+				"supportAcknowledgements": "這裡暫時還沒有公開的支持與鳴謝。",
+				"unavailable": "這個夥伴頁面暫時無法訪問。"
+			}
+		},
 		"charter": {
 			"title": "伺服器章程"
 		},

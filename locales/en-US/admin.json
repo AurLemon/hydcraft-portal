@@ -5,7 +5,8 @@
 			"cancel": "Cancel",
 			"save": "Save",
 			"copyUrl": "Copy URL",
-			"delete": "Delete"
+			"delete": "Delete",
+			"edit": "Edit"
 		},
 		"filters": {
 			"all": "All"
@@ -108,6 +109,75 @@
 		},
 		"serverCreate": {
 			"title": "New Server"
+		},
+		"partners": {
+			"title": "Partner Management",
+			"modal": {
+				"createCommunityTitle": "New Community Partner",
+				"createSupportTitle": "New Support & Acknowledgement",
+				"editTitle": "Edit Partner"
+			},
+			"partnerSections": {
+				"COMMUNITY": "Community Partners",
+				"SUPPORT_ACKNOWLEDGEMENTS": "Support & Acknowledgements"
+			},
+			"kinds": {
+				"SERVER": "Server",
+				"ORGANIZATION": "Player Group"
+			},
+			"states": {
+				"enabled": "Enabled",
+				"disabled": "Disabled"
+			},
+			"sections": {
+				"media": "Images",
+				"editors": "Editors"
+			},
+			"fields": {
+				"partner": "Partner",
+				"name": "Name",
+				"section": "Section",
+				"kind": "Type",
+				"summary": "Summary",
+				"websiteUrl": "Link",
+				"avatar": "Avatar",
+				"cover": "Cover",
+				"enabled": "Status",
+				"archived": "Archived",
+				"relationshipEstablishedAt": "Relationship started on",
+				"coreMembers": "Core members"
+			},
+			"filters": {
+				"search": "Search name or summary",
+				"userSearch": "Search users and assign editor access",
+				"coreMemberSearch": "Search public users for core members"
+			},
+			"actions": {
+				"uploadAvatar": "Upload Avatar",
+				"uploadCover": "Upload Cover",
+				"resetAvatar": "Clear Avatar",
+				"resetCover": "Clear Cover"
+			},
+			"empty": {
+				"editors": "No extra editors yet.",
+				"coreMembers": "No additional public users available.",
+				"userSearch": "No matching users available."
+			},
+			"notifications": {
+				"created": "Partner created",
+				"saved": "Partner saved",
+				"saveFailed": "Failed to save partner",
+				"editorAssigned": "Editor assigned",
+				"editorAssignFailed": "Failed to assign editor",
+				"editorRevoked": "Editor removed",
+				"editorRevokeFailed": "Failed to remove editor",
+				"deleted": "Partner deleted",
+				"deleteFailed": "Failed to delete partner",
+				"reordered": "Order updated",
+				"reorderFailed": "Failed to update order"
+			},
+			"createCommunity": "New Community Partner",
+			"createSupport": "New Support & Acknowledgement"
 		},
 		"serverDetail": {
 			"back": "Servers",

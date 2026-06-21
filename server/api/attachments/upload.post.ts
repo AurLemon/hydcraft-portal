@@ -1,8 +1,12 @@
 import { readMultipartFormData } from 'h3'
 import { requireAdminUser, requireCurrentUser } from '../../utils/auth/session'
 import { getAttachmentService } from '../../utils/attachment/runtime'
-import type { AttachmentPurpose } from '../../utils/attachment/types'
+import type {
+	AttachmentOwnerType,
+	AttachmentPurpose,
+} from '../../utils/attachment/types'
 import { createBadRequestError } from '../../utils/errors'
+import { canEditPartner } from '../../utils/partners/permissions'
 
 const badRequest = (code: string) => createBadRequestError(code)
 
@@ -43,7 +47,11 @@ export default defineEventHandler(async (event) => {
 		throw badRequest('INVALID_ATTACHMENT_INPUT')
 	}
 
-	if (ownerId && (ownerType !== 'user' || ownerId !== user.id)) {
+	if (ownerType === 'partner') {
+		if (!ownerId || !(await canEditPartner(user, ownerId))) {
+			await requireAdminUser(event)
+		}
+	} else if (ownerId && (ownerType !== 'user' || ownerId !== user.id)) {
 		await requireAdminUser(event)
 	}
 
@@ -52,5 +60,6 @@ export default defineEventHandler(async (event) => {
 		contentType: file.type ?? '',
 		buffer: file.data,
 		ownerId,
+		ownerType: ownerType as AttachmentOwnerType | undefined,
 	})
 })

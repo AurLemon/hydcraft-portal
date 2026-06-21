@@ -6,6 +6,40 @@
 		"timeline": {
 			"title": "How HydCraft Got Here?"
 		},
+		"partners": {
+			"hero": {
+				"line1": "Beyond HydCraft itself,",
+				"line2": "there are also friends who have walked shoulder to shoulder with us",
+				"subtitle": "Whether we stay in touch often or drift in and out, whether we chat or collaborate much, it does not stop us from leaving a coordinate for each other 👊"
+			},
+			"sections": {
+				"community": "Community Partners",
+				"communityDescription": "Servers and player groups that keep in touch with us.",
+				"supportAcknowledgements": "Support & Acknowledgements"
+			},
+			"kinds": {
+				"ALL": "All",
+				"SERVER": "Server",
+				"ORGANIZATION": "Player Group"
+			},
+			"actions": {
+				"visit": "Visit Link"
+			},
+			"archived": {
+				"label": "Archived",
+				"tooltip": "The public entry is unavailable or has not been confirmed active for a long time.",
+				"description": "This partner's public entry is currently no longer reachable, or its public community, website, and related operations have shown no recent signs of activity. Until we can confirm it is still actively operating, it is temporarily moved into the archive."
+			},
+			"relationshipEstablishedAt": "Established as a community partner on {year}-{month}-{day}",
+			"coreMembers": {
+				"title": "{name}'s core members inside HydCraft"
+			},
+			"empty": {
+				"community": "No public community partners yet.",
+				"supportAcknowledgements": "No public support or acknowledgements yet.",
+				"unavailable": "This partner page is not available."
+			}
+		},
 		"charter": {
 			"title": "Server Charter"
 		},

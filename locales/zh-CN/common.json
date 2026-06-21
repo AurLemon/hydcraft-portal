@@ -9,15 +9,16 @@
 		"overview": "概览",
 		"about": "关于",
 		"links": "友情链接",
-		"partners": "社区伙伴",
+		"partners": "伙伴与鸣谢",
 		"playerPage": "玩家页",
 		"userPage": "用户页",
 		"admin": "管理",
-		"adminOverview": "Portal 概览",
+		"adminOverview": "概览",
 		"adminServers": "服务器",
 		"adminPlayers": "玩家",
 		"adminUsers": "用户",
 		"adminUserEdit": "编辑用户",
+		"adminPartners": "伙伴与鸣谢",
 		"adminAttachments": "附件",
 		"login": "登录",
 		"register": "注册",
@@ -76,7 +77,7 @@
 			"docs": "文档库",
 			"status": "状态监控",
 			"friendLinks": "友情链接",
-			"communityPartners": "社区伙伴"
+			"communityPartners": "伙伴与鸣谢"
 		},
 		"records": {
 			"icp": "闽ICP备2023007345号-1",

@@ -47,6 +47,10 @@ model User {
   badges             UserProfileBadge[]
   activityEvents     UserActivityEvent[]
   createdAttachments Attachment[]            @relation("AttachmentCreatedBy")
+  partnerEditorAssignments PartnerEditor[]   @relation("PartnerEditorUser")
+  createdPartnerEditorAssignments PartnerEditor[] @relation("PartnerEditorCreatedBy")
+  partnerCoreMemberAssignments PartnerCoreMember[] @relation("PartnerCoreMemberUser")
+  createdPartnerCoreMemberAssignments PartnerCoreMember[] @relation("PartnerCoreMemberCreatedBy")
 
   @@index([lastAuthActivityAt])
 }

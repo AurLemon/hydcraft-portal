@@ -4,15 +4,18 @@ import type {
 } from '~/generated/prisma/client'
 
 export type AttachmentApp = 'portal'
-export type AttachmentCategory = 'profile' | 'oauth'
+export type AttachmentCategory = 'profile' | 'oauth' | 'partner'
 export type AttachmentPurpose =
 	| 'user-avatar'
 	| 'user-cover'
 	| 'external-account-avatar'
+	| 'partner-avatar'
+	| 'partner-cover'
 export type AttachmentOwnerType =
 	| 'user'
 	| 'external-account'
 	| 'registration-ticket'
+	| 'partner'
 export type StorageProfileName = 'publicAssets' | 'privateUploads'
 export type AttachmentOutputFormat = 'webp' | 'original'
 

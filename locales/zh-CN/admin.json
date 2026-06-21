@@ -5,7 +5,8 @@
 			"cancel": "取消",
 			"save": "保存",
 			"copyUrl": "复制 URL",
-			"delete": "删除"
+			"delete": "删除",
+			"edit": "编辑"
 		},
 		"filters": {
 			"all": "全部"
@@ -108,6 +109,75 @@
 		},
 		"serverCreate": {
 			"title": "新增服务器"
+		},
+		"partners": {
+			"title": "伙伴管理",
+			"modal": {
+				"createCommunityTitle": "新建社区伙伴",
+				"createSupportTitle": "新建支持与鸣谢",
+				"editTitle": "编辑伙伴"
+			},
+			"partnerSections": {
+				"COMMUNITY": "社区伙伴",
+				"SUPPORT_ACKNOWLEDGEMENTS": "支持与鸣谢"
+			},
+			"kinds": {
+				"SERVER": "服务器",
+				"ORGANIZATION": "玩家组织"
+			},
+			"states": {
+				"enabled": "启用",
+				"disabled": "停用"
+			},
+			"sections": {
+				"media": "图片",
+				"editors": "编辑权限"
+			},
+			"fields": {
+				"partner": "伙伴",
+				"name": "名称",
+				"section": "分类",
+				"kind": "类型",
+				"summary": "简介",
+				"websiteUrl": "链接",
+				"avatar": "头像",
+				"cover": "封面",
+				"enabled": "状态",
+				"archived": "已归档",
+				"relationshipEstablishedAt": "建立关系时间",
+				"coreMembers": "伙伴核心成员"
+			},
+			"filters": {
+				"search": "搜索名称或简介",
+				"userSearch": "搜索用户并分配编辑权限",
+				"coreMemberSearch": "搜索公开用户并选择核心成员"
+			},
+			"actions": {
+				"uploadAvatar": "上传头像",
+				"uploadCover": "上传封面",
+				"resetAvatar": "清除头像",
+				"resetCover": "清除封面"
+			},
+			"empty": {
+				"editors": "还没有额外编辑者。",
+				"coreMembers": "还没有可添加的公开用户。",
+				"userSearch": "没有找到可分配的用户。"
+			},
+			"notifications": {
+				"created": "伙伴已创建",
+				"saved": "伙伴已保存",
+				"saveFailed": "保存伙伴失败",
+				"editorAssigned": "编辑权限已分配",
+				"editorAssignFailed": "分配编辑权限失败",
+				"editorRevoked": "编辑权限已移除",
+				"editorRevokeFailed": "移除编辑权限失败",
+				"deleted": "伙伴已删除",
+				"deleteFailed": "删除伙伴失败",
+				"reordered": "排序已更新",
+				"reorderFailed": "更新排序失败"
+			},
+			"createCommunity": "新建社区伙伴",
+			"createSupport": "新建支持与鸣谢"
 		},
 		"serverDetail": {
 			"back": "服务器",

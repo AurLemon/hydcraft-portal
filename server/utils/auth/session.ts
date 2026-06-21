@@ -33,7 +33,7 @@ export interface UserSummary {
 	} | null
 }
 
-type UserForSummary = User & {
+export type UserForSummary = User & {
 	preferences?: {
 		language: UserProfileLanguage
 	} | null
@@ -334,6 +334,43 @@ export const requireAdminUser = async (event: H3Event): Promise<User> => {
 
 	if (user.role !== 'ADMIN' && user.role !== 'OWNER') {
 		throw createApiError({ statusCode: 403, code: 'ADMIN_ROLE_REQUIRED' })
+	}
+
+	return user
+}
+
+export const getOptionalCurrentUser = async (
+	event: H3Event,
+): Promise<UserForSummary | null> => {
+	const token = getAuthTokenFromEvent(event)
+
+	if (!token) {
+		return null
+	}
+
+	let payload
+
+	try {
+		payload = verifyAuthToken(token)
+	} catch {
+		return null
+	}
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: payload.sub,
+		},
+		include: {
+			preferences: {
+				select: {
+					language: true,
+				},
+			},
+		},
+	})
+
+	if (!user || user.status !== 'ACTIVE') {
+		return null
 	}
 
 	return user

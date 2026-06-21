@@ -1,0 +1,58 @@
+model PartnerEntry {
+  id                      String          @id @default(cuid())
+  name                    String
+  section                 PartnerSection  @default(COMMUNITY)
+  kind                    PartnerKind?
+  summary                 String?
+  websiteUrl              String?
+  avatarUrl               String?
+  coverUrl                String?
+  avatarAttachmentId      String?
+  coverAttachmentId       String?
+  linkedMinecraftServerId String?
+  linkedMinecraftServer   MinecraftServer? @relation(fields: [linkedMinecraftServerId], references: [serverId], onDelete: SetNull, onUpdate: Cascade)
+  enabled                 Boolean         @default(true)
+  archived                Boolean         @default(false)
+  relationshipEstablishedAt DateTime?
+  sortOrder               Int             @default(0)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  editors                 PartnerEditor[]
+  coreMembers             PartnerCoreMember[]
+
+  @@index([section, kind, enabled, archived, sortOrder])
+  @@index([linkedMinecraftServerId])
+}
+
+model PartnerEditor {
+  id          String       @id @default(cuid())
+  partnerId   String
+  partner     PartnerEntry @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User         @relation("PartnerEditorUser", fields: [userId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User?        @relation("PartnerEditorCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([partnerId, userId])
+  @@index([userId])
+  @@index([createdById])
+}
+
+model PartnerCoreMember {
+  id          String       @id @default(cuid())
+  partnerId   String
+  partner     PartnerEntry @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User         @relation("PartnerCoreMemberUser", fields: [userId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User?        @relation("PartnerCoreMemberCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([partnerId, userId])
+  @@index([userId])
+  @@index([createdById])
+}

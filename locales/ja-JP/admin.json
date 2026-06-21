@@ -5,7 +5,8 @@
 			"cancel": "キャンセル",
 			"save": "保存",
 			"copyUrl": "URL をコピー",
-			"delete": "削除"
+			"delete": "削除",
+			"edit": "編集"
 		},
 		"filters": {
 			"all": "すべて"
@@ -108,6 +109,75 @@
 		},
 		"serverCreate": {
 			"title": "サーバーを追加"
+		},
+		"partners": {
+			"title": "パートナー管理",
+			"modal": {
+				"createCommunityTitle": "コミュニティパートナーを追加",
+				"createSupportTitle": "サポート・謝辞を追加",
+				"editTitle": "パートナーを編集"
+			},
+			"partnerSections": {
+				"COMMUNITY": "コミュニティパートナー",
+				"SUPPORT_ACKNOWLEDGEMENTS": "支援と謝辞"
+			},
+			"kinds": {
+				"SERVER": "サーバー",
+				"ORGANIZATION": "プレイヤー組織"
+			},
+			"states": {
+				"enabled": "有効",
+				"disabled": "無効"
+			},
+			"sections": {
+				"media": "画像",
+				"editors": "編集権限"
+			},
+			"fields": {
+				"partner": "パートナー",
+				"name": "名前",
+				"section": "分類",
+				"kind": "種類",
+				"summary": "概要",
+				"websiteUrl": "リンク",
+				"avatar": "アバター",
+				"cover": "カバー",
+				"enabled": "状態",
+				"archived": "アーカイブ済み",
+				"relationshipEstablishedAt": "関係開始日",
+				"coreMembers": "コアメンバー"
+			},
+			"filters": {
+				"search": "名前または概要で検索",
+				"userSearch": "ユーザーを検索して編集権限を付与",
+				"coreMemberSearch": "公開ユーザーを検索してコアメンバーに追加"
+			},
+			"actions": {
+				"uploadAvatar": "アバターをアップロード",
+				"uploadCover": "カバーをアップロード",
+				"resetAvatar": "アバターを削除",
+				"resetCover": "カバーを削除"
+			},
+			"empty": {
+				"editors": "追加の編集者はまだいません。",
+				"coreMembers": "追加できる公開ユーザーがまだいません。",
+				"userSearch": "割り当て可能なユーザーが見つかりません。"
+			},
+			"notifications": {
+				"created": "パートナーを作成しました",
+				"saved": "パートナーを保存しました",
+				"saveFailed": "パートナー保存に失敗しました",
+				"editorAssigned": "編集権限を付与しました",
+				"editorAssignFailed": "編集権限の付与に失敗しました",
+				"editorRevoked": "編集権限を削除しました",
+				"editorRevokeFailed": "編集権限の削除に失敗しました",
+				"deleted": "パートナーを削除しました",
+				"deleteFailed": "パートナーの削除に失敗しました",
+				"reordered": "並び順を更新しました",
+				"reorderFailed": "並び順の更新に失敗しました"
+			},
+			"createCommunity": "コミュニティパートナー追加",
+			"createSupport": "サポート・謝辞追加"
 		},
 		"serverDetail": {
 			"back": "サーバー",

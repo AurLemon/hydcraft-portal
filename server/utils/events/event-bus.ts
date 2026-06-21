@@ -144,6 +144,47 @@ interface EventMap {
 		userId: string
 		occurredAt: Date
 	}
+	'partner.created': {
+		partnerId: string
+		actorUserId: string
+		createdAt: Date
+	}
+	'partner.updated': {
+		partnerId: string
+		actorUserId: string
+		changedFields: string[]
+		updatedAt: Date
+	}
+	'partner.attachment-replaced': {
+		partnerId: string
+		purpose: 'partner-avatar' | 'partner-cover'
+		activeAttachmentId: string | null
+		updatedAt: Date
+	}
+	'partner.editor-assigned': {
+		partnerId: string
+		userId: string
+		actorUserId: string
+		createdAt: Date
+	}
+	'partner.editor-revoked': {
+		partnerId: string
+		userId: string
+		actorUserId: string
+		revokedAt: Date
+	}
+	'partner.core-members-synced': {
+		partnerId: string
+		userIds: string[]
+		actorUserId: string
+		occurredAt: Date
+	}
+	'partner.reordered': {
+		section: 'COMMUNITY' | 'SUPPORT_ACKNOWLEDGEMENTS'
+		actorUserId: string
+		orderedIds: string[]
+		occurredAt: Date
+	}
 }
 
 const handlers = new Map<

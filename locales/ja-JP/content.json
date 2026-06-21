@@ -6,6 +6,40 @@
 		"timeline": {
 			"title": "HydCraft はどうやってここまで来たのか?"
 		},
+		"partners": {
+			"hero": {
+				"line1": "HydCraft だけでなく、",
+				"line2": "肩を並べて歩んできた友人たちもいます",
+				"subtitle": "よく連絡を取る関係でも、たまの行き来でも、あまり雑談しなくても、あまり一緒に動かなくても、お互いのためにひとつの座標を残しておける 👊"
+			},
+			"sections": {
+				"community": "コミュニティパートナー",
+				"communityDescription": "私たちとつながりのあるサーバーとプレイヤー組織。",
+				"supportAcknowledgements": "支援と謝辞"
+			},
+			"kinds": {
+				"ALL": "すべて",
+				"SERVER": "サーバー",
+				"ORGANIZATION": "プレイヤー組織"
+			},
+			"actions": {
+				"visit": "リンクを開く"
+			},
+			"archived": {
+				"label": "アーカイブ済み",
+				"tooltip": "公開導線が無効化されているか、長期間アクティブ確認が取れていません。",
+				"description": "このパートナーの公開導線は現在正常にアクセスできないか、公開コミュニティ、サイト、運営情報に長期間更新が見られません。継続運営中であることを確認できるまで、一時的に履歴アーカイブへ移しています。"
+			},
+			"relationshipEstablishedAt": "{year}年{month}月{day}日にコミュニティパートナー関係を締結",
+			"coreMembers": {
+				"title": "{name} の HydCraft 内コアメンバー"
+			},
+			"empty": {
+				"community": "公開中のコミュニティパートナーはまだありません。",
+				"supportAcknowledgements": "公開中の支援と謝辞はまだありません。",
+				"unavailable": "このパートナーページは利用できません。"
+			}
+		},
 		"charter": {
 			"title": "サーバー規約"
 		},

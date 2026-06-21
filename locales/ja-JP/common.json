@@ -9,15 +9,16 @@
 		"overview": "概要",
 		"about": "私たちについて",
 		"links": "リンク",
-		"partners": "パートナー",
+		"partners": "パートナーと謝辞",
 		"playerPage": "プレイヤーページ",
 		"userPage": "ユーザーページ",
 		"admin": "管理",
-		"adminOverview": "Portal 概要",
+		"adminOverview": "概要",
 		"adminServers": "サーバー",
 		"adminPlayers": "プレイヤー",
 		"adminUsers": "ユーザー",
 		"adminUserEdit": "ユーザー編集",
+		"adminPartners": "パートナーと謝辞",
 		"adminAttachments": "添付ファイル",
 		"login": "ログイン",
 		"register": "登録",
@@ -76,7 +77,7 @@
 			"docs": "Docs",
 			"status": "ステータス",
 			"friendLinks": "リンク",
-			"communityPartners": "パートナー"
+			"communityPartners": "パートナーと謝辞"
 		},
 		"records": {
 			"icp": "閩ICP備2023007345號-1",

@@ -9,15 +9,16 @@
 		"overview": "概覽",
 		"about": "關於",
 		"links": "友情連結",
-		"partners": "社群夥伴",
+		"partners": "夥伴與鳴謝",
 		"playerPage": "玩家頁",
 		"userPage": "使用者頁",
 		"admin": "管理",
-		"adminOverview": "Portal 概覽",
+		"adminOverview": "概覽",
 		"adminServers": "伺服器",
 		"adminPlayers": "玩家",
 		"adminUsers": "使用者",
 		"adminUserEdit": "編輯使用者",
+		"adminPartners": "夥伴與鳴謝",
 		"adminAttachments": "附件",
 		"login": "登入",
 		"register": "註冊",
@@ -76,7 +77,7 @@
 			"docs": "文件庫",
 			"status": "狀態監控",
 			"friendLinks": "友情連結",
-			"communityPartners": "社群夥伴"
+			"communityPartners": "夥伴與鳴謝"
 		},
 		"records": {
 			"icp": "閩ICP備2023007345號-1",

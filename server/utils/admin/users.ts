@@ -1,4 +1,3 @@
-import { useRuntimeConfig } from '#imports'
 import { randomInt } from 'node:crypto'
 import type {
 	Prisma,
@@ -7,6 +6,7 @@ import type {
 	UserStatus,
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { getPublicAttachmentUrl } from '../attachment/runtime'
 import { createApiError, createBadRequestError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from '../profile/defaults'
@@ -233,17 +233,7 @@ const resolveReadyAttachmentUrl = async (
 		})
 	}
 
-	const config = useRuntimeConfig()
-	const publicBaseUrl = String(config.cos.publicBaseUrl).replace(/\/$/, '')
-
-	if (!publicBaseUrl) {
-		throw createApiError({
-			statusCode: 500,
-			code: 'COS_PUBLIC_BASE_URL_MISSING',
-		})
-	}
-
-	return `${publicBaseUrl}/${primaryVariant.objectKey}`
+	return getPublicAttachmentUrl(primaryVariant.objectKey)
 }
 
 const normalizeBadgeIds = (value: unknown): string[] | undefined => {

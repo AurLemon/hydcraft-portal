@@ -1,7 +1,7 @@
-import { useRuntimeConfig } from '#imports'
 import { setResponseHeader, type H3Event } from 'h3'
 import type { User } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { getPublicAttachmentUrl } from '../attachment/runtime'
 import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from './defaults'
@@ -188,17 +188,7 @@ const resolveReadyAttachmentUrl = async (
 		})
 	}
 
-	const config = useRuntimeConfig()
-	const publicBaseUrl = String(config.cos.publicBaseUrl).replace(/\/$/, '')
-
-	if (!publicBaseUrl) {
-		throw createApiError({
-			statusCode: 500,
-			code: 'COS_PUBLIC_BASE_URL_MISSING',
-		})
-	}
-
-	return `${publicBaseUrl}/${primaryVariant.objectKey}`
+	return getPublicAttachmentUrl(primaryVariant.objectKey)
 }
 
 const getUsernameCooldownUntil = (usernameChangedAt: Date): Date => {

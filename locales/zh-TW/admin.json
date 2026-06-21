@@ -5,7 +5,8 @@
 			"cancel": "取消",
 			"save": "儲存",
 			"copyUrl": "複製 URL",
-			"delete": "刪除"
+			"delete": "刪除",
+			"edit": "編輯"
 		},
 		"filters": {
 			"all": "全部"
@@ -108,6 +109,75 @@
 		},
 		"serverCreate": {
 			"title": "新增伺服器"
+		},
+		"partners": {
+			"title": "夥伴管理",
+			"modal": {
+				"createCommunityTitle": "新建社群夥伴",
+				"createSupportTitle": "新建支持與鳴謝",
+				"editTitle": "編輯夥伴"
+			},
+			"partnerSections": {
+				"COMMUNITY": "社群夥伴",
+				"SUPPORT_ACKNOWLEDGEMENTS": "支持與鳴謝"
+			},
+			"kinds": {
+				"SERVER": "伺服器",
+				"ORGANIZATION": "玩家組織"
+			},
+			"states": {
+				"enabled": "啟用",
+				"disabled": "停用"
+			},
+			"sections": {
+				"media": "圖片",
+				"editors": "編輯權限"
+			},
+			"fields": {
+				"partner": "夥伴",
+				"name": "名稱",
+				"section": "分類",
+				"kind": "類型",
+				"summary": "簡介",
+				"websiteUrl": "連結",
+				"avatar": "頭像",
+				"cover": "封面",
+				"enabled": "狀態",
+				"archived": "已歸檔",
+				"relationshipEstablishedAt": "建立關係時間",
+				"coreMembers": "夥伴核心成員"
+			},
+			"filters": {
+				"search": "搜尋名稱或簡介",
+				"userSearch": "搜尋使用者並分配編輯權限",
+				"coreMemberSearch": "搜尋公開使用者並選擇核心成員"
+			},
+			"actions": {
+				"uploadAvatar": "上傳頭像",
+				"uploadCover": "上傳封面",
+				"resetAvatar": "清除頭像",
+				"resetCover": "清除封面"
+			},
+			"empty": {
+				"editors": "還沒有額外編輯者。",
+				"coreMembers": "還沒有可新增的公開使用者。",
+				"userSearch": "沒有找到可分配的使用者。"
+			},
+			"notifications": {
+				"created": "夥伴已建立",
+				"saved": "夥伴已儲存",
+				"saveFailed": "儲存夥伴失敗",
+				"editorAssigned": "編輯權限已分配",
+				"editorAssignFailed": "分配編輯權限失敗",
+				"editorRevoked": "編輯權限已移除",
+				"editorRevokeFailed": "移除編輯權限失敗",
+				"deleted": "夥伴已刪除",
+				"deleteFailed": "刪除夥伴失敗",
+				"reordered": "排序已更新",
+				"reorderFailed": "更新排序失敗"
+			},
+			"createCommunity": "新建社群夥伴",
+			"createSupport": "新建支持與鳴謝"
 		},
 		"serverDetail": {
 			"back": "伺服器",

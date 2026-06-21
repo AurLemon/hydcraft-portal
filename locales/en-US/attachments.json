@@ -13,6 +13,8 @@
 			"title": "Crop image",
 			"avatarTitle": "Crop avatar",
 			"coverTitle": "Crop cover",
+			"partnerAvatarTitle": "Crop partner avatar",
+			"partnerCoverTitle": "Crop partner cover",
 			"cancel": "Cancel crop",
 			"confirm": "Confirm crop"
 		}

@@ -83,6 +83,13 @@
 			"ATTACHMENT_NOT_FOUND": "The attachment was not found or is unavailable.",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "The attachment has no usable image variant.",
 			"ATTACHMENT_NOT_OWNED": "You do not have permission to manage this attachment.",
+			"PARTNER_NOT_FOUND": "The partner profile was not found.",
+			"INVALID_PARTNER_INPUT": "The partner profile input is invalid.",
+			"INVALID_PARTNER_KIND": "The partner type is invalid.",
+			"INVALID_PARTNER_SECTION": "The partner section is invalid.",
+			"INVALID_PARTNER_SLUG": "The partner slug is invalid.",
+			"PARTNER_EDIT_PERMISSION_REQUIRED": "You do not have permission to edit this partner profile.",
+			"PARTNER_CORE_MEMBER_PUBLIC_PROFILE_REQUIRED": "Core members must have a public profile that can be visited.",
 			"COS_CONFIG_MISSING": "Object storage configuration is missing.",
 			"COS_PUBLIC_BASE_URL_MISSING": "The public object storage URL is missing.",
 			"OWNER_ROLE_REQUIRES_OWNER": "Only OWNER can grant or remove the OWNER role.",
@@ -119,6 +126,7 @@
 			"JWT_SECRET_MISSING": "JWT configuration is missing.",
 			"HYDROLINE_ID_CREATE_FAILED": "Failed to create a Hydroline ID.",
 			"HYDROLINE_ID_GENERATION_FAILED": "Failed to generate a Hydroline ID."
-		}
+		},
+		"INVALID_PARTNER_REORDER": "The partner reorder input is invalid."
 	}
 }
