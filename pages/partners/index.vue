@@ -139,7 +139,7 @@ type CommunityTabValue = 'ALL' | Extract<PartnerKind, 'SERVER' | 'ORGANIZATION'>
 
 const activeCommunityKind = ref<CommunityTabValue>('ALL')
 const emptyStateClass =
-	'rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400'
+	'rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400'
 
 const isLightMode = computed(() => colorMode.value === 'light')
 const activeCommunityTabClass = computed(() =>
