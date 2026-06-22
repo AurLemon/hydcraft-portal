@@ -76,6 +76,22 @@
 					/>
 				</UTooltip>
 			</div>
+			<div>
+				<UTooltip
+					v-if="hasAccounts && selectedAccount"
+					:text="t('minecraftAccounts.actions.unbind')"
+				>
+					<UButton
+						type="button"
+						color="error"
+						variant="ghost"
+						icon="i-lucide-unlink"
+						:loading="unbindingId === selectedAccount.id"
+						:aria-label="t('minecraftAccounts.actions.unbind')"
+						@click="unbindConfirmOpen = true"
+					/>
+				</UTooltip>
+			</div>
 		</div>
 
 		<MinecraftSettingsModal
@@ -83,10 +99,64 @@
 			v-model:open="settingsOpen"
 			:account="selectedAccount"
 			:saving-id="savingId"
-			:unbinding-id="unbindingId"
 			@save="emit('save', $event)"
-			@unbind="emit('unbind', $event)"
 		/>
+
+		<UModal
+			v-if="selectedAccount"
+			v-model:open="unbindConfirmOpen"
+			:title="t('minecraftAccounts.actions.unbind')"
+			:ui="{ content: 'max-w-lg' }"
+		>
+			<template #body>
+				<div class="flex items-start gap-3">
+					<div class="relative size-10 shrink-0 overflow-hidden rounded-lg">
+						<SkeletonImage
+							:src="resolveAvatarUrl(selectedAccount)"
+							:alt="resolveDisplayName(selectedAccount)"
+							class="size-10 select-none"
+							skeleton-class="rounded-lg"
+							:image-class="'size-10 rounded-lg object-cover drop-shadow-sm'"
+						/>
+					</div>
+					<div class="min-w-0">
+						<p class="truncate font-medium text-slate-950 dark:text-white">
+							{{ resolveDisplayName(selectedAccount) }}
+						</p>
+						<p
+							class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400"
+						>
+							{{ t('minecraftAccounts.settings.confirmations.unbind') }}
+						</p>
+					</div>
+				</div>
+			</template>
+
+			<template #footer>
+				<div
+					class="flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+				>
+					<UButton
+						type="button"
+						color="neutral"
+						variant="ghost"
+						:disabled="unbindingId === selectedAccount.id"
+						@click="unbindConfirmOpen = false"
+					>
+						{{ t('common.cancel') }}
+					</UButton>
+					<UButton
+						type="button"
+						color="error"
+						icon="i-lucide-unlink"
+						:loading="unbindingId === selectedAccount.id"
+						@click="submitUnbind"
+					>
+						{{ t('minecraftAccounts.actions.unbind') }}
+					</UButton>
+				</div>
+			</template>
+		</UModal>
 	</div>
 </template>
 
@@ -114,6 +184,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const settingsOpen = ref(false)
+const unbindConfirmOpen = ref(false)
 
 const hasAccounts = computed(() => props.accounts.length > 0)
 
@@ -135,6 +206,18 @@ const getAvatarClass = (account: MinecraftAccountForm): string => {
 	}
 
 	return `${baseClass} opacity-50 saturate-[80%] hover:scale-[1.02]`
+}
+
+const submitUnbind = (): void => {
+	if (
+		!props.selectedAccount ||
+		props.unbindingId === props.selectedAccount.id
+	) {
+		return
+	}
+
+	emit('unbind', props.selectedAccount)
+	unbindConfirmOpen.value = false
 }
 </script>
 

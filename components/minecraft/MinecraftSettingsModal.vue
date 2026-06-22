@@ -21,19 +21,8 @@
 				<div class="flex justify-end">
 					<UButton
 						type="button"
-						color="error"
-						variant="soft"
-						icon="i-lucide-unlink"
-						:loading="unbindingId === account.id"
-						class="mr-auto"
-						@click="submitUnbind"
-					>
-						{{ t('minecraftAccounts.actions.unbind') }}
-					</UButton>
-					<UButton
-						type="button"
 						icon="i-lucide-check"
-						:disabled="account.isPrimary || unbindingId === account.id"
+						:disabled="account.isPrimary"
 						:loading="savingId === account.id"
 						@click="submit"
 					>
@@ -55,14 +44,12 @@ import {
 interface MinecraftSettingsModalProps {
 	account: MinecraftAccountForm
 	savingId: string | null
-	unbindingId: string | null
 }
 
 const props = defineProps<MinecraftSettingsModalProps>()
 
 const emit = defineEmits<{
 	save: [account: MinecraftAccountForm]
-	unbind: [account: MinecraftAccountForm]
 }>()
 
 const { t } = useI18n()
@@ -86,23 +73,6 @@ const uuidStateLabel = computed(() =>
 
 const submit = () => {
 	emit('save', props.account)
-	open.value = false
-}
-
-const submitUnbind = () => {
-	if (!import.meta.client) {
-		return
-	}
-
-	const confirmed = window.confirm(
-		t('minecraftAccounts.settings.confirmations.unbind'),
-	)
-
-	if (!confirmed) {
-		return
-	}
-
-	emit('unbind', props.account)
 	open.value = false
 }
 </script>
