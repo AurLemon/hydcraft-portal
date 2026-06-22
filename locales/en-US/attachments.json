@@ -14,6 +14,7 @@
 			"avatarTitle": "Crop avatar",
 			"coverTitle": "Crop cover",
 			"partnerAvatarTitle": "Crop partner avatar",
+			"friendLinkAvatarTitle": "Crop link avatar",
 			"partnerCoverTitle": "Crop partner cover",
 			"cancel": "Cancel crop",
 			"confirm": "Confirm crop"

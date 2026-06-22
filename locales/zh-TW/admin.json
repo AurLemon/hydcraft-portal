@@ -179,6 +179,71 @@
 			"createCommunity": "新建社群夥伴",
 			"createSupport": "新建支持與鳴謝"
 		},
+		"links": {
+			"title": "友情連結管理",
+			"tabs": {
+				"links": "正式連結",
+				"applications": "申請佇列"
+			},
+			"modal": {
+				"createTitle": "新建友情連結",
+				"editTitle": "編輯友情連結"
+			},
+			"states": {
+				"enabled": "啟用",
+				"disabled": "停用"
+			},
+			"applicationStatuses": {
+				"DRAFT": "草稿",
+				"PENDING_REVIEW": "待審核",
+				"APPROVED": "已通過",
+				"REJECTED": "已拒絕",
+				"EXPIRED": "已過期"
+			},
+			"fields": {
+				"link": "友情連結",
+				"application": "申請",
+				"category": "分類",
+				"url": "連結",
+				"name": "名稱",
+				"summary": "簡介",
+				"avatar": "圖片",
+				"enabled": "狀態",
+				"archived": "已歸檔",
+				"applicationStatus": "申請狀態",
+				"applicant": "申請者",
+				"applicantStatement": "申請者自述",
+				"submittedAt": "提交時間"
+			},
+			"filters": {
+				"searchLinks": "搜尋名稱、簡介或連結",
+				"searchApplications": "搜尋申請名稱、連結或申請者"
+			},
+			"actions": {
+				"create": "新增友情連結",
+				"viewApplications": "友情連結申請佇列",
+				"uploadAvatar": "上傳圖片",
+				"resetAvatar": "清除圖片",
+				"approve": "批准",
+				"reject": "拒絕"
+			},
+			"empty": {
+				"applicationName": "未填寫名稱",
+				"summary": "未填寫簡介",
+				"statement": "申請者暫未填寫自述。",
+				"unknownDate": "暫無"
+			},
+			"notifications": {
+				"created": "友情連結已建立",
+				"saved": "友情連結已保存",
+				"saveFailed": "保存友情連結失敗",
+				"deleted": "友情連結已刪除",
+				"deleteFailed": "刪除友情連結失敗",
+				"approved": "友情連結申請已通過",
+				"rejected": "友情連結申請已拒絕",
+				"reviewFailed": "處理友情連結申請失敗"
+			}
+		},
 		"serverDetail": {
 			"back": "伺服器",
 			"fallbackTitle": "伺服器",

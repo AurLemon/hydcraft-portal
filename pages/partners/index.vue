@@ -13,13 +13,13 @@
 				<div
 					class="text-4xl font-arkpixel tracking-wider text-slate-950 dark:text-slate-50 leading-tight"
 				>
-					<div class="flex justify-center items-baseline gap-1">
+					<div class="block text-center max-w-3xl mx-auto">
 						{{ t('content.partners.hero.line1') }}
 					</div>
-					<div class="flex justify-center items-baseline gap-1">
+					<div class="block text-center max-w-3xl mx-auto">
 						{{ t('content.partners.hero.line2') }}
 						<span
-							class="partner-heart inline-block align-super text-xs text-rose-500"
+							class="partner-heart inline-block align-baseline text-xs text-rose-500 -ml-4 select-none"
 							aria-hidden="true"
 						>
 							♥
@@ -33,7 +33,7 @@
 		</div>
 
 		<div class="grid gap-12">
-			<section class="grid gap-5">
+			<section class="flex flex-col gap-2">
 				<div
 					class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
 				>
@@ -79,7 +79,7 @@
 				</div>
 			</section>
 
-			<section class="grid gap-5">
+			<section class="flex flex-col gap-2">
 				<h2 class="mx-1 text-2xl text-slate-950 dark:text-white">
 					{{ t('content.partners.sections.supportAcknowledgements') }}
 				</h2>
@@ -139,7 +139,7 @@ type CommunityTabValue = 'ALL' | Extract<PartnerKind, 'SERVER' | 'ORGANIZATION'>
 
 const activeCommunityKind = ref<CommunityTabValue>('ALL')
 const emptyStateClass =
-	'rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400'
+	'rounded-xl bg-white p-8 text-center text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400'
 
 const isLightMode = computed(() => colorMode.value === 'light')
 const activeCommunityTabClass = computed(() =>

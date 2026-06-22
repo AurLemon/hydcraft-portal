@@ -85,6 +85,8 @@
 							:src="partner?.avatarUrl || undefined"
 							:alt="partner?.name || ''"
 							size="3xl"
+							class="rounded-lg"
+							:ui="avatarUi"
 						/>
 						<div class="min-w-0 flex-1">
 							<h2
@@ -126,7 +128,7 @@
 							<UPopover v-if="shouldUseCoreMemberPopover">
 								<button
 									type="button"
-									class="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									class="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
 									<UAvatarGroup size="lg" :max="5">
 										<UAvatar
@@ -134,6 +136,8 @@
 											:key="member.id"
 											:src="member.avatarUrl || undefined"
 											:alt="member.displayName || member.username"
+											class="rounded-lg"
+											:ui="avatarUi"
 										/>
 									</UAvatarGroup>
 								</button>
@@ -150,6 +154,8 @@
 												:src="member.avatarUrl || undefined"
 												:alt="member.displayName || member.username"
 												size="sm"
+												class="rounded-lg"
+												:ui="avatarUi"
 											/>
 											<div class="min-w-0">
 												<p
@@ -171,12 +177,14 @@
 									v-for="member in partner.coreMembers"
 									:key="member.id"
 									:to="localePath(`/u/${member.username}`)"
-									class="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+									class="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
 									<UAvatar
 										:src="member.avatarUrl || undefined"
 										:alt="member.displayName || member.username"
 										size="lg"
+										class="rounded-lg"
+										:ui="avatarUi"
 									/>
 								</NuxtLink>
 							</div>
@@ -213,9 +221,11 @@ const coverImageClass = computed(() =>
 		props.partner?.archived ? 'grayscale saturate-0' : '',
 	].join(' '),
 )
-const canVisitPartner = computed(
-	() => Boolean(props.partner?.websiteUrl) && !props.partner?.archived,
-)
+const canVisitPartner = computed(() => Boolean(props.partner?.websiteUrl))
+const avatarUi = {
+	root: 'rounded-lg overflow-hidden',
+	fallback: 'rounded-lg',
+}
 const shouldUseCoreMemberPopover = computed(
 	() => (props.partner?.coreMembers.length ?? 0) >= 5,
 )

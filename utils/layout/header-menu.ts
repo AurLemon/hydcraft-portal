@@ -83,6 +83,11 @@ export const headerMenuGroups: HeaderMenuGroup[] = [
 				to: '/admin/partners',
 			},
 			{
+				key: 'links',
+				labelKey: 'routes.adminLinks',
+				to: '/admin/links',
+			},
+			{
 				key: 'achievements',
 				labelKey: 'routes.adminAchievements',
 				to: '/admin/achievements',
@@ -114,6 +119,7 @@ export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/admin/players': 'routes.adminPlayers',
 	'/admin/users': 'routes.adminUsers',
 	'/admin/partners': 'routes.adminPartners',
+	'/admin/links': 'routes.adminLinks',
 	'/admin/achievements': 'routes.adminAchievements',
 	'/admin/attachments': 'routes.adminAttachments',
 	'/me/profile': 'routes.meProfile',

@@ -40,6 +40,53 @@
 				"unavailable": "This partner page is not available."
 			}
 		},
+		"links": {
+			"archived": {
+				"label": "Archived",
+				"tooltip": "The public entry is no longer reachable or has not shown recent activity."
+			},
+			"sections": {
+				"business": "Business Links",
+				"personal": "Personal Links",
+				"organization": "Organization Links"
+			},
+			"categories": {
+				"BUSINESS": "Business",
+				"PERSONAL": "Personal",
+				"ORGANIZATION": "Organization"
+			},
+			"empty": {
+				"business": "No public business links yet.",
+				"personal": "No public personal links yet.",
+				"organization": "No public organization links yet."
+			},
+			"banner": {
+				"title": "Exchange links with us right now!",
+				"action": "Apply"
+			},
+			"application": {
+				"title": "Apply for a Link Exchange",
+				"fields": {
+					"category": "Category",
+					"url": "Link",
+					"name": "Name",
+					"summary": "Summary",
+					"avatar": "Image",
+					"applicantStatement": "Applicant statement",
+					"captcha": "Security verification"
+				},
+				"actions": {
+					"uploadAvatar": "Upload Image",
+					"resetAvatar": "Clear Image",
+					"submit": "Submit Application"
+				},
+				"notifications": {
+					"draftCreateFailed": "Failed to create application draft",
+					"submitted": "Link application submitted",
+					"submitFailed": "Failed to submit link application"
+				}
+			}
+		},
 		"charter": {
 			"title": "Server Charter"
 		},

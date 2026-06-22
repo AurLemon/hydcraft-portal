@@ -111,9 +111,11 @@ const cropperTitle = computed(() =>
 		? t('attachments.crop.avatarTitle')
 		: props.purpose === 'partner-avatar'
 			? t('attachments.crop.partnerAvatarTitle')
-			: props.purpose === 'partner-cover'
-				? t('attachments.crop.partnerCoverTitle')
-				: t('attachments.crop.coverTitle'),
+			: props.purpose === 'friend-link-avatar'
+				? t('attachments.crop.friendLinkAvatarTitle')
+				: props.purpose === 'partner-cover'
+					? t('attachments.crop.partnerCoverTitle')
+					: t('attachments.crop.coverTitle'),
 )
 
 const resetSelection = (): void => {

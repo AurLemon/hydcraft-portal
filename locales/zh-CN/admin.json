@@ -179,6 +179,71 @@
 			"createCommunity": "新建社区伙伴",
 			"createSupport": "新建支持与鸣谢"
 		},
+		"links": {
+			"title": "友情链接管理",
+			"tabs": {
+				"links": "正式友链",
+				"applications": "申请队列"
+			},
+			"modal": {
+				"createTitle": "新建友链",
+				"editTitle": "编辑友链"
+			},
+			"states": {
+				"enabled": "启用",
+				"disabled": "停用"
+			},
+			"applicationStatuses": {
+				"DRAFT": "草稿",
+				"PENDING_REVIEW": "待审核",
+				"APPROVED": "已通过",
+				"REJECTED": "已拒绝",
+				"EXPIRED": "已过期"
+			},
+			"fields": {
+				"link": "友链",
+				"application": "申请",
+				"category": "分类",
+				"url": "链接",
+				"name": "名称",
+				"summary": "简介",
+				"avatar": "图片",
+				"enabled": "状态",
+				"archived": "已归档",
+				"applicationStatus": "申请状态",
+				"applicant": "申请者",
+				"applicantStatement": "申请者自述",
+				"submittedAt": "提交时间"
+			},
+			"filters": {
+				"searchLinks": "搜索名称、简介或链接",
+				"searchApplications": "搜索申请名称、链接或申请者"
+			},
+			"actions": {
+				"create": "新增友链",
+				"viewApplications": "友链申请队列",
+				"uploadAvatar": "上传图片",
+				"resetAvatar": "清除图片",
+				"approve": "批准",
+				"reject": "拒绝"
+			},
+			"empty": {
+				"applicationName": "未填写名称",
+				"summary": "未填写简介",
+				"statement": "申请者暂未填写自述。",
+				"unknownDate": "暂无"
+			},
+			"notifications": {
+				"created": "友链已创建",
+				"saved": "友链已保存",
+				"saveFailed": "保存友链失败",
+				"deleted": "友链已删除",
+				"deleteFailed": "删除友链失败",
+				"approved": "友链申请已通过",
+				"rejected": "友链申请已拒绝",
+				"reviewFailed": "处理友链申请失败"
+			}
+		},
 		"serverDetail": {
 			"back": "服务器",
 			"fallbackTitle": "服务器",

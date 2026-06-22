@@ -179,6 +179,71 @@
 			"createCommunity": "コミュニティパートナー追加",
 			"createSupport": "サポート・謝辞追加"
 		},
+		"links": {
+			"title": "リンク管理",
+			"tabs": {
+				"links": "公開リンク",
+				"applications": "申請キュー"
+			},
+			"modal": {
+				"createTitle": "リンクを追加",
+				"editTitle": "リンクを編集"
+			},
+			"states": {
+				"enabled": "有効",
+				"disabled": "無効"
+			},
+			"applicationStatuses": {
+				"DRAFT": "下書き",
+				"PENDING_REVIEW": "審査待ち",
+				"APPROVED": "承認済み",
+				"REJECTED": "却下",
+				"EXPIRED": "期限切れ"
+			},
+			"fields": {
+				"link": "リンク",
+				"application": "申請",
+				"category": "分類",
+				"url": "URL",
+				"name": "名称",
+				"summary": "概要",
+				"avatar": "画像",
+				"enabled": "状態",
+				"archived": "アーカイブ済み",
+				"applicationStatus": "申請状態",
+				"applicant": "申請者",
+				"applicantStatement": "申請者メモ",
+				"submittedAt": "申請日時"
+			},
+			"filters": {
+				"searchLinks": "名称、概要、URL で検索",
+				"searchApplications": "申請名、URL、申請者で検索"
+			},
+			"actions": {
+				"create": "リンクを追加",
+				"viewApplications": "申請キュー",
+				"uploadAvatar": "画像をアップロード",
+				"resetAvatar": "画像をクリア",
+				"approve": "承認",
+				"reject": "却下"
+			},
+			"empty": {
+				"applicationName": "名称未設定",
+				"summary": "概要未設定",
+				"statement": "申請者メモは未入力です。",
+				"unknownDate": "未設定"
+			},
+			"notifications": {
+				"created": "リンクを作成しました",
+				"saved": "リンクを保存しました",
+				"saveFailed": "リンクの保存に失敗しました",
+				"deleted": "リンクを削除しました",
+				"deleteFailed": "リンクの削除に失敗しました",
+				"approved": "申請を承認しました",
+				"rejected": "申請を却下しました",
+				"reviewFailed": "申請処理に失敗しました"
+			}
+		},
 		"serverDetail": {
 			"back": "サーバー",
 			"fallbackTitle": "サーバー",

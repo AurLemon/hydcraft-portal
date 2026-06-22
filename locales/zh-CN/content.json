@@ -40,6 +40,53 @@
 				"unavailable": "这个伙伴页面暂时无法访问。"
 			}
 		},
+		"links": {
+			"archived": {
+				"label": "已归档",
+				"tooltip": "公开入口已失效或长期未确认活跃。"
+			},
+			"sections": {
+				"business": "业务链接",
+				"personal": "个人链接",
+				"organization": "组织链接"
+			},
+			"categories": {
+				"BUSINESS": "业务链接",
+				"PERSONAL": "个人链接",
+				"ORGANIZATION": "组织链接"
+			},
+			"empty": {
+				"business": "这里暂时还没有公开的业务链接。",
+				"personal": "这里暂时还没有公开的个人链接。",
+				"organization": "这里暂时还没有公开的组织链接。"
+			},
+			"banner": {
+				"title": "要求你立刻和我们交换友情链接！",
+				"action": "申请友链"
+			},
+			"application": {
+				"title": "申请友情链接",
+				"fields": {
+					"category": "所属分类",
+					"url": "链接",
+					"name": "名称",
+					"summary": "简介",
+					"avatar": "图片",
+					"applicantStatement": "申请者自述",
+					"captcha": "安全验证"
+				},
+				"actions": {
+					"uploadAvatar": "上传图片",
+					"resetAvatar": "清除图片",
+					"submit": "提交申请"
+				},
+				"notifications": {
+					"draftCreateFailed": "创建申请草稿失败",
+					"submitted": "友链申请已提交",
+					"submitFailed": "提交友链申请失败"
+				}
+			}
+		},
 		"charter": {
 			"title": "服务器章程"
 		},

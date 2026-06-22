@@ -185,6 +185,43 @@ interface EventMap {
 		orderedIds: string[]
 		occurredAt: Date
 	}
+	'friend-link.created': {
+		linkId: string
+		actorUserId: string
+		createdAt: Date
+	}
+	'friend-link.updated': {
+		linkId: string
+		actorUserId: string
+		changedFields: string[]
+		updatedAt: Date
+	}
+	'friend-link.deleted': {
+		linkId: string
+		actorUserId: string
+		deletedAt: Date
+	}
+	'friend-link.application.draft-created': {
+		applicationId: string
+		applicantUserId: string
+		createdAt: Date
+	}
+	'friend-link.application.submitted': {
+		applicationId: string
+		applicantUserId: string
+		submittedAt: Date
+	}
+	'friend-link.application.reviewed': {
+		applicationId: string
+		reviewerUserId: string
+		status: 'APPROVED' | 'REJECTED'
+		reviewedAt: Date
+	}
+	'friend-link.application.expired': {
+		applicationId: string
+		previousStatus: 'DRAFT' | 'PENDING_REVIEW'
+		expiredAt: Date
+	}
 }
 
 const handlers = new Map<

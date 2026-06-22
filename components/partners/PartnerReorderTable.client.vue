@@ -44,6 +44,8 @@
 								<UAvatar
 									:src="element.avatarUrl || undefined"
 									:alt="element.name"
+									class="rounded-lg"
+									:ui="avatarUi"
 								/>
 								<span
 									class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
@@ -101,6 +103,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const avatarUi = {
+	root: 'rounded-lg overflow-hidden',
+	fallback: 'rounded-lg',
+}
 
 const localList = ref<PartnerSummary[]>([...props.items])
 

@@ -461,6 +461,30 @@ export class AttachmentService {
 		})
 	}
 
+	async deleteFriendLinkAttachmentsExcept(input: {
+		linkId: string
+		activeAttachmentId: string | null
+	}): Promise<void> {
+		await this.deleteAttachmentsExcept({
+			ownerType: 'friend-link',
+			ownerId: input.linkId,
+			purpose: 'friend-link-avatar',
+			activeAttachmentId: input.activeAttachmentId,
+		})
+	}
+
+	async deleteFriendLinkApplicationAttachmentsExcept(input: {
+		applicationId: string
+		activeAttachmentId: string | null
+	}): Promise<void> {
+		await this.deleteAttachmentsExcept({
+			ownerType: 'friend-link-application',
+			ownerId: input.applicationId,
+			purpose: 'friend-link-avatar',
+			activeAttachmentId: input.activeAttachmentId,
+		})
+	}
+
 	async deleteExternalAccountAvatarAttachmentsExcept(input: {
 		externalAccountId: string
 		activeAttachmentId: string | null

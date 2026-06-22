@@ -6,6 +6,7 @@ import type {
 	AttachmentPurpose,
 } from '../../utils/attachment/types'
 import { createBadRequestError } from '../../utils/errors'
+import { assertFriendLinkApplicationUploadAccess } from '../../utils/friend-links/service'
 import { canEditPartner } from '../../utils/partners/permissions'
 
 const badRequest = (code: string) => createBadRequestError(code)
@@ -51,6 +52,14 @@ export default defineEventHandler(async (event) => {
 		if (!ownerId || !(await canEditPartner(user, ownerId))) {
 			await requireAdminUser(event)
 		}
+	} else if (ownerType === 'friend-link') {
+		await requireAdminUser(event)
+	} else if (ownerType === 'friend-link-application') {
+		if (!ownerId) {
+			throw badRequest('INVALID_ATTACHMENT_INPUT')
+		}
+
+		await assertFriendLinkApplicationUploadAccess(user.id, ownerId)
 	} else if (ownerId && (ownerType !== 'user' || ownerId !== user.id)) {
 		await requireAdminUser(event)
 	}

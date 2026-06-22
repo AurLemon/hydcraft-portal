@@ -51,10 +51,10 @@
 							:src="partner.avatarUrl || undefined"
 							:alt="partner.name"
 							size="3xl"
-							class="shrink-0 w-14 h-14 ring-2 ring-white/24 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
+							class="shrink-0 w-14 h-14 rounded-lg ring-2 ring-white/24 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
 							:ui="{
-								root: 'bg-white/14 text-white backdrop-blur-sm',
-								fallback: 'bg-transparent text-white',
+								root: 'rounded-lg overflow-hidden bg-white/14 text-white backdrop-blur-sm',
+								fallback: 'rounded-lg bg-transparent text-white',
 							}"
 						/>
 						<div class="min-w-0 max-w-54">
@@ -112,15 +112,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const isSupport = computed(
-	() => props.partner.section === 'SUPPORT_ACKNOWLEDGEMENTS',
-)
-const opensExternally = computed(
-	() =>
-		isSupport.value &&
-		!props.partner.archived &&
-		Boolean(props.partner.websiteUrl),
-)
+const opensExternally = computed(() => Boolean(props.partner.websiteUrl))
 const coverSrc = computed(() => props.partner.coverUrl || defaultCover)
 const coverImageClass = computed(() =>
 	[

@@ -179,6 +179,71 @@
 			"createCommunity": "New Community Partner",
 			"createSupport": "New Support & Acknowledgement"
 		},
+		"links": {
+			"title": "Link Management",
+			"tabs": {
+				"links": "Published Links",
+				"applications": "Application Queue"
+			},
+			"modal": {
+				"createTitle": "New Link",
+				"editTitle": "Edit Link"
+			},
+			"states": {
+				"enabled": "Enabled",
+				"disabled": "Disabled"
+			},
+			"applicationStatuses": {
+				"DRAFT": "Draft",
+				"PENDING_REVIEW": "Pending Review",
+				"APPROVED": "Approved",
+				"REJECTED": "Rejected",
+				"EXPIRED": "Expired"
+			},
+			"fields": {
+				"link": "Link",
+				"application": "Application",
+				"category": "Category",
+				"url": "URL",
+				"name": "Name",
+				"summary": "Summary",
+				"avatar": "Image",
+				"enabled": "Status",
+				"archived": "Archived",
+				"applicationStatus": "Application Status",
+				"applicant": "Applicant",
+				"applicantStatement": "Applicant Statement",
+				"submittedAt": "Submitted At"
+			},
+			"filters": {
+				"searchLinks": "Search name, summary, or URL",
+				"searchApplications": "Search application name, URL, or applicant"
+			},
+			"actions": {
+				"create": "New Link",
+				"viewApplications": "Application Queue",
+				"uploadAvatar": "Upload Image",
+				"resetAvatar": "Clear Image",
+				"approve": "Approve",
+				"reject": "Reject"
+			},
+			"empty": {
+				"applicationName": "Unnamed application",
+				"summary": "No summary provided",
+				"statement": "No applicant statement provided.",
+				"unknownDate": "N/A"
+			},
+			"notifications": {
+				"created": "Link created",
+				"saved": "Link saved",
+				"saveFailed": "Failed to save link",
+				"deleted": "Link deleted",
+				"deleteFailed": "Failed to delete link",
+				"approved": "Application approved",
+				"rejected": "Application rejected",
+				"reviewFailed": "Failed to review application"
+			}
+		},
 		"serverDetail": {
 			"back": "Servers",
 			"fallbackTitle": "Server",

@@ -40,6 +40,53 @@
 				"unavailable": "このパートナーページは利用できません。"
 			}
 		},
+		"links": {
+			"archived": {
+				"label": "アーカイブ済み",
+				"tooltip": "公開先が無効になったか、長期間アクティブか確認できていません。"
+			},
+			"sections": {
+				"business": "業務リンク",
+				"personal": "個人リンク",
+				"organization": "組織リンク"
+			},
+			"categories": {
+				"BUSINESS": "業務リンク",
+				"PERSONAL": "個人リンク",
+				"ORGANIZATION": "組織リンク"
+			},
+			"empty": {
+				"business": "公開中の業務リンクはまだありません。",
+				"personal": "公開中の個人リンクはまだありません。",
+				"organization": "公開中の組織リンクはまだありません。"
+			},
+			"banner": {
+				"title": "今すぐ相互リンクを交換しませんか！",
+				"action": "リンク申請"
+			},
+			"application": {
+				"title": "相互リンク申請",
+				"fields": {
+					"category": "分類",
+					"url": "リンク",
+					"name": "名称",
+					"summary": "紹介文",
+					"avatar": "画像",
+					"applicantStatement": "申請者メモ",
+					"captcha": "セキュリティ認証"
+				},
+				"actions": {
+					"uploadAvatar": "画像をアップロード",
+					"resetAvatar": "画像をクリア",
+					"submit": "申請を送信"
+				},
+				"notifications": {
+					"draftCreateFailed": "申請下書きの作成に失敗しました",
+					"submitted": "リンク申請を送信しました",
+					"submitFailed": "リンク申請の送信に失敗しました"
+				}
+			}
+		},
 		"charter": {
 			"title": "サーバー規約"
 		},

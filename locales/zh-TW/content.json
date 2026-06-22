@@ -40,6 +40,53 @@
 				"unavailable": "這個夥伴頁面暫時無法訪問。"
 			}
 		},
+		"links": {
+			"archived": {
+				"label": "已歸檔",
+				"tooltip": "公開入口已失效或長期未確認活躍。"
+			},
+			"sections": {
+				"business": "業務連結",
+				"personal": "個人連結",
+				"organization": "組織連結"
+			},
+			"categories": {
+				"BUSINESS": "業務連結",
+				"PERSONAL": "個人連結",
+				"ORGANIZATION": "組織連結"
+			},
+			"empty": {
+				"business": "這裡暫時還沒有公開的業務連結。",
+				"personal": "這裡暫時還沒有公開的個人連結。",
+				"organization": "這裡暫時還沒有公開的組織連結。"
+			},
+			"banner": {
+				"title": "要求你立刻和我們交換友情連結！",
+				"action": "申請友鏈"
+			},
+			"application": {
+				"title": "申請友情連結",
+				"fields": {
+					"category": "所屬分類",
+					"url": "連結",
+					"name": "名稱",
+					"summary": "簡介",
+					"avatar": "圖片",
+					"applicantStatement": "申請者自述",
+					"captcha": "安全驗證"
+				},
+				"actions": {
+					"uploadAvatar": "上傳圖片",
+					"resetAvatar": "清除圖片",
+					"submit": "提交申請"
+				},
+				"notifications": {
+					"draftCreateFailed": "建立申請草稿失敗",
+					"submitted": "友情連結申請已提交",
+					"submitFailed": "提交友情連結申請失敗"
+				}
+			}
+		},
 		"charter": {
 			"title": "伺服器章程"
 		},

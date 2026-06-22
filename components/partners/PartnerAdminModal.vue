@@ -83,6 +83,8 @@
 										:src="item.avatarUrl || undefined"
 										:alt="item.label"
 										size="xs"
+										class="rounded-lg"
+										:ui="avatarUi"
 									/>
 								</template>
 								<template #item-label="{ item }">
@@ -113,6 +115,8 @@
 										<UAvatar
 											:src="member.avatarUrl || undefined"
 											:alt="member.label"
+											class="rounded-lg"
+											:ui="avatarUi"
 										/>
 										<div class="min-w-0">
 											<p
@@ -176,6 +180,8 @@
 										:src="current?.avatarUrl || undefined"
 										:alt="current?.name || form.name"
 										size="3xl"
+										class="rounded-lg"
+										:ui="avatarUi"
 									/>
 									<div class="flex flex-wrap gap-2">
 										<AttachmentUploadButton
@@ -184,7 +190,7 @@
 											purpose="partner-avatar"
 											owner-type="partner"
 											:owner-id="current.id"
-											preview-shape="circle"
+											preview-shape="square"
 											icon="i-lucide-upload"
 											@uploaded="handleAvatarUploaded"
 										>
@@ -302,6 +308,8 @@
 										:src="item.avatarUrl || undefined"
 										:alt="item.label"
 										size="xs"
+										class="rounded-lg"
+										:ui="avatarUi"
 									/>
 								</template>
 								<template #item-label="{ item }">
@@ -335,6 +343,8 @@
 										<UAvatar
 											:src="editor.user.avatarUrl || undefined"
 											:alt="editor.user.displayName || editor.user.username"
+											class="rounded-lg"
+											:ui="avatarUi"
 										/>
 										<div class="min-w-0">
 											<p
@@ -411,6 +421,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
+const avatarUi = {
+	root: 'rounded-lg overflow-hidden',
+	fallback: 'rounded-lg',
+}
 
 const form = reactive({
 	name: '',

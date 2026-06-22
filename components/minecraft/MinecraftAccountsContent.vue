@@ -280,7 +280,7 @@
 			</div>
 		</section>
 
-		<section v-else class="rounded-3xl bg-slate-50/80 p-8 dark:bg-slate-900/60">
+		<section v-else>
 			<PageInlineException
 				icon="i-lucide-link"
 				:title="t('minecraftAccounts.bind.title')"

@@ -31,6 +31,8 @@
 							:src="currentPartner?.avatarUrl || undefined"
 							:alt="currentPartner?.name || ''"
 							size="3xl"
+							class="rounded-lg"
+							:ui="avatarUi"
 						/>
 						<div class="flex flex-wrap gap-2">
 							<AttachmentUploadButton
@@ -38,7 +40,7 @@
 								purpose="partner-avatar"
 								owner-type="partner"
 								:owner-id="currentPartner.id"
-								preview-shape="circle"
+								preview-shape="square"
 								icon="i-lucide-upload"
 								@uploaded="handleAvatarUploaded"
 							>
@@ -107,7 +109,9 @@
 		</template>
 
 		<template #footer>
-			<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+			<div
+				class="flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+			>
 				<UButton
 					type="button"
 					color="neutral"
@@ -147,6 +151,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
+const avatarUi = {
+	root: 'rounded-lg overflow-hidden',
+	fallback: 'rounded-lg',
+}
 
 const saving = ref(false)
 const currentPartner = ref<PartnerSummary | null>(null)

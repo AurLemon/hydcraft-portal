@@ -3,7 +3,12 @@ export type AttachmentPurpose =
 	| 'user-cover'
 	| 'partner-avatar'
 	| 'partner-cover'
-export type AttachmentOwnerType = 'user' | 'partner'
+	| 'friend-link-avatar'
+export type AttachmentOwnerType =
+	| 'user'
+	| 'partner'
+	| 'friend-link'
+	| 'friend-link-application'
 
 export interface AttachmentUploadVariant {
 	name: string

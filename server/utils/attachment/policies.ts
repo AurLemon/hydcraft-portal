@@ -81,6 +81,22 @@ export const attachmentPolicies = {
 			{ name: 'cover_1440', width: 1440, height: 360, fit: 'cover' },
 		],
 	},
+	'friend-link-avatar': {
+		purpose: 'friend-link-avatar',
+		category: 'link',
+		visibility: 'PUBLIC',
+		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		maxSizeBytes: 8 * 1024 * 1024,
+		requiresCrop: true,
+		aspectRatio: 1,
+		outputFormat: 'webp',
+		variants: [
+			{ name: 'avatar_64', width: 64, height: 64, fit: 'cover' },
+			{ name: 'avatar_128', width: 128, height: 128, fit: 'cover' },
+			{ name: 'avatar_256', width: 256, height: 256, fit: 'cover' },
+			{ name: 'avatar_512', width: 512, height: 512, fit: 'cover' },
+		],
+	},
 } satisfies Record<AttachmentPurpose, AttachmentPolicy>
 
 export const getAttachmentPolicy = (purpose: string): AttachmentPolicy => {

@@ -192,3 +192,17 @@ enum PartnerSection {
   COMMUNITY
   SUPPORT_ACKNOWLEDGEMENTS
 }
+
+enum FriendLinkCategory {
+  BUSINESS
+  PERSONAL
+  ORGANIZATION
+}
+
+enum FriendLinkApplicationStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  EXPIRED
+}

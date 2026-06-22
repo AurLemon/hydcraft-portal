@@ -51,6 +51,8 @@ model User {
   createdPartnerEditorAssignments PartnerEditor[] @relation("PartnerEditorCreatedBy")
   partnerCoreMemberAssignments PartnerCoreMember[] @relation("PartnerCoreMemberUser")
   createdPartnerCoreMemberAssignments PartnerCoreMember[] @relation("PartnerCoreMemberCreatedBy")
+  friendLinkApplications FriendLinkApplication[] @relation("FriendLinkApplicant")
+  reviewedFriendLinkApplications FriendLinkApplication[] @relation("FriendLinkReviewer")
 
   @@index([lastAuthActivityAt])
 }

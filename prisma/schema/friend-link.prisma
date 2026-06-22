@@ -1,0 +1,46 @@
+model FriendLink {
+  id                 String             @id @default(cuid())
+  category           FriendLinkCategory
+  url                String
+  name               String
+  summary            String?
+  avatarAttachmentId String?
+  avatarUrl          String?
+  enabled            Boolean            @default(true)
+  archived           Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  approvedApplications FriendLinkApplication[] @relation("ApprovedFriendLink")
+
+  @@index([category, enabled, archived, createdAt])
+  @@index([enabled, archived, createdAt])
+}
+
+model FriendLinkApplication {
+  id                 String                      @id @default(cuid())
+  applicantUserId    String
+  applicantUser      User                        @relation("FriendLinkApplicant", fields: [applicantUserId], references: [id], onDelete: Cascade)
+  category           FriendLinkCategory?
+  url                String?
+  name               String?
+  summary            String?
+  avatarAttachmentId String?
+  avatarUrl          String?
+  applicantStatement String?
+  status             FriendLinkApplicationStatus @default(DRAFT)
+  submittedAt        DateTime?
+  reviewedAt         DateTime?
+  reviewedById       String?
+  reviewedBy         User?                       @relation("FriendLinkReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  approvedLinkId     String?                     @unique
+  approvedLink       FriendLink?                 @relation("ApprovedFriendLink", fields: [approvedLinkId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  expiresAt          DateTime?
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  @@index([applicantUserId, status])
+  @@index([status, submittedAt])
+  @@index([expiresAt])
+  @@index([reviewedById])
+}

@@ -80,6 +80,8 @@
 							<UAvatar
 								:src="row.original.avatarUrl || undefined"
 								:alt="row.original.name"
+								class="rounded-lg"
+								:ui="avatarUi"
 							/>
 							<span
 								class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
@@ -171,6 +173,10 @@ definePageMeta({
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
 const ALL_FILTER_VALUE = '__all__'
+const avatarUi = {
+	root: 'rounded-lg overflow-hidden',
+	fallback: 'rounded-lg',
+}
 
 const filters = reactive({
 	search: '',
