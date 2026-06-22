@@ -9,7 +9,14 @@
 						name="i-lucide-info"
 						class="mt-0.5 size-4 shrink-0 text-slate-400 dark:text-slate-500"
 					/>
-					<p>{{ t('minecraftAccounts.bind.description') }}</p>
+					<div>
+						<p
+							v-for="(line, index) in bindDescriptionLines"
+							:key="`minecraft-bind-description-${index}`"
+						>
+							{{ line }}
+						</p>
+					</div>
 				</div>
 
 				<form class="grid gap-4" @submit.prevent="submit">
@@ -81,6 +88,11 @@ const form = reactive<BindMinecraftAccountBody>({
 	username: '',
 	password: '',
 })
+const bindDescriptionLines = computed(() => [
+	t('minecraftAccounts.bind.descriptionLine1'),
+	t('minecraftAccounts.bind.descriptionLine2'),
+	t('minecraftAccounts.bind.descriptionLine3'),
+])
 
 const submitDisabled = computed(
 	() => !form.username || !form.password || props.binding,

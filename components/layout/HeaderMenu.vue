@@ -14,11 +14,13 @@ const {
 	backButtonLabel,
 	canGoBack,
 	closeMobileMenu,
-	currentFallback,
+	desktopMenuNav,
+	desktopOverflowModel,
+	desktopOverflowNavItems,
+	desktopOverflowSelectItems,
+	desktopVisibleNavItems,
 	displayNavItems,
 	displayedGroup,
-	fallbackNavItemClass,
-	groupMenuItems,
 	groupTransitionKey,
 	hiddenMenuClass,
 	isMobileMenuClamped,
@@ -29,10 +31,12 @@ const {
 	mobileMenuAnchor,
 	mobileMenuOpen,
 	openMobileMenu,
+	resolveDesktopNavItemClass,
 	resolveHighlightClass,
 	resolveNavItemClass,
 	resolveTo,
 	routeGroupKey,
+	selectDesktopOverflowItem,
 	selectMobileFallback,
 	selectableMobileFallback,
 	selectableMobileGroupNavItems,
@@ -129,12 +133,14 @@ onBeforeUnmount(() => {
 <template>
 	<div
 		ref="menuMeasure"
+		data-header-menu-owned="true"
 		class="pointer-events-none fixed top-0 left-0 -z-10 inline-flex w-max flex-none flex-nowrap items-center justify-center gap-2 opacity-0"
 		aria-hidden="true"
 	>
 		<span
 			v-for="item in displayNavItems"
 			:key="item.key"
+			:data-menu-measure-key="item.key"
 			class="inline-flex items-center gap-1.5 rounded-full p-2 text-[16px] leading-none whitespace-nowrap"
 			:class="{ 'font-semibold': isPathActive(item) || item.isFallback }"
 		>
@@ -149,6 +155,8 @@ onBeforeUnmount(() => {
 	</div>
 
 	<nav
+		ref="desktopMenuNav"
+		data-header-menu-owned="true"
 		class="absolute left-1/2 hidden max-w-[calc(100vw-1.5rem)] min-w-0 -translate-x-1/2 justify-center transition duration-[300ms] ease-out md:flex"
 		:class="hiddenMenuClass"
 	>
@@ -199,47 +207,66 @@ onBeforeUnmount(() => {
 					class="inline-flex w-max flex-none flex-nowrap items-center justify-center gap-2"
 				>
 					<NuxtLink
-						v-for="item in groupMenuItems"
+						v-for="item in desktopVisibleNavItems"
 						:key="item.key"
 						:to="resolveTo(item)"
 						class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-						:class="resolveNavItemClass(item)"
-						:aria-current="isPathActive(item) ? 'page' : undefined"
+						:class="resolveDesktopNavItemClass(item)"
+						:aria-current="
+							item.isFallback || isPathActive(item) ? 'page' : undefined
+						"
 					>
 						<span
 							class="pointer-events-none absolute top-[calc(50%+0.24em)] left-1/2 -z-10 h-[0.95em] w-[96%] origin-center -translate-x-1/2 -translate-y-1/2 scale-y-[1] rounded-md bg-[rgba(125,211,252,0.16)] opacity-0 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100"
 							:class="resolveHighlightClass(item)"
 							aria-hidden="true"
 						/>
-						{{ item.label }}
+						<span
+							v-if="item.isFallback"
+							class="inline-flex items-center gap-1.5 font-semibold"
+						>
+							<HeaderMenuRouteBadge
+								:badge-type="item.badgeType"
+								:src="item.badgeAvatarUrl || undefined"
+								:alt="item.label"
+								:fallback-text="item.badgeFallbackText"
+							/>
+							<span class="inline-block">{{ item.label }}</span>
+						</span>
+						<span v-else>{{ item.label }}</span>
 					</NuxtLink>
 
-					<NuxtLink
-						v-if="currentFallback"
-						:to="resolveTo(currentFallback)"
-						class="group relative z-0 rounded-full p-2 text-[16px] leading-none font-semibold whitespace-nowrap transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-						:class="fallbackNavItemClass"
-						aria-current="page"
+					<USelect
+						v-if="desktopOverflowNavItems.length"
+						:model-value="desktopOverflowModel"
+						:items="desktopOverflowSelectItems"
+						value-key="value"
+						label-key="label"
+						placeholder=""
+						color="neutral"
+						variant="none"
+						size="md"
+						class="header-menu-overflow-select"
+						:ui="{
+							base: 'h-10 w-10 justify-center rounded-full bg-transparent p-0 text-slate-800 opacity-70 transition hover:bg-transparent hover:opacity-100 focus:bg-transparent active:bg-transparent active:opacity-70 data-[state=open]:bg-transparent dark:text-slate-100',
+							value: 'flex w-full items-center justify-center',
+							placeholder: 'flex w-full items-center justify-center',
+							trailing: 'hidden',
+							trailingIcon: 'hidden',
+							content: 'min-w-36',
+							viewport: 'min-w-36',
+							item: 'whitespace-nowrap',
+							itemLabel: 'whitespace-nowrap',
+						}"
+						@update:model-value="selectDesktopOverflowItem"
 					>
-						<span
-							class="pointer-events-none absolute top-[calc(50%+0.24em)] left-1/2 -z-10 h-[0.95em] w-[96%] origin-center -translate-x-1/2 -translate-y-1/2 scale-y-[1] rounded-md bg-[rgba(125,211,252,0.16)] opacity-100 shadow-[0_0_10px_rgba(125,211,252,0.12)] transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-							aria-hidden="true"
-						/>
-						<Transition name="header-current-page-label" mode="out-in">
-							<span
-								:key="currentFallback.key"
-								class="inline-flex items-center gap-1.5"
-							>
-								<HeaderMenuRouteBadge
-									:badge-type="currentFallback.badgeType"
-									:src="currentFallback.badgeAvatarUrl || undefined"
-									:alt="currentFallback.label"
-									:fallback-text="currentFallback.badgeFallbackText"
-								/>
-								<span class="inline-block">{{ currentFallback.label }}</span>
-							</span>
-						</Transition>
-					</NuxtLink>
+						<template #default>
+							<UIcon
+								name="i-lucide-ellipsis"
+								class="h-5 w-5 text-slate-800 dark:text-slate-100"
+							/>
+						</template>
+					</USelect>
 				</div>
 			</Transition>
 		</div>
@@ -247,6 +274,7 @@ onBeforeUnmount(() => {
 
 	<div
 		ref="mobileActiveButton"
+		data-header-menu-owned="true"
 		class="absolute top-12 left-6 z-10 transition duration-[300ms] ease-out md:hidden"
 		:class="hiddenMenuClass"
 	>

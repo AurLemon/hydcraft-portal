@@ -53,7 +53,10 @@
 			"setPrimaryTip": "メイン設定"
 		},
 		"settings": {
-			"title": "メインアカウントを設定"
+			"title": "現在のアカウントを管理",
+			"confirmations": {
+				"unbind": "バインドを解除すると、この Minecraft アカウントは現在の Hydroline ID との関連付けが外れ、記録は宙に浮いた状態のまま残ります。解除を続行しますか？"
+			}
 		},
 		"overlay": {
 			"lastLogin": "前回ログイン"
@@ -61,6 +64,9 @@
 		"bind": {
 			"title": "別の Minecraft アカウントをバインド",
 			"description": "HydCraft サーバーで使用しているゲームアカウントを入力してください。ここでは Minecraft 正規版アカウントの確認は行わず、HydCraft 内で登録済みかつ過去にログインしたことがあるゲームアカウントのみを認識します。2022 年 2 月 17 日に第6周目が始まって以降に登録されたアカウントはバインドできます。HydCraft 内で登録済みかつ過去にログインしたことがない場合は、バインドできません。",
+			"descriptionLine1": "HydCraft サーバーで使用しているゲームアカウントを入力してください。",
+			"descriptionLine2": "ここでは Minecraft 正規版アカウントの確認は行わず、HydCraft 内で登録済みかつ過去にログインしたことがあるゲームアカウントのみを認識します。",
+			"descriptionLine3": "2022 年 2 月 17 日に第6周目が始まって以降に登録されたアカウントはバインドできます。HydCraft 内で登録済みかつ過去にログインしたことがない場合は、バインドできません。",
 			"fields": {
 				"username": "Minecraft ID",
 				"password": "ログインパスワード"
@@ -76,7 +82,8 @@
 			}
 		},
 		"actions": {
-			"setPrimary": "メインに設定"
+			"setPrimary": "メインに設定",
+			"unbind": "バインドを解除"
 		},
 		"empty": {
 			"title": "まだ Minecraft アカウントがバインドされていません",
@@ -87,7 +94,10 @@
 		"notifications": {
 			"primarySet": "メインアカウントを設定しました",
 			"primarySetFailed": "メインアカウントの設定に失敗しました",
-			"primarySetFailedDescription": "セッションまたはアカウントの所有権を確認してください。"
+			"primarySetFailedDescription": "セッションまたはアカウントの所有権を確認してください。",
+			"unbindSuccess": "Minecraft アカウントのバインドを解除しました",
+			"unbindFailed": "Minecraft アカウントのバインド解除に失敗しました",
+			"unbindFailedDescription": "セッション、アカウント所有権、または時間をおいて再試行してください。"
 		}
 	}
 }

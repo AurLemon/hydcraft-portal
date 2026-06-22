@@ -30,21 +30,33 @@ interface MenuItem {
 	badgeFallbackText?: string | null
 }
 
+interface MenuSelectItem {
+	label: string
+	value: string
+}
+
 export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 	const route = useRoute()
 	const error = useError()
 	const localePath = useLocalePath()
 	const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
 	const menuMeasure = ref<HTMLElement | null>(null)
+	const desktopMenuNav = ref<HTMLElement | null>(null)
 	const mobileActiveButton = ref<HTMLElement | null>(null)
 	const mobileMenuOpen = ref(false)
+	const desktopOverflowModel = ref<string | undefined>()
 	const shellWidth = ref<number | null>(null)
 	const viewportWidth = ref<number | null>(null)
+	const desktopAvailableWidth = ref<number | null>(null)
+	const measuredItemWidths = ref<Record<string, number>>({})
 	const mobileMenuAnchor = ref({ left: 24, top: 48, width: 0, height: 0 })
 	const displayedGroupKey = ref('main')
 	const SIDE_GUTTER = 12
 	const MOBILE_SIDE_GUTTER = 12
-	const MOBILE_BREAKPOINT = 1024
+	const MOBILE_BREAKPOINT = 768
+	const DESKTOP_ITEM_GAP = 8
+	const DESKTOP_OVERFLOW_TRIGGER_WIDTH = 36
+	const DESKTOP_SIBLING_GAP = 16
 	let resizeObserver: ResizeObserver | null = null
 
 	const resolveTo = (item: MenuItem | HeaderMenuItem): string =>
@@ -255,6 +267,123 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 	const backButtonLabel = computed(() =>
 		parentGroup.value ? t('header.nav.backToParent') : t('header.nav.back'),
 	)
+	const desktopPreservedItemKey = computed(() => {
+		const activeKey = activeDisplayNavItem.value?.key
+
+		return displayNavItems.value.some((item) => item.key === activeKey)
+			? activeKey
+			: null
+	})
+	const sumMenuItemsWidth = (items: MenuItem[]): number | null => {
+		if (!items.length) {
+			return 0
+		}
+
+		let total = 0
+
+		for (const item of items) {
+			const width = measuredItemWidths.value[item.key]
+
+			if (!width) {
+				return null
+			}
+
+			total += width
+		}
+
+		return total + DESKTOP_ITEM_GAP * Math.max(items.length - 1, 0)
+	}
+	const desktopOverflowLayout = computed(() => {
+		const items = [...displayNavItems.value]
+		const availableWidth = desktopAvailableWidth.value
+
+		if (
+			availableWidth == null ||
+			availableWidth <= 0 ||
+			viewportWidth.value == null ||
+			viewportWidth.value < MOBILE_BREAKPOINT
+		) {
+			return {
+				visibleItems: items,
+				overflowItems: [] as MenuItem[],
+			}
+		}
+
+		const fullWidth = sumMenuItemsWidth(items)
+
+		if (fullWidth == null || fullWidth <= availableWidth) {
+			return {
+				visibleItems: items,
+				overflowItems: [] as MenuItem[],
+			}
+		}
+
+		const preservedKey = desktopPreservedItemKey.value
+		const visibleItems = [...items]
+		const overflowItems: MenuItem[] = []
+		const fitsAvailableWidth = (): boolean => {
+			const visibleWidth = sumMenuItemsWidth(visibleItems)
+
+			if (visibleWidth == null) {
+				return true
+			}
+
+			const overflowWidth = overflowItems.length
+				? DESKTOP_OVERFLOW_TRIGGER_WIDTH + DESKTOP_ITEM_GAP
+				: 0
+
+			return visibleWidth + overflowWidth <= availableWidth
+		}
+
+		while (visibleItems.length > 1 && !fitsAvailableWidth()) {
+			const removableIndex = [...visibleItems.keys()]
+				.reverse()
+				.find((index) => visibleItems[index]?.key !== preservedKey)
+
+			if (removableIndex == null) {
+				break
+			}
+
+			const [removedItem] = visibleItems.splice(removableIndex, 1)
+
+			if (!removedItem) {
+				break
+			}
+
+			overflowItems.unshift(removedItem)
+		}
+
+		return {
+			visibleItems,
+			overflowItems,
+		}
+	})
+	const desktopVisibleNavItems = computed(
+		() => desktopOverflowLayout.value.visibleItems,
+	)
+	const desktopOverflowNavItems = computed(
+		() => desktopOverflowLayout.value.overflowItems,
+	)
+	const desktopOverflowSelectItems = computed<MenuSelectItem[]>(() =>
+		desktopOverflowNavItems.value.map((item) => ({
+			label: item.label,
+			value: item.key,
+		})),
+	)
+	const visibleDesktopShellWidth = computed(() => {
+		const width = sumMenuItemsWidth(desktopVisibleNavItems.value)
+
+		if (width == null) {
+			return null
+		}
+
+		return (
+			width +
+			(desktopOverflowNavItems.value.length
+				? DESKTOP_OVERFLOW_TRIGGER_WIDTH + DESKTOP_ITEM_GAP
+				: 0)
+		)
+	})
 	const isMobileMenuClamped = computed(() => {
 		if (viewportWidth.value === null || shellWidth.value === null) {
 			return false
@@ -268,6 +397,16 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		)
 	})
 	const menuShellStyle = computed(() => {
+		const visibleWidth = visibleDesktopShellWidth.value
+
+		if (
+			visibleWidth !== null &&
+			viewportWidth.value !== null &&
+			viewportWidth.value >= MOBILE_BREAKPOINT
+		) {
+			return { width: `${visibleWidth + SIDE_GUTTER * 2}px` }
+		}
+
 		if (shellWidth.value === null) {
 			return undefined
 		}
@@ -293,8 +432,10 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		isPathActive(item)
 			? options.activeNavItemClass()
 			: options.inactiveNavItemClass()
+	const resolveDesktopNavItemClass = (item: MenuItem): string =>
+		item.isFallback ? options.fallbackNavItemClass() : resolveNavItemClass(item)
 	const resolveHighlightClass = (item: MenuItem): string =>
-		isPathActive(item) ? 'opacity-100' : ''
+		isPathActive(item) || item.isFallback ? 'opacity-100' : ''
 	const hiddenMenuClass = computed(() =>
 		options.hidden?.()
 			? 'pointer-events-none translate-y-1 opacity-0 select-none'
@@ -347,18 +488,49 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 
 		await selectMobileNavItem(selectableMobileFallback.value)
 	}
-	const syncShellWidth = async (): Promise<void> => {
+	const selectDesktopOverflowItem = async (
+		value: string | undefined,
+	): Promise<void> => {
+		desktopOverflowModel.value = undefined
+
+		if (!value) {
+			return
+		}
+
+		const selectedItem = desktopOverflowNavItems.value.find(
+			(item) => item.key === value,
+		)
+
+		if (!selectedItem) {
+			return
+		}
+
+		await navigateTo(resolveTo(selectedItem))
+	}
+	const syncMeasuredMenuMetrics = async (): Promise<void> => {
 		if (!import.meta.client) {
 			return
 		}
 
 		await nextTick()
 		const measure = menuMeasure.value
+
 		if (!measure) {
 			return
 		}
 
 		shellWidth.value = Math.ceil(measure.scrollWidth)
+
+		const nextWidths = Object.fromEntries(
+			Array.from(
+				measure.querySelectorAll<HTMLElement>('[data-menu-measure-key]'),
+			).map((element) => [
+				element.dataset.menuMeasureKey ?? '',
+				Math.ceil(element.offsetWidth),
+			]),
+		)
+
+		measuredItemWidths.value = nextWidths
 	}
 	const syncViewportWidth = (): void => {
 		if (!import.meta.client) {
@@ -367,9 +539,81 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 
 		viewportWidth.value = window.innerWidth
 	}
+	const syncDesktopAvailableWidth = async (): Promise<void> => {
+		if (!import.meta.client) {
+			return
+		}
+
+		await nextTick()
+		const nav = desktopMenuNav.value
+		const parent = nav?.parentElement
+
+		if (!nav || !parent) {
+			desktopAvailableWidth.value = null
+			return
+		}
+
+		const parentRect = parent.getBoundingClientRect()
+		const centerX = parentRect.left + parentRect.width / 2
+		let leftBoundary = parentRect.left
+		let rightBoundary = parentRect.right
+
+		for (const child of Array.from(parent.children)) {
+			if (!(child instanceof HTMLElement)) {
+				continue
+			}
+
+			if (child.dataset.headerMenuOwned === 'true') {
+				continue
+			}
+
+			const rect = child.getBoundingClientRect()
+
+			if (rect.width <= 0 || rect.height <= 0) {
+				continue
+			}
+
+			if (rect.right <= centerX) {
+				leftBoundary = Math.max(leftBoundary, rect.right)
+				continue
+			}
+
+			if (rect.left >= centerX) {
+				rightBoundary = Math.min(rightBoundary, rect.left)
+				continue
+			}
+
+			leftBoundary = Math.max(leftBoundary, Math.min(rect.right, centerX))
+			rightBoundary = Math.min(rightBoundary, Math.max(rect.left, centerX))
+		}
+
+		const leftSpace = Math.max(0, centerX - leftBoundary - DESKTOP_SIBLING_GAP)
+		const rightSpace = Math.max(
+			0,
+			rightBoundary - centerX - DESKTOP_SIBLING_GAP,
+		)
+
+		desktopAvailableWidth.value = Math.floor(
+			Math.max(0, Math.min(leftSpace, rightSpace) * 2),
+		)
+
+		if (resizeObserver) {
+			resizeObserver.observe(parent)
+
+			for (const child of Array.from(parent.children)) {
+				if (
+					child instanceof HTMLElement &&
+					child.dataset.headerMenuOwned !== 'true'
+				) {
+					resizeObserver.observe(child)
+				}
+			}
+		}
+	}
 	const onResize = (): void => {
 		syncViewportWidth()
-		void syncShellWidth()
+		void syncMeasuredMenuMetrics()
+		void syncDesktopAvailableWidth()
 		if (mobileMenuOpen.value) {
 			void syncMobileMenuAnchor()
 		}
@@ -383,12 +627,14 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		{ immediate: true },
 	)
 	watch(groupTransitionKey, () => {
-		void syncShellWidth()
+		void syncMeasuredMenuMetrics()
+		void syncDesktopAvailableWidth()
 	})
 	watch(
 		displayNavItems,
 		() => {
-			void syncShellWidth()
+			void syncMeasuredMenuMetrics()
+			void syncDesktopAvailableWidth()
 		},
 		{ deep: true, flush: 'post' },
 	)
@@ -408,15 +654,29 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			}
 		},
 	)
+	watch(
+		desktopOverflowNavItems,
+		() => {
+			desktopOverflowModel.value = undefined
+		},
+		{ deep: true },
+	)
 	onMounted(() => {
 		syncViewportWidth()
-		void syncShellWidth()
+		void syncMeasuredMenuMetrics()
+		void syncDesktopAvailableWidth()
+
+		resizeObserver = new ResizeObserver(() => {
+			void syncMeasuredMenuMetrics()
+			void syncDesktopAvailableWidth()
+		})
 
 		if (menuMeasure.value) {
-			resizeObserver = new ResizeObserver(() => {
-				void syncShellWidth()
-			})
 			resizeObserver.observe(menuMeasure.value)
+		}
+
+		if (desktopMenuNav.value) {
+			resizeObserver.observe(desktopMenuNav.value)
 		}
 
 		window.addEventListener('resize', onResize, { passive: true })
@@ -433,6 +693,11 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		canGoBack,
 		closeMobileMenu,
 		currentFallback,
+		desktopMenuNav,
+		desktopOverflowModel,
+		desktopOverflowSelectItems,
+		desktopOverflowNavItems,
+		desktopVisibleNavItems,
 		displayNavItems,
 		displayedGroup,
 		fallbackNavItemClass: computed(() => options.fallbackNavItemClass()),
@@ -447,10 +712,12 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		mobileMenuAnchor,
 		mobileMenuOpen,
 		openMobileMenu,
+		resolveDesktopNavItemClass,
 		resolveHighlightClass,
 		resolveNavItemClass,
 		resolveTo,
 		routeGroupKey,
+		selectDesktopOverflowItem,
 		selectMobileFallback,
 		selectableMobileFallback,
 		selectableMobileGroupNavItems,

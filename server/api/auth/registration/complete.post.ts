@@ -28,19 +28,6 @@ export default defineEventHandler(async (event) => {
 		email: body.email,
 		code: body.code,
 	})
-	const userWithPreferences = await prisma.user.findUniqueOrThrow({
-		where: {
-			id: user.id,
-		},
-		include: {
-			preferences: {
-				select: {
-					language: true,
-				},
-			},
-		},
-	})
-	const token = await issueAuthCookies(event, userWithPreferences)
 	await emitEvent('user.registered', {
 		userId: user.id,
 		occurredAt: user.createdAt,
@@ -95,6 +82,20 @@ export default defineEventHandler(async (event) => {
 			updatedAt: new Date(),
 		})
 	}
+
+	const userWithPreferences = await prisma.user.findUniqueOrThrow({
+		where: {
+			id: user.id,
+		},
+		include: {
+			preferences: {
+				select: {
+					language: true,
+				},
+			},
+		},
+	})
+	const token = await issueAuthCookies(event, userWithPreferences)
 
 	return {
 		token,

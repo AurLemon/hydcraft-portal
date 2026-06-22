@@ -53,7 +53,10 @@
 			"setPrimaryTip": "設定主檔案"
 		},
 		"settings": {
-			"title": "設定主檔案"
+			"title": "管理目前帳號",
+			"confirmations": {
+				"unbind": "解除綁定後，目前的 Minecraft 帳號會與此 Hydroline ID 斷開關聯，但紀錄仍會保留為懸空狀態。確定要繼續解除綁定嗎？"
+			}
 		},
 		"overlay": {
 			"lastLogin": "上次登入"
@@ -61,6 +64,9 @@
 		"bind": {
 			"title": "綁定新的 Minecraft 帳號",
 			"description": "請填寫您在氫氣工藝伺服器中使用的遊戲帳號。這裡不會校驗 Minecraft 正版帳號，只識別在氫氣工藝內註冊且登入過的遊戲帳號。2022 年 2 月 17 日六周目開啟後註冊的帳號均可綁定。如果您沒有在氫氣工藝內註冊且登入過，則無法綁定。",
+			"descriptionLine1": "請填寫您在氫氣工藝伺服器中使用的遊戲帳號。",
+			"descriptionLine2": "這裡不會校驗 Minecraft 正版帳號，只識別在氫氣工藝內註冊且登入過的遊戲帳號。",
+			"descriptionLine3": "2022 年 2 月 17 日六周目開啟後註冊的帳號均可綁定。如果您沒有在氫氣工藝內註冊且登入過，則無法綁定。",
 			"fields": {
 				"username": "Minecraft ID",
 				"password": "登入密碼"
@@ -76,7 +82,8 @@
 			}
 		},
 		"actions": {
-			"setPrimary": "設為主檔案"
+			"setPrimary": "設為主檔案",
+			"unbind": "解除綁定"
 		},
 		"empty": {
 			"title": "還沒有綁定的 Minecraft 帳號",
@@ -87,7 +94,10 @@
 		"notifications": {
 			"primarySet": "主檔案設定成功",
 			"primarySetFailed": "設定主檔案失敗",
-			"primarySetFailedDescription": "請檢查登入狀態與帳號歸屬。"
+			"primarySetFailedDescription": "請檢查登入狀態與帳號歸屬。",
+			"unbindSuccess": "Minecraft 帳號已解除綁定",
+			"unbindFailed": "解除綁定 Minecraft 帳號失敗",
+			"unbindFailedDescription": "請檢查登入狀態、帳號歸屬，或稍後再試。"
 		}
 	}
 }

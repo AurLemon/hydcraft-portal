@@ -21,9 +21,19 @@
 					>
 						{{ t(authTitleKey) }}
 					</h1>
-					<p class="text-sm leading-6 text-slate-600 dark:text-slate-300/80">
-						{{ t(authDescriptionKey) }}
-					</p>
+					<div class="text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+						<template v-if="authMode === 'game'">
+							<p
+								v-for="(line, index) in minecraftLoginDescriptionLines"
+								:key="`minecraft-login-description-${index}`"
+							>
+								{{ line }}
+							</p>
+						</template>
+						<p v-else>
+							{{ t(authDescriptionKey) }}
+						</p>
+					</div>
 				</div>
 			</Transition>
 		</div>
@@ -304,6 +314,11 @@ const authDescriptionKey = computed(() => {
 			return 'login.description'
 	}
 })
+const minecraftLoginDescriptionLines = computed(() => [
+	t('minecraftLogin.descriptionLine1'),
+	t('minecraftLogin.descriptionLine2'),
+	t('minecraftLogin.descriptionLine3'),
+])
 const registerRoute = computed(() => ({
 	path: localePath('/register'),
 	query: route.query.redirect ? { redirect: route.query.redirect } : {},

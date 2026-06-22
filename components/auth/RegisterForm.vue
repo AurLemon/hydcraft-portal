@@ -21,9 +21,19 @@
 					>
 						{{ t(titleKey) }}
 					</h1>
-					<p class="text-sm leading-6 text-slate-600 dark:text-slate-300/80">
-						{{ t(descriptionKey) }}
-					</p>
+					<div class="text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+						<template v-if="mode === 'game' && step === 'auth'">
+							<p
+								v-for="(line, index) in minecraftRegisterDescriptionLines"
+								:key="`minecraft-register-description-${index}`"
+							>
+								{{ line }}
+							</p>
+						</template>
+						<p v-else>
+							{{ t(descriptionKey) }}
+						</p>
+					</div>
 				</div>
 			</Transition>
 		</div>
@@ -428,6 +438,11 @@ const descriptionKey = computed(() => {
 
 	return 'register.description'
 })
+const minecraftRegisterDescriptionLines = computed(() => [
+	t('minecraftRegister.descriptionLine1'),
+	t('minecraftRegister.descriptionLine2'),
+	t('minecraftRegister.descriptionLine3'),
+])
 const backActionKey = computed(() => 'register.actions.back')
 const submitLabelKey = computed(() => {
 	if (mode.value === 'game' && step.value === 'auth') {

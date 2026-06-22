@@ -83,7 +83,9 @@
 			v-model:open="settingsOpen"
 			:account="selectedAccount"
 			:saving-id="savingId"
+			:unbinding-id="unbindingId"
 			@save="emit('save', $event)"
+			@unbind="emit('unbind', $event)"
 		/>
 	</div>
 </template>
@@ -98,6 +100,7 @@ interface MinecraftAccountsToolbarProps {
 	selectedAccountId: string | null
 	selectedAccount: MinecraftAccountForm | null
 	savingId: string | null
+	unbindingId: string | null
 }
 
 const props = defineProps<MinecraftAccountsToolbarProps>()
@@ -106,6 +109,7 @@ const emit = defineEmits<{
 	select: [accountId: string]
 	bind: []
 	save: [account: MinecraftAccountForm]
+	unbind: [account: MinecraftAccountForm]
 }>()
 
 const { t } = useI18n()

@@ -53,7 +53,10 @@
 			"setPrimaryTip": "Set primary"
 		},
 		"settings": {
-			"title": "Set primary account"
+			"title": "Manage current account",
+			"confirmations": {
+				"unbind": "Unbinding will disconnect this Minecraft account from the current Hydroline ID, while keeping the record as a dangling entry. Do you want to continue?"
+			}
 		},
 		"overlay": {
 			"lastLogin": "Last login"
@@ -61,6 +64,9 @@
 		"bind": {
 			"title": "Bind another Minecraft account",
 			"description": "Enter the game account you use on the HydCraft server. This does not verify a premium Minecraft account. It only recognizes game accounts that were registered within HydCraft and have logged in before. Accounts registered after Season 6 began on February 17, 2022 can be bound. If you have not registered within HydCraft and logged in before, binding is not possible.",
+			"descriptionLine1": "Enter the game account you use on the HydCraft server.",
+			"descriptionLine2": "This does not verify a premium Minecraft account. It only recognizes game accounts that were registered within HydCraft and have logged in before.",
+			"descriptionLine3": "Accounts registered after Season 6 began on February 17, 2022 can be bound. If you have not registered within HydCraft and logged in before, binding is not possible.",
 			"fields": {
 				"username": "Minecraft ID",
 				"password": "Login password"
@@ -76,7 +82,8 @@
 			}
 		},
 		"actions": {
-			"setPrimary": "Set as primary"
+			"setPrimary": "Set as primary",
+			"unbind": "Unbind account"
 		},
 		"empty": {
 			"title": "No Minecraft account is bound yet",
@@ -87,7 +94,10 @@
 		"notifications": {
 			"primarySet": "Primary account updated",
 			"primarySetFailed": "Failed to set primary account",
-			"primarySetFailedDescription": "Check your session or account ownership."
+			"primarySetFailedDescription": "Check your session or account ownership.",
+			"unbindSuccess": "Minecraft account unbound",
+			"unbindFailed": "Failed to unbind Minecraft account",
+			"unbindFailedDescription": "Check your session, account ownership, or try again later."
 		}
 	}
 }

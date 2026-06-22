@@ -29,9 +29,11 @@
 					:selected-account-id="selectedAccountId"
 					:selected-account="selectedAccount"
 					:saving-id="savingId"
+					:unbinding-id="unbindingId"
 					@select="selectedAccountId = $event"
 					@bind="bindOpen = true"
 					@save="saveAccount"
+					@unbind="unbindAccount"
 				/>
 				<MinecraftAccountsContent
 					:accounts="accounts"
@@ -65,7 +67,9 @@ definePageMeta({
 
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
+const { fetchCurrentUser } = usePortalAuth()
 const savingId = ref<string | null>(null)
+const unbindingId = ref<string | null>(null)
 const binding = ref(false)
 const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
@@ -189,6 +193,7 @@ const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
 			method: 'POST',
 			body,
 		})
+		await fetchCurrentUser()
 		bindSuccessToken.value += 1
 		await refresh()
 		notifySuccess({
@@ -201,6 +206,32 @@ const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
 		})
 	} finally {
 		binding.value = false
+	}
+}
+
+const unbindAccount = async (account: MinecraftAccountForm): Promise<void> => {
+	if (!account.id || unbindingId.value) {
+		return
+	}
+
+	const endpoint = `/api/users/me/minecraft-accounts/${account.id}` as string
+	unbindingId.value = account.id
+
+	try {
+		await $fetch(endpoint, {
+			method: 'DELETE',
+		})
+		await refresh()
+		notifySuccess({
+			title: t('minecraftAccounts.notifications.unbindSuccess'),
+		})
+	} catch (unbindError) {
+		notifyError(unbindError, {
+			title: t('minecraftAccounts.notifications.unbindFailed'),
+			description: t('minecraftAccounts.notifications.unbindFailedDescription'),
+		})
+	} finally {
+		unbindingId.value = null
 	}
 }
 

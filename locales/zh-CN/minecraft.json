@@ -53,7 +53,10 @@
 			"setPrimaryTip": "设置主档案"
 		},
 		"settings": {
-			"title": "设置主档案"
+			"title": "管理当前账号",
+			"confirmations": {
+				"unbind": "解绑后当前 Minecraft 账号会与此 Hydroline ID 断开关联，但记录会保留为悬空状态。确认继续解绑吗？"
+			}
 		},
 		"overlay": {
 			"lastLogin": "上次登录"
@@ -61,6 +64,9 @@
 		"bind": {
 			"title": "绑定新的 Minecraft 账号",
 			"description": "请填写您在氢气工艺服务器中使用的游戏账号。这里不会校验 Minecraft 正版账号，只识别在氢气工艺内注册且登录过的游戏账号。2022 年 2 月 17 日六周目开启后注册的账号均可绑定。如果您没有在氢气工艺内注册且登录过，则无法绑定。",
+			"descriptionLine1": "请填写您在氢气工艺服务器中使用的游戏账号。",
+			"descriptionLine2": "这里不会校验 Minecraft 正版账号，只识别在氢气工艺内注册且登录过的游戏账号。",
+			"descriptionLine3": "2022 年 2 月 17 日六周目开启后注册的账号均可绑定。如果您没有在氢气工艺内注册且登录过，则无法绑定。",
 			"fields": {
 				"username": "Minecraft ID",
 				"password": "登录密码"
@@ -76,7 +82,8 @@
 			}
 		},
 		"actions": {
-			"setPrimary": "设为主档案"
+			"setPrimary": "设为主档案",
+			"unbind": "解绑账号"
 		},
 		"empty": {
 			"title": "还没有绑定的 Minecraft 账号",
@@ -87,7 +94,10 @@
 		"notifications": {
 			"primarySet": "主档案设置成功",
 			"primarySetFailed": "设置主档案失败",
-			"primarySetFailedDescription": "请检查登录状态与账号归属。"
+			"primarySetFailedDescription": "请检查登录状态与账号归属。",
+			"unbindSuccess": "Minecraft 账号已解绑",
+			"unbindFailed": "解绑 Minecraft 账号失败",
+			"unbindFailedDescription": "请检查登录状态、账号归属，或稍后再试。"
 		}
 	}
 }
