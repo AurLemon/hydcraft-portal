@@ -2,9 +2,9 @@
 	<div class="home-hero-shell flex flex-col justify-end pt-24">
 		<div class="flex flex-col">
 			<div class="relative z-10">
-				<div class="max-w-4xl">
+				<div class="max-w-4xl [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">
 					<h1
-						class="text-left text-5xl leading-none font-medium tracking-tight text-white sm:text-6xl lg:text-7xl"
+						class="text-left text-5xl leading-none font-medium tracking-tight text-white sm:text-6xl lg:text-7xl "
 					>
 						<span class="block text-4xl sm:inline sm:text-7xl">This is </span>
 						<span class="block sm:inline">

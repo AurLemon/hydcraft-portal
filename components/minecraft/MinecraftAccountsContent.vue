@@ -58,8 +58,7 @@
 					<div
 						v-if="hoverCoordsVisible && hoveredBlockPoint"
 						key="hover-coords"
-						class="pointer-events-none inline-flex max-w-full items-center gap-1.5 text-sm text-white"
-						style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
+						class="pointer-events-none inline-flex max-w-full items-center gap-1.5 text-sm text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
 						aria-live="polite"
 					>
 						<div class="flex items-center gap-1 whitespace-nowrap">
@@ -153,8 +152,7 @@
 					<div
 						v-else-if="hoverDisplayVisible"
 						key="hover-dimension"
-						class="pointer-events-none inline-flex max-w-full items-center text-sm text-white"
-						style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
+						class="pointer-events-none inline-flex max-w-full items-center text-sm text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
 						aria-live="polite"
 					>
 						<span class="truncate font-semibold uppercase">
@@ -172,8 +170,7 @@
 				/>
 
 				<div
-					class="relative z-20 flex w-full min-w-0 flex-col gap-3 text-white sm:flex-row sm:items-end sm:justify-between"
-					style="text-shadow: rgba(0, 0, 0, 0.7) 0px 0px 5px"
+					class="relative z-20 flex w-full min-w-0 flex-col gap-3 text-white sm:flex-row sm:items-end sm:justify-between [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
 				>
 					<div class="min-w-0 flex-1">
 						<div
@@ -203,8 +200,7 @@
 								</span>
 								<UBadge
 									v-if="displayPrimaryGroup"
-									style="text-shadow: none"
-									class="sm:-translate-y-1"
+									class="sm:-translate-y-1 text-shadow-none"
 									color="neutral"
 									variant="solid"
 									size="xs"
