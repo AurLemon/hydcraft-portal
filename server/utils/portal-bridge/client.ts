@@ -144,6 +144,23 @@ const describeBridgeContext = (input: {
 }): string =>
 	`Bridge connection [server=${input.serverId}] [bridge=${input.bridgeId}] [module=${input.module}]`
 
+const describeCloseEvent = (event: {
+	code?: number
+	reason?: string
+}): string => {
+	const parts: string[] = []
+
+	if (typeof event.code === 'number' && Number.isFinite(event.code)) {
+		parts.push(`code=${event.code}`)
+	}
+
+	if (typeof event.reason === 'string' && event.reason.trim().length > 0) {
+		parts.push(`reason=${event.reason.trim()}`)
+	}
+
+	return parts.length > 0 ? parts.join(', ') : 'no close reason'
+}
+
 const logBridgeInfo = (
 	message: string,
 	level: 'info' | 'success' | 'error' = 'info',
@@ -264,6 +281,11 @@ export interface PortalBridgeRuntimeStatus {
 	lastHeartbeatPayload: unknown
 }
 
+interface ReportedConnectionError {
+	fingerprint: string
+	message: string
+}
+
 class PortalBridgeConnection {
 	private socket: WebSocket | null = null
 	private coreSyncTimer: NodeJS.Timeout | null = null
@@ -278,6 +300,7 @@ class PortalBridgeConnection {
 	private lastHeartbeatAt: Date | null = null
 	private lastHeartbeatLatencyMs: number | null = null
 	private lastHeartbeatPayload: unknown = null
+	private lastReportedConnectionError: ReportedConnectionError | null = null
 	private stopped = false
 	private closeReason: 'manual' | 'unexpected' = 'unexpected'
 	private closingSocket = false
@@ -332,6 +355,7 @@ class PortalBridgeConnection {
 	stop(): void {
 		this.stopped = true
 		this.closeReason = 'manual'
+		this.lastReportedConnectionError = null
 
 		this.stopCoreSync()
 		this.retryController.clear()
@@ -561,7 +585,11 @@ class PortalBridgeConnection {
 
 			if (!secret) {
 				this.closeSocket(socket)
-				void this.markError('PortalBridge secret is required')
+				void this.reportConnectionError({
+					fingerprint: 'secret-required',
+					message: 'secret is required',
+					persistedError: 'PortalBridge secret is required',
+				})
 				return
 			}
 
@@ -592,7 +620,7 @@ class PortalBridgeConnection {
 			void this.handleMessage(event.data)
 		})
 
-		socket.addEventListener('close', () => {
+		socket.addEventListener('close', (event) => {
 			if (this.socket !== socket) {
 				return
 			}
@@ -609,14 +637,21 @@ class PortalBridgeConnection {
 				},
 			})
 
-			logBridgeInfo(
-				`${describeBridgeContext({
-					serverId: this.config.minecraftServer.serverId,
-					bridgeId: this.config.bridgeId,
-					module: this.config.module,
-				})} ${this.closeReason === 'manual' ? 'disconnected' : 'closed unexpectedly'}`,
-				this.closeReason === 'manual' ? 'info' : 'error',
-			)
+			if (this.closeReason === 'manual') {
+				logBridgeInfo(
+					`${describeBridgeContext({
+						serverId: this.config.minecraftServer.serverId,
+						bridgeId: this.config.bridgeId,
+						module: this.config.module,
+					})} disconnected`,
+				)
+			} else {
+				void this.reportConnectionError({
+					fingerprint: `close:${describeCloseEvent(event)}`,
+					message: `closed unexpectedly (${describeCloseEvent(event)})`,
+					persistedError: `PortalBridge connection closed unexpectedly (${describeCloseEvent(event)})`,
+				})
+			}
 			this.scheduleReconnect()
 		})
 
@@ -627,15 +662,11 @@ class PortalBridgeConnection {
 
 			this.websocketErrorLogged = true
 			this.closeReason = 'unexpected'
-			logBridgeInfo(
-				`${describeBridgeContext({
-					serverId: this.config.minecraftServer.serverId,
-					bridgeId: this.config.bridgeId,
-					module: this.config.module,
-				})} websocket error`,
-				'error',
-			)
-			void this.markError('PortalBridge websocket error')
+			void this.reportConnectionError({
+				fingerprint: 'websocket-error',
+				message: 'websocket error',
+				persistedError: 'PortalBridge websocket error',
+			})
 
 			if (socket.readyState === WebSocket.OPEN) {
 				setTimeout(() => this.closeSocket(socket), 0)
@@ -713,6 +744,7 @@ class PortalBridgeConnection {
 					lastError: null,
 				},
 			})
+			this.lastReportedConnectionError = null
 			logBridgeInfo(
 				`${describeBridgeContext({
 					serverId: this.config.minecraftServer.serverId,
@@ -735,14 +767,11 @@ class PortalBridgeConnection {
 					lastError: JSON.stringify(envelope.payload),
 				},
 			})
-			logBridgeInfo(
-				`${describeBridgeContext({
-					serverId: this.config.minecraftServer.serverId,
-					bridgeId: this.config.bridgeId,
-					module: this.config.module,
-				})} rejected ${JSON.stringify(envelope.payload)}`,
-				'error',
-			)
+			void this.reportConnectionError({
+				fingerprint: `rejected:${JSON.stringify(envelope.payload)}`,
+				message: `rejected ${JSON.stringify(envelope.payload)}`,
+				skipPersist: true,
+			})
 			this.closeSocket()
 			return
 		}
@@ -812,6 +841,42 @@ class PortalBridgeConnection {
 				lastError: message,
 			},
 		})
+	}
+
+	private async reportConnectionError(input: {
+		fingerprint: string
+		message: string
+		persistedError?: string
+		skipPersist?: boolean
+		error?: unknown
+	}): Promise<void> {
+		const context = describeBridgeContext({
+			serverId: this.config.minecraftServer.serverId,
+			bridgeId: this.config.bridgeId,
+			module: this.config.module,
+		})
+		const previous = this.lastReportedConnectionError
+
+		if (previous?.fingerprint === input.fingerprint) {
+			return
+		}
+
+		if (previous) {
+			logBridgeInfo(
+				`${context} error reason changed: ${previous.message} -> ${input.message}`,
+				'error',
+			)
+		}
+
+		this.lastReportedConnectionError = {
+			fingerprint: input.fingerprint,
+			message: input.message,
+		}
+		logBridgeInfo(`${context} ${input.message}`, 'error', input.error)
+
+		if (!input.skipPersist) {
+			await this.markError(input.persistedError ?? input.message)
+		}
 	}
 
 	private scheduleReconnect(): void {
@@ -894,18 +959,12 @@ class PortalBridgeConnection {
 			const silenceMs = Date.now() - this.lastMessageAt.getTime()
 
 			if (silenceMs > thresholdMs) {
-				logBridgeInfo(
-					`${describeBridgeContext({
-						serverId: this.config.minecraftServer.serverId,
-						bridgeId: this.config.bridgeId,
-						module: this.config.module,
-					})} liveness watchdog tripped after ${Math.round(silenceMs / 1000)}s of silence (threshold ${Math.round(thresholdMs / 1000)}s), forcing reconnect`,
-					'error',
-				)
 				this.closeReason = 'unexpected'
-				void this.markError(
-					`PortalBridge liveness watchdog tripped after ${Math.round(silenceMs / 1000)}s of silence`,
-				)
+				void this.reportConnectionError({
+					fingerprint: `liveness-watchdog:${Math.round(thresholdMs / 1000)}`,
+					message: `liveness watchdog tripped after ${Math.round(silenceMs / 1000)}s of silence (threshold ${Math.round(thresholdMs / 1000)}s), forcing reconnect`,
+					persistedError: `PortalBridge liveness watchdog tripped after ${Math.round(silenceMs / 1000)}s of silence`,
+				})
 				this.closeSocket()
 			}
 		}, checkIntervalMs)
