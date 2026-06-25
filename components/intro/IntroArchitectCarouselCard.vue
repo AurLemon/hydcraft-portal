@@ -26,28 +26,21 @@
 				:style="architectTrackStyle"
 			>
 				<div
-					v-for="(page, pageIndex) in architectPages"
-					:key="`architect-page-${pageIndex}`"
-					class="w-full shrink-0 grow-0"
+					v-for="(member, memberIndex) in members"
+					:key="member.id"
+					class="shrink-0 grow-0"
+					:class="visibleArchitectCount > 1 ? 'w-1/2' : 'w-full'"
 				>
-					<div
-						class="relative grid"
-						:class="
-							visibleArchitectCount > 1
-								? 'grid-cols-2 gap-0'
-								: 'grid-cols-1 gap-0'
-						"
-					>
+					<div class="relative h-full">
 						<article
-							v-for="(member, memberIndex) in page"
-							:key="member.id"
-							class="relative min-h-140 lg:min-h-112 text-slate-950 dark:text-slate-50"
+							class="relative min-h-140 lg:min-h-112 flex flex-col text-slate-950 dark:text-slate-50"
 						>
 							<div
 								class="absolute inset-y-0 left-0 right-0 overflow-hidden pointer-events-none"
 								:class="{
 									'architect-scene--overlap-right':
-										visibleArchitectCount > 1 && memberIndex < page.length - 1,
+										visibleArchitectCount > 1 &&
+										memberIndex < members.length - 1,
 									'architect-scene--overlap-left':
 										visibleArchitectCount > 1 && memberIndex > 0,
 								}"
@@ -62,16 +55,16 @@
 								/>
 							</div>
 							<div
-								class="relative z-10 flex h-full items-end p-8 pb-10 lg:pb-8 pt-16 sm:pt-18"
+								class="relative z-10 flex flex-1 h-full items-end p-8 pb-10 lg:pb-8 pt-16 sm:pt-18"
 							>
 								<div class="flex w-full items-end gap-4">
 									<div
-										class="shrink-0 transform-[translateY(6px)_rotate(-8deg)] lg:transform-[translateY(20px)_rotate(-8deg)] origin-center"
+										class="shrink-0 transform-[translateY(0px)_rotate(-8deg)] lg:transform-[translateY(20px)_rotate(-8deg)] origin-center"
 									>
 										<IntroMinecraftSkinViewer
 											v-if="
 												hasEnteredViewportOnce &&
-												pageIndex === currentArchitectPage
+												isArchitectVisible(memberIndex)
 											"
 											:skin-url="member.skinUrl"
 											viewer-class="h-56 w-28 drop-shadow-[0_14px_28px_rgba(15,23,42,0.35)]"
@@ -102,7 +95,7 @@
 											{{ member.motto }}
 										</p>
 										<p
-											class="line-clamp-8 lg:line-clamp-4 mt-1 max-w-136 text-sm leading-7 text-white"
+											class="line-clamp-8 lg:line-clamp-4 mt-1 max-w-136 text-sm leading-7 text-white lg:h-28"
 										>
 											{{ member.intro }}
 										</p>
@@ -129,17 +122,17 @@
 				/>
 				<div class="flex items-center gap-1.5">
 					<button
-						v-for="(_, pageIndex) in architectPages"
-						:key="`architect-dot-${pageIndex}`"
+						v-for="pageIndex in architectPageCount"
+						:key="`architect-dot-${pageIndex - 1}`"
 						type="button"
 						class="block size-1.5 rounded-full transition-all duration-200"
 						:class="
-							pageIndex === currentArchitectPage
+							pageIndex - 1 === currentArchitectPage
 								? 'bg-white'
 								: 'bg-white/35 hover:bg-white/60'
 						"
-						:aria-label="gotoLabel(pageIndex + 1)"
-						@click="goToArchitectPage(pageIndex)"
+						:aria-label="gotoLabel(pageIndex)"
+						@click="goToArchitectPage(pageIndex - 1)"
 					/>
 				</div>
 				<UButton
@@ -201,24 +194,23 @@ const visibleArchitectCount = computed(() =>
 	viewportWidth.value <= MOBILE_CAROUSEL_MAX_WIDTH ? 1 : 2,
 )
 
-const architectPages = computed<IntroArchitectCarouselMember[][]>(() => {
-	const items = props.members
-	const visibleCount = visibleArchitectCount.value
+const architectMaxPageIndex = computed(() =>
+	Math.max(0, props.members.length - visibleArchitectCount.value),
+)
 
-	if (items.length <= visibleCount) {
-		return [items]
-	}
+const architectPageCount = computed(() => architectMaxPageIndex.value + 1)
 
-	return Array.from({ length: items.length - visibleCount + 1 }, (_, index) =>
-		items.slice(index, index + visibleCount),
-	)
-})
-
-const showArchitectControls = computed(() => architectPages.value.length > 1)
+const showArchitectControls = computed(() => architectPageCount.value > 1)
 
 const architectTrackStyle = computed(() => ({
-	transform: `translate3d(-${currentArchitectPage.value * 100}%, 0, 0)`,
+	transform: `translate3d(-${
+		currentArchitectPage.value * (100 / visibleArchitectCount.value)
+	}%, 0, 0)`,
 }))
+
+const isArchitectVisible = (memberIndex: number) =>
+	memberIndex >= currentArchitectPage.value &&
+	memberIndex < currentArchitectPage.value + visibleArchitectCount.value
 
 const stopArchitectCarousel = () => {
 	if (architectCarouselTimer) {
@@ -229,12 +221,12 @@ const stopArchitectCarousel = () => {
 
 const startArchitectCarousel = () => {
 	stopArchitectCarousel()
-	if (architectPages.value.length <= 1) {
+	if (architectPageCount.value <= 1) {
 		return
 	}
 	architectCarouselTimer = setInterval(() => {
 		currentArchitectPage.value =
-			(currentArchitectPage.value + 1) % architectPages.value.length
+			(currentArchitectPage.value + 1) % architectPageCount.value
 	}, ARCHITECT_CAROUSEL_INTERVAL)
 }
 
@@ -244,14 +236,14 @@ const resetArchitectCarousel = () => {
 
 const goNextArchitectPage = () => {
 	currentArchitectPage.value =
-		(currentArchitectPage.value + 1) % architectPages.value.length
+		(currentArchitectPage.value + 1) % architectPageCount.value
 	resetArchitectCarousel()
 }
 
 const goPrevArchitectPage = () => {
 	currentArchitectPage.value =
-		(currentArchitectPage.value - 1 + architectPages.value.length) %
-		architectPages.value.length
+		(currentArchitectPage.value - 1 + architectPageCount.value) %
+		architectPageCount.value
 	resetArchitectCarousel()
 }
 
@@ -260,9 +252,9 @@ const goToArchitectPage = (pageIndex: number) => {
 	resetArchitectCarousel()
 }
 
-watch(architectPages, (pages) => {
-	if (currentArchitectPage.value >= pages.length) {
-		currentArchitectPage.value = 0
+watch([() => props.members.length, visibleArchitectCount], () => {
+	if (currentArchitectPage.value > architectMaxPageIndex.value) {
+		currentArchitectPage.value = architectMaxPageIndex.value
 	}
 
 	startArchitectCarousel()
@@ -302,19 +294,47 @@ onBeforeUnmount(() => {
 <style scoped>
 .architect-scene--overlap-right {
 	right: -20%;
+	z-index: 0;
+	-webkit-mask-image: linear-gradient(
+		78deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(0, 0, 0, 1) 72%,
+		rgba(0, 0, 0, 0.82) 82%,
+		rgba(0, 0, 0, 0.4) 90%,
+		rgba(0, 0, 0, 0.08) 96%,
+		rgba(0, 0, 0, 0) 99%
+	);
+	mask-image: linear-gradient(
+		78deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(0, 0, 0, 1) 72%,
+		rgba(0, 0, 0, 0.82) 82%,
+		rgba(0, 0, 0, 0.4) 90%,
+		rgba(0, 0, 0, 0.08) 96%,
+		rgba(0, 0, 0, 0) 99%
+	);
 }
 
 .architect-scene--overlap-left {
 	left: -20%;
 	z-index: 1;
+	-webkit-mask-image: linear-gradient(
+		102deg,
+		rgba(0, 0, 0, 0) 1%,
+		rgba(0, 0, 0, 0.08) 6%,
+		rgba(0, 0, 0, 0.38) 14%,
+		rgba(0, 0, 0, 0.78) 22%,
+		rgba(0, 0, 0, 1) 30%,
+		rgba(0, 0, 0, 1) 96%
+	);
 	mask-image: linear-gradient(
 		102deg,
-		rgba(0, 0, 0, 0) 0%,
-		rgba(0, 0, 0, 0.08) 8%,
-		rgba(0, 0, 0, 0.38) 17%,
-		rgba(0, 0, 0, 0.78) 26%,
-		rgba(0, 0, 0, 1) 34%,
-		rgba(0, 0, 0, 1) 100%
+		rgba(0, 0, 0, 0) 1%,
+		rgba(0, 0, 0, 0.08) 6%,
+		rgba(0, 0, 0, 0.38) 14%,
+		rgba(0, 0, 0, 0.78) 22%,
+		rgba(0, 0, 0, 1) 30%,
+		rgba(0, 0, 0, 1) 96%
 	);
 }
 </style>

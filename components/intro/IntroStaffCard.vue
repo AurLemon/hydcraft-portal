@@ -54,7 +54,7 @@
 								{{ t('content.intro.staff.owner.roleLine') }}
 							</div>
 							<div
-								class="mt-2 text-base leading-7 text-slate-600 dark:text-slate-300"
+								class="mt-2 break-all text-base leading-7 text-slate-600 dark:text-slate-300"
 							>
 								{{ t('content.intro.staff.owner.bioLine') }}
 							</div>
