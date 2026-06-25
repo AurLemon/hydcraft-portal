@@ -37,7 +37,7 @@
 							:alt="image.alt"
 							:root="scrollContainer"
 							class="h-full w-full"
-							image-class="block h-full w-full object-cover transition-opacity duration-200"
+							image-class="block h-full w-full object-cover"
 						/>
 					</button>
 					<figcaption

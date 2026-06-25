@@ -3,6 +3,204 @@
 		"about": {
 			"title": "Who Are We?"
 		},
+		"intro": {
+			"hero": {
+				"coverAlt": "HydCraft intro cover",
+				"eyebrow": "HYDCRAFT INTRO",
+				"title": "HydCraft",
+				"subtitle": "Season 7 Recruitment",
+				"toasts": {
+					"pipeline": "This hydrogen pipeline is not for sale",
+					"anniversaryPrefix": "Year",
+					"anniversarySuffix": "online"
+				},
+				"highlights": [
+					"Creative mode / City & railway construction",
+					"Modded server / MTR + Create / 1.20.1 Forge",
+					"No premium verification / No whitelist review",
+					"Community-run / No monetization / Build freely / Just have fun"
+				],
+				"highlightBadges": [
+					"Excellent",
+					"Very fun",
+					"Very civil",
+					"Pure conscience"
+				]
+			},
+			"ourWorks": {
+				"title": "Our Works",
+				"imageAlt": "HydCraft showcase image {index}"
+			},
+			"goodAndBad": {
+				"title": "Some good, some bad",
+				"imageAlt": "HydCraft showcase image {index}"
+			},
+			"participation": {
+				"title": "How to take part in building",
+				"prev": "Previous",
+				"next": "Next",
+				"goto": "Go to rule {index}",
+				"rules": [
+					{
+						"title": "What you do is up to you",
+						"desc": "Unoccupied land in the server, or plots left open for new settlers, can be freely built on as long as they do not conflict with others' existing work. The server provides no official mainline projects or mandatory tasks; architecture, railways, machinery and all other projects are initiated and built by players themselves."
+					},
+					{
+						"title": "Protect others' work",
+						"desc": "Free building rests on not infringing on others' existing work. Blocking others' roads, occupying reserved space, or damaging the integrity of existing builds without permission is strictly prohibited."
+					},
+					{
+						"title": "Communicate first on public matters",
+						"desc": "Any modification or connection involving public facilities (main railways, public stations, main roads) or others' territory must be discussed with the relevant parties in advance, and only carried out once a consensus is reached."
+					},
+					{
+						"title": "No unified building goal",
+						"desc": "HydCraft has no overall building blueprint enforced by the administration. How cities develop and how railways connect are entirely driven by spontaneous negotiation among players and progress step by step."
+					},
+					{
+						"title": "Non-intervention unless necessary",
+						"desc": "The admin team follows a principle of non-intervention unless necessary, mainly handling operations and resolving conflicts. Admins only step in cases of malicious griefing, long-term land squatting, impacts on public areas, or irreconcilable disputes."
+					},
+					{
+						"title": "Socializing is also part of building",
+						"desc": "HydCraft is essentially a community of acquaintances. All collaboration and planning are built on long-accumulated trust and mutual recognition among players. At its core, the point of playing is simply to have fun—and that remains our one guiding principle."
+					}
+				]
+			},
+			"fit": {
+				"title": "Who this place is for",
+				"fitColumn": {
+					"title": "For people who like to build slowly",
+					"items": [
+						"You enjoy long-term building and have a real interest in railways, cities, and architecture.",
+						"When roads, railways, terrain, or other people's plans are involved, you're willing to communicate in advance.",
+						"Being quiet is not a problem, as long as you're willing to explain your intent, respond when coordination is needed, and gradually build basic communication with the people around you.",
+						"You're comfortable with a server that has no fixed core gameplay loop, and you understand that much of the collaboration here is built on long-term trust among familiar players.",
+						"You respect other people's builds and don't damage or overwrite them at will."
+					]
+				},
+				"unfitColumn": {
+					"title": "May not be a good fit if you want quick results",
+					"items": [
+						"If what you're looking for is orderly construction, unified planning, or a stable place to prove your individual ability, this server may not be a good fit for you.",
+						"You don't want to communicate, but still want to reshape terrain, claim land, or force railway lines through.",
+						"You rely on strong in-game guidance and feel lost when no one tells you what to do next.",
+						"If you expect to arrive and immediately have a clear place, steady feedback, and ready-made collaborative relationships, this server may not be a good fit for you.",
+						"If you prefer to stay completely self-contained and don't want to respond to collaboration, communication, or relationship-building with others, you'll probably find it hard to fit in here."
+					]
+				},
+				"baseline": {
+					"title": "Community Baseline",
+					"items": [
+						"Follow the laws and regulations of mainland China. HydCraft has zero tolerance for illegal or non-compliant content.",
+						"The server is centered on building and collaboration. No real-world politics, no flame-baiting, and no factional hostility.",
+						"Do not form cliques to exclude others, and do not mock, attack, or damage other people's work. When disputes arise, contact the admin team for mediation first."
+					],
+					"charterLinkLabel": "View the full server charter"
+				}
+			},
+			"staff": {
+				"title": "Who Keeps This Place Running",
+				"owner": {
+					"aliasLine": "AurLemon",
+					"roleLine": "Server Owner, Chair of the Management Committee",
+					"bioLine": "A transfer-track student at a non-elite university and a TypeScript full-stack developer. To be honest, I built this whole website myself, haha. I'm not really a railway enthusiast or an architecture enthusiast either. I just thought it seemed fun, poked at it a bit, and somehow it all turned into this with everyone else."
+				},
+				"committee": {
+					"title": "Management Committee",
+					"subtitle": "The server's governing core"
+				},
+				"councilOfElders": {
+					"title": "Council of Elders",
+					"subtitle": "Where the old hands gather",
+					"count": "40+"
+				},
+				"chiefArchitect": {
+					"title": "Chief Architects",
+					"subtitle": "The core force behind the server's construction",
+					"prev": "Previous page",
+					"next": "Next page",
+					"goto": "Go to page {index}",
+					"members": {
+						"cat": {
+							"nickname": "仓鼠",
+							"motto": "Consilio et Motu.",
+							"intro": "From Shenzhen, Guangdong, and one of the map designers for Season 7 and Season 8. Excels at map drafting, small-scale design, and mechanical contraptions, with strong ideas and creativity in both architecture and structural mechanics. Handles European and American architectural styles especially well, particularly when weaving kinetic machinery into the overall design, and also enjoys musicals."
+						},
+						"xw": {
+							"nickname": "小万",
+							"motto": "Cura et Forma.",
+							"intro": "From Fuzhou, Fujian, and a close friend of CatPillager. Specializes in small-scale European and American modern design, with standout work on both interiors and exteriors, especially in spatial detail, material texture, and atmosphere. Often collaborates with the first architect, forming a strong complement in design and refinement."
+						},
+						"fisheye": {
+							"nickname": "题散",
+							"motto": "Order Leads Beyond.",
+							"intro": "From Shenyang, Liaoning, a Lindong City admin and the operator of Tongyun Railway. Known across the server for detailed structures and complete supporting works. Best at weaving clever machinery into a coherent system."
+						}
+					}
+				},
+				"seniorArchitect": {
+					"title": "Senior Architects",
+					"subtitle": "The server's native builders",
+					"prev": "Previous page",
+					"next": "Next page",
+					"goto": "Go to page {index}",
+					"members": {
+						"afe": {
+							"nickname": "afe",
+							"motto": "A city needs its outline first.",
+							"intro": "From Nanjing, Jiangsu, and a builder of Dongfeng in Season 6 and Edo in Season 7. Nina_Naganohara is good at organizing urban massing with clean block stacking, with Japanese style as the main axis and the occasional Chinese cadence. The work wins not by ornament, but by crisp silhouettes, clear district rhythm, and a steady skyline."
+						},
+						"qishui": {
+							"nickname": "汽水",
+							"motto": "AAA Nationwide Free Delivery.",
+							"intro": "From Guangzhou, Guangdong, a builder of Qinjing in Season 7, and afe's longtime partner. QiShui233 focuses on railways and stations, using refined material choices and unexpected station forms to make every stop worth a special visit."
+						},
+						"qixuan": {
+							"nickname": "七炫",
+							"motto": "Detail is not decoration.",
+							"intro": "From Langfang, Hebei, a builder of Guangyang in Seasons 5 and 7, a childhood friend of xxlm233, and a friend of Dotkk. qixuanjun233 likes hiding mechanical contraptions at street corners, shaping alleys with scenery that makes people slow down, and handling metro stations with a Beijing flavor."
+						},
+						"xxlm": {
+							"nickname": "宵宵狸猫",
+							"motto": "Get the scale and detail right, and the atmosphere follows.",
+							"intro": "From Langfang, Hebei, a builder of Guangyang in Seasons 5 and 7, and qixuanjun233's childhood friend. xxlm233 favors the restraint, compactness, and precision of small-scale Japanese architecture, compressing the city into a light yet ordered scale. From vehicles and route organization to platform layouts, the work carries a strong JR feel."
+						},
+						"dotkk": {
+							"nickname": "Dotkk",
+							"motto": "I'm still a newbie.",
+							"intro": "From Shanghai, one of Guangyang's builders in Season 7, and a friend of qixuanjun233. Dotkk is the kind of builder who can raise a city's skeleton the moment he steps in, turning empty ground into urban order through road networks, building massing, and public space."
+						},
+						"chuxia": {
+							"nickname": "初夏",
+							"motto": "Details decide success or failure.",
+							"intro": "From Tianjin, one of the builders of Jiuxiang in Season 7, and a close teammate of ColaFrog and LanYue_CN. Chuxia_SF is especially strong with interiors, from furnishings and room flow to lived-in detail, and feels most at ease in places that demand patience, taste, and everyday texture."
+						}
+					}
+				},
+				"badges": {
+					"member": "Member",
+					"advisor": "Advisor",
+					"viceOwner": "Vice Owner",
+					"councilOfEldersSecretary": "Council of Elders Secretary"
+				}
+			},
+			"joinUs": {
+				"title": "If you're in, join us now!",
+				"subtitle": "",
+				"notes": {
+					"client": "Join the group first to get the client download.",
+					"source": "We've had many ad accounts lately, so please say you came from the official site when joining."
+				},
+				"actions": {
+					"qq": "Join the QQ Group"
+				},
+				"notifications": {
+					"copied": "QQ group number copied.",
+					"copyFailed": "Failed to copy the QQ group number."
+				}
+			}
+		},
 		"timeline": {
 			"title": "How HydCraft Got Here?"
 		},

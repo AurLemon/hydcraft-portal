@@ -1,15 +1,15 @@
 <template>
 	<div class="site-shell">
 		<div class="grid gap-12">
-			<div class="lg:-mt-12 relative overflow-hidden rounded-2xl">
+			<div class="relative overflow-hidden rounded-2xl">
 				<SkeletonImage
 					:src="linksBannerImage"
 					alt=""
 					class="absolute inset-0 w-full"
-					image-class="min-h-54 lg:min-h-48 block h-full w-full object-cover  transition-opacity duration-200"
+					image-class="h-54 lg:min-h-48 block h-full w-full object-cover  transition-opacity duration-200"
 				/>
 				<div
-					class="absolute inset-0 h-full z-10 flex min-h-28 flex-col justify-between lg:gap-5 px-6 py-6 text-white lg:flex-row lg:items-center lg:px-8"
+					class="absolute inset-0 h-full z-10 flex min-h-54 flex-col justify-between lg:gap-5 px-6 py-6 text-white lg:flex-row lg:items-center lg:px-8"
 				>
 					<p
 						class="max-w-2xl font-arkpixel mt-8 mb-10 lg:mt-0 lg:mb-0 text-center lg:text-left font-medium text-3xl lg:text-4xl leading-tight [text-shadow:0_1px_2px_rgba(15,23,42,0.42)]"

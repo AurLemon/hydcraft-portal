@@ -189,7 +189,7 @@
 							/>
 						</div>
 
-						<div class="min-w-0 sm:pl-30">
+						<div class="min-w-0 sm:pl-34">
 							<div
 								class="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:translate-y-1"
 							>

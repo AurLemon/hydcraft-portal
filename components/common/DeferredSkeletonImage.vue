@@ -1,15 +1,20 @@
 <template>
 	<div ref="wrapperRef" v-bind="$attrs" class="relative">
-		<USkeleton v-if="!isVisible" class="absolute inset-0" />
+		<USkeleton
+			class="absolute inset-0 transition-opacity duration-300"
+			:class="[skeletonClass, imageReady ? 'opacity-0' : 'opacity-100']"
+			aria-hidden="true"
+		/>
 		<SkeletonImage
-			v-else
+			v-if="isVisible"
 			:src="src"
 			:alt="alt"
 			:image-class="imageClass"
-			:skeleton-class="skeletonClass"
+			:show-skeleton="false"
 			:loading="loading"
 			:decoding="decoding"
 			class="h-full w-full"
+			@ready="handleImageReady"
 		/>
 	</div>
 </template>
@@ -41,12 +46,17 @@ const props = withDefaults(defineProps<DeferredSkeletonImageProps>(), {
 
 const wrapperRef = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
+const imageReady = ref(false)
 
 let observer: IntersectionObserver | null = null
 
 const stopObserving = (): void => {
 	observer?.disconnect()
 	observer = null
+}
+
+const handleImageReady = (): void => {
+	imageReady.value = true
 }
 
 const markVisible = (): void => {
@@ -82,6 +92,7 @@ watch(
 	() => [props.src, props.root] as const,
 	() => {
 		isVisible.value = false
+		imageReady.value = false
 		void nextTick(startObserving)
 	},
 )

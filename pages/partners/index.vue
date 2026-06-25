@@ -1,6 +1,6 @@
 <template>
 	<div class="site-shell">
-		<div class="lg:-mt-12 mb-10 w-full">
+		<div class="mb-10 w-full">
 			<div class="mb-6 w-full">
 				<SkeletonImage
 					:src="partnersCover"

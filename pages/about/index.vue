@@ -2,7 +2,7 @@
 	<div class="site-shell flex flex-col items-center">
 		<MarkdownPage>
 			<template #header="{ doc }">
-				<div class="lg:-mt-12 mb-6 w-full">
+				<div class="mb-6 w-full">
 					<div class="mb-6 w-full">
 						<SkeletonImage
 							:src="aboutCover"

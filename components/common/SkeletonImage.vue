@@ -1,18 +1,19 @@
 <template>
 	<div v-bind="$attrs" class="relative">
 		<USkeleton
-			v-if="!imageReady"
-			class="absolute inset-0"
-			:class="skeletonClass"
+			v-if="showSkeleton && renderSkeleton"
+			class="absolute inset-0 transition-opacity duration-300"
+			:class="[skeletonClass, skeletonVisible ? 'opacity-100' : 'opacity-0']"
+			aria-hidden="true"
 		/>
 		<img
 			ref="imageRef"
 			:src="src"
 			:alt="alt"
 			:class="[
-				'transition-opacity duration-200',
+				'transition-opacity duration-300',
 				imageClass,
-				imageReady ? 'opacity-100' : 'opacity-0',
+				imageVisible ? 'opacity-100' : 'opacity-0',
 			]"
 			:loading="loading"
 			:decoding="decoding"
@@ -28,6 +29,8 @@ interface SkeletonImageProps {
 	alt: string
 	imageClass?: string
 	skeletonClass?: string
+	showSkeleton?: boolean
+	revealDelayMs?: number
 	loading?: 'eager' | 'lazy'
 	decoding?: 'async' | 'auto' | 'sync'
 }
@@ -39,34 +42,133 @@ defineOptions({
 const props = withDefaults(defineProps<SkeletonImageProps>(), {
 	imageClass: '',
 	skeletonClass: '',
+	showSkeleton: true,
+	revealDelayMs: 0,
 	loading: 'lazy',
 	decoding: 'async',
 })
 
-const imageReady = ref(false)
+const emit = defineEmits<{
+	ready: []
+}>()
+
 const imageRef = ref<HTMLImageElement | null>(null)
+const renderSkeleton = ref(props.showSkeleton)
+const skeletonVisible = ref(true)
+const imageVisible = ref(false)
+let revealFrame = 0
+let skeletonCleanupTimer: ReturnType<typeof setTimeout> | null = null
+let revealDelayTimer: ReturnType<typeof setTimeout> | null = null
+let decodeSequence = 0
+
+const clearSkeletonCleanupTimer = (): void => {
+	if (skeletonCleanupTimer !== null) {
+		clearTimeout(skeletonCleanupTimer)
+		skeletonCleanupTimer = null
+	}
+}
+
+const clearRevealDelayTimer = (): void => {
+	if (revealDelayTimer !== null) {
+		clearTimeout(revealDelayTimer)
+		revealDelayTimer = null
+	}
+}
+
+const resetVisibility = (): void => {
+	decodeSequence += 1
+	cancelAnimationFrame(revealFrame)
+	clearSkeletonCleanupTimer()
+	clearRevealDelayTimer()
+	renderSkeleton.value = props.showSkeleton
+	skeletonVisible.value = props.showSkeleton
+	imageVisible.value = false
+}
+
+const applyRevealState = (): void => {
+	cancelAnimationFrame(revealFrame)
+	clearSkeletonCleanupTimer()
+	if (props.showSkeleton) {
+		skeletonVisible.value = false
+		skeletonCleanupTimer = setTimeout(() => {
+			renderSkeleton.value = false
+			skeletonCleanupTimer = null
+		}, 300)
+	}
+	revealFrame = requestAnimationFrame(() => {
+		imageVisible.value = true
+		emit('ready')
+	})
+}
+
+const revealImage = (): void => {
+	clearRevealDelayTimer()
+
+	if (props.revealDelayMs > 0) {
+		revealDelayTimer = setTimeout(() => {
+			revealDelayTimer = null
+			applyRevealState()
+		}, props.revealDelayMs)
+		return
+	}
+
+	applyRevealState()
+}
+
+const waitForImageDecode = async (): Promise<void> => {
+	const image = imageRef.value
+
+	if (!image || typeof image.decode !== 'function') {
+		return
+	}
+
+	try {
+		await image.decode()
+	} catch {
+		// Fall back to normal reveal when decode is unavailable or interrupted.
+	}
+}
+
+const revealWhenDecoded = async (): Promise<void> => {
+	const sequence = ++decodeSequence
+
+	await waitForImageDecode()
+
+	if (sequence !== decodeSequence) {
+		return
+	}
+
+	revealImage()
+}
 
 const markImageReady = (): void => {
-	imageReady.value = true
+	void revealWhenDecoded()
 }
 
 const syncCachedImageState = async (): Promise<void> => {
 	await nextTick()
 
 	if (imageRef.value?.complete) {
-		imageReady.value = true
+		void revealWhenDecoded()
 	}
 }
 
 watch(
 	() => props.src,
 	() => {
-		imageReady.value = false
+		resetVisibility()
 		void syncCachedImageState()
 	},
 )
 
 onMounted(() => {
 	void syncCachedImageState()
+})
+
+onBeforeUnmount(() => {
+	decodeSequence += 1
+	cancelAnimationFrame(revealFrame)
+	clearSkeletonCleanupTimer()
+	clearRevealDelayTimer()
 })
 </script>
