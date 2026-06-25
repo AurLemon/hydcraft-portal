@@ -98,11 +98,7 @@ body {
 }
 
 ::-moz-selection {
-	background: color-mix(
-		in srgb,
-		var(--ui-color-primary-500) 72%,
-		var(--color-surface-0) 28%
-	);
+	background: rgb(43 156 214);
 	color: var(--ui-primary-foreground);
 }
 
@@ -116,11 +112,7 @@ body {
 }
 
 .dark ::-moz-selection {
-	background: color-mix(
-		in srgb,
-		var(--ui-color-primary-400) 58%,
-		var(--color-surface-950) 42%
-	);
+	background: rgb(68 138 186);
 	color: var(--color-text--emphasized);
 }
 
