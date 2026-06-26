@@ -82,6 +82,30 @@ When current members are unable to continue performing their duties due to studi
 
 When a core role cannot be fulfilled for a long time, involves serious dereliction of duty, seriously damages community relationships, or when the person's conduct may clearly harm the server's long-term stability, the Management Committee may, after fully soliciting opinions from the Council of Elders, adjust, suspend, or reconfirm the relevant role.
 
+## Builder Ranks
+
+The server maintains builder ranks to record each player's level of participation and long-term contribution in construction, while also serving as a reference for identity display and building records. These ranks do not affect any actual in-server permissions, nor are they used as a basis for dispute handling or management decisions.
+
+Rank evaluation considers construction experience, degree of completion, stylistic consistency, and long-term participation as a whole. Cities, architecture, railways, landscapes, interiors, planning, maintenance, and related directions are all within scope; no single standard is used as the sole measure.
+
+Builder ranks are not fixed labels. The Management Committee may adjust them according to a player's long-term status. Players may also proactively submit works or construction records to apply for promotion review. From highest to lowest, the ranks are Chief Architect, Senior Architect, Practicing Architect, and Apprentice Architect.
+
+### Chief Architect
+
+A very small number of players whose building level and personal style are the most mature and outstanding on the server. Their works show high completion quality and strong recognizability, and can to some extent represent the server's construction standard. The rank is strictly limited, is not decided by a single work or short-term performance, and is not granted lightly.
+
+### Senior Architect
+
+Players who have participated in the server's construction over the long term and delivered steady output in architecture, urban building, railways, or large public projects. They usually have a relatively clear personal style, or have long been responsible for construction areas and public matters of a certain scale.
+
+### Practicing Architect
+
+Resident players who are already capable of completing works independently and make up the main body of the server's day-to-day construction. They are not required to have an especially distinctive style, but should possess basic aesthetic judgment and the ability to complete works in harmony with the server's overall environment. Outstanding new players may also be directly promoted to this rank after observation.
+
+### Apprentice Architect
+
+New players who join the server begin as Apprentice Architects by default. They may participate in construction freely and can be promoted according to their actual performance after collaborating with others or completing personal works.
+
 ## Supplementary Provisions
 
 Matters not covered by this charter shall be interpreted and handled by the Management Committee according to the actual circumstances of the community.
