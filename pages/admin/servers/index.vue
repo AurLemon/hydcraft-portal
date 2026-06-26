@@ -1,5 +1,5 @@
 <template>
-	<div class="-mt-2">
+	<div>
 		<div
 			class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between"
 		>

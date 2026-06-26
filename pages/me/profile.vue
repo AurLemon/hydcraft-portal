@@ -1,5 +1,5 @@
 <template>
-	<div class="mx-auto -mt-2 flex w-full flex-col items-center pb-16">
+	<div class="mx-auto flex w-full flex-col items-center pb-16">
 		<div v-if="pending" class="grid w-full gap-5">
 			<USkeleton class="h-72 rounded-lg" />
 			<USkeleton v-for="index in 4" :key="index" class="h-56 rounded-lg" />

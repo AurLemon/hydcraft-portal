@@ -1,5 +1,5 @@
 <template>
-	<div class="site-shell mx-auto -mt-2 pb-16">
+	<div class="site-shell mx-auto pb-16">
 		<div v-if="pending" class="grid gap-5">
 			<USkeleton class="h-80 rounded-lg" />
 			<div class="grid gap-4 lg:grid-cols-3">
