@@ -16,6 +16,12 @@ export interface ServerOverviewObservedPlayer {
 	username: string | null
 }
 
+export interface ServerOverviewOnlineHistoryPoint {
+	observedAt: string
+	onlinePlayers: number
+	maxPlayers: number | null
+}
+
 export interface ServerOverviewBridgeStatus {
 	enabled: boolean
 	connected: boolean
@@ -26,6 +32,7 @@ export interface ServerOverviewBridgeStatus {
 	onlineCount: number
 	maxPlayers: number | null
 	observedPlayers: ServerOverviewObservedPlayer[]
+	onlineHistory: ServerOverviewOnlineHistoryPoint[]
 }
 
 export interface ServerOverviewServerItem {

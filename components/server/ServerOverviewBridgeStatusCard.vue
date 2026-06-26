@@ -1,137 +1,145 @@
 <template>
 	<div
-		class="flex h-full flex-col justify-between rounded-xl border border-slate-200 bg-white p-10 dark:border-slate-800 dark:bg-slate-950"
+		class="relative isolate h-full overflow-hidden rounded-xl border border-slate-200 bg-white p-10 dark:border-slate-800 dark:bg-slate-950"
 	>
 		<template v-if="selectedServer">
-			<div class="flex flex-col gap-2">
-				<div class="flex items-baseline gap-2">
-					<div class="flex items-center gap-2">
-						<span
-							class="size-3 rounded-full translate-y-1"
-							:class="statusDotClass"
-						/>
-					</div>
+			<ServerOverviewOnlineSparkline
+				:bridge-status="selectedServer.bridgeStatus"
+			/>
 
-					<div class="flex items-baseline gap-2 text-right">
-						<div class="flex items-end gap-1 text-slate-950 dark:text-white">
-							<span class="text-7xl leading-none font-semibold translate-y-1">
-								{{ selectedServer.bridgeStatus.onlineCount }}
-							</span>
+			<div class="relative z-10 flex h-full flex-col justify-between">
+				<div class="flex flex-col gap-2">
+					<div class="flex items-baseline gap-2">
+						<div class="flex items-center gap-2">
 							<span
-								class="pb-1 text-2xl leading-none text-slate-500 dark:text-slate-400"
-							>
-								/ {{ maxPlayersText }}
-							</span>
+								class="size-3 rounded-full translate-y-1"
+								:class="statusDotClass"
+							/>
 						</div>
 
-						<UPopover
-							v-if="servers.length > 1"
-							v-model:open="serverMenuOpen"
-							:popper="{ placement: 'bottom-end' }"
-						>
-							<button
-								type="button"
-								class="inline-flex items-center justify-center rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-								:aria-label="
-									t('content.serverOverview.cards.bridge.selectServer')
-								"
-							>
-								<UIcon name="i-lucide-chevron-down" class="size-4" />
-							</button>
-
-							<template #content>
-								<div
-									class="grid w-64 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+						<div class="flex items-baseline gap-2 text-right">
+							<div class="flex items-end gap-1 text-slate-950 dark:text-white">
+								<span class="text-7xl leading-none font-semibold translate-y-1">
+									{{ selectedServer.bridgeStatus.onlineCount }}
+								</span>
+								<span
+									class="pb-1 text-2xl leading-none text-slate-500 dark:text-slate-400"
 								>
-									<button
-										v-for="server in servers"
-										:key="server.serverId"
-										type="button"
-										class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
-										:class="{
-											'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
-												server.serverId === selectedServerId,
-											'text-slate-600 dark:text-slate-300':
-												server.serverId !== selectedServerId,
-										}"
-										@click="selectServer(server.serverId)"
-									>
-										<span class="min-w-0 flex-1 truncate">
-											{{ server.name }}
-										</span>
-										<UIcon
-											v-if="server.serverId === selectedServerId"
-											name="i-lucide-check"
-											class="size-3.5 shrink-0"
-										/>
-									</button>
-								</div>
-							</template>
-						</UPopover>
-					</div>
-				</div>
+									/ {{ maxPlayersText }}
+								</span>
+							</div>
 
-				<div class="flex items-center justify-between gap-4">
-					<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
-						<div class="truncate">
-							{{ selectedServer.name }}
+							<UPopover
+								v-if="servers.length > 1"
+								v-model:open="serverMenuOpen"
+								:popper="{ placement: 'bottom-end' }"
+							>
+								<button
+									type="button"
+									class="inline-flex items-center justify-center rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+									:aria-label="
+										t('content.serverOverview.cards.bridge.selectServer')
+									"
+								>
+									<UIcon name="i-lucide-chevron-down" class="size-4" />
+								</button>
+
+								<template #content>
+									<div
+										class="grid w-64 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+									>
+										<button
+											v-for="server in servers"
+											:key="server.serverId"
+											type="button"
+											class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
+											:class="{
+												'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
+													server.serverId === selectedServerId,
+												'text-slate-600 dark:text-slate-300':
+													server.serverId !== selectedServerId,
+											}"
+											@click="selectServer(server.serverId)"
+										>
+											<span class="min-w-0 flex-1 truncate">
+												{{ server.name }}
+											</span>
+											<UIcon
+												v-if="server.serverId === selectedServerId"
+												name="i-lucide-check"
+												class="size-3.5 shrink-0"
+											/>
+										</button>
+									</div>
+								</template>
+							</UPopover>
 						</div>
 					</div>
 
-					<div
-						v-if="headItems.length"
-						class="flex max-w-[55%] flex-wrap justify-end gap-2"
-					>
-						<SkeletonImage
-							v-for="player in headItems"
-							:key="player.uuid"
-							:src="getMinecraftHeadRendererUrl(player.username || player.uuid)"
-							:alt="player.username || player.uuid"
-							class="size-8 overflow-hidden rounded-lg"
-							image-class="block size-8 object-cover"
-							skeleton-class="rounded-lg"
-						/>
+					<div class="flex items-center justify-between gap-4">
+						<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
+							<div class="truncate">
+								{{ selectedServer.name }}
+							</div>
+						</div>
+
+						<div
+							v-if="headItems.length"
+							class="flex max-w-[55%] flex-wrap justify-end gap-2"
+						>
+							<SkeletonImage
+								v-for="player in headItems"
+								:key="player.uuid"
+								:src="
+									getMinecraftHeadRendererUrl(player.username || player.uuid)
+								"
+								:alt="player.username || player.uuid"
+								class="size-8 overflow-hidden rounded-lg"
+								image-class="block size-8 object-cover"
+								skeleton-class="rounded-lg"
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="mt-8 flex flex-col gap-3 text-sm">
-				<div class="flex flex-wrap gap-x-4 gap-y-2">
-					<template v-for="link in mapLinkItems" :key="link.label">
-						<a
-							:href="link.to"
-							target="_blank"
-							rel="noreferrer"
-							class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
-						>
-							<UIcon :name="link.icon" class="size-5" />
-							<span>{{ link.label }}</span>
-						</a>
-					</template>
-				</div>
+				<div class="mt-8 flex flex-col gap-3 text-sm">
+					<div class="flex flex-wrap gap-x-4 gap-y-2">
+						<template v-for="link in mapLinkItems" :key="link.label">
+							<a
+								:href="link.to"
+								target="_blank"
+								rel="noreferrer"
+								class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
+							>
+								<UIcon :name="link.icon" class="size-5" />
+								<span>{{ link.label }}</span>
+							</a>
+						</template>
+					</div>
 
-				<div class="flex flex-wrap gap-x-4 gap-y-2">
-					<template v-for="link in resourceLinkItems" :key="link.label">
-						<NuxtLink
-							v-if="!link.external"
-							:to="link.to"
-							class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
-						>
-							<UIcon :name="link.icon" class="size-5" />
-							<span>{{ link.label }}</span>
-						</NuxtLink>
+					<div class="flex flex-wrap gap-x-4 gap-y-2">
+						<template v-for="link in resourceLinkItems" :key="link.label">
+							<NuxtLink
+								v-if="!link.external"
+								:to="link.to"
+								class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
+							>
+								<UIcon :name="link.icon" class="size-5" />
+								<span>{{ link.label }}</span>
+							</NuxtLink>
 
-						<a
-							v-else
-							:href="link.to"
-							target="_blank"
-							rel="noreferrer"
-							class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
-						>
-							<UIcon :name="link.icon" class="size-5" />
-							<span>{{ link.label }}</span>
-						</a>
-					</template>
+							<a
+								v-else
+								:href="link.to"
+								target="_blank"
+								rel="noreferrer"
+								class="inline-flex items-center gap-1.5 text-base text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
+							>
+								<UIcon :name="link.icon" class="size-5" />
+								<span>{{ link.label }}</span>
+							</a>
+						</template>
+					</div>
 				</div>
 			</div>
 		</template>

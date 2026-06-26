@@ -84,6 +84,29 @@ const readObservedPlayers = (
 	})
 }
 
+const readOnlineHistory = (
+	snapshots: Array<{
+		observedAt: Date
+		payload: unknown
+	}>,
+): ServerOverviewResponse['servers'][number]['bridgeStatus']['onlineHistory'] =>
+	snapshots
+		.map((snapshot) => ({
+			observedAt: snapshot.observedAt.toISOString(),
+			onlinePlayers: readPlayerCount(snapshot.payload),
+			maxPlayers: readNumber(snapshot.payload, 'maxPlayers'),
+		}))
+		.filter(
+			(
+				point,
+			): point is {
+				observedAt: string
+				onlinePlayers: number
+				maxPlayers: number | null
+			} => point.onlinePlayers !== null,
+		)
+		.reverse()
+
 const shuffle = <T>(items: T[]): T[] => {
 	const shuffled = [...items]
 
@@ -278,7 +301,11 @@ export default defineEventHandler(async (): Promise<ServerOverviewResponse> => {
 
 	const serverItems = await Promise.all(
 		servers.map(async (server) => {
-			const [latestPlayerSnapshot, latestStatusSnapshot] = await Promise.all([
+			const [
+				latestPlayerSnapshot,
+				latestStatusSnapshot,
+				playerHistorySnapshots,
+			] = await Promise.all([
 				prisma.minecraftServerSnapshot.findFirst({
 					where: {
 						serverId: server.serverId,
@@ -295,6 +322,20 @@ export default defineEventHandler(async (): Promise<ServerOverviewResponse> => {
 					},
 					orderBy: {
 						observedAt: 'desc',
+					},
+				}),
+				prisma.minecraftServerSnapshot.findMany({
+					where: {
+						serverId: server.serverId,
+						kind: 'PLAYER_SNAPSHOT',
+					},
+					orderBy: {
+						observedAt: 'desc',
+					},
+					take: 24,
+					select: {
+						observedAt: true,
+						payload: true,
 					},
 				}),
 			])
@@ -325,6 +366,7 @@ export default defineEventHandler(async (): Promise<ServerOverviewResponse> => {
 					onlineCount,
 					maxPlayers,
 					observedPlayers,
+					onlineHistory: readOnlineHistory(playerHistorySnapshots),
 				},
 			}
 		}),

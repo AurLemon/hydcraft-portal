@@ -1,6 +1,6 @@
 <template>
 	<div class="site-shell pb-16">
-		<div v-if="pending" class="grid gap-12">
+		<div v-if="showInitialSkeleton" class="grid gap-12">
 			<div class="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
 				<USkeleton class="h-[40rem] rounded-xl lg:row-span-2" />
 				<ServerOverviewMapShell
@@ -37,7 +37,7 @@
 		</div>
 
 		<PageInlineException
-			v-else-if="error || !overview"
+			v-else-if="showInitialError"
 			icon="i-lucide-cloud-off"
 			:title="t('content.serverOverview.states.loadFailed')"
 		/>
@@ -113,6 +113,8 @@ const selectedServerId = ref<string | null>(null)
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const overview = computed(() => data.value ?? null)
+const showInitialSkeleton = computed(() => pending.value && !overview.value)
+const showInitialError = computed(() => Boolean(error.value) && !overview.value)
 
 watch(
 	overview,
