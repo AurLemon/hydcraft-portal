@@ -30,6 +30,7 @@
 			"CAPTCHA_INVALID": "安全驗證無效或已過期，請重新完成。",
 			"CAPTCHA_VERIFY_FAILED": "安全驗證服務校驗失敗，請稍後再試。",
 			"CAPTCHA_CONFIG_MISSING": "安全驗證服務尚未配置。",
+			"DIRECTORY_SEARCH_CAPTCHA_REQUIRED": "搜尋目錄前請先完成安全驗證。",
 			"RESET_TOKEN_REQUIRED": "請輸入重置權杖。",
 			"PASSWORD_RESET_CONFIRM_NOT_CONFIGURED": "密碼重置通道暫未配置。",
 			"PRIMARY_EMAIL_REQUIRED": "至少需要保留一個主電子郵件。",

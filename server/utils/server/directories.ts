@@ -1,0 +1,520 @@
+import type { Prisma } from '~/generated/prisma/client'
+import type {
+	ServerDirectoryPlayerItem,
+	ServerDirectoryUserItem,
+} from '../../../utils/server/directories'
+import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
+import { prisma } from '../db/prisma'
+import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
+
+const USER_SORT_FIELDS = new Set([
+	'joinedAt',
+	'updatedAt',
+	'username',
+	'displayName',
+])
+
+const PLAYER_SORT_FIELDS = new Set([
+	'username',
+	'authMeLastLoginAt',
+	'authMeRegisteredAt',
+	'updatedAt',
+	'createdAt',
+])
+
+const publicPlayerInclude = {
+	authMeAccount: true,
+	user: {
+		select: {
+			username: true,
+			displayName: true,
+			avatarUrl: true,
+			privacy: {
+				select: {
+					publicProfile: true,
+					allowMinecraftProfileDiscovery: true,
+				},
+			},
+		},
+	},
+} satisfies Prisma.MinecraftAccountInclude
+
+type PublicPlayerEntity = Prisma.MinecraftAccountGetPayload<{
+	include: typeof publicPlayerInclude
+}>
+
+const PUBLIC_PLAYERDATA_INCLUDE = {
+	playerData: true,
+	statsSnapshot: true,
+	advancementsSnapshot: true,
+} satisfies Prisma.MinecraftServerPlayerInclude
+
+type PublicServerPlayerEntity = Prisma.MinecraftServerPlayerGetPayload<{
+	include: typeof PUBLIC_PLAYERDATA_INCLUDE
+}>
+
+const buildPlayerOrderBy = (
+	sortField: string | undefined,
+	sortDirection: 'asc' | 'desc' | undefined,
+): Prisma.MinecraftAccountOrderByWithRelationInput[] => {
+	const field = sortField ?? 'authMeLastLoginAt'
+	const direction = sortDirection ?? 'desc'
+	const usernameOrder = {
+		username: 'asc',
+	} satisfies Prisma.MinecraftAccountOrderByWithRelationInput
+	const uuidOrder = {
+		uuid: { sort: 'asc', nulls: 'last' },
+	} satisfies Prisma.MinecraftAccountOrderByWithRelationInput
+	const fallbackOrder = [usernameOrder, uuidOrder]
+
+	if (field === 'authMeRegisteredAt') {
+		return [
+			{
+				authMeAccount: {
+					registeredAt: { sort: direction, nulls: 'last' },
+				},
+			},
+			...fallbackOrder,
+		]
+	}
+
+	if (field === 'authMeLastLoginAt') {
+		return [
+			{
+				authMeAccount: {
+					lastLoginAt: { sort: direction, nulls: 'last' },
+				},
+			},
+			...fallbackOrder,
+		]
+	}
+
+	if (field === 'username') {
+		return [{ username: direction }, uuidOrder]
+	}
+
+	if (PLAYER_SORT_FIELDS.has(field)) {
+		return [{ [field]: direction }, ...fallbackOrder]
+	}
+
+	return [{ updatedAt: 'desc' }, ...fallbackOrder]
+}
+
+const findGroupMatchedNames = async (group: string): Promise<string[]> => {
+	const luckPermsPlayers = await prisma.luckPermsPlayer.findMany()
+	const resolver = createLuckPermsPrimaryGroupResolver({
+		players: luckPermsPlayers,
+		userPermissions: await prisma.luckPermsUserPermission.findMany({
+			where: {
+				uuid: {
+					in: luckPermsPlayers.map((player) => player.uuid),
+				},
+				permission: {
+					startsWith: 'group.',
+				},
+			},
+		}),
+		groupPermissions: await prisma.luckPermsGroupPermission.findMany({
+			where: {
+				permission: {
+					startsWith: 'weight.',
+				},
+			},
+		}),
+	})
+	const matchedLuckPermsPlayers = luckPermsPlayers.filter((player) =>
+		(
+			resolver.resolveEffectivePrimaryGroup({
+				uuid: player.uuid,
+				normalizedUsername: player.normalizedUsername,
+			}) ?? ''
+		)
+			.toLowerCase()
+			.includes(group.toLowerCase()),
+	)
+	const groupUuids = matchedLuckPermsPlayers.map((player) => player.uuid)
+	const serverPlayers = groupUuids.length
+		? await prisma.minecraftServerPlayer.findMany({
+				where: {
+					uuid: {
+						in: groupUuids,
+					},
+					normalizedUsername: {
+						not: null,
+					},
+				},
+				select: {
+					normalizedUsername: true,
+				},
+				distinct: ['normalizedUsername'],
+			})
+		: []
+
+	return [
+		...new Set([
+			...matchedLuckPermsPlayers.flatMap(
+				(player) => player.normalizedUsername ?? [],
+			),
+			...serverPlayers.flatMap((player) => player.normalizedUsername ?? []),
+		]),
+	]
+}
+
+const isPublicDirectoryUser = (
+	privacy:
+		| {
+				publicProfile: boolean
+				searchableInUserDirectory: boolean
+		  }
+		| null
+		| undefined,
+): boolean =>
+	(privacy?.publicProfile ?? true) &&
+	(privacy?.searchableInUserDirectory ?? true)
+
+const canExposeBoundUser = (
+	privacy:
+		| {
+				publicProfile: boolean
+				allowMinecraftProfileDiscovery: boolean
+		  }
+		| null
+		| undefined,
+): boolean =>
+	(privacy?.publicProfile ?? true) &&
+	(privacy?.allowMinecraftProfileDiscovery ?? true)
+
+const buildUserOrderBy = (
+	sortField: string | undefined,
+	sortDirection: 'asc' | 'desc' | undefined,
+): Prisma.UserOrderByWithRelationInput => {
+	const field = sortField ?? 'joinedAt'
+	const direction = sortDirection ?? 'desc'
+
+	if (USER_SORT_FIELDS.has(field)) {
+		return { [field]: direction }
+	}
+
+	return { joinedAt: 'desc' }
+}
+
+export const listPublicServerUsers = async (input: {
+	page: number
+	pageSize: number
+	search?: string
+	sortField?: string
+	sortDirection?: 'asc' | 'desc'
+}) => {
+	const where: Prisma.UserWhereInput = {
+		status: 'ACTIVE',
+		OR: [
+			{
+				privacy: null,
+			},
+			{
+				privacy: {
+					is: {
+						publicProfile: true,
+						searchableInUserDirectory: true,
+					},
+				},
+			},
+		],
+		...(input.search
+			? {
+					AND: [
+						{
+							OR: [
+								{
+									username: {
+										contains: input.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									displayName: {
+										contains: input.search,
+										mode: 'insensitive',
+									},
+								},
+								{
+									bio: {
+										contains: input.search,
+										mode: 'insensitive',
+									},
+								},
+							],
+						},
+					],
+				}
+			: {}),
+	}
+	const [total, users] = await Promise.all([
+		prisma.user.count({
+			where,
+		}),
+		prisma.user.findMany({
+			where,
+			orderBy: buildUserOrderBy(input.sortField, input.sortDirection),
+			skip: (input.page - 1) * input.pageSize,
+			take: input.pageSize,
+			select: {
+				username: true,
+				displayName: true,
+				avatarUrl: true,
+				bio: true,
+				joinedAt: true,
+				privacy: {
+					select: {
+						publicProfile: true,
+						showBio: true,
+						showJoinedAt: true,
+						showMinecraftProfileLink: true,
+						searchableInUserDirectory: true,
+					},
+				},
+				minecraftAccounts: {
+					where: {
+						unlinkedAt: null,
+					},
+					orderBy: [
+						{
+							isPrimary: 'desc',
+						},
+						{
+							updatedAt: 'desc',
+						},
+					],
+					take: 1,
+					select: {
+						username: true,
+					},
+				},
+			},
+		}),
+	])
+
+	const items: ServerDirectoryUserItem[] = users
+		.filter((user) => isPublicDirectoryUser(user.privacy))
+		.map((user) => ({
+			username: user.username,
+			displayName: user.displayName,
+			avatarUrl: user.avatarUrl,
+			bio: (user.privacy?.showBio ?? true) ? user.bio : null,
+			joinedAt:
+				(user.privacy?.showJoinedAt ?? true)
+					? user.joinedAt.toISOString()
+					: null,
+			minecraft:
+				(user.privacy?.showMinecraftProfileLink ?? true) &&
+				user.minecraftAccounts[0]
+					? {
+							mcid: user.minecraftAccounts[0].username,
+							username: user.minecraftAccounts[0].username,
+						}
+					: null,
+		}))
+
+	return {
+		items,
+		page: input.page,
+		pageSize: input.pageSize,
+		total,
+		pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+	}
+}
+
+const readDirectoryServerPlayers = async (
+	accounts: PublicPlayerEntity[],
+): Promise<PublicServerPlayerEntity[]> => {
+	const uuids = accounts
+		.map((account) => account.uuid)
+		.filter((uuid): uuid is string => Boolean(uuid))
+	const normalizedUsernames = accounts.map(
+		(account) => account.normalizedUsername,
+	)
+
+	if (!uuids.length && !normalizedUsernames.length) {
+		return []
+	}
+
+	return await prisma.minecraftServerPlayer.findMany({
+		where: {
+			OR: [
+				{
+					normalizedUsername: {
+						in: normalizedUsernames,
+					},
+				},
+				...(uuids.length
+					? [
+							{
+								uuid: {
+									in: uuids,
+								},
+							},
+						]
+					: []),
+			],
+		},
+		include: PUBLIC_PLAYERDATA_INCLUDE,
+		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
+	})
+}
+
+export const listPublicServerPlayers = async (input: {
+	page: number
+	pageSize: number
+	search?: string
+	linked?: string
+	group?: string
+	sortField?: string
+	sortDirection?: 'asc' | 'desc'
+}) => {
+	const linked =
+		input.linked === 'linked'
+			? true
+			: input.linked === 'unlinked'
+				? false
+				: undefined
+	const groupMatchedNames = input.group
+		? await findGroupMatchedNames(input.group)
+		: undefined
+	const where: Prisma.MinecraftAccountWhereInput = {
+		authMeAccount: {
+			isNot: null,
+		},
+		...(linked === undefined
+			? {}
+			: linked
+				? { userId: { not: null } }
+				: { userId: null }),
+		...(groupMatchedNames
+			? {
+					normalizedUsername: {
+						in: groupMatchedNames,
+					},
+				}
+			: {}),
+		...(input.search
+			? {
+					OR: [
+						{
+							username: {
+								contains: input.search,
+								mode: 'insensitive',
+							},
+						},
+						{
+							authmeName: {
+								contains: input.search,
+								mode: 'insensitive',
+							},
+						},
+						{
+							authMeAccount: {
+								is: {
+									OR: [
+										{
+											username: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											realname: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+									],
+								},
+							},
+						},
+						{
+							user: {
+								is: {
+									OR: [
+										{
+											username: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+										{
+											displayName: {
+												contains: input.search,
+												mode: 'insensitive',
+											},
+										},
+									],
+								},
+							},
+						},
+					],
+				}
+			: {}),
+	}
+	const [total, accounts] = await Promise.all([
+		prisma.minecraftAccount.count({
+			where,
+		}),
+		prisma.minecraftAccount.findMany({
+			where,
+			orderBy: buildPlayerOrderBy(input.sortField, input.sortDirection),
+			skip: (input.page - 1) * input.pageSize,
+			take: input.pageSize,
+			include: publicPlayerInclude,
+		}),
+	])
+	const players = await readDirectoryServerPlayers(accounts)
+	const luckPermsResolver = createLuckPermsPrimaryGroupResolver(
+		await readLuckPermsSnapshotBundle({
+			uuids: players.map((player) => player.uuid),
+			normalizedUsernames: accounts.map(
+				(account) => account.normalizedUsername,
+			),
+		}),
+	)
+	const items: ServerDirectoryPlayerItem[] = accounts.map((account) => {
+		const summary = buildMinecraftAccountSummary(
+			account,
+			players,
+			[],
+			luckPermsResolver,
+		)
+		const linkedUser =
+			account.user && canExposeBoundUser(account.user.privacy)
+				? {
+						username: account.user.username,
+						displayName: account.user.displayName,
+						avatarUrl: account.user.avatarUrl,
+					}
+				: null
+		const mcid =
+			summary.playerIdentity.playerId || summary.username || account.username
+
+		return {
+			id: account.id,
+			mcid,
+			username: summary.username,
+			uuid: summary.uuid,
+			isPrimary: summary.isPrimary,
+			luckPermsPrimaryGroup: summary.luckPermsPrimaryGroup,
+			authMeLastLoginAt:
+				account.authMeAccount?.lastLoginAt?.toISOString() ?? null,
+			playTimeTicks: summary.playerProfile.playTimeTicks,
+			hasStats: summary.playerProfile.hasStats,
+			linkedUser,
+		}
+	})
+
+	return {
+		items,
+		page: input.page,
+		pageSize: input.pageSize,
+		total,
+		pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+	}
+}

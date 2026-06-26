@@ -233,7 +233,7 @@
 							/>
 						</label>
 
-						<div class="grid max-h-64 gap-2 overflow-y-auto pr-1">
+						<div class="grid max-h-54 gap-2 overflow-y-auto pr-1">
 							<label
 								v-for="user in filteredUsers"
 								:key="user.id"

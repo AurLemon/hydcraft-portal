@@ -3,6 +3,103 @@
 		"about": {
 			"title": "私たちは何者か?"
 		},
+		"serverOverview": {
+			"pageTitle": "サーバー",
+			"actions": {
+				"openMap": "地図を開く"
+			},
+			"cards": {
+				"satellite": {
+					"title": "衛星地図"
+				},
+				"mtr": {
+					"title": "MTR 地図"
+				},
+				"bridge": {
+					"selectServer": "サーバーを選択",
+					"links": {
+						"charter": "サーバー規約",
+						"communityCovenant": "コミュニティ公約",
+						"satellite": "衛星地図",
+						"mtr": "MTR 鉄道路線図",
+						"createRail": "Create 鉄道路線図",
+						"wiki": "Wiki",
+						"docs": "Docs",
+						"sponsor": "Support Us"
+					}
+				},
+				"users": {
+					"title": "サイトユーザー",
+					"action": "ユーザー一覧を見る"
+				},
+				"players": {
+					"title": "サイトプレイヤー",
+					"action": "プレイヤー一覧を見る",
+					"fields": {
+						"playTime": "プレイ時間",
+						"lastLogin": "最近の AuthMe ログイン"
+					}
+				}
+			},
+			"directories": {
+				"pagination": {
+					"summary": "{page} / {pageCount} ページ、全 {total} 件",
+					"first": "最初のページ",
+					"previous": "前のページ",
+					"next": "次のページ",
+					"last": "最後のページ",
+					"pageSize": "{size} / ページ"
+				},
+				"states": {
+					"loadFailed": "ディレクトリを読み込めませんでした",
+					"emptyUsers": "公開中のユーザーはまだいません。",
+					"emptyPlayers": "公開中のプレイヤーはまだいません。"
+				},
+				"searchCaptcha": {
+					"title": "検索前にセキュリティ認証が必要です",
+					"description": "大量検索やディレクトリのスクレイピングを減らすため、検索前に一度セキュリティ認証を完了してください。",
+					"action": "認証して続行",
+					"verifying": "認証が完了しました。検索結果を読み込んでいます..."
+				},
+				"users": {
+					"title": "ユーザー一覧",
+					"description": "公開されている Portal ユーザーを一覧できます。",
+					"fields": {
+						"user": "ユーザー",
+						"minecraft": "Minecraft",
+						"joinedAt": "参加日時"
+					},
+					"filters": {
+						"search": "ユーザー名、表示名、自己紹介で検索"
+					}
+				},
+				"players": {
+					"title": "プレイヤー一覧",
+					"description": "ゲーム側のプレイヤー情報と Portal 連携状況を公開表示します。",
+					"fields": {
+						"player": "プレイヤー",
+						"linkedUser": "連携ユーザー",
+						"group": "権限グループ",
+						"playTime": "プレイ時間",
+						"lastLogin": "最終ログイン",
+						"registeredAt": "登録日時"
+					},
+					"filters": {
+						"search": "プレイヤー名、AuthMe 名、連携ユーザーで検索",
+						"group": "権限グループを検索"
+					}
+				}
+			},
+			"states": {
+				"loadFailed": "サーバーページを読み込めませんでした。",
+				"iframeLoadFailed": "読み込めません",
+				"emptyServers": "公開できるサーバーがまだありません。",
+				"emptyUsers": "表示できるユーザーがまだいません。",
+				"emptyPlayers": "表示できるプレイヤーがまだいません。",
+				"noDescription": "このユーザーはまだ自己紹介を書いていません。",
+				"notAvailable": "未設定"
+			}
+		},
 		"intro": {
 			"hero": {
 				"coverAlt": "HydCraft 募集案内カバー",

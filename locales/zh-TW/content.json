@@ -3,6 +3,103 @@
 		"about": {
 			"title": "我們是什麼?"
 		},
+		"serverOverview": {
+			"pageTitle": "服況",
+			"actions": {
+				"openMap": "打開地圖"
+			},
+			"cards": {
+				"satellite": {
+					"title": "衛星地圖"
+				},
+				"mtr": {
+					"title": "MTR 地圖"
+				},
+				"bridge": {
+					"selectServer": "選擇伺服器",
+					"links": {
+						"charter": "伺服器章程",
+						"communityCovenant": "社群公約",
+						"satellite": "衛星地圖",
+						"mtr": "MTR 鐵路地圖",
+						"createRail": "Create 鐵路地圖",
+						"wiki": "知識庫（維基）",
+						"docs": "文件庫",
+						"sponsor": "贊助我們"
+					}
+				},
+				"users": {
+					"title": "本站用戶",
+					"action": "查看用戶目錄"
+				},
+				"players": {
+					"title": "本站玩家",
+					"action": "查看玩家目錄",
+					"fields": {
+						"playTime": "遊玩時間",
+						"lastLogin": "最近登入時間"
+					}
+				}
+			},
+			"directories": {
+				"pagination": {
+					"summary": "第 {page} / {pageCount} 頁，共 {total} 筆",
+					"first": "第一頁",
+					"previous": "上一頁",
+					"next": "下一頁",
+					"last": "最後一頁",
+					"pageSize": "{size} / 頁"
+				},
+				"states": {
+					"loadFailed": "目錄頁面暫時無法載入",
+					"emptyUsers": "暫時沒有可展示的使用者。",
+					"emptyPlayers": "暫時沒有可展示的玩家。"
+				},
+				"searchCaptcha": {
+					"title": "搜尋前需要完成安全驗證",
+					"description": "為了減少批量搜尋與目錄抓取，搜尋目錄前需要先完成一次安全驗證。",
+					"action": "驗證後繼續搜尋",
+					"verifying": "驗證通過，正在載入搜尋結果..."
+				},
+				"users": {
+					"title": "用戶目錄",
+					"description": "公開展示可被檢索的 Portal 用戶。",
+					"fields": {
+						"user": "用戶",
+						"minecraft": "Minecraft",
+						"joinedAt": "加入時間"
+					},
+					"filters": {
+						"search": "搜尋用戶名、顯示名稱或簡介"
+					}
+				},
+				"players": {
+					"title": "玩家目錄",
+					"description": "公開展示來自遊戲側的玩家身份與綁定情況。",
+					"fields": {
+						"player": "玩家",
+						"linkedUser": "綁定用戶",
+						"group": "權限組",
+						"playTime": "遊玩時間",
+						"lastLogin": "最近登入時間",
+						"registeredAt": "註冊時間"
+					},
+					"filters": {
+						"search": "搜尋玩家名、AuthMe 名或綁定用戶",
+						"group": "搜尋權限組"
+					}
+				}
+			},
+			"states": {
+				"loadFailed": "服況頁面暫時無法載入",
+				"iframeLoadFailed": "無法載入",
+				"emptyServers": "暫未配置可展示的伺服器。",
+				"emptyUsers": "暫時沒有可展示的本站用戶。",
+				"emptyPlayers": "暫時沒有可展示的本站玩家。",
+				"noDescription": "這位用戶暫時沒有留下簡介。",
+				"notAvailable": "暫無"
+			}
+		},
 		"intro": {
 			"hero": {
 				"coverAlt": "HydCraft 招新簡介封面",

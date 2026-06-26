@@ -30,6 +30,7 @@
 			"CAPTCHA_INVALID": "セキュリティ認証が無効または期限切れです。もう一度完了してください。",
 			"CAPTCHA_VERIFY_FAILED": "セキュリティ認証サービスで検証できませんでした。",
 			"CAPTCHA_CONFIG_MISSING": "セキュリティ認証サービスが設定されていません。",
+			"DIRECTORY_SEARCH_CAPTCHA_REQUIRED": "ディレクトリを検索する前にセキュリティ認証を完了してください。",
 			"RESET_TOKEN_REQUIRED": "リセットトークンを入力してください。",
 			"PASSWORD_RESET_CONFIRM_NOT_CONFIGURED": "パスワードリセット確認はまだ設定されていません。",
 			"PRIMARY_EMAIL_REQUIRED": "少なくとも 1 つのメインメールが必要です。",

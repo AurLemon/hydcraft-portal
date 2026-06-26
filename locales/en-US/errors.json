@@ -30,6 +30,7 @@
 			"CAPTCHA_INVALID": "The security verification is invalid or expired. Please complete it again.",
 			"CAPTCHA_VERIFY_FAILED": "The security verification service could not validate the challenge.",
 			"CAPTCHA_CONFIG_MISSING": "The security verification service is not configured.",
+			"DIRECTORY_SEARCH_CAPTCHA_REQUIRED": "Please complete the security verification before searching the directory.",
 			"RESET_TOKEN_REQUIRED": "Please enter the reset token.",
 			"PASSWORD_RESET_CONFIRM_NOT_CONFIGURED": "Password reset confirmation is not configured yet.",
 			"PRIMARY_EMAIL_REQUIRED": "At least one primary email must remain.",

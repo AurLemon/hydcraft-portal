@@ -3,6 +3,103 @@
 		"about": {
 			"title": "Who Are We?"
 		},
+		"serverOverview": {
+			"pageTitle": "Server",
+			"actions": {
+				"openMap": "Open Map"
+			},
+			"cards": {
+				"satellite": {
+					"title": "Satellite Map"
+				},
+				"mtr": {
+					"title": "MTR Map"
+				},
+				"bridge": {
+					"selectServer": "Select server",
+					"links": {
+						"charter": "Server Charter",
+						"communityCovenant": "Community Covenant",
+						"satellite": "Satellite Map",
+						"mtr": "MTR Rail Map",
+						"createRail": "Create Rail Map",
+						"wiki": "Wiki",
+						"docs": "Docs",
+						"sponsor": "Support Us"
+					}
+				},
+				"users": {
+					"title": "Portal Users",
+					"action": "View User Directory"
+				},
+				"players": {
+					"title": "Portal Players",
+					"action": "View Player Directory",
+					"fields": {
+						"playTime": "Play Time",
+						"lastLogin": "Last AuthMe Login"
+					}
+				}
+			},
+			"directories": {
+				"pagination": {
+					"summary": "Page {page} / {pageCount}, {total} total",
+					"first": "First page",
+					"previous": "Previous page",
+					"next": "Next page",
+					"last": "Last page",
+					"pageSize": "{size} / page"
+				},
+				"states": {
+					"loadFailed": "The directory is temporarily unavailable.",
+					"emptyUsers": "No public users are available right now.",
+					"emptyPlayers": "No public players are available right now."
+				},
+				"searchCaptcha": {
+					"title": "Security verification is required before searching",
+					"description": "To reduce automated search and directory scraping, please complete a security verification before searching the directory.",
+					"action": "Verify and continue",
+					"verifying": "Verified. Loading search results..."
+				},
+				"users": {
+					"title": "User Directory",
+					"description": "Browse public Portal users that can be discovered.",
+					"fields": {
+						"user": "User",
+						"minecraft": "Minecraft",
+						"joinedAt": "Joined"
+					},
+					"filters": {
+						"search": "Search username, display name, or bio"
+					}
+				},
+				"players": {
+					"title": "Player Directory",
+					"description": "Browse public player identities and their Portal bindings.",
+					"fields": {
+						"player": "Player",
+						"linkedUser": "Linked user",
+						"group": "Primary group",
+						"playTime": "Play time",
+						"lastLogin": "Last login",
+						"registeredAt": "Registered at"
+					},
+					"filters": {
+						"search": "Search player, AuthMe name, or linked user",
+						"group": "Search primary group"
+					}
+				}
+			},
+			"states": {
+				"loadFailed": "The server overview is temporarily unavailable.",
+				"iframeLoadFailed": "Unable to load",
+				"emptyServers": "No public server is available right now.",
+				"emptyUsers": "No portal users are available right now.",
+				"emptyPlayers": "No players are available right now.",
+				"noDescription": "This user has not added a description yet.",
+				"notAvailable": "N/A"
+			}
+		},
 		"intro": {
 			"hero": {
 				"coverAlt": "HydCraft intro cover",

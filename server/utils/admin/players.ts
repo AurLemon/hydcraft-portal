@@ -659,3 +659,25 @@ export const listAdminMinecraftAccounts = async (input: {
 		pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
 	}
 }
+
+export const listAdminMinecraftAccountOverviewCandidates = async () => {
+	return await prisma.minecraftAccount.findMany({
+		where: {
+			authMeAccount: {
+				isNot: null,
+			},
+		},
+		select: {
+			normalizedUsername: true,
+			username: true,
+			authMeAccount: {
+				select: {
+					username: true,
+					realname: true,
+					lastLoginAt: true,
+				},
+			},
+		},
+		orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
+	})
+}

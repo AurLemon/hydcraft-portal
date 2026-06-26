@@ -3,6 +3,103 @@
 		"about": {
 			"title": "我们是什么?"
 		},
+		"serverOverview": {
+			"pageTitle": "服况",
+			"actions": {
+				"openMap": "打开地图"
+			},
+			"cards": {
+				"satellite": {
+					"title": "卫星地图"
+				},
+				"mtr": {
+					"title": "MTR 地图"
+				},
+				"bridge": {
+					"selectServer": "选择服务器",
+					"links": {
+						"charter": "服务器章程",
+						"communityCovenant": "社区公约",
+						"satellite": "卫星地图",
+						"mtr": "MTR 铁路地图",
+						"createRail": "Create 铁路地图",
+						"wiki": "知识库（维基）",
+						"docs": "文档库",
+						"sponsor": "赞助我们"
+					}
+				},
+				"users": {
+					"title": "用户",
+					"action": "查看用户目录"
+				},
+				"players": {
+					"title": "玩家",
+					"action": "查看玩家目录",
+					"fields": {
+						"playTime": "游戏时间",
+						"lastLogin": "最近登录时间"
+					}
+				}
+			},
+			"directories": {
+				"pagination": {
+					"summary": "第 {page} / {pageCount} 页，共 {total} 条",
+					"first": "第一页",
+					"previous": "上一页",
+					"next": "下一页",
+					"last": "最后一页",
+					"pageSize": "{size} / 页"
+				},
+				"states": {
+					"loadFailed": "目录页面暂时无法加载",
+					"emptyUsers": "暂时没有可展示的用户。",
+					"emptyPlayers": "暂时没有可展示的玩家。"
+				},
+				"searchCaptcha": {
+					"title": "搜索前需要完成安全验证",
+					"description": "为了减少批量搜索与目录抓取，搜索目录前需要先完成一次安全验证。",
+					"action": "验证后继续搜索",
+					"verifying": "验证通过，正在加载搜索结果..."
+				},
+				"users": {
+					"title": "用户目录",
+					"description": "公开展示可被检索的 Portal 用户。",
+					"fields": {
+						"user": "用户",
+						"minecraft": "Minecraft",
+						"joinedAt": "加入时间"
+					},
+					"filters": {
+						"search": "搜索用户名、显示名或简介"
+					}
+				},
+				"players": {
+					"title": "玩家目录",
+					"description": "公开展示来自游戏侧的玩家身份与绑定情况。",
+					"fields": {
+						"player": "玩家",
+						"linkedUser": "绑定用户",
+						"group": "权限组",
+						"playTime": "游戏时间",
+						"lastLogin": "最近登录时间",
+						"registeredAt": "注册时间"
+					},
+					"filters": {
+						"search": "搜索玩家名、AuthMe 名或绑定用户",
+						"group": "搜索权限组"
+					}
+				}
+			},
+			"states": {
+				"loadFailed": "服况页面暂时无法加载",
+				"iframeLoadFailed": "无法加载",
+				"emptyServers": "暂未配置可展示的服务器。",
+				"emptyUsers": "暂时没有可展示的用户。",
+				"emptyPlayers": "暂时没有可展示的玩家。",
+				"noDescription": "这个用户暂时没有留下简介。",
+				"notAvailable": "暂无"
+			}
+		},
 		"intro": {
 			"hero": {
 				"coverAlt": "HydCraft 招新简介封面",

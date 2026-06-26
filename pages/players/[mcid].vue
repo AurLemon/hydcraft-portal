@@ -1,5 +1,5 @@
 <template>
-	<div class="site-shell -mt-2 pb-16">
+	<div class="site-shell pb-16">
 		<div class="flex flex-col gap-4">
 			<div v-if="initialLoading" class="grid gap-4">
 				<USkeleton class="h-160 rounded-3xl" />

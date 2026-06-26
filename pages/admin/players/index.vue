@@ -68,17 +68,8 @@
 							skeleton-class="rounded-md"
 						/>
 						<div class="min-w-0">
-							<p
-								class="flex min-w-0 items-center gap-1 font-medium text-slate-900 dark:text-white"
-							>
-								<span class="truncate">{{ row.original.username }}</span>
-								<UBadge
-									v-if="row.original.isPrimary"
-									color="primary"
-									variant="subtle"
-								>
-									{{ t('admin.players.states.primary') }}
-								</UBadge>
+							<p class="truncate font-medium text-slate-900 dark:text-white">
+								{{ row.original.username }}
 							</p>
 							<p
 								v-if="getAccountUuid(row.original)"
