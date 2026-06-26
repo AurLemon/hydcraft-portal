@@ -35,16 +35,33 @@ export const mainHeaderMenuGroup: HeaderMenuGroup = {
 	],
 }
 
+export const isServerDirectoryDetailPath = (path: string): boolean => {
+	const normalizedPath = normalizeHeaderMenuPath(path)
+
+	return (
+		/^\/players\/[^/]+$/.test(normalizedPath) ||
+		/^\/u\/[^/]+$/.test(normalizedPath)
+	)
+}
+
+export const matchesServerDirectoriesGroupPath = (path: string): boolean => {
+	const normalizedPath = normalizeHeaderMenuPath(path)
+
+	return (
+		normalizedPath === '/server/users' ||
+		normalizedPath === '/server/players' ||
+		normalizedPath === '/server/charter' ||
+		normalizedPath === '/server/community-covenant' ||
+		isServerDirectoryDetailPath(normalizedPath)
+	)
+}
+
 export const headerMenuGroups: HeaderMenuGroup[] = [
 	mainHeaderMenuGroup,
 	{
 		key: 'server-directories',
 		parentKey: 'main',
-		match: (path) =>
-			path === '/server/users' ||
-			path === '/server/players' ||
-			path === '/server/charter' ||
-			path === '/server/community-covenant',
+		match: matchesServerDirectoriesGroupPath,
 		items: [
 			{ key: 'server-overview', labelKey: 'routes.server', to: '/server' },
 			{

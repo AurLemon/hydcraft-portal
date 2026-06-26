@@ -3,6 +3,7 @@ import {
 	findHeaderMenuGroupByKey,
 	findHeaderMenuGroupByPath,
 	headerMenuGroups,
+	isServerDirectoryDetailPath,
 	isPathInHeaderMenuGroup,
 	mainHeaderMenuGroup,
 	normalizeHeaderMenuPath,
@@ -128,22 +129,6 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			return isPathInHeaderMenuGroup(group, route.path)
 		}),
 	)
-	const groupMenuItems = computed<MenuItem[]>(() =>
-		displayedGroup.value.items.map((item) => ({
-			key: item.key,
-			label: t(item.labelKey),
-			to: item.to,
-			icon: item.icon,
-		})),
-	)
-	const routeGroupMenuItems = computed<MenuItem[]>(() =>
-		routeGroup.value.items.map((item) => ({
-			key: item.key,
-			label: t(item.labelKey),
-			to: item.to,
-			icon: item.icon,
-		})),
-	)
 	const getPathMatchScore = (
 		item: MenuItem,
 		currentPath: string = route.path,
@@ -268,6 +253,41 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			badgeFallbackText: routeBadge.value?.fallbackText ?? null,
 		}
 	})
+	const currentRouteGroupItem = computed<MenuItem | null>(() => {
+		if (routeGroupKey.value !== 'server-directories') {
+			return null
+		}
+
+		if (!isServerDirectoryDetailPath(route.path)) {
+			return null
+		}
+
+		return currentRouteFallback.value
+	})
+	const buildGroupMenuItems = (group: HeaderMenuGroup): MenuItem[] => {
+		const items = group.items.map((item) => ({
+			key: item.key,
+			label: t(item.labelKey),
+			to: item.to,
+			icon: item.icon,
+		}))
+
+		if (
+			group.key !== 'server-directories' ||
+			!currentRouteGroupItem.value ||
+			items.some((item) => item.key === currentRouteGroupItem.value?.key)
+		) {
+			return items
+		}
+
+		return [...items, currentRouteGroupItem.value]
+	}
+	const groupMenuItems = computed<MenuItem[]>(() =>
+		buildGroupMenuItems(displayedGroup.value),
+	)
+	const routeGroupMenuItems = computed<MenuItem[]>(() =>
+		buildGroupMenuItems(routeGroup.value),
+	)
 	const currentFallback = computed<MenuItem | null>(() => {
 		if (!isViewingRouteGroup.value || activeRouteBelongsToAnyGroup.value) {
 			return null
