@@ -42,7 +42,7 @@
 			:title="t('content.serverOverview.states.loadFailed')"
 		/>
 
-		<div v-else class="grid gap-12">
+		<div v-else-if="overview" class="grid gap-12">
 			<section class="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
 				<ServerOverviewBridgeStatusCard
 					class="lg:row-span-2"
@@ -91,6 +91,12 @@
 				:total-count="overview.totalPlayers"
 			/>
 		</div>
+
+		<PageInlineException
+			v-else
+			icon="i-lucide-cloud-off"
+			:title="t('content.serverOverview.states.loadFailed')"
+		/>
 	</div>
 </template>
 
