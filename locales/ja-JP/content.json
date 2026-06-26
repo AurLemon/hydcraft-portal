@@ -130,7 +130,7 @@
 						"xw": {
 							"nickname": "小万",
 							"motto": "Cura et Forma.",
-							"intro": "福建省福州出身で、倉鼠の親友です。欧米モダン系の小スケール設計を得意とし、内外装、空間の細部、建築の質感、全体の雰囲気づくりに強みがあります。"
+							"intro": "福建省福州出身で、倉鼠の親友です。欧米モダン系の小スケール設計を得意とし、内外装、空間の細部、建築の質感、全体の雰囲気づくりに強みがあります。倉鼠と組んで協業することも多く、建築設計と細部の仕上げで良い相互補完を見せます。"
 						},
 						"fisheye": {
 							"nickname": "題散",
@@ -286,7 +286,15 @@
 			}
 		},
 		"charter": {
-			"title": "サーバー規約"
+			"title": "HydCraftサーバー憲章"
+		},
+		"communityCovenant": {
+			"title": "HydCraftサーバーコミュニティ規約"
+		},
+		"documentApproval": {
+			"approvedByCommittee": "管理委員会は {date}にこれを可決しました",
+			"edition": "第{ordinal}版",
+			"statusInEffect": "施行中"
 		},
 		"imageCarousel": {
 			"openPreview": "画像プレビューを開く: {alt}",

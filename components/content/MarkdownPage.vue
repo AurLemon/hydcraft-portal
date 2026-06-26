@@ -8,7 +8,7 @@
 			<div v-if="doc" :key="displayKey" class="min-w-0">
 				<MarkdownReadingProgressStatus :doc="doc" />
 				<slot name="header" :doc="doc" />
-				<div class="mx-auto w-full max-w-3xl min-w-0">
+				<div class="mx-auto w-full max-w-3xl min-w-0" :class="props.bodyClass">
 					<ContentRenderer :value="doc" />
 				</div>
 				<slot name="footer" :doc="doc" />
@@ -28,6 +28,12 @@ interface MarkdownPageDoc {
 	}
 	updatedAt?: string
 }
+
+interface MarkdownPageProps {
+	bodyClass?: string
+}
+
+const props = defineProps<MarkdownPageProps>()
 
 const route = useRoute()
 const { $i18n } = useNuxtApp()

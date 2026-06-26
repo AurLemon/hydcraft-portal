@@ -107,6 +107,7 @@ export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/server': 'routes.server',
 	'/server/overview': 'routes.serverOverview',
 	'/server/charter': 'routes.serverCharter',
+	'/server/community-covenant': 'routes.serverCommunityCovenant',
 	'/timeline': 'routes.timeline',
 	'/story': 'routes.timeline',
 	'/overview': 'routes.overview',

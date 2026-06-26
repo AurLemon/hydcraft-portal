@@ -151,7 +151,7 @@ const baselineTitle = computed(() => t('content.intro.fit.baseline.title'))
 const charterLinkLabel = computed(() =>
 	t('content.intro.fit.baseline.charterLinkLabel'),
 )
-const charterLinkTo = computed(() => localePath('/server/charter'))
+const charterLinkTo = computed(() => localePath('/server/community-covenant'))
 
 const fitItems = computed(() =>
 	Array.from({ length: FIT_COUNT }, (_, index) =>

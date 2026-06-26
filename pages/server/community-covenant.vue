@@ -11,7 +11,7 @@
 						<div
 							class="text-4xl text-center font-arkpixel tracking-wider uppercase text-slate-950 dark:text-slate-50"
 						>
-							{{ t('content.charter.title') }}
+							{{ t('content.communityCovenant.title') }}
 						</div>
 						<ContentReadingStats :doc="doc" />
 					</div>
@@ -19,9 +19,9 @@
 			</template>
 			<template #footer="{ doc }">
 				<DocumentApprovalCard
-					approved-at="2023-11-20T00:00:00+08:00"
-					:edition="2"
-					:approve-count="4"
+					approved-at="2026-06-26T16:18:00+08:00"
+					:edition="1"
+					:approve-count="7"
 					:veto-count="0"
 					:abstain-count="0"
 				/>

@@ -96,7 +96,7 @@
 						"The server is centered on building and collaboration. No real-world politics, no flame-baiting, and no factional hostility.",
 						"Do not form cliques to exclude others, and do not mock, attack, or damage other people's work. When disputes arise, contact the admin team for mediation first."
 					],
-					"charterLinkLabel": "View the full server charter"
+					"charterLinkLabel": "View the full community covenant"
 				}
 			},
 			"staff": {
@@ -130,7 +130,7 @@
 						"xw": {
 							"nickname": "小万",
 							"motto": "Cura et Forma.",
-							"intro": "From Fuzhou, Fujian, and a close friend of CatPillager. Specializes in small-scale European and American modern design, with standout work on both interiors and exteriors, especially in spatial detail, material texture, and atmosphere. Often collaborates with the first architect, forming a strong complement in design and refinement."
+							"intro": "From Fuzhou, Fujian, and a close friend of catpillager. Specializes in small-scale European and American modern design, with standout work on both interiors and exteriors, especially in spatial detail, material texture, and atmosphere. He often collaborates with catpillager, forming a strong complement in architectural design and detail refinement."
 						},
 						"fisheye": {
 							"nickname": "题散",
@@ -286,7 +286,15 @@
 			}
 		},
 		"charter": {
-			"title": "Server Charter"
+			"title": "HydCraft Server Charter"
+		},
+		"communityCovenant": {
+			"title": "HydCraft Server Community Covenant"
+		},
+		"documentApproval": {
+			"approvedByCommittee": "Approved by the Management Committee on {date}",
+			"edition": "{ordinal} Edition",
+			"statusInEffect": "In Effect"
 		},
 		"imageCarousel": {
 			"openPreview": "Open image preview: {alt}",

@@ -125,7 +125,7 @@
 						"xw": {
 							"nickname": "小萬",
 							"motto": "Cura et Forma.",
-							"intro": "福建福州人，和倉鼠是好朋友。擅長歐美現代風格的小比例設計，內飾與外飾都非常出色，尤其擅長空間細節、建築質感與整體氛圍的處理。常與第一位搭檔協作，在建築設計與細節完善上形成很好的互補。"
+							"intro": "福建福州人，和倉鼠是好朋友。擅長歐美現代風格的小比例設計，內飾與外飾都非常出色，尤其擅長空間細節、建築質感與整體氛圍的處理。他經常與倉鼠搭檔協作，在建築設計與細節完善上形成很好的互補。"
 						},
 						"fisheye": {
 							"nickname": "題散",
@@ -281,7 +281,15 @@
 			}
 		},
 		"charter": {
-			"title": "伺服器章程"
+			"title": "氫氣工藝伺服器章程"
+		},
+		"communityCovenant": {
+			"title": "氫氣工藝伺服器社群公約"
+		},
+		"documentApproval": {
+			"approvedByCommittee": "管理委員會已於 {date}通過",
+			"edition": "第{ordinal}版",
+			"statusInEffect": "實施中"
 		},
 		"imageCarousel": {
 			"openPreview": "打開圖片預覽：{alt}",
