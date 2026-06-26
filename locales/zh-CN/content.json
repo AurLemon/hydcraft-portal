@@ -63,7 +63,6 @@
 				},
 				"users": {
 					"title": "用户目录",
-					"description": "公开展示可被检索的 Portal 用户。",
 					"fields": {
 						"user": "用户",
 						"minecraft": "Minecraft",
@@ -75,7 +74,6 @@
 				},
 				"players": {
 					"title": "玩家目录",
-					"description": "公开展示来自游戏侧的玩家身份与绑定情况。",
 					"fields": {
 						"player": "玩家",
 						"linkedUser": "绑定用户",
@@ -85,7 +83,7 @@
 						"registeredAt": "注册时间"
 					},
 					"filters": {
-						"search": "搜索玩家名、AuthMe 名或绑定用户",
+						"search": "搜索玩家名、登录名或绑定用户",
 						"group": "搜索权限组"
 					}
 				}

@@ -16,6 +16,18 @@
 		@update:page="page = $event"
 		@update:page-size="setPageSize"
 	>
+		<template #headerPrefix>
+			<UButton
+				:to="localePath('/server')"
+				color="primary"
+				variant="ghost"
+				icon="i-lucide-arrow-left"
+				class="-ml-2 mb-3"
+			>
+				{{ t('routes.server') }}
+			</UButton>
+		</template>
+
 		<template #filters>
 			<UInput
 				v-model="filters.search"

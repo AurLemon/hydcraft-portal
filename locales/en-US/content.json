@@ -29,15 +29,15 @@
 					}
 				},
 				"users": {
-					"title": "Portal Users",
+					"title": "User",
 					"action": "View User Directory"
 				},
 				"players": {
-					"title": "Portal Players",
+					"title": "Players",
 					"action": "View Player Directory",
 					"fields": {
 						"playTime": "Play Time",
-						"lastLogin": "Last AuthMe Login"
+						"lastLogin": "Last Login"
 					}
 				}
 			},
@@ -63,7 +63,6 @@
 				},
 				"users": {
 					"title": "User Directory",
-					"description": "Browse public Portal users that can be discovered.",
 					"fields": {
 						"user": "User",
 						"minecraft": "Minecraft",
@@ -75,7 +74,6 @@
 				},
 				"players": {
 					"title": "Player Directory",
-					"description": "Browse public player identities and their Portal bindings.",
 					"fields": {
 						"player": "Player",
 						"linkedUser": "Linked user",
@@ -85,7 +83,7 @@
 						"registeredAt": "Registered at"
 					},
 					"filters": {
-						"search": "Search player, AuthMe name, or linked user",
+						"search": "Search player, login name, or linked user",
 						"group": "Search primary group"
 					}
 				}
@@ -94,7 +92,7 @@
 				"loadFailed": "The server overview is temporarily unavailable.",
 				"iframeLoadFailed": "Unable to load",
 				"emptyServers": "No public server is available right now.",
-				"emptyUsers": "No portal users are available right now.",
+				"emptyUsers": "No users are available right now.",
 				"emptyPlayers": "No players are available right now.",
 				"noDescription": "This user has not added a description yet.",
 				"notAvailable": "N/A"

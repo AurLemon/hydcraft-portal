@@ -29,11 +29,11 @@
 					}
 				},
 				"users": {
-					"title": "本站用戶",
+					"title": "用戶",
 					"action": "查看用戶目錄"
 				},
 				"players": {
-					"title": "本站玩家",
+					"title": "玩家",
 					"action": "查看玩家目錄",
 					"fields": {
 						"playTime": "遊玩時間",
@@ -63,7 +63,6 @@
 				},
 				"users": {
 					"title": "用戶目錄",
-					"description": "公開展示可被檢索的 Portal 用戶。",
 					"fields": {
 						"user": "用戶",
 						"minecraft": "Minecraft",
@@ -75,7 +74,6 @@
 				},
 				"players": {
 					"title": "玩家目錄",
-					"description": "公開展示來自遊戲側的玩家身份與綁定情況。",
 					"fields": {
 						"player": "玩家",
 						"linkedUser": "綁定用戶",
@@ -85,7 +83,7 @@
 						"registeredAt": "註冊時間"
 					},
 					"filters": {
-						"search": "搜尋玩家名、AuthMe 名或綁定用戶",
+						"search": "搜尋玩家名、登入名或綁定用戶",
 						"group": "搜尋權限組"
 					}
 				}
@@ -94,8 +92,8 @@
 				"loadFailed": "服況頁面暫時無法載入",
 				"iframeLoadFailed": "無法載入",
 				"emptyServers": "暫未配置可展示的伺服器。",
-				"emptyUsers": "暫時沒有可展示的本站用戶。",
-				"emptyPlayers": "暫時沒有可展示的本站玩家。",
+				"emptyUsers": "暫時沒有可展示的用戶。",
+				"emptyPlayers": "暫時沒有可展示的玩家。",
 				"noDescription": "這位用戶暫時沒有留下簡介。",
 				"notAvailable": "暫無"
 			}

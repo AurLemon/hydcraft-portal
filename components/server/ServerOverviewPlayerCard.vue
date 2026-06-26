@@ -79,6 +79,7 @@ const colorMode = useColorMode()
 const accentColor = ref<ServerOverviewRgbColor>({
 	...props.player.accentColor,
 })
+const hasMounted = ref(false)
 let accentLoadToken = 0
 
 const TICKS_PER_SECOND = 20
@@ -108,12 +109,18 @@ const accentRgbText = computed(
 		`${accentColor.value.r}, ${accentColor.value.g}, ${accentColor.value.b}`,
 )
 
-const cardBackgroundStyle = computed(() => ({
-	background:
-		colorMode.value === 'dark'
-			? `radial-gradient(circle at top center, rgba(${accentRgbText.value}, 0.24) 0%, rgba(${accentRgbText.value}, 0.12) 20%, rgba(2,6,23,0) 62%), linear-gradient(180deg, rgba(15,23,42,0.94) 0%, rgba(2,6,23,0.98) 42%, rgba(${accentRgbText.value}, 0.14) 100%)`
-			: `radial-gradient(circle at top center, rgba(${accentRgbText.value}, 0.26) 0%, rgba(${accentRgbText.value}, 0.12) 22%, rgba(255,255,255,0) 62%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,250,252,0.98) 42%, rgba(${accentRgbText.value}, 0.1) 100%)`,
-}))
+const cardBackgroundStyle = computed(() => {
+	if (!hasMounted.value) {
+		return undefined
+	}
+
+	return {
+		background:
+			colorMode.value === 'dark'
+				? `radial-gradient(circle at top center, rgba(${accentRgbText.value}, 0.24) 0%, rgba(${accentRgbText.value}, 0.12) 20%, rgba(2,6,23,0) 62%), linear-gradient(180deg, rgba(15,23,42,0.94) 0%, rgba(2,6,23,0.98) 42%, rgba(${accentRgbText.value}, 0.14) 100%)`
+				: `radial-gradient(circle at top center, rgba(${accentRgbText.value}, 0.26) 0%, rgba(${accentRgbText.value}, 0.12) 22%, rgba(255,255,255,0) 62%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,250,252,0.98) 42%, rgba(${accentRgbText.value}, 0.1) 100%)`,
+	}
+})
 
 const syncAccentColor = async () => {
 	const currentToken = ++accentLoadToken
@@ -141,6 +148,10 @@ watch(
 	},
 	{ immediate: true },
 )
+
+onMounted(() => {
+	hasMounted.value = true
+})
 
 onBeforeUnmount(() => {
 	accentLoadToken += 1

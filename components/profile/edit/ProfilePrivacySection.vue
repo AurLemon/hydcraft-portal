@@ -15,7 +15,7 @@
 				label-class="flex-1"
 				:label="item.label"
 			>
-				<USwitch v-model="form.privacy[item.key]" :disabled="item.disabled" />
+				<USwitch v-model="form.privacy[item.key]" />
 			</ProfileSwitchField>
 		</div>
 	</section>
@@ -37,7 +37,6 @@ const localizedPrivacyItems = computed(() =>
 	privacyItems.map((item) => ({
 		...item,
 		label: t(`profile.privacy.${item.key}`),
-		disabled: item.key === 'searchableInUserDirectory',
 	})),
 )
 </script>

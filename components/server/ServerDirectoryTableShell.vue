@@ -5,6 +5,9 @@
 				class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between"
 			>
 				<div>
+					<div v-if="$slots.headerPrefix" class="mb-3">
+						<slot name="headerPrefix" />
+					</div>
 					<h1 class="text-3xl font-semibold text-slate-950 dark:text-white">
 						{{ title }}
 					</h1>

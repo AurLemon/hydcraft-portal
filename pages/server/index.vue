@@ -107,10 +107,10 @@ const { t } = useI18n()
 const pageTitle = computed(() => t('content.serverOverview.pageTitle'))
 useExplicitRouteTitle(pageTitle)
 
-const { data, pending, error } = await useFetch<ServerOverviewResponse>(
-	'/api/public/server/overview',
-)
+const { data, pending, error, refresh } =
+	await useFetch<ServerOverviewResponse>('/api/public/server/overview')
 const selectedServerId = ref<string | null>(null)
+let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const overview = computed(() => data.value ?? null)
 
@@ -133,4 +133,17 @@ watch(
 	},
 	{ immediate: true },
 )
+
+onMounted(() => {
+	refreshTimer = setInterval(() => {
+		void refresh()
+	}, 60_000)
+})
+
+onBeforeUnmount(() => {
+	if (refreshTimer) {
+		clearInterval(refreshTimer)
+		refreshTimer = null
+	}
+})
 </script>

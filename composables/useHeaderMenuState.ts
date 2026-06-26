@@ -144,17 +144,60 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			icon: item.icon,
 		})),
 	)
+	const getPathMatchScore = (
+		item: MenuItem,
+		currentPath: string = route.path,
+	): number => {
+		const normalizedCurrentPath = normalizePath(currentPath)
+		const target = item.to
+
+		if (item.to === '/') {
+			return normalizedCurrentPath === target ? 2 : -1
+		}
+
+		if (normalizedCurrentPath === target) {
+			return 3
+		}
+
+		return normalizedCurrentPath.startsWith(`${target}/`) ? 1 : -1
+	}
+	const findBestActiveItem = (
+		items: MenuItem[],
+		currentPath: string = route.path,
+	): MenuItem | null =>
+		items.reduce<MenuItem | null>((bestItem, item) => {
+			const score = getPathMatchScore(item, currentPath)
+
+			if (score < 0) {
+				return bestItem
+			}
+
+			if (!bestItem) {
+				return item
+			}
+
+			const bestScore = getPathMatchScore(bestItem, currentPath)
+
+			if (score > bestScore) {
+				return item
+			}
+
+			if (score === bestScore && item.to.length > bestItem.to.length) {
+				return item
+			}
+
+			return bestItem
+		}, null)
 	const isPathActive = (
 		item: MenuItem,
 		currentPath: string = route.path,
-	): boolean => {
-		const target = resolveTo(item)
-		if (item.to === '/') {
-			return currentPath === target
-		}
-
-		return currentPath === target || currentPath.startsWith(`${target}/`)
-	}
+	): boolean => getPathMatchScore(item, currentPath) >= 0
+	const displayedGroupActiveItem = computed<MenuItem | null>(() =>
+		findBestActiveItem(groupMenuItems.value, route.path),
+	)
+	const routeGroupActiveItem = computed<MenuItem | null>(() =>
+		findBestActiveItem(routeGroupMenuItems.value, route.path),
+	)
 	const routeBadge = computed(() => {
 		const normalizedRoutePath = normalizePath(route.path)
 
@@ -230,7 +273,7 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			return null
 		}
 
-		if (groupMenuItems.value.some((item) => isPathActive(item))) {
+		if (displayedGroupActiveItem.value) {
 			return null
 		}
 
@@ -242,9 +285,7 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 			: groupMenuItems.value,
 	)
 	const activeDisplayNavItem = computed<MenuItem>(() => {
-		const activeItem = routeGroupMenuItems.value.find((item) =>
-			isPathActive(item),
-		)
+		const activeItem = routeGroupActiveItem.value
 		const firstItem = routeGroupMenuItems.value[0]
 
 		return activeItem || currentRouteFallback.value || firstItem
@@ -429,13 +470,15 @@ export const useHeaderMenuState = (options: HeaderMenuStateOptions) => {
 		}
 	})
 	const resolveNavItemClass = (item: MenuItem): string =>
-		isPathActive(item)
+		displayedGroupActiveItem.value?.key === item.key
 			? options.activeNavItemClass()
 			: options.inactiveNavItemClass()
 	const resolveDesktopNavItemClass = (item: MenuItem): string =>
 		item.isFallback ? options.fallbackNavItemClass() : resolveNavItemClass(item)
 	const resolveHighlightClass = (item: MenuItem): string =>
-		isPathActive(item) || item.isFallback ? 'opacity-100' : ''
+		displayedGroupActiveItem.value?.key === item.key || item.isFallback
+			? 'opacity-100'
+			: ''
 	const hiddenMenuClass = computed(() =>
 		options.hidden?.()
 			? 'pointer-events-none translate-y-1 opacity-0 select-none'

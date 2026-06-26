@@ -103,8 +103,11 @@ const pickRandomItems = <T>(items: T[], limit: number): T[] =>
 const isPublicProfileCandidate = (
 	privacy: {
 		publicProfile: boolean | null
+		searchableInUserDirectory: boolean | null
 	} | null,
-): boolean => privacy?.publicProfile ?? true
+): boolean =>
+	(privacy?.publicProfile ?? true) &&
+	(privacy?.searchableInUserDirectory ?? true)
 
 const listRecommendedUsers = async (): Promise<
 	ServerOverviewRecommendedUser[]
@@ -119,6 +122,7 @@ const listRecommendedUsers = async (): Promise<
 			privacy: {
 				select: {
 					publicProfile: true,
+					searchableInUserDirectory: true,
 				},
 			},
 		},
@@ -144,6 +148,7 @@ const countPublicUsers = async (): Promise<number> => {
 			privacy: {
 				select: {
 					publicProfile: true,
+					searchableInUserDirectory: true,
 				},
 			},
 		},

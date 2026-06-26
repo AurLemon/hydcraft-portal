@@ -38,6 +38,38 @@ export const mainHeaderMenuGroup: HeaderMenuGroup = {
 export const headerMenuGroups: HeaderMenuGroup[] = [
 	mainHeaderMenuGroup,
 	{
+		key: 'server-directories',
+		parentKey: 'main',
+		match: (path) =>
+			path === '/server/users' ||
+			path === '/server/players' ||
+			path === '/server/charter' ||
+			path === '/server/community-covenant',
+		items: [
+			{ key: 'server-overview', labelKey: 'routes.server', to: '/server' },
+			{
+				key: 'server-users',
+				labelKey: 'routes.serverUsers',
+				to: '/server/users',
+			},
+			{
+				key: 'server-players',
+				labelKey: 'routes.serverPlayers',
+				to: '/server/players',
+			},
+			{
+				key: 'server-charter',
+				labelKey: 'routes.serverCharter',
+				to: '/server/charter',
+			},
+			{
+				key: 'server-community-covenant',
+				labelKey: 'routes.serverCommunityCovenant',
+				to: '/server/community-covenant',
+			},
+		],
+	},
+	{
 		key: 'me',
 		parentKey: 'main',
 		match: (path) => path === '/me' || path.startsWith('/me/'),

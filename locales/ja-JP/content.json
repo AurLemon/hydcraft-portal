@@ -29,15 +29,15 @@
 					}
 				},
 				"users": {
-					"title": "サイトユーザー",
+					"title": "ユーザー",
 					"action": "ユーザー一覧を見る"
 				},
 				"players": {
-					"title": "サイトプレイヤー",
+					"title": "プレイヤー",
 					"action": "プレイヤー一覧を見る",
 					"fields": {
 						"playTime": "プレイ時間",
-						"lastLogin": "最近の AuthMe ログイン"
+						"lastLogin": "最終ログイン"
 					}
 				}
 			},
@@ -63,7 +63,6 @@
 				},
 				"users": {
 					"title": "ユーザー一覧",
-					"description": "公開されている Portal ユーザーを一覧できます。",
 					"fields": {
 						"user": "ユーザー",
 						"minecraft": "Minecraft",
@@ -75,7 +74,6 @@
 				},
 				"players": {
 					"title": "プレイヤー一覧",
-					"description": "ゲーム側のプレイヤー情報と Portal 連携状況を公開表示します。",
 					"fields": {
 						"player": "プレイヤー",
 						"linkedUser": "連携ユーザー",
@@ -85,7 +83,7 @@
 						"registeredAt": "登録日時"
 					},
 					"filters": {
-						"search": "プレイヤー名、AuthMe 名、連携ユーザーで検索",
+						"search": "プレイヤー名、ログイン名、連携ユーザーで検索",
 						"group": "権限グループを検索"
 					}
 				}
