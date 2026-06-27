@@ -4,6 +4,7 @@
 			<div class="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
 				<USkeleton class="h-[40rem] rounded-xl lg:row-span-2" />
 				<ServerOverviewMapShell
+					class="h-full"
 					:title="t('content.serverOverview.cards.satellite.title')"
 					:open-label="t('content.serverOverview.actions.openMap')"
 					open-to="https://map.nitrogen.hydcraft.cn"
@@ -12,6 +13,7 @@
 					<USkeleton class="h-full w-full rounded-none" />
 				</ServerOverviewMapShell>
 				<ServerOverviewMapShell
+					class="h-full"
 					:title="t('content.serverOverview.cards.mtr.title')"
 					:open-label="t('content.serverOverview.actions.openMap')"
 					open-to="https://rail.nitrogen.hydcraft.cn"
@@ -54,10 +56,11 @@
 				/>
 
 				<ClientOnly>
-					<ServerOverviewSatelliteMapCard />
+					<ServerOverviewSatelliteMapCard class="h-full" />
 
 					<template #fallback>
 						<ServerOverviewMapShell
+							class="h-full"
 							:title="t('content.serverOverview.cards.satellite.title')"
 							:open-label="t('content.serverOverview.actions.openMap')"
 							open-to="https://map.nitrogen.hydcraft.cn"
@@ -69,10 +72,11 @@
 				</ClientOnly>
 
 				<ClientOnly>
-					<ServerOverviewMtrMapCard />
+					<ServerOverviewMtrMapCard class="h-full" />
 
 					<template #fallback>
 						<ServerOverviewMapShell
+							class="h-full"
 							:title="t('content.serverOverview.cards.mtr.title')"
 							:open-label="t('content.serverOverview.actions.openMap')"
 							open-to="https://rail.nitrogen.hydcraft.cn"
@@ -84,8 +88,7 @@
 				</ClientOnly>
 			</section>
 
-			<ServerOverviewSponsorCard v-if="sponsorStats" :stats="sponsorStats" />
-			<USkeleton v-else-if="showSponsorSkeleton" class="h-64 rounded-xl" />
+			<ServerOverviewSponsorCard :summary="sponsorSummary" />
 			<ServerOverviewUsersSection
 				:users="overview.recommendedUsers"
 				:total-count="overview.totalUsers"
@@ -106,9 +109,13 @@
 
 <script setup lang="ts">
 import PageInlineException from '~/components/common/PageInlineException.vue'
+import type { ServerOverviewSponsorCardSummary } from '~/components/server/ServerOverviewSponsorCard.vue'
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 import type { AfdianSponsorStatsResponse } from '~/utils/server/afdian'
-import type { ServerOverviewResponse } from '~/utils/server/overview'
+import type {
+	ServerOverviewLiveResponse,
+	ServerOverviewResponse,
+} from '~/utils/server/overview'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -118,20 +125,61 @@ const { t } = useI18n()
 const pageTitle = computed(() => t('content.serverOverview.pageTitle'))
 useExplicitRouteTitle(pageTitle)
 
-const { data, pending, error, refresh } =
-	await useFetch<ServerOverviewResponse>('/api/public/server/overview')
-const { data: sponsorData, pending: sponsorPending } =
-	await useFetch<AfdianSponsorStatsResponse | null>('/api/public/server/afdian')
+const { data, pending, error } = await useFetch<ServerOverviewResponse>(
+	'/api/public/server/overview',
+)
+const { data: liveOverviewData, refresh: refreshLiveOverview } =
+	await useFetch<ServerOverviewLiveResponse>(
+		'/api/public/server/overview-live',
+		{
+			immediate: false,
+		},
+	)
+const { data: sponsorData } = await useFetch<AfdianSponsorStatsResponse | null>(
+	'/api/public/server/afdian',
+)
 const selectedServerId = ref<string | null>(null)
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
-const overview = computed(() => data.value ?? null)
+const overview = computed<ServerOverviewResponse | null>(() => {
+	const initialOverview = data.value ?? null
+
+	if (!initialOverview) {
+		return null
+	}
+
+	const liveOverview = liveOverviewData.value ?? null
+
+	if (!liveOverview) {
+		return initialOverview
+	}
+
+	return {
+		...initialOverview,
+		servers: liveOverview.servers,
+		defaultServerId: liveOverview.defaultServerId,
+		totalUsers: liveOverview.totalUsers,
+		totalPlayers: liveOverview.totalPlayers,
+	}
+})
 const sponsorStats = computed(() => sponsorData.value ?? null)
 const showInitialSkeleton = computed(() => pending.value && !overview.value)
 const showInitialError = computed(() => Boolean(error.value) && !overview.value)
-const showSponsorSkeleton = computed(
-	() => sponsorPending.value && !sponsorStats.value,
-)
+const sponsorSummary = computed<ServerOverviewSponsorCardSummary>(() => {
+	if (sponsorStats.value) {
+		return {
+			supporterCount: String(sponsorStats.value.supporterCount),
+			totalAmount: sponsorStats.value.totalAmount,
+			link: sponsorStats.value.sponsorPageUrl,
+		}
+	}
+
+	return {
+		supporterCount: '10+',
+		totalAmount: '400+',
+		link: 'https://afdian.com/a/HydCraft',
+	}
+})
 
 watch(
 	overview,
@@ -155,7 +203,7 @@ watch(
 
 onMounted(() => {
 	refreshTimer = setInterval(() => {
-		void refresh()
+		void refreshLiveOverview()
 	}, 60_000)
 })
 

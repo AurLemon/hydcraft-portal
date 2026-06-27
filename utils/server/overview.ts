@@ -68,3 +68,10 @@ export interface ServerOverviewResponse {
 	recommendedUsers: ServerOverviewRecommendedUser[]
 	recommendedPlayers: ServerOverviewRecommendedPlayer[]
 }
+
+export interface ServerOverviewLiveResponse {
+	servers: ServerOverviewServerItem[]
+	defaultServerId: string | null
+	totalUsers: number
+	totalPlayers: number
+}

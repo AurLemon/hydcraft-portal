@@ -32,7 +32,7 @@
 					"eyebrow": "SUPPORT HYDCRAFT",
 					"supporterCountLabel": "支援者数",
 					"totalAmountLabel": "支援総額",
-					"summary": "{date} 時点で、{count} 人の支援者から合計 {amount} 元の発電を受け取りました。",
+					"summary": "現在までに、{count} 人の支援者から合計 {amount} 元の発電を受け取りました。",
 					"cta": "サーバーの長期運営を支えていただけるなら、Afdian でのご支援を歓迎します。",
 					"action": "Afdian を開く"
 				},

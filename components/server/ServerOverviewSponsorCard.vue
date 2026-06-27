@@ -1,10 +1,5 @@
 <template>
-	<a
-		:href="stats.sponsorPageUrl"
-		target="_blank"
-		rel="noreferrer"
-		class="group block"
-	>
+	<a :href="summary.link" target="_blank" rel="noreferrer" class="group block">
 		<section
 			class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-900 sm:p-7"
 		>
@@ -26,17 +21,14 @@
 							tag="p"
 							class="font-arkpixel text-2xl leading-7 text-slate-900 dark:text-slate-100"
 						>
-							<template #date>
-								{{ formattedDate }}
-							</template>
 							<template #count>
 								<strong class="mx-0.5 lg:text-4xl font-semibold">
-									{{ stats.supporterCount }}
+									{{ summary.supporterCount }}
 								</strong>
 							</template>
 							<template #amount>
 								<strong class="mx-0.5 lg:text-4xl font-semibold">
-									{{ stats.totalAmount }}
+									{{ summary.totalAmount }}
 								</strong>
 							</template>
 						</i18n-t>
@@ -51,21 +43,15 @@
 </template>
 
 <script setup lang="ts">
-import type { AfdianSponsorStatsResponse } from '~/utils/server/afdian'
-
-interface Props {
-	stats: AfdianSponsorStatsResponse
+export interface ServerOverviewSponsorCardSummary {
+	supporterCount: string
+	totalAmount: string
+	link: string
 }
 
-const props = defineProps<Props>()
-const { t, locale } = useI18n()
+defineProps<{
+	summary: ServerOverviewSponsorCardSummary
+}>()
 
-const asOfDate = computed(() => new Date(props.stats.asOfDate))
-const formattedDate = computed(() =>
-	new Intl.DateTimeFormat(locale.value, {
-		year: 'numeric',
-		month: 'numeric',
-		day: 'numeric',
-	}).format(asOfDate.value),
-)
+const { t } = useI18n()
 </script>

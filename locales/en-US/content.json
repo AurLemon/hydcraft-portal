@@ -32,7 +32,7 @@
 					"eyebrow": "SUPPORT HYDCRAFT",
 					"supporterCountLabel": "Supporters",
 					"totalAmountLabel": "Total Support",
-					"summary": "As of {date}, we have received a total of {amount} CNY from {count} supporters on Afdian.",
+					"summary": "To date, we have received a total of {amount} CNY from {count} supporters on Afdian.",
 					"cta": "If you would like to help keep the server running for the long term, you are welcome to support us on Afdian.",
 					"action": "Open Afdian"
 				},

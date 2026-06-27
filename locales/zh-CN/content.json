@@ -32,7 +32,7 @@
 					"eyebrow": "SUPPORT HYDCRAFT",
 					"supporterCountLabel": "已赞助人数",
 					"totalAmountLabel": "总赞助金额",
-					"summary": "截止至 {date}，我们已经收到了来自 {count} 位支持者的总计 {amount} 元发电。",
+					"summary": "截止至目前，我们已经收到了来自 {count} 位支持者的总计 {amount} 元发电。",
 					"cta": "如果你也愿意为服务器的长期运转添一份力，欢迎来爱发电支持我们。",
 					"action": "前往爱发电"
 				},
