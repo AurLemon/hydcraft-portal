@@ -133,15 +133,15 @@ import toastFrame from '~/assets/resources/material/minecraft_achievement_toast_
 import barrierIcon from '~/assets/resources/material/minecraft_item_barrier.webp'
 import clockIcon from '~/assets/resources/material/minecraft_item_clock.webp'
 import introCover from '~/assets/resources/pages/intro_cover.webp'
+import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 
 const { t } = useI18n()
 
 const introNow = useState<number>('intro-hero-now', () => Date.now())
-const toStableAssetUrl = (src: string): string => src.replace(/\?t=\d+$/, '')
-const stableIntroCover = toStableAssetUrl(introCover)
-const stableToastFrame = toStableAssetUrl(toastFrame)
-const stableBarrierIcon = toStableAssetUrl(barrierIcon)
-const stableClockIcon = toStableAssetUrl(clockIcon)
+const stableIntroCover = getStableAssetUrl(introCover)
+const stableToastFrame = getStableAssetUrl(toastFrame)
+const stableBarrierIcon = getStableAssetUrl(barrierIcon)
+const stableClockIcon = getStableAssetUrl(clockIcon)
 
 const currentYear = dayjs(introNow.value).year()
 const serverEstablishedAt = dayjs('2018-09-01')

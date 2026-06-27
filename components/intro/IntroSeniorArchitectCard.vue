@@ -14,6 +14,7 @@ import {
 	getMinecraftBodyRendererUrl,
 	getMinecraftSkinRendererUrl,
 } from '~/utils/minecraft/body-renderer'
+import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 import seniorArchitectAfeImage from '~/assets/resources/minecraft-gallery/season_7/jianghu_screenshots_1.webp'
 import seniorArchitectChuxiaImage from '~/assets/resources/minecraft-gallery/season_7/jiuxiang_screenshots_1.webp'
 import seniorArchitectDotkkImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_2.webp'
@@ -39,32 +40,32 @@ const seniorArchitectDefinitions: SeniorArchitectDefinition[] = [
 	{
 		key: 'afe',
 		id: 'Nina_Naganohara',
-		imageUrl: seniorArchitectAfeImage,
+		imageUrl: getStableAssetUrl(seniorArchitectAfeImage),
 	},
 	{
 		key: 'qishui',
 		id: 'QiShui233',
-		imageUrl: seniorArchitectQishuiImage,
+		imageUrl: getStableAssetUrl(seniorArchitectQishuiImage),
 	},
 	{
 		key: 'qixuan',
 		id: 'qixuanjun233',
-		imageUrl: seniorArchitectQixuanImage,
+		imageUrl: getStableAssetUrl(seniorArchitectQixuanImage),
 	},
 	{
 		key: 'xxlm',
 		id: 'xxlm233',
-		imageUrl: seniorArchitectXxlmImage,
+		imageUrl: getStableAssetUrl(seniorArchitectXxlmImage),
 	},
 	{
 		key: 'dotkk',
 		id: 'Dotkk',
-		imageUrl: seniorArchitectDotkkImage,
+		imageUrl: getStableAssetUrl(seniorArchitectDotkkImage),
 	},
 	{
 		key: 'chuxia',
 		id: 'Chuxia_SF',
-		imageUrl: seniorArchitectChuxiaImage,
+		imageUrl: getStableAssetUrl(seniorArchitectChuxiaImage),
 	},
 ]
 

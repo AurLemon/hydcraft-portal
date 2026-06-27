@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import type { NormalizedContentImageItem } from '~/components/content/utils/content-image'
+import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -82,11 +83,12 @@ const introImageMap = Object.fromEntries(
 	Object.entries(introImageModules).flatMap(([path, url]) => {
 		const normalizedPath = normalizeIntroImagePath(path)
 		const filename = normalizedPath.split('/').at(-1) ?? normalizedPath
+		const stableUrl = getStableAssetUrl(url)
 
 		return [
-			[normalizedPath, url],
-			[`minecraft-gallery/${normalizedPath}`, url],
-			[filename, url],
+			[normalizedPath, stableUrl],
+			[`minecraft-gallery/${normalizedPath}`, stableUrl],
+			[filename, stableUrl],
 		]
 	}),
 ) as Record<string, string>

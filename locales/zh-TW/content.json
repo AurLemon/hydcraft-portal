@@ -200,6 +200,7 @@
 				"prev": "上一家",
 				"next": "下一家",
 				"goto": "跳轉到第 {index} 家",
+				"routeMapLabel": "路線圖",
 				"openGalleryImage": "打開 {route} 的第 {index} 張配圖",
 				"openRouteMap": "打開 {route} 的路線圖",
 				"tags": {

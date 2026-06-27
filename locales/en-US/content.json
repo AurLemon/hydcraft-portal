@@ -205,6 +205,7 @@
 				"prev": "Previous operator",
 				"next": "Next operator",
 				"goto": "Go to operator {index}",
+				"routeMapLabel": "Route Map",
 				"openGalleryImage": "Open gallery image {index} for {route}",
 				"openRouteMap": "Open the route map of {route}",
 				"tags": {

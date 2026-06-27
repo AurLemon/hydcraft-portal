@@ -150,13 +150,51 @@
 											</p>
 										</div>
 									</button>
+									<button
+										v-if="route.routeMap"
+										type="button"
+										class="group relative block overflow-hidden rounded-xl border border-white/12 bg-white/8 text-left shadow-[0_14px_28px_rgba(2,6,23,0.24)] transition focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-300 lg:hidden"
+										:aria-label="
+											t('content.intro.railways.openRouteMap', {
+												route: route.nameEn,
+											})
+										"
+										@click="openPreview(route.routeMap)"
+									>
+										<SkeletonImage
+											:src="route.routeMap.src"
+											:alt="route.routeMap.alt"
+											:reveal-delay-ms="90"
+											class="h-28 w-full sm:h-32"
+											image-class="block h-full w-full object-cover"
+											skeleton-class="rounded-none"
+										/>
+										<div class="pointer-events-none absolute inset-0">
+											<div
+												class="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0)_48%,rgba(2,6,23,0.22)_100%)]"
+											/>
+											<div
+												class="absolute inset-0 bg-linear-to-t from-slate-950/82 via-slate-950/42 to-transparent mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.94)_12%,rgba(0,0,0,0.4)_22%,transparent_36%)]"
+											/>
+											<div
+												class="absolute inset-0 bg-slate-950/0 transition-colors duration-300 ease-out group-hover:bg-slate-950/14"
+											/>
+										</div>
+										<div
+											class="absolute inset-x-0 bottom-0 p-2 text-xs text-white"
+										>
+											<p class="leading-4">
+												{{ t('content.intro.railways.routeMapLabel') }}
+											</p>
+										</div>
+									</button>
 								</div>
 							</div>
 						</div>
 
 						<div
 							v-if="route.routeMap"
-							class="flex lg:w-76 lg:shrink-0 lg:items-end"
+							class="hidden lg:flex lg:w-76 lg:shrink-0 lg:items-end"
 						>
 							<button
 								type="button"
@@ -248,6 +286,7 @@ import {
 	loadImageAccentColor,
 	type ImageAccentRgbColor,
 } from '~/utils/minecraft/skin-accent'
+import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 import gtrBackgroundImage from '~/assets/resources/minecraft-gallery/routes/gtr_bg.webp'
 import gtrGalleryImage1 from '~/assets/resources/minecraft-gallery/routes/gtr_gallery_1.webp'
 import gtrGalleryImage2 from '~/assets/resources/minecraft-gallery/routes/gtr_gallery_2.webp'
@@ -306,34 +345,38 @@ const RAILWAY_CAROUSEL_INTERVAL = 5000
 const railwayRouteDefinitions: RailwayRouteDefinition[] = [
 	{
 		id: 'gtr',
-		logoSrc: gtrLogoImage,
-		backgroundSrc: gtrBackgroundImage,
-		routeMapSrc: gtrRouteMapImage,
+		logoSrc: getStableAssetUrl(gtrLogoImage),
+		backgroundSrc: getStableAssetUrl(gtrBackgroundImage),
+		routeMapSrc: getStableAssetUrl(gtrRouteMapImage),
 		tags: ['create'],
 		operatorId: 'FisheyeArtist59',
-		gallerySrcs: [gtrGalleryImage1, gtrGalleryImage2, gtrGalleryImage3],
+		gallerySrcs: [
+			getStableAssetUrl(gtrGalleryImage1),
+			getStableAssetUrl(gtrGalleryImage2),
+			getStableAssetUrl(gtrGalleryImage3),
+		],
 	},
 	{
 		id: 'hrJianghu',
-		backgroundSrc: hrJianghuBackgroundImage,
+		backgroundSrc: getStableAssetUrl(hrJianghuBackgroundImage),
 		tags: ['mtr'],
 		operatorId: 'Nina_Naganohara',
 		gallerySrcs: [
-			hrJianghuGalleryImage1,
-			hrJianghuGalleryImage2,
-			hrJianghuGalleryImage3,
+			getStableAssetUrl(hrJianghuGalleryImage1),
+			getStableAssetUrl(hrJianghuGalleryImage2),
+			getStableAssetUrl(hrJianghuGalleryImage3),
 		],
 	},
 	{
 		id: 'hrYiheng',
-		backgroundSrc: hrYihengBackgroundImage,
-		routeMapSrc: hrYihengRouteMapImage,
+		backgroundSrc: getStableAssetUrl(hrYihengBackgroundImage),
+		routeMapSrc: getStableAssetUrl(hrYihengRouteMapImage),
 		tags: ['mtr'],
 		operatorId: 'larker_package',
 		gallerySrcs: [
-			hrYihengGalleryImage1,
-			hrYihengGalleryImage2,
-			hrYihengGalleryImage3,
+			getStableAssetUrl(hrYihengGalleryImage1),
+			getStableAssetUrl(hrYihengGalleryImage2),
+			getStableAssetUrl(hrYihengGalleryImage3),
 		],
 	},
 ]

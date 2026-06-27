@@ -30,7 +30,7 @@
 					<figure v-for="image in column" :key="image.src" class="m-0 w-full">
 						<button
 							type="button"
-							class="group block w-full cursor-zoom-in overflow-hidden rounded-lg bg-white/80 shadow-[0_10px_24px_rgba(15,23,42,0.14)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-400 dark:bg-slate-900/80"
+							class="group block w-full cursor-zoom-in overflow-hidden rounded-lg bg-white/80 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-400 dark:bg-slate-900/80"
 							:aria-label="`Open image preview: ${image.alt}`"
 							@click="openPreview(image)"
 						>
@@ -69,7 +69,7 @@
 					<figure v-for="image in row" :key="image.src" class="m-0">
 						<button
 							type="button"
-							class="group block cursor-zoom-in overflow-hidden rounded-xl bg-white/80 shadow-[0_12px_32px_rgba(15,23,42,0.14)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:bg-slate-900/80"
+							class="group block cursor-zoom-in overflow-hidden rounded-xl bg-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:bg-slate-900/80"
 							:aria-label="`Open image preview: ${image.alt}`"
 							@click="openPreview(image)"
 						>

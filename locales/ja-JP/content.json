@@ -205,6 +205,7 @@
 				"prev": "前の会社",
 				"next": "次の会社",
 				"goto": "{index} 社目へ移動",
+				"routeMapLabel": "路線図",
 				"openGalleryImage": "{route} のギャラリー画像 {index} を開く",
 				"openRouteMap": "{route} の路線図を開く",
 				"tags": {

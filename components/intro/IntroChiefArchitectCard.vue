@@ -16,6 +16,7 @@ import {
 	getMinecraftBodyRendererUrl,
 	getMinecraftSkinRendererUrl,
 } from '~/utils/minecraft/body-renderer'
+import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 import chiefArchitectCatImage from '~/assets/resources/minecraft-gallery/season_7/owen_screenshots_1.webp'
 import chiefArchitectFisheyeImage from '~/assets/resources/minecraft-gallery/season_7/gtr_screenshots_1.webp'
 import chiefArchitectXwImage from '~/assets/resources/minecraft-gallery/misc/marclen_screenshots_1.webp'
@@ -38,17 +39,17 @@ const chiefArchitectDefinitions: ChiefArchitectDefinition[] = [
 	{
 		key: 'cat',
 		id: 'CatPillager',
-		imageUrl: chiefArchitectCatImage,
+		imageUrl: getStableAssetUrl(chiefArchitectCatImage),
 	},
 	{
 		key: 'xw',
 		id: 'xwTeng',
-		imageUrl: chiefArchitectXwImage,
+		imageUrl: getStableAssetUrl(chiefArchitectXwImage),
 	},
 	{
 		key: 'fisheye',
 		id: 'FisheyeArtist59',
-		imageUrl: chiefArchitectFisheyeImage,
+		imageUrl: getStableAssetUrl(chiefArchitectFisheyeImage),
 	},
 ]
 

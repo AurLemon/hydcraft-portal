@@ -200,6 +200,7 @@
 				"prev": "上一家",
 				"next": "下一家",
 				"goto": "跳转到第 {index} 家",
+				"routeMapLabel": "线路图",
 				"openGalleryImage": "打开 {route} 的第 {index} 张配图",
 				"openRouteMap": "打开 {route} 的线路图",
 				"tags": {

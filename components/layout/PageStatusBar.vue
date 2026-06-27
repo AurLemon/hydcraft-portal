@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const isAtBottom = ref(false)
 const rawAtBottom = ref(false)
 const hasContent = ref(false)
 const statusbarRef = ref<HTMLElement | null>(null)
 
-const SIDE_GUTTER = 12
-const MOBILE_SIDE_GUTTER = 12
-const MOBILE_BREAKPOINT = 1024
 const BOTTOM_HIDE_DELAY = 180
 const BOTTOM_SHOW_DELAY = 120
 
@@ -16,13 +13,6 @@ let bottomHideTimer: ReturnType<typeof setTimeout> | null = null
 let bottomShowTimer: ReturnType<typeof setTimeout> | null = null
 let scrollRaf = 0
 let contentObserver: MutationObserver | null = null
-
-const shellStyle = computed(() => ({
-	width:
-		import.meta.client && window.innerWidth < MOBILE_BREAKPOINT
-			? `${Math.max(0, window.innerWidth - MOBILE_SIDE_GUTTER * 2)}px`
-			: undefined,
-}))
 
 const updateBottomState = (): void => {
 	if (!import.meta.client) {
@@ -153,14 +143,13 @@ onBeforeUnmount(() => {
 		/>
 
 		<div
-			class="statusbar-shell pointer-events-none fixed bottom-14 left-1/2 z-100 flex justify-center"
+			class="statusbar-shell pointer-events-none fixed bottom-14 left-1/2 z-100 flex w-[calc(100vw-24px)] justify-center lg:w-auto"
 			:class="
 				isAtBottom || !hasContent
 					? 'statusbar-shell--hidden'
 					: 'statusbar-shell--visible'
 			"
 			:aria-hidden="isAtBottom || !hasContent ? 'true' : 'false'"
-			:style="shellStyle"
 		>
 			<div
 				id="page-statusbar"
