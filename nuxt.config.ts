@@ -221,6 +221,11 @@ export default defineNuxtConfig({
 		defaultLocale: 'zh-CN',
 	},
 	runtimeConfig: {
+		afdian: {
+			userId: process.env.AFDIAN_USER_ID ?? '',
+			apiKey: process.env.AFDIAN_API_KEY ?? '',
+			baseUrl: process.env.AFDIAN_BASE_URL ?? 'https://afdian.com',
+		},
 		cap: {
 			baseUrl: process.env.CAP_BASE_URL ?? '',
 		},

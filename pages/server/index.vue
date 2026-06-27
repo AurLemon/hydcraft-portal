@@ -28,6 +28,8 @@
 				</div>
 			</section>
 
+			<USkeleton class="h-64 rounded-xl" />
+
 			<section class="grid gap-2">
 				<USkeleton class="h-8 w-48 rounded-lg" />
 				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -82,6 +84,8 @@
 				</ClientOnly>
 			</section>
 
+			<ServerOverviewSponsorCard v-if="sponsorStats" :stats="sponsorStats" />
+			<USkeleton v-else-if="showSponsorSkeleton" class="h-64 rounded-xl" />
 			<ServerOverviewUsersSection
 				:users="overview.recommendedUsers"
 				:total-count="overview.totalUsers"
@@ -103,6 +107,7 @@
 <script setup lang="ts">
 import PageInlineException from '~/components/common/PageInlineException.vue'
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
+import type { AfdianSponsorStatsResponse } from '~/utils/server/afdian'
 import type { ServerOverviewResponse } from '~/utils/server/overview'
 
 definePageMeta({
@@ -115,12 +120,18 @@ useExplicitRouteTitle(pageTitle)
 
 const { data, pending, error, refresh } =
 	await useFetch<ServerOverviewResponse>('/api/public/server/overview')
+const { data: sponsorData, pending: sponsorPending } =
+	await useFetch<AfdianSponsorStatsResponse | null>('/api/public/server/afdian')
 const selectedServerId = ref<string | null>(null)
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const overview = computed(() => data.value ?? null)
+const sponsorStats = computed(() => sponsorData.value ?? null)
 const showInitialSkeleton = computed(() => pending.value && !overview.value)
 const showInitialError = computed(() => Boolean(error.value) && !overview.value)
+const showSponsorSkeleton = computed(
+	() => sponsorPending.value && !sponsorStats.value,
+)
 
 watch(
 	overview,
