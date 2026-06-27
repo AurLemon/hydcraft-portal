@@ -466,35 +466,43 @@
 				"items": [
 					{
 						"question": "Will the world save be released publicly?",
-						"answer": "No full public release is planned. Players can take away the parts they built through blueprints, WorldEdit schematics, or similar export methods; when necessary, the admin team can also help with exports within a reasonable scope."
+						"answer": "No full public release is planned. Players can still take away the parts they built through blueprints, WorldEdit schematics, or similar export methods. If necessary, exports can also be assisted within a reasonable scope."
 					},
 					{
 						"question": "Why is there no official district map for Season 7?",
-						"answer": "Because the actual building range, collaboration patterns, and practical boundaries of Season 7 have kept changing, there is still no district map that would stay accurate for long. Rather than publishing a map that goes stale quickly, we prefer to coordinate case by case around districts, roads, railways, and public facilities during real construction."
+						"answer": "The areas are too fragmented, and mostly, nobody has had the time to draw one."
 					},
 					{
 						"question": "Is QQ still the only main entry point right now?",
-						"answer": "Yes. The QQ group is still the main communication entry. Most members are mainland China players, so routine notices, client downloads, reviews, and construction coordination are all mostly handled there."
+						"answer": "Yes. The main communication entry is still the QQ group, because most members are mainland China players. We do also have WeChat, Xiaohongshu, and Douyin groups."
 					},
 					{
 						"question": "Can a newcomer start building right away?",
-						"answer": "Yes, but it's better to first look around at the existing roads, railways, public facilities, and nearby builds. Ordinary personal buildings usually do not require complicated approval; if it involves city districts, railway access, large public works, or possible impact on other people's areas, talk first."
+						"answer": "Yes. If there is open space, you can build. If it touches someone else's area, just communicate with them first."
 					},
 					{
 						"question": "Does the server enforce a unified building style?",
-						"answer": "No strict unified style is enforced. HydCraft cares more about the urban relationships that form naturally over long-term building, and whether players can collaborate steadily; as long as a build does not clearly damage the public environment, maliciously occupy land, or interfere with others, style differences are usually not something we step in over."
+						"answer": "No forced unified style. Build however you want."
 					},
 					{
 						"question": "What if I only want to visit and look around?",
-						"answer": "That's fine. You can join the group first, learn the basics, then enter the server after downloading the client. If you're only visiting for a short time, you do not need to jump into large-scale building right away."
+						"answer": "That's fine. Just join the group and download the client."
 					},
 					{
 						"question": "Can I bring friends with me?",
-						"answer": "Yes, absolutely. Friends and classmates are welcome. We just ask them to join through the normal entry path and read the rules first."
+						"answer": "Absolutely. A lot of members were invited by friends, or were already classmates to begin with."
 					},
 					{
 						"question": "Can I still join if I'm not good at building?",
-						"answer": "Absolutely. Building skill has never been the barrier here. If there's open space and your plan does not step on someone else's layout, you can just start building. Whether it looks impressive comes second. We care much more about social connection and collaboration, and the overall atmosphere matters far more than individual technique. Even though the server does have a Ranking system, it is only meant as encouragement, not as a way to sort people into tiers by building level."
+						"answer": "Absolutely. Why wouldn't you be able to? Just come as you are."
+					},
+					{
+						"question": "Why do the buildings look so spread out on the satellite map?",
+						"answer": "Because the map is superflat, and there are not that many players who can just spread things out and build at that scale."
+					},
+					{
+						"question": "How long has Season 7 been running?",
+						"answer": "It started in August 2023. Season 8 is already being planned and is expected to officially start in mid-to-late July 2026."
 					}
 				]
 			},

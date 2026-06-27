@@ -4,7 +4,7 @@
 		"cards": {
 			"backgroundAlt": "{title} の背景",
 			"nitrogen": {
-				"description": "現在のサーバーシーズン（1.20.1）"
+				"description": "現在のサーバー周目（1.20.1）"
 			},
 			"railway": {
 				"description": "鉄道システムと交通ネットワーク"

@@ -35,7 +35,7 @@ interface IntroFaqItem {
 	answer: string
 }
 
-const FAQ_COUNT = 8
+const FAQ_COUNT = 10
 
 const { t } = useI18n()
 
