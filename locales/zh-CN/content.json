@@ -157,6 +157,44 @@
 				"title": "有好的肯定也有坏的",
 				"imageAlt": "HydCraft 成果展示图 {index}"
 			},
+			"dailyLife": {
+				"title": "城市的日常",
+				"imageAlt": "HydCraft 城市日常展示图 {index}",
+				"items": [
+					{
+						"title": "蜜雪冰城",
+						"subtitle": "位于七周目旧巷滨海地区，蜜雪也是开到氢气了。"
+					},
+					{
+						"title": "时尚咖啡",
+						"subtitle": "坐落于七周目广阳的核心区，广阳大统领的下午茶指定场所。"
+					},
+					{
+						"title": "北安面馆 #1",
+						"subtitle": "广阳北安地区唯一的一家自动化面馆！"
+					},
+					{
+						"title": "北安面馆 #2",
+						"subtitle": "不知道的还以为是回转寿司。"
+					},
+					{
+						"title": "久里居 711",
+						"subtitle": "坐落于广阳地方私铁车站旁的 711。"
+					},
+					{
+						"title": "另一所 711",
+						"subtitle": "坐落于广阳核心区的 711。"
+					},
+					{
+						"title": "神秘の小米之家",
+						"subtitle": "全北安唯一一家小米之家。"
+					},
+					{
+						"title": "这是谁的青春",
+						"subtitle": "是江户大统领的青春，因为这是他母校的教室。"
+					}
+				]
+			},
 			"participation": {
 				"title": "怎么参与建设",
 				"prev": "上一条",

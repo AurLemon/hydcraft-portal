@@ -5,7 +5,9 @@
 		<div
 			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,68,68,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_28%)]"
 		/>
-		<div class="relative flex flex-col gap-6 px-6 py-6 sm:px-8 sm:py-8">
+		<div
+			class="relative flex flex-col gap-6 backdrop-blur-xl px-6 py-6 sm:px-8 sm:py-8"
+		>
 			<div class="max-w-3xl">
 				<h3
 					class="font-arkpixel text-2xl leading-tight tracking-wide text-slate-950 dark:text-slate-50 sm:text-3xl"

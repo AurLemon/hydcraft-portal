@@ -9,6 +9,10 @@
 			:title="t('content.intro.goodAndBad.title')"
 			:images="serverDarkSideImages"
 		/>
+		<IntroDailyLifeCard
+			:title="t('content.intro.dailyLife.title')"
+			:items="dailyLifeItems"
+		/>
 		<section class="flex flex-col gap-6">
 			<div class="flex justify-center">
 				<h2
@@ -87,17 +91,24 @@ const introImageMap = Object.fromEntries(
 ) as Record<string, string>
 
 const serverShowcaseImagePaths = [
+	"season_7/bei'an_screenshots_2.webp",
+	"season_7/bei'an_screenshots_3.webp",
+	"season_7/bei'an_screenshots_4.webp",
+	"season_7/bei'an_screenshots_5.webp",
+	"season_7/bei'an_screenshots_6.webp",
 	'season_7/gtr_screenshots_1.webp',
 	'season_7/gtr_screenshots_2.webp',
 	'season_7/guangyang_screenshots_1.webp',
 	'season_7/guangyang_screenshots_2.webp',
 	'season_7/guangyang_screenshots_3.webp',
 	'season_7/guangyang_screenshots_4.webp',
+	'season_7/guangyang_screenshots_6.webp',
 	'season_7/owen_screenshots_1.webp',
 	'season_7/owen_screenshots_2.webp',
 	'season_7/owen_screenshots_3.webp',
 	'season_7/owen_screenshots_4.webp',
 	'season_7/owen_screenshots_5.webp',
+	'season_7/spawnpoint_screenshots_1.webp',
 	'season_7/xw_hotel_screenshots_2.webp',
 ]
 
@@ -110,6 +121,17 @@ const serverDarkSideImagePaths = Object.keys(introImageModules)
 
 		return leftIndex - rightIndex
 	})
+
+const dailyLifeImagePaths = [
+	'season_7/daily_screenshots_1_mixue.webp',
+	'season_7/daily_screenshots_2_cafe.webp',
+	'season_7/daily_screenshots_3_noodle.webp',
+	'season_7/daily_screenshots_4_noodle.webp',
+	'season_7/daily_screenshots_5_711.webp',
+	'season_7/daily_screenshots_6_711.webp',
+	'season_7/daily_screenshots_7_xiaomi.webp',
+	'season_7/daily_screenshots_8_classroom.webp',
+]
 
 const buildIntroImages = (
 	options: IntroImageGroupOptions,
@@ -145,6 +167,32 @@ const serverDarkSideImages = computed<NormalizedContentImageItem[]>(() =>
 	buildIntroImages({
 		altKey: 'content.intro.goodAndBad.imageAlt',
 		paths: serverDarkSideImagePaths,
+	}),
+)
+
+const dailyLifeItems = computed(() =>
+	dailyLifeImagePaths.flatMap((path, index) => {
+		const src = introImageMap[path]
+
+		if (!src) {
+			return []
+		}
+
+		return [
+			{
+				image: {
+					alt: t('content.intro.dailyLife.imageAlt', {
+						index: index + 1,
+					}),
+					caption: '',
+					height: '100%',
+					src,
+					width: '100%',
+				},
+				subtitle: t(`content.intro.dailyLife.items.${index}.subtitle`),
+				title: t(`content.intro.dailyLife.items.${index}.title`),
+			},
+		]
 	}),
 )
 </script>

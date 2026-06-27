@@ -8,7 +8,7 @@
 			</h2>
 		</div>
 
-		<div class="grid grid-cols-2 gap-4">
+		<div class="grid lg:grid-cols-2 gap-4">
 			<article
 				v-for="(item, index) in items"
 				:key="`intro-faq-${index}`"

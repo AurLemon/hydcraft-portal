@@ -162,6 +162,44 @@
 				"title": "Some good, some bad",
 				"imageAlt": "HydCraft showcase image {index}"
 			},
+			"dailyLife": {
+				"title": "Daily Life in the City",
+				"imageAlt": "HydCraft city daily life image {index}",
+				"items": [
+					{
+						"title": "Mixue Bingcheng",
+						"subtitle": "In the Old Alley seaside area of Season 7. Yes, Mixue really made it to HydCraft."
+					},
+					{
+						"title": "Fashion Coffee",
+						"subtitle": "In the core district of Guangyang in Season 7, the appointed afternoon tea spot of Guangyang's grand leader."
+					},
+					{
+						"title": "Bei'an Noodle House #1",
+						"subtitle": "The only automated noodle shop in Guangyang's Bei'an area."
+					},
+					{
+						"title": "Bei'an Noodle House #2",
+						"subtitle": "If you did not know better, you would think this was conveyor-belt sushi."
+					},
+					{
+						"title": "Jiuliju 7-Eleven",
+						"subtitle": "A 7-Eleven sitting right beside a Guangyang local private railway station."
+					},
+					{
+						"title": "Another 7-Eleven",
+						"subtitle": "A 7-Eleven located in the core district of Guangyang."
+					},
+					{
+						"title": "The Mysterious Xiaomi Home",
+						"subtitle": "The only Xiaomi Home in all of Bei'an."
+					},
+					{
+						"title": "Whose Youth Was This",
+						"subtitle": "Jianghu's grand leader, because this was a classroom at his alma mater."
+					}
+				]
+			},
 			"participation": {
 				"title": "How to take part in building",
 				"prev": "Previous",

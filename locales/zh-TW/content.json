@@ -157,6 +157,44 @@
 				"title": "有好的也有壞的",
 				"imageAlt": "HydCraft 成果展示圖 {index}"
 			},
+			"dailyLife": {
+				"title": "城市的日常",
+				"imageAlt": "HydCraft 城市日常展示圖 {index}",
+				"items": [
+					{
+						"title": "蜜雪冰城",
+						"subtitle": "位於七周目舊巷濱海地區，蜜雪也是開到氫氣了。"
+					},
+					{
+						"title": "時尚咖啡",
+						"subtitle": "坐落於七周目廣陽核心區，廣陽大統領指定的下午茶場所。"
+					},
+					{
+						"title": "北安麵館 #1",
+						"subtitle": "廣陽北安地區唯一一家自動化麵館！"
+					},
+					{
+						"title": "北安麵館 #2",
+						"subtitle": "不知道的還以為是迴轉壽司。"
+					},
+					{
+						"title": "久里居 711",
+						"subtitle": "坐落於廣陽地方私鐵車站旁的 711。"
+					},
+					{
+						"title": "另一所 711",
+						"subtitle": "坐落於廣陽核心區的 711。"
+					},
+					{
+						"title": "神秘の小米之家",
+						"subtitle": "全北安唯一一家小米之家。"
+					},
+					{
+						"title": "這是誰的青春",
+						"subtitle": "是江戶大統領的青春，因為這是他母校的教室。"
+					}
+				]
+			},
 			"participation": {
 				"title": "怎麼參與建設",
 				"prev": "上一條",

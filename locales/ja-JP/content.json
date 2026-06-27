@@ -162,6 +162,44 @@
 				"title": "良いものもあれば悪いものもある",
 				"imageAlt": "HydCraft 成果画像 {index}"
 			},
+			"dailyLife": {
+				"title": "街の日常",
+				"imageAlt": "HydCraft 街の日常画像 {index}",
+				"items": [
+					{
+						"title": "蜜雪氷城",
+						"subtitle": "七周目の旧巷浜海エリアにあります。蜜雪はついに HydCraft にも進出しました。"
+					},
+					{
+						"title": "おしゃれカフェ",
+						"subtitle": "七周目・広陽の中心地区にあり、広陽大統領ご指定のアフタヌーンティースポットです。"
+					},
+					{
+						"title": "北安麺館 #1",
+						"subtitle": "広陽の北安地区で唯一の自動化麺館です。"
+					},
+					{
+						"title": "北安麺館 #2",
+						"subtitle": "知らなければ回転寿司だと思ってしまうかもしれません。"
+					},
+					{
+						"title": "久里居 711",
+						"subtitle": "広陽の地方私鉄駅のそばにある 711 です。"
+					},
+					{
+						"title": "もう一つの 711",
+						"subtitle": "広陽の中心地区にある 711 です。"
+					},
+					{
+						"title": "謎の Xiaomi Home",
+						"subtitle": "北安全域で唯一の Xiaomi Home です。"
+					},
+					{
+						"title": "これは誰の青春か",
+						"subtitle": "江戸大統領の青春です。なぜなら、ここは彼の母校にある教室だからです。"
+					}
+				]
+			},
 			"participation": {
 				"title": "建設への参加方法",
 				"prev": "前へ",

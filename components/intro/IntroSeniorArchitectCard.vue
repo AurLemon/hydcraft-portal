@@ -18,8 +18,8 @@ import seniorArchitectAfeImage from '~/assets/resources/minecraft-gallery/season
 import seniorArchitectChuxiaImage from '~/assets/resources/minecraft-gallery/season_7/jiuxiang_screenshots_1.webp'
 import seniorArchitectDotkkImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_2.webp'
 import seniorArchitectQishuiImage from '~/assets/resources/minecraft-gallery/season_7/qinjing_screenshots_1.webp'
-import seniorArchitectQixuanImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_4.webp'
-import seniorArchitectXxlmImage from "~/assets/resources/minecraft-gallery/season_7/bei'an_screenshots_1.webp"
+import seniorArchitectQixuanImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_6.webp'
+import seniorArchitectXxlmImage from "~/assets/resources/minecraft-gallery/season_7/bei'an_screenshots_5.webp"
 
 interface SeniorArchitectDefinition {
 	key: 'afe' | 'qishui' | 'qixuan' | 'xxlm' | 'dotkk' | 'chuxia'

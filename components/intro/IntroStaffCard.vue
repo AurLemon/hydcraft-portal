@@ -76,7 +76,7 @@
 							{{ t('content.intro.staff.committee.subtitle') }}
 						</span>
 					</div>
-					<div class="mt-4 grid grid-cols-6 gap-2">
+					<div class="mt-4 grid grid-cols-3 lg:grid-cols-6 gap-2">
 						<UPopover
 							v-for="member in committeeMembers"
 							:key="member.id"
