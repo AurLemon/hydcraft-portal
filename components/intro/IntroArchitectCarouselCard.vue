@@ -95,7 +95,7 @@
 											{{ member.motto }}
 										</p>
 										<p
-											class="line-clamp-8 lg:line-clamp-4 mt-1 max-w-136 text-sm leading-7 text-white lg:h-28"
+											class="line-clamp-5 lg:line-clamp-4 mt-1 max-w-136 text-sm leading-7 text-white lg:h-28"
 										>
 											{{ member.intro }}
 										</p>

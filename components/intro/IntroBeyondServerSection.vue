@@ -92,7 +92,6 @@ import meetupImage1 from '~/assets/resources/meetups/meetups_1.webp'
 import meetupImage2 from '~/assets/resources/meetups/meetups_2.webp'
 import meetupImage3 from '~/assets/resources/meetups/meetups_3.webp'
 import meetupImage4 from '~/assets/resources/meetups/meetups_4.webp'
-import meetupImage5 from '~/assets/resources/meetups/meetups_5.webp'
 import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 
 interface IntroBeyondServerImage {
@@ -122,7 +121,6 @@ const stableMeetupImages = [
 	getStableAssetUrl(meetupImage2),
 	getStableAssetUrl(meetupImage3),
 	getStableAssetUrl(meetupImage4),
-	getStableAssetUrl(meetupImage5),
 ]
 
 const stableGameImages = [
