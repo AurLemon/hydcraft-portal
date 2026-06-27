@@ -1,5 +1,5 @@
 <template>
-	<section class="relative overflow-hidden rounded-2xl">
+	<section class="relative overflow-hidden rounded-xl">
 		<div class="absolute inset-0">
 			<SkeletonImage
 				:src="stableIntroCover"

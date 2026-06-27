@@ -200,6 +200,95 @@
 					}
 				]
 			},
+			"railways": {
+				"title": "家だけじゃなく、走るものもある",
+				"prev": "前の会社",
+				"next": "次の会社",
+				"goto": "{index} 社目へ移動",
+				"openGalleryImage": "{route} のギャラリー画像 {index} を開く",
+				"openRouteMap": "{route} の路線図を開く",
+				"tags": {
+					"create": "Create",
+					"mtr": "MTR"
+				},
+				"routes": {
+					"gtr": {
+						"nameZh": "通运铁路",
+						"nameEn": "GT Railway",
+						"summary": "GT Railway は第七周目の複数の都県を結ぶ路線網で、2023 年に通運交通物流有限公司によって建設・運営が始まりました。土木、車両、運行整理はいずれも Create と関連 Mod の技術で構成されており、サーバー内でもっとも周辺整備の行き届いた鉄道会社です。",
+						"logoAlt": "GT Railway のロゴ",
+						"backgroundAlt": "GT Railway の背景画像",
+						"routeMapAlt": "GT Railway の路線図",
+						"operator": {
+							"nickname": "題散",
+							"roleLabel": "運営責任者"
+						},
+						"gallery": [
+							{
+								"caption": "円湖北駅で乗客を迎える車両",
+								"alt": "GT Railway の車両が円湖北駅で乗客を迎える様子"
+							},
+							{
+								"caption": "北麓駅のホームとコンコース階",
+								"alt": "GT Railway 北麓駅のホームとコンコース階"
+							},
+							{
+								"caption": "アルテミス市にある船橋駅",
+								"alt": "アルテミス市にある GT Railway 船橋駅"
+							}
+						]
+					},
+					"hrJianghu": {
+						"nameZh": "HR 江户",
+						"nameEn": "HydCraft Railway Jianghu",
+						"summary": "HydCraft Railway Jianghu は、2024 年に旧 HR 網が分割されたあとに新設された地方自主運営会社です。本部は江戸県にあり、中央線などの路線を主力として運行しています。",
+						"backgroundAlt": "HydCraft Railway Jianghu の背景画像",
+						"operator": {
+							"nickname": "afe",
+							"roleLabel": "運営責任者"
+						},
+						"gallery": [
+							{
+								"caption": "スポーン横にある円湖南駅のコンコース",
+								"alt": "HR 江戸の円湖南駅コンコース"
+							},
+							{
+								"caption": "旧巷県にある句号沙灘駅のホーム",
+								"alt": "旧巷県にある HR 江戸 句号沙灘駅のホーム"
+							},
+							{
+								"caption": "江戸本部にある北麓駅",
+								"alt": "HR 江戸の江戸本部にある北麓駅"
+							}
+						]
+					},
+					"hrYiheng": {
+						"nameZh": "HR 颐恒",
+						"nameEn": "HydCraft Railway Yiheng",
+						"summary": "HydCraft Railway Yiheng も、2024 年に旧 HR 網が分割されたあとに設立された地方自主運営会社です。QR と協力しながらサーバー全体で CR 化運営を進めており、本部は頤恒県に置かれています。",
+						"backgroundAlt": "HydCraft Railway Yiheng の背景画像",
+						"routeMapAlt": "HydCraft Railway Yiheng の路線図",
+						"operator": {
+							"nickname": "拉克",
+							"roleLabel": "運営責任者"
+						},
+						"gallery": [
+							{
+								"caption": "ホーム内で発車を待つ D3801 編成",
+								"alt": "HR 頤恒の D3801 編成がホーム内で発車を待つ様子"
+							},
+							{
+								"caption": "広陽県にある HR 頤恒の動車運用所",
+								"alt": "広陽県にある HR 頤恒の動車運用所"
+							},
+							{
+								"caption": "スポーン横にある円湖西駅",
+								"alt": "HR 頤恒の円湖西駅"
+							}
+						]
+					}
+				}
+			},
 			"participation": {
 				"title": "建設への参加方法",
 				"prev": "前へ",

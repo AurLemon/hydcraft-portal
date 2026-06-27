@@ -3,6 +3,11 @@ import {
 	type ServerOverviewRgbColor,
 } from '~/utils/server/overview'
 
+export type ImageAccentRgbColor = ServerOverviewRgbColor
+
+export const DEFAULT_IMAGE_ACCENT: Readonly<ImageAccentRgbColor> =
+	DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT
+
 const clampColorChannel = (value: number): number =>
 	Math.min(255, Math.max(0, Math.round(value)))
 
@@ -126,9 +131,9 @@ const getPixelWeight = (r: number, g: number, b: number): number => {
 	return 0.35 + vividness * 0.9 + (0.5 - Math.abs(lightness - 0.5)) * 0.4
 }
 
-export const extractAccentColorFromSkinImage = (
+export const extractAccentColorFromImage = (
 	image: HTMLImageElement,
-): ServerOverviewRgbColor => {
+): ImageAccentRgbColor => {
 	const canvas = document.createElement('canvas')
 	const width = image.naturalWidth || image.width || 64
 	const height = image.naturalHeight || image.height || 64
@@ -140,7 +145,7 @@ export const extractAccentColorFromSkinImage = (
 	})
 
 	if (!context) {
-		return { ...DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT }
+		return { ...DEFAULT_IMAGE_ACCENT }
 	}
 
 	context.drawImage(image, 0, 0, width, height)
@@ -197,14 +202,18 @@ export const extractAccentColorFromSkinImage = (
 		})
 	}
 
-	return { ...DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT }
+	return { ...DEFAULT_IMAGE_ACCENT }
 }
 
-export const loadSkinAccentColor = async (
-	skinUrl: string,
-): Promise<ServerOverviewRgbColor> => {
-	if (!import.meta.client || !skinUrl) {
-		return { ...DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT }
+export const extractAccentColorFromSkinImage = (
+	image: HTMLImageElement,
+): ServerOverviewRgbColor => extractAccentColorFromImage(image)
+
+export const loadImageAccentColor = async (
+	imageUrl: string,
+): Promise<ImageAccentRgbColor> => {
+	if (!import.meta.client || !imageUrl) {
+		return { ...DEFAULT_IMAGE_ACCENT }
 	}
 
 	try {
@@ -213,12 +222,16 @@ export const loadSkinAccentColor = async (
 			element.crossOrigin = 'anonymous'
 			element.decoding = 'async'
 			element.onload = () => resolve(element)
-			element.onerror = () => reject(new Error('Failed to load minecraft skin'))
-			element.src = skinUrl
+			element.onerror = () => reject(new Error('Failed to load image'))
+			element.src = imageUrl
 		})
 
-		return extractAccentColorFromSkinImage(image)
+		return extractAccentColorFromImage(image)
 	} catch {
-		return { ...DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT }
+		return { ...DEFAULT_IMAGE_ACCENT }
 	}
 }
+
+export const loadSkinAccentColor = async (
+	skinUrl: string,
+): Promise<ServerOverviewRgbColor> => loadImageAccentColor(skinUrl)

@@ -13,6 +13,7 @@
 			:title="t('content.intro.dailyLife.title')"
 			:items="dailyLifeItems"
 		/>
+		<IntroRailwaysCard />
 		<section class="flex flex-col gap-6">
 			<div class="flex justify-center">
 				<h2

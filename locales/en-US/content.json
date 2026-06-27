@@ -200,6 +200,95 @@
 					}
 				]
 			},
+			"railways": {
+				"title": "We build more than houses",
+				"prev": "Previous operator",
+				"next": "Next operator",
+				"goto": "Go to operator {index}",
+				"openGalleryImage": "Open gallery image {index} for {route}",
+				"openRouteMap": "Open the route map of {route}",
+				"tags": {
+					"create": "Create",
+					"mtr": "MTR"
+				},
+				"routes": {
+					"gtr": {
+						"nameZh": "通运铁路",
+						"nameEn": "GT Railway",
+						"summary": "GT Railway serves multiple prefectures and counties in Season 7. It began in 2023 and is built and operated by Tongyun Transport Logistics Co., Ltd. Its civil works, rolling stock, and dispatching all rely on Create and related mods, and it remains the best-supported railway operator on the server.",
+						"logoAlt": "GT Railway logo",
+						"backgroundAlt": "Background image of GT Railway",
+						"routeMapAlt": "Route map of GT Railway",
+						"operator": {
+							"nickname": "题散",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "A GT Railway train boarding passengers at Yuanhu East Station",
+								"alt": "A GT Railway train boarding passengers at Yuanhu East Station"
+							},
+							{
+								"caption": "Platform and concourse level of Beilu Station",
+								"alt": "Platform and concourse level of GT Railway's Beilu Station"
+							},
+							{
+								"caption": "Chuanqiao Station in Artemis City",
+								"alt": "Chuanqiao Station of GT Railway in Artemis City"
+							}
+						]
+					},
+					"hrJianghu": {
+						"nameZh": "HR 江户",
+						"nameEn": "HydCraft Railway Jianghu",
+						"summary": "HydCraft Railway Jianghu was formed in 2024 after the original HR network split apart. It is a locally operated railway company based in Jianghu County, and its core services include routes such as the Central Line.",
+						"backgroundAlt": "Background image of HydCraft Railway Jianghu",
+						"operator": {
+							"nickname": "afe",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "The concourse of Yuanhu South Station beside spawn",
+								"alt": "The concourse of HR Jianghu's Yuanhu South Station beside spawn"
+							},
+							{
+								"caption": "Jvhao Beach Station platform in Jiuxiang County",
+								"alt": "The platform of HR Jianghu's Jvhao Beach Station in Jiuxiang County"
+							},
+							{
+								"caption": "Beilu Station in the Jianghu headquarters district",
+								"alt": "Beilu Station in the Jianghu headquarters district of HR Jianghu"
+							}
+						]
+					},
+					"hrYiheng": {
+						"nameZh": "HR 颐恒",
+						"nameEn": "HydCraft Railway Yiheng",
+						"summary": "HydCraft Railway Yiheng was also created in 2024 after the original HR network split apart. Working together with QR, it pushes a CR-style operating model across the server and is headquartered in Yiheng County.",
+						"backgroundAlt": "Background image of HydCraft Railway Yiheng",
+						"routeMapAlt": "Route map of HydCraft Railway Yiheng",
+						"operator": {
+							"nickname": "拉克",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "The D3801 set waiting for departure inside the platform",
+								"alt": "An HR Yiheng D3801 set waiting for departure inside the platform"
+							},
+							{
+								"caption": "HR Yiheng's EMU depot in Guangyang County",
+								"alt": "The HR Yiheng EMU depot in Guangyang County"
+							},
+							{
+								"caption": "Yuanhu West Station beside spawn",
+								"alt": "HR Yiheng's Yuanhu West Station beside spawn"
+							}
+						]
+					}
+				}
+			},
 			"participation": {
 				"title": "How to take part in building",
 				"prev": "Previous",

@@ -195,6 +195,95 @@
 					}
 				]
 			},
+			"railways": {
+				"title": "除了房子咱還有會跑的",
+				"prev": "上一家",
+				"next": "下一家",
+				"goto": "跳轉到第 {index} 家",
+				"openGalleryImage": "打開 {route} 的第 {index} 張配圖",
+				"openRouteMap": "打開 {route} 的路線圖",
+				"tags": {
+					"create": "Create",
+					"mtr": "MTR"
+				},
+				"routes": {
+					"gtr": {
+						"nameZh": "通運鐵路",
+						"nameEn": "GT Railway",
+						"summary": "通運鐵路覆蓋七周目多個都縣，始於 2023 年，由通運交通物流有限公司建設營運。通運鐵路的土建、車輛、調度等均使用機械動力及其相關模組提供的技術實現，是全服鐵路配套最好的一家公司。",
+						"logoAlt": "通運鐵路 LOGO",
+						"backgroundAlt": "通運鐵路背景圖",
+						"routeMapAlt": "通運鐵路路線圖",
+						"operator": {
+							"nickname": "題散",
+							"roleLabel": "營運負責人"
+						},
+						"gallery": [
+							{
+								"caption": "車輛在圓湖東站接客",
+								"alt": "通運鐵路車輛在圓湖東站接客"
+							},
+							{
+								"caption": "北麓站月台與站廳層",
+								"alt": "通運鐵路北麓站月台與站廳層"
+							},
+							{
+								"caption": "位於阿提米斯市的船橋站",
+								"alt": "通運鐵路位於阿提米斯市的船橋站"
+							}
+						]
+					},
+					"hrJianghu": {
+						"nameZh": "HR 江戶",
+						"nameEn": "HydCraft Railway Jianghu",
+						"summary": "HR 江戶是服有鐵路 HR 於 2024 年拆分後新成立的地方自主營運鐵路公司，主營路線包括中央線等路線，總部位於江戶縣。",
+						"backgroundAlt": "HR 江戶背景圖",
+						"operator": {
+							"nickname": "afe",
+							"roleLabel": "營運負責人"
+						},
+						"gallery": [
+							{
+								"caption": "出生點旁的圓湖南站站廳",
+								"alt": "HR 江戶出生點旁的圓湖南站站廳"
+							},
+							{
+								"caption": "位於舊巷縣的句號沙灘站月台",
+								"alt": "HR 江戶位於舊巷縣的句號沙灘站月台"
+							},
+							{
+								"caption": "位於江戶本部的北麓站",
+								"alt": "HR 江戶位於江戶本部的北麓站"
+							}
+						]
+					},
+					"hrYiheng": {
+						"nameZh": "HR 頤恆",
+						"nameEn": "HydCraft Railway Yiheng",
+						"summary": "HR 頤恆是服有鐵路 HR 於 2024 年拆分後新成立的地方自主營運鐵路公司。HR 頤恆和 QR 合作，在全服推廣 CR 化營運，總部位於頤恆縣。",
+						"backgroundAlt": "HR 頤恆背景圖",
+						"routeMapAlt": "HR 頤恆路線圖",
+						"operator": {
+							"nickname": "拉克",
+							"roleLabel": "營運負責人"
+						},
+						"gallery": [
+							{
+								"caption": "在月台內等待發車的 D3801 車輛",
+								"alt": "HR 頤恆在月台內等待發車的 D3801 車輛"
+							},
+							{
+								"caption": "HR 頤恆位於廣陽縣的動車運用所",
+								"alt": "HR 頤恆位於廣陽縣的動車運用所"
+							},
+							{
+								"caption": "HR 頤恆在出生點旁的圓湖西站",
+								"alt": "HR 頤恆在出生點旁的圓湖西站"
+							}
+						]
+					}
+				}
+			},
 			"participation": {
 				"title": "怎麼參與建設",
 				"prev": "上一條",

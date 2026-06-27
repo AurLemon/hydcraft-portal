@@ -195,6 +195,95 @@
 					}
 				]
 			},
+			"railways": {
+				"title": "除了房子咱还有会跑的",
+				"prev": "上一家",
+				"next": "下一家",
+				"goto": "跳转到第 {index} 家",
+				"openGalleryImage": "打开 {route} 的第 {index} 张配图",
+				"openRouteMap": "打开 {route} 的线路图",
+				"tags": {
+					"create": "Create",
+					"mtr": "MTR"
+				},
+				"routes": {
+					"gtr": {
+						"nameZh": "通运铁路",
+						"nameEn": "GT Railway",
+						"summary": "通运铁路覆盖七周目多个都县，起始于 2023 年，由通运交通物流有限公司建设运营。通运铁路的土建、车辆、调度等均使用机械动力及其相关模组提供的技术实现。是全服铁路配套最好的一家公司。",
+						"logoAlt": "通运铁路 LOGO",
+						"backgroundAlt": "通运铁路背景图",
+						"routeMapAlt": "通运铁路线路图",
+						"operator": {
+							"nickname": "题散",
+							"roleLabel": "运营负责人"
+						},
+						"gallery": [
+							{
+								"caption": "车辆在圆湖东站接客",
+								"alt": "通运铁路车辆在圆湖东站接客"
+							},
+							{
+								"caption": "北麓站站台和站厅层",
+								"alt": "通运铁路北麓站站台和站厅层"
+							},
+							{
+								"caption": "位于阿提米斯市的船桥站",
+								"alt": "通运铁路位于阿提米斯市的船桥站"
+							}
+						]
+					},
+					"hrJianghu": {
+						"nameZh": "HR 江户",
+						"nameEn": "HydCraft Railway Jianghu",
+						"summary": "HR 江户是服有铁路 HR 于 2024 年拆分后新成立的地方自主运营铁路公司，主营线路包括中央线等线路，总部位于江户县。",
+						"backgroundAlt": "HR 江户背景图",
+						"operator": {
+							"nickname": "afe",
+							"roleLabel": "运营负责人"
+						},
+						"gallery": [
+							{
+								"caption": "出生点旁的圆湖南站站厅",
+								"alt": "HR 江户出生点旁的圆湖南站站厅"
+							},
+							{
+								"caption": "位于旧巷县的句号沙滩站站台",
+								"alt": "HR 江户位于旧巷县的句号沙滩站站台"
+							},
+							{
+								"caption": "位于江户本部的北麓站",
+								"alt": "HR 江户位于江户本部的北麓站"
+							}
+						]
+					},
+					"hrYiheng": {
+						"nameZh": "HR 颐恒",
+						"nameEn": "HydCraft Railway Yiheng",
+						"summary": "HR 颐恒是服有铁路 HR 于 2024 年拆分后新成立的地方自主运营铁路公司。HR 颐恒和 QR 合作，在全服推广 CR 化运营，总部位于颐恒县。",
+						"backgroundAlt": "HR 颐恒背景图",
+						"routeMapAlt": "HR 颐恒线路图",
+						"operator": {
+							"nickname": "拉克",
+							"roleLabel": "运营负责人"
+						},
+						"gallery": [
+							{
+								"caption": "在站台内等待发车的 D3801 车辆",
+								"alt": "HR 颐恒在站台内等待发车的 D3801 车辆"
+							},
+							{
+								"caption": "HR 颐恒位于广阳县的动车运用所",
+								"alt": "HR 颐恒位于广阳县的动车运用所"
+							},
+							{
+								"caption": "HR 颐恒在出生点旁的圆湖西站",
+								"alt": "HR 颐恒在出生点旁的圆湖西站"
+							}
+						]
+					}
+				}
+			},
 			"participation": {
 				"title": "怎么参与建设",
 				"prev": "上一条",
