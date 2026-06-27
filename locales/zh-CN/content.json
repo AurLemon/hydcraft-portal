@@ -47,6 +47,30 @@
 						"playTime": "游戏时间",
 						"lastLogin": "最近登录时间"
 					}
+				},
+				"municipality": {
+					"title": "自治体",
+					"headline": "敬请期待",
+					"description": "自治体（城市）仍在规划中，后续将作为独立站点上线",
+					"imageAlt": "自治体预告展示图"
+				},
+				"railwayData": {
+					"title": "铁路信息",
+					"headline": "敬请期待",
+					"description": "MTR、Create 及原版铁路的信息获取、汇总与功能仍在开发中，后续将作为独立站点上线",
+					"imageAlt": "铁路信息预告展示图"
+				},
+				"company": {
+					"title": "公司",
+					"headline": "敬请期待",
+					"description": "公司申报与管理功能仍在规划中，后续将作为独立站点上线",
+					"imageAlt": "公司预告展示图"
+				},
+				"map": {
+					"title": "地图",
+					"headline": "敬请期待",
+					"description": "类似高德地图的地图服务仍在规划中，后续将作为独立站点上线",
+					"imageAlt": "地图预告展示图"
 				}
 			},
 			"directories": {

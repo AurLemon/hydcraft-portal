@@ -47,6 +47,30 @@
 						"playTime": "Play Time",
 						"lastLogin": "Last Login"
 					}
+				},
+				"municipality": {
+					"title": "Municipality",
+					"headline": "Coming Soon",
+					"description": "Municipality and city features are still being planned and will later launch as a standalone site",
+					"imageAlt": "Municipality preview artwork"
+				},
+				"railwayData": {
+					"title": "Railway Information",
+					"headline": "Coming Soon",
+					"description": "Information access, aggregation, and related features for MTR, Create, and vanilla railways are still under development and will later launch as a standalone site",
+					"imageAlt": "Railway information preview artwork"
+				},
+				"company": {
+					"title": "Company",
+					"headline": "Coming Soon",
+					"description": "Company registration and management features are still being planned and will later launch as a standalone site",
+					"imageAlt": "Company preview artwork"
+				},
+				"map": {
+					"title": "Map",
+					"headline": "Coming Soon",
+					"description": "A map service similar to Amap is still being planned and will later launch as a standalone site",
+					"imageAlt": "Map preview artwork"
 				}
 			},
 			"directories": {

@@ -47,6 +47,30 @@
 						"playTime": "遊玩時間",
 						"lastLogin": "最近登入時間"
 					}
+				},
+				"municipality": {
+					"title": "自治體",
+					"headline": "敬請期待",
+					"description": "自治體（城市）仍在規劃中，後續將作為獨立站點上線",
+					"imageAlt": "自治體預告展示圖"
+				},
+				"railwayData": {
+					"title": "鐵路資訊",
+					"headline": "敬請期待",
+					"description": "MTR、Create 與原版鐵路的資訊取得、彙整與功能仍在開發中，後續將作為獨立站點上線",
+					"imageAlt": "鐵路資訊預告展示圖"
+				},
+				"company": {
+					"title": "公司",
+					"headline": "敬請期待",
+					"description": "公司申報與管理功能仍在規劃中，後續將作為獨立站點上線",
+					"imageAlt": "公司預告展示圖"
+				},
+				"map": {
+					"title": "地圖",
+					"headline": "敬請期待",
+					"description": "類似高德地圖的地圖服務仍在規劃中，後續將作為獨立站點上線",
+					"imageAlt": "地圖預告展示圖"
 				}
 			},
 			"directories": {

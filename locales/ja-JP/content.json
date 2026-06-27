@@ -47,6 +47,30 @@
 						"playTime": "プレイ時間",
 						"lastLogin": "最終ログイン"
 					}
+				},
+				"municipality": {
+					"title": "自治体",
+					"headline": "近日公開",
+					"description": "自治体と都市機能は現在も企画中で、今後は独立したサイトとして公開予定です",
+					"imageAlt": "自治体の予告イメージ"
+				},
+				"railwayData": {
+					"title": "鉄道情報",
+					"headline": "近日公開",
+					"description": "MTR、Create、そしてバニラ鉄道の情報取得・集約・関連機能は現在も開発中で、今後は独立したサイトとして公開予定です",
+					"imageAlt": "鉄道情報の予告イメージ"
+				},
+				"company": {
+					"title": "会社",
+					"headline": "近日公開",
+					"description": "会社申請と管理機能は現在も企画中で、今後は独立したサイトとして公開予定です",
+					"imageAlt": "会社の予告イメージ"
+				},
+				"map": {
+					"title": "地図",
+					"headline": "近日公開",
+					"description": "高徳地図のような地図サービスは現在も企画中で、今後は独立したサイトとして公開予定です",
+					"imageAlt": "地図の予告イメージ"
 				}
 			},
 			"directories": {

@@ -97,6 +97,10 @@
 				:players="overview.recommendedPlayers"
 				:total-count="overview.totalPlayers"
 			/>
+			<ServerOverviewMunicipalitySection />
+			<ServerOverviewRailwayDataSection />
+			<ServerOverviewCompanySection />
+			<ServerOverviewMapSection />
 		</div>
 
 		<PageInlineException

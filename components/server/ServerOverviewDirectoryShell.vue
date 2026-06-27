@@ -16,6 +16,7 @@
 			</div>
 
 			<UButton
+				v-if="actionLabel && to"
 				color="neutral"
 				variant="link"
 				icon="i-lucide-arrow-right"
@@ -32,8 +33,8 @@
 <script setup lang="ts">
 interface Props {
 	title: string
-	actionLabel: string
-	to: string
+	actionLabel?: string
+	to?: string
 	count?: number
 }
 
