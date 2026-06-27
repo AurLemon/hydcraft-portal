@@ -435,6 +435,27 @@
 					"councilOfEldersSecretary": "元老院书记"
 				}
 			},
+			"beyondServer": {
+				"title": "不止在服务器里面",
+				"cards": {
+					"meetups": {
+						"title": "现实里也见过面",
+						"description": "网上看久了只是一个 ID，线下见到才发现，群里的 ID 和现实里的人也连起来了，原来真是这么个人。",
+						"note": "实拍照片已做隐私化处理，人物为非真人形象。",
+						"imageAlt": "HydCraft 线下见面照片 {index}"
+					},
+					"games": {
+						"title": "一起开黑",
+						"description": "其实我们还有 Steam 和 Kook 的小群，甚至还有打瓦和布吉岛的战队。",
+						"imageAlt": "HydCraft 一起开黑照片 {index}"
+					},
+					"interests": {
+						"title": "共同兴趣",
+						"description": "Coding、二次元、音乐剧、Ham、PC DIY、法学、考研、高考…… 反正干什么的都有，搞不好还有地下社团。",
+						"imageAlt": "HydCraft 共同兴趣照片 {index}"
+					}
+				}
+			},
 			"faq": {
 				"title": "几个常见问题",
 				"items": [

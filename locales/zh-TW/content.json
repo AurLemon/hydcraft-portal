@@ -435,6 +435,27 @@
 					"councilOfEldersSecretary": "元老院書記"
 				}
 			},
+			"beyondServer": {
+				"title": "不只在伺服器裡面",
+				"cards": {
+					"meetups": {
+						"title": "現實裡也見過面",
+						"description": "網上看久了只是一個 ID，線下見到才發現，群裡的 ID 和現實裡的人也連了起來，原來真的是這麼一個人。",
+						"note": "實拍照片已做隱私化處理，人物為非真人形象。",
+						"imageAlt": "HydCraft 線下見面照片 {index}"
+					},
+					"games": {
+						"title": "一起開黑",
+						"description": "其實我們還有 Steam 和 Kook 的小群，甚至還有打瓦和布吉島的戰隊。",
+						"imageAlt": "HydCraft 一起開黑照片 {index}"
+					},
+					"interests": {
+						"title": "共同興趣",
+						"description": "Coding、二次元、音樂劇、Ham、PC DIY、法學、考研、高考…… 反正做什麼的都有，搞不好還有地下社團。",
+						"imageAlt": "HydCraft 共同興趣照片 {index}"
+					}
+				}
+			},
 			"faq": {
 				"title": "幾個常見問題",
 				"items": [

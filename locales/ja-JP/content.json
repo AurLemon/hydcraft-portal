@@ -440,6 +440,27 @@
 					"councilOfEldersSecretary": "元老院書記"
 				}
 			},
+			"beyondServer": {
+				"title": "サーバーの中だけではない",
+				"cards": {
+					"meetups": {
+						"title": "現実でも会っている",
+						"description": "ネットで長く見ているうちは、ただの ID に見えることもあります。けれど実際に会ってみると、グループの中の ID と現実の人がちゃんとつながって、ああ本当にこういう人なんだと実感します。",
+						"note": "実写写真にはプライバシー保護の処理を施しており、人物は実在の顔ではない表現になっています。",
+						"imageAlt": "HydCraft オフライン交流写真 {index}"
+					},
+					"games": {
+						"title": "一緒にゲームをする",
+						"description": "実は Steam や Kook の小さなグループもありますし、VALORANT やブジダオのチームまであります。",
+						"imageAlt": "HydCraft 一緒に遊ぶ写真 {index}"
+					},
+					"interests": {
+						"title": "共通の興味",
+						"description": "Coding、二次元、ミュージカル、Ham、PC DIY、法学、大学院受験、高考…… とにかく何をしている人でもいます。もしかすると地下サークルまであるかもしれません。",
+						"imageAlt": "HydCraft 共通の興味の写真 {index}"
+					}
+				}
+			},
 			"faq": {
 				"title": "よくある質問",
 				"items": [

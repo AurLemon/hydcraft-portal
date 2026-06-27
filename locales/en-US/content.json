@@ -159,7 +159,7 @@
 				"imageAlt": "HydCraft showcase image {index}"
 			},
 			"goodAndBad": {
-				"title": "Some good, some bad",
+				"title": "Some Good, Some Bad",
 				"imageAlt": "HydCraft showcase image {index}"
 			},
 			"dailyLife": {
@@ -201,7 +201,7 @@
 				]
 			},
 			"railways": {
-				"title": "We build more than houses",
+				"title": "We Build More Than Houses",
 				"prev": "Previous operator",
 				"next": "Next operator",
 				"goto": "Go to operator {index}",
@@ -291,7 +291,7 @@
 				}
 			},
 			"participation": {
-				"title": "How to take part in building",
+				"title": "How to Take Part in Building",
 				"prev": "Previous",
 				"next": "Next",
 				"goto": "Go to rule {index}",
@@ -323,7 +323,7 @@
 				]
 			},
 			"fit": {
-				"title": "Who this place is for",
+				"title": "Who This Place Is For",
 				"fitColumn": {
 					"title": "For people who like to build slowly",
 					"items": [
@@ -440,6 +440,27 @@
 					"councilOfEldersSecretary": "Council of Elders Secretary"
 				}
 			},
+			"beyondServer": {
+				"title": "More Than Just the Server",
+				"cards": {
+					"meetups": {
+						"title": "We Have Met Offline Too",
+						"description": "After seeing someone online for long enough, they can feel like just an ID. Meeting offline is when it suddenly clicks that the ID in the group and the real person are the same, and you realize what kind of person they actually are.",
+						"note": "The original photo has been privacy-processed, and the people shown are non-real-person representations.",
+						"imageAlt": "HydCraft offline meetup photo {index}"
+					},
+					"games": {
+						"title": "Queueing Up Together",
+						"description": "We also have smaller Steam and Kook groups, and there are even squads for Valorant and Bujidao.",
+						"imageAlt": "HydCraft gaming session photo {index}"
+					},
+					"interests": {
+						"title": "Shared Interests",
+						"description": "Coding, anime, musicals, ham radio, PC DIY, law, graduate exams, gaokao... pretty much every kind of person shows up here. There might even be a secret club or two.",
+						"imageAlt": "HydCraft shared interests photo {index}"
+					}
+				}
+			},
 			"faq": {
 				"title": "A Few Common Questions",
 				"items": [
@@ -478,7 +499,7 @@
 				]
 			},
 			"joinUs": {
-				"title": "If you're in, join us now!",
+				"title": "If You're In, Join Us Now!",
 				"subtitle": "",
 				"notes": {
 					"client": "Join the group first to get the client download.",

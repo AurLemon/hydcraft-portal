@@ -46,6 +46,7 @@
 			<IntroChiefArchitectCard />
 			<IntroSeniorArchitectCard />
 		</section>
+		<IntroBeyondServerSection />
 		<IntroFaq />
 		<IntroJoinUsCard />
 	</div>
