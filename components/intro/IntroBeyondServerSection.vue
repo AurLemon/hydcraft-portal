@@ -12,7 +12,7 @@
 			<article
 				v-for="card in cards"
 				:key="card.key"
-				class="group relative overflow-hidden rounded-xl bg-slate-950 shadow-[0_18px_50px_rgba(15,23,42,0.2)]"
+				class="group relative overflow-hidden rounded-xl bg-slate-950 border border-slate-200 dark:border-slate-800"
 				:class="card.layoutClass"
 			>
 				<div class="absolute inset-0">
@@ -60,7 +60,10 @@
 				>
 					<div class="flex flex-col gap-3">
 						<div class="flex items-center gap-3">
-							<UIcon :name="card.icon" class="size-6 shrink-0 text-white translate-y-px" />
+							<UIcon
+								:name="card.icon"
+								class="size-6 shrink-0 text-white translate-y-px"
+							/>
 							<h3 class="font-arkpixel text-2xl tracking-wide text-white">
 								{{ card.title }}
 							</h3>

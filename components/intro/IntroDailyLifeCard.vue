@@ -12,7 +12,7 @@
 			<figure
 				v-for="(item, index) in items"
 				:key="`${item.image.src}-${index}`"
-				class="group relative m-0 min-h-72 overflow-hidden rounded-xl bg-white/80 dark:bg-slate-700/80 lg:min-h-90"
+				class="group relative m-0 min-h-72 overflow-hidden rounded-xl bg-white/80 dark:bg-slate-700/80 lg:min-h-90 border border-slate-200 dark:border-slate-800"
 			>
 				<SkeletonImage
 					:src="item.image.src"

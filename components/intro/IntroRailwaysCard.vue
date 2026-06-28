@@ -462,17 +462,17 @@ const stopRailwayCarousel = (): void => {
 }
 
 const startRailwayCarousel = (): void => {
-	// if (!import.meta.client) {
-	// 	return
-	// }
-	// stopRailwayCarousel()
-	// if (railwayRoutes.value.length <= 1) {
-	// 	return
-	// }
-	// railwayCarouselTimer = setInterval(() => {
-	// 	currentRouteIndex.value =
-	// 		(currentRouteIndex.value + 1) % railwayRoutes.value.length
-	// }, RAILWAY_CAROUSEL_INTERVAL)
+	if (!import.meta.client) {
+		return
+	}
+	stopRailwayCarousel()
+	if (railwayRoutes.value.length <= 1) {
+		return
+	}
+	railwayCarouselTimer = setInterval(() => {
+		currentRouteIndex.value =
+			(currentRouteIndex.value + 1) % railwayRoutes.value.length
+	}, RAILWAY_CAROUSEL_INTERVAL)
 }
 
 const resetRailwayCarousel = (): void => {

@@ -69,7 +69,7 @@
 					<figure v-for="image in row" :key="image.src" class="m-0">
 						<button
 							type="button"
-							class="group block cursor-zoom-in overflow-hidden rounded-xl bg-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:bg-slate-900/80"
+							class="group block cursor-zoom-in overflow-hidden rounded-xl bg-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800"
 							:aria-label="`Open image preview: ${image.alt}`"
 							@click="openPreview(image)"
 						>

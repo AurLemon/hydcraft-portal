@@ -1,6 +1,6 @@
 <template>
 	<section
-		class="relative isolate h-104 w-full overflow-hidden rounded-xl bg-slate-900 sm:h-120"
+		class="relative isolate h-104 w-full overflow-hidden rounded-xl bg-slate-900 sm:h-120 border border-slate-200 dark:border-slate-800"
 		@mouseenter="handleUserInteraction"
 		@mousemove="handleUserInteraction"
 	>
