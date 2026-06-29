@@ -1,12 +1,10 @@
 ---
-updatedAt: 2026-06-28T20:04:35+08:00
+updatedAt: 2026-06-30T03:03:05+08:00
 ---
 
-How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback...
+How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback. Since 2018, the server has made it through seven seasons, and Season 8 is almost here.
 
-Since 2018, the server has made it through seven seasons, and Season 8 is almost here. It started as a few friends playing together, but that manic phase where people stayed up every night building giant houses and claiming land for huge projects is long gone. Season 7 has been running since August 2023, and the pace has visibly slowed. People have school, jobs, and, frankly, I as the owner am not really capable of leading big builds anymore.
-
-Instead of logging in and AFKing on the server, people now spend more time chatting in the group or scrolling through old screenshots and reminiscing. Still, the server has not completely stalled. It is still nice to tinker with things once in a while, and Season 7 has produced quite a few results too. You can see some of them on the intro page.
+It started as a few friends playing together, but that manic phase where people stayed up every night building giant houses and claiming land for huge projects is long gone. Season 7 has been running since August 2023, and the pace has visibly slowed. People have school, jobs, and, frankly, I as the owner am not really capable of leading big builds anymore. Instead of logging in and AFKing on the server, people now spend more time chatting in the group or scrolling through old screenshots and reminiscing. Still, the server has not completely stalled. It is still nice to tinker with things once in a while, and Season 7 has produced quite a few results too. You can see some of them on the intro page.
 
 Oh, right, I should introduce myself first. I am the server owner, Aurora_Lemon. People usually call me Lemon. From here on, I will record what this server has actually gone through over the years from a first-person point of view.
 
@@ -17,7 +15,7 @@ Compared with what it is now, the earliest version of the server was almost a co
 ::image-grid{images='[{"src":"timeline/gallery/season_1/misc_server_temp_logo.webp","caption":"Early server logo (Binhai City server)","width":"15rem"},{"src":"timeline/gallery/season_2/misc_division.webp","caption":"Season 2 administrative divisions","width":"20rem"}]'}
 ::
 
-On September 1, 2018, that multiplayer server officially went live, and other people could finally join. Season 1. Version 1.7.10. RTM plus RC. Most of the earliest players came from RTM Baidu Tieba group chats. Around the spawn point, players gradually built all kinds of structures, roads, stations, and early urban rail transit, in an area that was later named Binhai City. At the very beginning, there was no complete system and no clear goal. It was simply a few people starting to play together, and the server's name, website, and community all came later, bit by bit.
+On September 1, 2018, that multiplayer server officially went live, and other people could finally join. Season 1 was on version 1.7.10, with RTM plus RC. Most of the earliest players came from RTM Baidu Tieba group chats. Around the spawn point, players gradually built all kinds of structures, roads, stations, and early urban rail transit, in an area that was later named Binhai City. At the very beginning, there was no complete system and no clear goal. It was simply a few people starting to play together, and the server's name and website both came later, bit by bit.
 
 In early September, people saw that I knew how to handle server-side and technical stuff, so the person who had started the multiplayer session handed me the title of owner. I scraped together some money, bought a panel host on Taobao, and put the server on it for everyone to play. I was not even the group owner yet at that point. That was transferred to me a month or two later.
 
