@@ -126,7 +126,7 @@ import {
 	type AdminUserForm,
 	type AdminUserSaveSection,
 	type AdminUserSelectItem,
-} from '~/utils/admin-user-edit'
+} from '~/utils/admin/users/edit'
 
 definePageMeta({
 	headerVariant: 'solid',

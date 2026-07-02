@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable'
-import type { PartnerSection, PartnerSummary } from '~/utils/partners'
+import type { PartnerSection, PartnerSummary } from '~/utils/community/partners'
 
 const props = defineProps<{
 	section: PartnerSection

@@ -13,7 +13,7 @@ import {
 import {
 	profileLanguageToLocaleCode,
 	type ProfileLanguage,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'

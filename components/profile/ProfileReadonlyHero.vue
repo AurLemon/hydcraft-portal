@@ -145,8 +145,8 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
-import type { EditableProfile, ProfileBadge } from '~/utils/profile-edit'
-import { getProfileBadgeStyle } from '~/utils/profile-badges'
+import type { EditableProfile, ProfileBadge } from '~/utils/profile/edit'
+import { getProfileBadgeStyle } from '~/utils/profile/badges'
 
 interface ProfileReadonlyHeroAction {
 	label: string

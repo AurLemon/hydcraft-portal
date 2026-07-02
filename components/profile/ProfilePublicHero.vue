@@ -165,7 +165,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
-import { getProfileBadgeStyle } from '~/utils/profile-badges'
+import { getProfileBadgeStyle } from '~/utils/profile/badges'
 
 interface PublicProfileBadge {
 	id: string

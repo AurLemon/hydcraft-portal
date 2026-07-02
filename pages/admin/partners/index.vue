@@ -162,8 +162,11 @@
 </template>
 
 <script setup lang="ts">
-import type { PartnerSection, PartnerSummary } from '~/utils/partners'
-import { partnerKindValues, partnerSectionValues } from '~/utils/partners'
+import type { PartnerSection, PartnerSummary } from '~/utils/community/partners'
+import {
+	partnerKindValues,
+	partnerSectionValues,
+} from '~/utils/community/partners'
 
 definePageMeta({
 	headerVariant: 'solid',

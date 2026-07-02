@@ -141,7 +141,7 @@ import dayjs from 'dayjs'
 import {
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 interface AdminUserMinecraftSectionProps {
 	accounts: AdminUser['minecraftAccounts']

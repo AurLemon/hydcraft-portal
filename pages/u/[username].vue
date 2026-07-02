@@ -243,11 +243,11 @@ import {
 	extractPathSegment,
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 import {
 	resolveBirthdaySummary,
 	resolveGenderSymbol,
-} from '~/utils/profile-birthday'
+} from '~/utils/profile/birthday'
 import type {
 	MinecraftAccountForm,
 	MinecraftAccountsResponse,

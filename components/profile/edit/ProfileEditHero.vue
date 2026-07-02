@@ -153,8 +153,8 @@ import type {
 	EditableProfile,
 	ProfileBadge,
 	ProfileForm,
-} from '~/utils/profile-edit'
-import { getProfileBadgeStyle } from '~/utils/profile-badges'
+} from '~/utils/profile/edit'
+import { getProfileBadgeStyle } from '~/utils/profile/badges'
 
 interface ProfileEditHeroProps {
 	profile: EditableProfile

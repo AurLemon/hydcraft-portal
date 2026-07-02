@@ -27,8 +27,8 @@ import {
 	privacyItems,
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
-import type { AdminUserForm } from '~/utils/admin-user-edit'
+} from '~/utils/profile/edit'
+import type { AdminUserForm } from '~/utils/admin/users/edit'
 
 const { t } = useI18n()
 const form = defineModel<AdminUserForm>('form', { required: true })

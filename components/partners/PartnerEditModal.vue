@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import defaultCover from '~/assets/resources/pages/partners_cover.webp'
-import type { PartnerSummary } from '~/utils/partners'
+import type { PartnerSummary } from '~/utils/community/partners'
 
 interface PartnerEditModalProps {
 	open: boolean

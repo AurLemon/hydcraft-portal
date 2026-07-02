@@ -2,7 +2,7 @@ import type {
 	PrivacyKey,
 	ProfileLanguage,
 	TimezoneMode,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 import type { MinecraftAccountSummary } from '~/utils/minecraft/accounts'
 
 export interface PortalBridgeSummary {

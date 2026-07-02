@@ -42,8 +42,8 @@ import {
 	profileCardClass,
 	profileSectionTitleClass,
 	timezoneItems,
-} from '~/utils/profile-edit'
-import { adminFieldClass, type AdminUserForm } from '~/utils/admin-user-edit'
+} from '~/utils/profile/edit'
+import { adminFieldClass, type AdminUserForm } from '~/utils/admin/users/edit'
 
 interface AdminUserPreferencesSectionProps {
 	submitting: boolean

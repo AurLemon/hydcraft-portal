@@ -6,7 +6,7 @@ import {
 	type PrivacyKey,
 	type ProfileLanguage,
 	type TimezoneMode,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 export interface AdminUserSelectItem {
 	label: string

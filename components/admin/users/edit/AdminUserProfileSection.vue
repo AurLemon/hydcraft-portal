@@ -41,12 +41,12 @@
 import {
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 import {
 	adminFieldClass,
 	type AdminUserForm,
 	type AdminUserSelectItem,
-} from '~/utils/admin-user-edit'
+} from '~/utils/admin/users/edit'
 
 interface AdminUserProfileSectionProps {
 	submitting: boolean

@@ -53,8 +53,8 @@
 import {
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
-import { adminFieldClass, type AdminUserForm } from '~/utils/admin-user-edit'
+} from '~/utils/profile/edit'
+import { adminFieldClass, type AdminUserForm } from '~/utils/admin/users/edit'
 
 interface AdminUserSocialSectionProps {
 	submitting: boolean

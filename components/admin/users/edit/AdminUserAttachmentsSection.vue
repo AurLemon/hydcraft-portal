@@ -122,12 +122,12 @@ import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader
 import {
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 import {
 	adminMediaEmptyClass,
 	adminMediaFrameClass,
 	adminReadonlyFieldClass,
-} from '~/utils/admin-user-edit'
+} from '~/utils/admin/users/edit'
 
 interface AdminUserAttachmentsSectionProps {
 	user: AdminUser

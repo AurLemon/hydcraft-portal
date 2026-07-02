@@ -133,7 +133,7 @@ import {
 	friendLinkCategoryValues,
 	type FriendLinkCategory,
 	type FriendLinkSummary,
-} from '~/utils/friend-links'
+} from '~/utils/links/friend-links'
 
 interface AdminFriendLinkModalProps {
 	open: boolean

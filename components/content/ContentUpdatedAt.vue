@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { getContentStats } from '~/utils/content-stats'
+import { getContentStats } from '~/utils/content/stats'
 
 interface UpdatedAtDoc {
 	body?: unknown

@@ -431,11 +431,11 @@ import type {
 	FriendLinkApplicationSummary,
 	FriendLinkCategory,
 	FriendLinkSummary,
-} from '~/utils/friend-links'
+} from '~/utils/links/friend-links'
 import {
 	friendLinkCategoryValues,
 	friendLinkApplicationStatusValues,
-} from '~/utils/friend-links'
+} from '~/utils/links/friend-links'
 
 definePageMeta({
 	headerVariant: 'solid',

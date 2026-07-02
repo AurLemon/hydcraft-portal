@@ -719,7 +719,7 @@ import {
 	profileCardClass,
 	profileSectionTitleClass,
 	type ProfileResponse,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 definePageMeta({
 	headerVariant: 'solid',

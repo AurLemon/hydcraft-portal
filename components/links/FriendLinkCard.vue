@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FriendLinkSummary } from '~/utils/friend-links'
+import type { FriendLinkSummary } from '~/utils/links/friend-links'
 
 interface FriendLinkCardProps {
 	link: FriendLinkSummary

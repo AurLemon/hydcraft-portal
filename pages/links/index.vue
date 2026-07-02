@@ -105,7 +105,7 @@
 <script setup lang="ts">
 import linksBannerImage from '~/assets/resources/pages/links_banner.webp'
 import { getPortalRedirectQuery } from '~/utils/auth/redirect'
-import type { FriendLinksPublicResponse } from '~/utils/friend-links'
+import type { FriendLinksPublicResponse } from '~/utils/links/friend-links'
 
 const { t } = useI18n()
 const route = useRoute()

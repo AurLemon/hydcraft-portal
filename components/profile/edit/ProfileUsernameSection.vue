@@ -44,7 +44,7 @@ import {
 	profileCardClass,
 	profileSectionTitleClass,
 	type ProfileForm,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 interface ProfileUsernameSectionProps {
 	publicProfileUrl: string

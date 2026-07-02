@@ -11,7 +11,7 @@
 import {
 	formatBirthdaySummaryText,
 	resolveBirthdaySummary,
-} from '~/utils/profile-birthday'
+} from '~/utils/profile/birthday'
 
 interface ProfileBirthdayInfoProps {
 	birthday: string

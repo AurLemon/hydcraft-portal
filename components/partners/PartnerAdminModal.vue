@@ -385,8 +385,8 @@ import type {
 	PartnerKind,
 	PartnerSection,
 	PartnerSummary,
-} from '~/utils/partners'
-import { partnerKindValues } from '~/utils/partners'
+} from '~/utils/community/partners'
+import { partnerKindValues } from '~/utils/community/partners'
 
 interface PartnerAdminModalProps {
 	open: boolean

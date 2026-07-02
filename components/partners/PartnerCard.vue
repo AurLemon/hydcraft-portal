@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 import defaultCover from '~/assets/resources/pages/partners_cover.webp'
-import type { PartnerSummary } from '~/utils/partners'
+import type { PartnerSummary } from '~/utils/community/partners'
 
 const props = defineProps<{
 	partner: PartnerSummary

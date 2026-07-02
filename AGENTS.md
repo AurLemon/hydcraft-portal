@@ -45,6 +45,12 @@
 - 颜色、语义色、表面层级、字号与字体倾向，优先通过 token 与 class 表达，不要在局部组件里散落硬编码色值。
 - 对 Nuxt UI 组件的定制，优先走 theme / config / class 扩展，不要为了一个局部视觉点把整个组件手写替换掉。
 
+## Utils Directory Discipline
+
+- `utils/` 不要长期平铺堆放领域文件；只允许保留极少数真正的顶层稳定入口，默认都应按领域拆进子文件夹，例如 `utils/profile/*`、`utils/community/*`、`utils/links/*`。
+- 当某个 util 已明显服务于特定业务域、页面族、或模块契约时，优先新建对应子目录，不要继续把文件散放在 `utils/` 根下。
+- 做 utils 重构时，先按领域边界整理目录，再决定是否保留或收缩顶层 re-export 入口；不要为了“先能用”长期保留一堆平铺 shim。
+
 ## Error And i18n Discipline
 
 - 服务端业务错误统一通过 `createApiError` / `createBadRequestError` 抛出，不要直接散落 `createError` 拼结构。

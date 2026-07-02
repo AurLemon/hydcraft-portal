@@ -298,7 +298,7 @@
 import {
 	getProfileBadgeStyle,
 	profileBadgePalette,
-} from '~/utils/profile-badges'
+} from '~/utils/profile/badges'
 
 definePageMeta({
 	headerVariant: 'solid',

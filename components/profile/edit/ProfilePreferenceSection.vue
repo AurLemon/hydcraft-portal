@@ -49,7 +49,7 @@ import {
 	type LocaleCode,
 	type ProfileLanguage,
 	type ProfileForm,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 
 const form = defineModel<ProfileForm>('form', { required: true })
 const { t } = useI18n()

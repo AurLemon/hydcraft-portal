@@ -127,7 +127,7 @@ import {
 	friendLinkApplicationCategoryValues,
 	type FriendLinkApplicationSummary,
 	type FriendLinkCategory,
-} from '~/utils/friend-links'
+} from '~/utils/links/friend-links'
 
 interface FriendLinkApplicationModalProps {
 	open: boolean

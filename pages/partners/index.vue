@@ -123,7 +123,7 @@ import type {
 	PartnerKind,
 	PartnerSummary,
 	PartnersPublicResponse,
-} from '~/utils/partners'
+} from '~/utils/community/partners'
 
 const { t } = useI18n()
 const colorMode = useColorMode()

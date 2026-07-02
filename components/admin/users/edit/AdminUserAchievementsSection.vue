@@ -73,12 +73,12 @@ import type { AdminBadge } from '~/components/admin/types'
 import {
 	profileCardClass,
 	profileSectionTitleClass,
-} from '~/utils/profile-edit'
+} from '~/utils/profile/edit'
 import {
 	adminFieldClass,
 	adminToggleRowClass,
 	type AdminUserForm,
-} from '~/utils/admin-user-edit'
+} from '~/utils/admin/users/edit'
 
 interface AdminUserAchievementsSectionProps {
 	availableBadges: AdminBadge[]
