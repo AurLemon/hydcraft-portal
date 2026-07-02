@@ -17,6 +17,7 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 	modules: [
 		'@nuxt/eslint',
+		'nuxt-svgo',
 		[
 			'@nuxtjs/i18n',
 			{
@@ -184,6 +185,10 @@ export default defineNuxtConfig({
 	},
 	colorMode: {
 		preference: 'system',
+	},
+	svgo: {
+		global: false,
+		defaultImport: 'component',
 	},
 	nitro: {
 		serverAssets: [

@@ -1,5 +1,5 @@
 ---
-updatedAt: 2026-06-30T03:26:39+08:00
+updatedAt: 2026-07-02T18:20:00+08:00
 ---
 
 How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback. Since 2018, the server has made it through seven seasons, and Season 8 is almost here.
@@ -7,6 +7,9 @@ How did HydCraft end up where it is today? If I really had to get into it, I sti
 It started as a few friends playing together, but that manic phase where people stayed up every night building giant houses and claiming land for huge projects is long gone. Season 7 has been running since August 2023, and the pace has visibly slowed. People have school, jobs, and, frankly, I as the owner am not really capable of leading big builds anymore. Instead of logging in and AFKing on the server, people now spend more time chatting in the group or scrolling through old screenshots and reminiscing. Still, the server has not completely stalled. It is still nice to tinker with things once in a while, and Season 7 has produced quite a few results too. You can see some of them on the intro page.
 
 Oh, right, I should introduce myself first. I am the server owner, Aurora_Lemon. People usually call me Lemon. From here on, I will record what this server has actually gone through over the years from a first-person point of view.
+
+::timeline-owner-intro-card
+::
 
 ## The Beginning
 
