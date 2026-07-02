@@ -38,6 +38,8 @@
 								t('home.cards.backgroundAlt', { title: card.title })
 							"
 							:background-class="card.backgroundClass"
+							:to="card.to"
+							:tooltip="card.tooltip"
 						/>
 					</div>
 				</section>
@@ -57,7 +59,7 @@ definePageMeta({
 	headerVariant: 'hero',
 })
 
-type HomeCardKey = 'nitrogen' | 'railway' | 'culture' | 'cities'
+type HomeCardKey = 'nitrogen' | 'railway' | 'players' | 'cities'
 
 interface HomeCard {
 	index: number
@@ -66,6 +68,8 @@ interface HomeCard {
 	description: string
 	backgroundSrc: string
 	backgroundClass?: string
+	to?: string
+	tooltip?: string
 }
 
 interface Vector2D {
@@ -77,6 +81,8 @@ const HOME_HERO_PARALLAX_MAX_OFFSET = 24
 const HOME_HERO_ROTATION_MAX_DEGREE = 1.4
 const CARD_MAGNET_MAX_OFFSET = 6
 const DESKTOP_POINTER_MIN_WIDTH = 1024
+const { t } = useI18n()
+const localePath = useLocalePath()
 
 const cardRefs = ref<HTMLElement[]>([])
 const cardOffsets = reactive<Vector2D[]>([
@@ -99,6 +105,7 @@ const homeCards = computed<HomeCard[]>(() => [
 		description: t('home.cards.nitrogen.description'),
 		backgroundSrc: nitrogenBackground,
 		backgroundClass: 'object-center',
+		to: localePath('/server'),
 	},
 	{
 		index: 1,
@@ -107,14 +114,16 @@ const homeCards = computed<HomeCard[]>(() => [
 		description: t('home.cards.railway.description'),
 		backgroundSrc: railwayBackground,
 		backgroundClass: 'object-left',
+		tooltip: t('home.cards.comingSoon'),
 	},
 	{
 		index: 2,
-		key: 'culture',
-		title: 'Culture',
-		description: t('home.cards.culture.description'),
+		key: 'players',
+		title: 'Players',
+		description: t('home.cards.players.description'),
 		backgroundSrc: cultureBackground,
 		backgroundClass: 'object-center',
+		to: localePath('/server/players'),
 	},
 	{
 		index: 3,
@@ -123,6 +132,7 @@ const homeCards = computed<HomeCard[]>(() => [
 		description: t('home.cards.cities.description'),
 		backgroundSrc: citiesBackground,
 		backgroundClass: 'object-center',
+		tooltip: t('home.cards.comingSoon'),
 	},
 ])
 

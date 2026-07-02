@@ -3,14 +3,15 @@
 		"lead": "ビルを建てて、線路を敷いて、街をつくって、のんびり暮らす。じゃあ、どうして MC サーバーの名前が水素なのかって？ それは私にもわからない。",
 		"cards": {
 			"backgroundAlt": "{title} の背景",
+			"comingSoon": "開発中",
 			"nitrogen": {
 				"description": "現在のサーバー周目（1.20.1）"
 			},
 			"railway": {
 				"description": "鉄道システムと交通ネットワーク"
 			},
-			"culture": {
-				"description": "ランドマーク、イベント、そして共有された記憶"
+			"players": {
+				"description": "プレイヤーディレクトリと公開表示"
 			},
 			"cities": {
 				"description": "都市計画と建築コミュニティ"

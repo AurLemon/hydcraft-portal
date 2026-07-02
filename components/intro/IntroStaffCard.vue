@@ -234,7 +234,7 @@ interface CouncilOfEldersMember extends CouncilOfEldersMemberDefinition {
 }
 
 const ownerId = 'Aurora_Lemon'
-const DESKTOP_COUNCIL_OF_ELDERS_HIDDEN_COUNT = 4
+const DESKTOP_COUNCIL_OF_ELDERS_HIDDEN_COUNT = 5
 const DESKTOP_LAYOUT_MIN_WIDTH = 1024
 
 const committeeMemberDefinitions: CommitteeMemberDefinition[] = [
@@ -282,7 +282,7 @@ const councilOfEldersMemberDefinitions: CouncilOfEldersMemberDefinition[] = [
 	{ id: 'TochoShizuku', nickname: '远绪' },
 	{ id: 'LanYue_CN', nickname: '蓝月' },
 	{ id: 'Mobike', nickname: '摩拜' },
-	{ id: 'HidakaHokuto', nickname: '裤头' },
+	{ id: 'Hei_awa_', nickname: '小黑' },
 	{ id: 'BackSpace', nickname: '退格' },
 	{ id: 'MainCity_Subway', nickname: '主城' },
 	{ id: 'UYxiaoli', nickname: '小李' },
@@ -299,6 +299,7 @@ const councilOfEldersMemberDefinitions: CouncilOfEldersMemberDefinition[] = [
 	{ id: 'Misaka_13577', nickname: '弥撒卡' },
 	{ id: 'FruKyuu', nickname: '芙秋' },
 	{ id: 'LynaCrystal', nickname: '乾喵' },
+	{ id: 'xiaobaimao233', nickname: '小白猫' },
 ]
 
 const { t } = useI18n()

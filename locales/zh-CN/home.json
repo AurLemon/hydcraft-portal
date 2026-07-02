@@ -3,14 +3,15 @@
 		"lead": "修楼、铺轨、造城、养老。至于为什么一个 MC 服务器叫氢气？我也不知道。",
 		"cards": {
 			"backgroundAlt": "{title} 背景",
+			"comingSoon": "开发中",
 			"nitrogen": {
 				"description": "服务器现行周目（1.20.1）"
 			},
 			"railway": {
 				"description": "铁路系统与交通网络"
 			},
-			"culture": {
-				"description": "地标、活动与共同记忆"
+			"players": {
+				"description": "玩家目录与公开展示"
 			},
 			"cities": {
 				"description": "城市规划与建筑群落"

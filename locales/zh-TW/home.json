@@ -3,14 +3,15 @@
 		"lead": "修樓、鋪軌、造城、養老。至於為什麼一個 MC 伺服器叫氫氣？我也不知道。",
 		"cards": {
 			"backgroundAlt": "{title} 背景",
+			"comingSoon": "開發中",
 			"nitrogen": {
 				"description": "伺服器目前周目（1.20.1）"
 			},
 			"railway": {
 				"description": "鐵路系統與交通網路"
 			},
-			"culture": {
-				"description": "地標、活動與共同記憶"
+			"players": {
+				"description": "玩家目錄與公開展示"
 			},
 			"cities": {
 				"description": "城市規劃與建築群落"
