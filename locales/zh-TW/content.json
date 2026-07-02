@@ -638,6 +638,11 @@
 			"openPreview": "打開圖片預覽：{alt}",
 			"scrollLeft": "向左捲動圖片",
 			"scrollRight": "向右捲動圖片"
+		},
+		"timeline": {
+			"postscriptCard": {
+				"title": "伺服器服主寫的後記看這裡"
+			}
 		}
 	}
 }

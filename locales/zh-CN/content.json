@@ -638,6 +638,11 @@
 			"openPreview": "打开图片预览：{alt}",
 			"scrollLeft": "向左滚动图片",
 			"scrollRight": "向右滚动图片"
+		},
+		"timeline": {
+			"postscriptCard": {
+				"title": "服务器服主写的后记看这里"
+			}
 		}
 	}
 }

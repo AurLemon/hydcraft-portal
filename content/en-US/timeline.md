@@ -1,5 +1,5 @@
 ---
-updatedAt: 2026-07-02T18:20:00+08:00
+updatedAt: 2026-07-02T20:05:00+08:00
 ---
 
 How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback. Since 2018, the server has made it through seven seasons, and Season 8 is almost here.
@@ -134,7 +134,10 @@ The collective spamming of "1" after a WorldEdit command froze the server's main
 
 Back then we also held "discussion meetings." In reality they were just Tencent Meetings where we chatted and, truthfully, did not reach many results. At the time I really believed that if we just held enough meetings and made the systems detailed enough, many old problems could be solved all at once. Looking back now, that was too simple a way of thinking. It is not that those discussions were entirely useless. It is just that they could not solve as much as we thought they could. In an acquaintance community, manpower, execution cost, and relationship complexity are always there. In the end, many meetings were really just a bunch of people seriously imagining what the server might become in the future.
 
-For me, Season 6 holds both good memories and bad ones. Old friends left. Managers left because of factional disputes. People formed cliques, excluded others, and attacked people recklessly. All of that happened in 2023. For me, 2023 is not a good number. I never expected such a small online community to end up carrying all of my emotions. I lacked a sense of security too badly. I wanted to keep everyone, and in the end I pleased neither side and kept no one. I will not write those stories into the server history here, though. I will write them on my personal website instead, maybe as the [owner's postscript](https://aurlemon.top/en-US/journey).
+For me, Season 6 holds both good memories and bad ones. Old friends left. Managers left because of factional disputes. People formed cliques, excluded others, and attacked people recklessly. All of that happened in 2023. For me, 2023 is not a good number. I never expected such a small online community to end up carrying all of my emotions. I lacked a sense of security too badly. I wanted to keep everyone, and in the end I pleased neither side and kept no one. I will not write those stories into the server history here, though. I will write them on my personal website instead, maybe as the owner's postscript.
+
+::timeline-owner-postscript-card
+::
 
 In the summer of 2023, construction started to saturate, small-group conflicts and questions about direction all exploded at once, and Season 6 basically entered its late stage then. Season 7 was opened after that pile of problems, so of course it was a new map and new technology, but it also carried a response to the late-Season-6 problems with it. Later on, Season 6 would occasionally reopen. It was not the most stable period, but if I had to pick the phase that was the most crowded, the most vivid, and the clearest example of community complexity, I would still probably pick Season 6. It was only near the end of Season 6 that I truly realized we had to explicitly forbid clique-building and excluding other people.
 
@@ -287,3 +290,6 @@ It is not only HydCraft. Somewhere in the corners of the internet, there are pro
 If you were ever here, I hope that whenever HydCraft comes back to mind, you will know that this place once remembered you seriously. And if you are only passing by, then just treat this as a bit of archaeology from some forgotten corner of the internet. Or pretend I never said any of this. Honestly, the thought that someone might resonate with this little essay of mine is enough to make me excited.
 
 <span class="block font-serif font-bold text-xl pt-4">This page records that HydCraft once existed in one corner of the internet. It also records the people who left behind their names, buildings, routes, and memories here.</span>
+
+::timeline-owner-postscript-card
+::
