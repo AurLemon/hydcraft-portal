@@ -499,6 +499,7 @@ const goNextRoute = (): void => {
 }
 
 const openPreview = (item: RailwayGalleryItem): void => {
+	stopRailwayCarousel()
 	activeImage.value = toLightboxImage(item)
 }
 
@@ -550,6 +551,25 @@ watch(
 	},
 	{ immediate: true },
 )
+
+watch(lightboxOpen, (open) => {
+	if (open) {
+		stopRailwayCarousel()
+		return
+	}
+
+	if (!import.meta.client || railwayRoutes.value.length <= 1) {
+		return
+	}
+
+	window.setTimeout(() => {
+		if (lightboxOpen.value) {
+			return
+		}
+
+		startRailwayCarousel()
+	}, 0)
+})
 
 onMounted(() => {
 	void syncRouteAccentColors()
