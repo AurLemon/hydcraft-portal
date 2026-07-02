@@ -35,7 +35,7 @@
 	},
 	"main": {
 		"contentFooter": {
-			"updatedAt": "{date} 更新",
+			"updatedAt": "{date}",
 			"stats": "{count} 字 / {minutes} 分"
 		}
 	},

@@ -617,6 +617,9 @@
 			"edition": "{ordinal} Edition",
 			"statusInEffect": "In Effect"
 		},
+		"imageGrid": {
+			"openPreview": "Open image preview: {alt}"
+		},
 		"imageCarousel": {
 			"openPreview": "Open image preview: {alt}",
 			"scrollLeft": "Scroll images left",

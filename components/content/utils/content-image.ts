@@ -20,6 +20,46 @@ export interface NormalizedContentImageItem {
 	caption: string
 	width: string
 	height: string
+	aspectRatio: number | null
+}
+
+const parseAspectRatio = (
+	width: string | undefined,
+	height: string | undefined,
+): number | null => {
+	if (!width || !height) {
+		return null
+	}
+
+	const widthMatch = width.trim().match(/^(-?\d+(?:\.\d+)?)([a-z%]*)$/i)
+	const heightMatch = height.trim().match(/^(-?\d+(?:\.\d+)?)([a-z%]*)$/i)
+
+	if (!widthMatch || !heightMatch) {
+		return null
+	}
+
+	const widthValue = widthMatch[1]
+	const widthUnit = widthMatch[2] ?? ''
+	const heightValue = heightMatch[1]
+	const heightUnit = heightMatch[2] ?? ''
+
+	if (!widthValue || !heightValue || widthUnit !== heightUnit) {
+		return null
+	}
+
+	const parsedWidth = Number.parseFloat(widthValue)
+	const parsedHeight = Number.parseFloat(heightValue)
+
+	if (
+		!Number.isFinite(parsedWidth) ||
+		!Number.isFinite(parsedHeight) ||
+		parsedWidth <= 0 ||
+		parsedHeight <= 0
+	) {
+		return null
+	}
+
+	return parsedWidth / parsedHeight
 }
 
 const contentImageMap = Object.fromEntries(
@@ -80,14 +120,19 @@ export const normalizeContentImage = (
 			caption: '',
 			width: defaultWidth,
 			height: defaultHeight,
+			aspectRatio: parseAspectRatio(defaultWidth, defaultHeight),
 		}
 	}
+
+	const width = image.width ?? defaultWidth
+	const height = image.height ?? defaultHeight
 
 	return {
 		src: resolveContentImageSrc(image.src),
 		alt: image.alt ?? `Content image ${index + 1}`,
 		caption: image.caption ?? '',
-		width: image.width ?? defaultWidth,
-		height: image.height ?? defaultHeight,
+		width,
+		height,
+		aspectRatio: parseAspectRatio(width, height),
 	}
 }

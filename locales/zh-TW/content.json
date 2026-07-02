@@ -612,6 +612,9 @@
 			"edition": "第{ordinal}版",
 			"statusInEffect": "實施中"
 		},
+		"imageGrid": {
+			"openPreview": "打開圖片預覽：{alt}"
+		},
 		"imageCarousel": {
 			"openPreview": "打開圖片預覽：{alt}",
 			"scrollLeft": "向左捲動圖片",

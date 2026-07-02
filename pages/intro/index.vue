@@ -152,6 +152,7 @@ const buildIntroImages = (
 				alt: t(options.altKey, {
 					index: index + 1,
 				}),
+				aspectRatio: 1.8,
 				caption: '',
 				height: '10rem',
 				src,
@@ -188,6 +189,7 @@ const dailyLifeItems = computed(() =>
 					alt: t('content.intro.dailyLife.imageAlt', {
 						index: index + 1,
 					}),
+					aspectRatio: null,
 					caption: '',
 					height: '100%',
 					src,

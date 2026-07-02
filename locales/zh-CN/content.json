@@ -612,6 +612,9 @@
 			"edition": "第{ordinal}版",
 			"statusInEffect": "实施中"
 		},
+		"imageGrid": {
+			"openPreview": "打开图片预览：{alt}"
+		},
 		"imageCarousel": {
 			"openPreview": "打开图片预览：{alt}",
 			"scrollLeft": "向左滚动图片",

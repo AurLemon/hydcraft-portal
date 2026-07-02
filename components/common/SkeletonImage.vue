@@ -17,6 +17,7 @@
 			]"
 			:loading="loading"
 			:decoding="decoding"
+			:referrerpolicy="referrerpolicy"
 			@load="markImageReady"
 			@error="markImageReady"
 		/>
@@ -24,6 +25,17 @@
 </template>
 
 <script setup lang="ts">
+type ImageReferrerPolicy =
+	| ''
+	| 'no-referrer'
+	| 'no-referrer-when-downgrade'
+	| 'origin'
+	| 'origin-when-cross-origin'
+	| 'same-origin'
+	| 'strict-origin'
+	| 'strict-origin-when-cross-origin'
+	| 'unsafe-url'
+
 interface SkeletonImageProps {
 	src: string
 	alt: string
@@ -33,6 +45,7 @@ interface SkeletonImageProps {
 	revealDelayMs?: number
 	loading?: 'eager' | 'lazy'
 	decoding?: 'async' | 'auto' | 'sync'
+	referrerpolicy?: ImageReferrerPolicy
 }
 
 defineOptions({
@@ -46,6 +59,7 @@ const props = withDefaults(defineProps<SkeletonImageProps>(), {
 	revealDelayMs: 0,
 	loading: 'lazy',
 	decoding: 'async',
+	referrerpolicy: undefined,
 })
 
 const emit = defineEmits<{
@@ -54,7 +68,7 @@ const emit = defineEmits<{
 
 const imageRef = ref<HTMLImageElement | null>(null)
 const renderSkeleton = ref(props.showSkeleton)
-const skeletonVisible = ref(true)
+const skeletonVisible = ref(props.showSkeleton)
 const imageVisible = ref(false)
 let revealFrame = 0
 let skeletonCleanupTimer: ReturnType<typeof setTimeout> | null = null
@@ -88,6 +102,7 @@ const resetVisibility = (): void => {
 const applyRevealState = (): void => {
 	cancelAnimationFrame(revealFrame)
 	clearSkeletonCleanupTimer()
+
 	if (props.showSkeleton) {
 		skeletonVisible.value = false
 		skeletonCleanupTimer = setTimeout(() => {
@@ -95,6 +110,7 @@ const applyRevealState = (): void => {
 			skeletonCleanupTimer = null
 		}, 300)
 	}
+
 	revealFrame = requestAnimationFrame(() => {
 		imageVisible.value = true
 		emit('ready')
@@ -125,7 +141,7 @@ const waitForImageDecode = async (): Promise<void> => {
 	try {
 		await image.decode()
 	} catch {
-		// Fall back to normal reveal when decode is unavailable or interrupted.
+		// Decode can be interrupted for cached or replaced images.
 	}
 }
 

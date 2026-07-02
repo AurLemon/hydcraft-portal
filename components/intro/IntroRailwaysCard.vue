@@ -417,6 +417,7 @@ const toLightboxImage = (
 	caption: item.caption,
 	width: '100%',
 	height: '100%',
+	aspectRatio: null,
 })
 
 const railwayRoutes = computed<RailwayRouteCard[]>(() =>

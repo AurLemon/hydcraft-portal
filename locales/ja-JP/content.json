@@ -617,6 +617,9 @@
 			"edition": "第{ordinal}版",
 			"statusInEffect": "施行中"
 		},
+		"imageGrid": {
+			"openPreview": "画像プレビューを開く: {alt}"
+		},
 		"imageCarousel": {
 			"openPreview": "画像プレビューを開く: {alt}",
 			"scrollLeft": "画像を左へスクロール",
