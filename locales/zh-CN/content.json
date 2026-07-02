@@ -36,6 +36,13 @@
 					"cta": "如果你也愿意为服务器的长期运转添一份力，欢迎来爱发电支持我们。",
 					"action": "前往爱发电"
 				},
+				"seasonEightTerrain": {
+					"title": "八周目地形锐意制作中，新周目将于 7 月底正式启动！",
+					"subtitle": "地形大手子 —— CatPillager 将为服务器献上最优秀的地图设计！",
+					"openPreview": "查看八周目计划地形图",
+					"previewAlt": "八周目计划地形图",
+					"previewCaption": "八周目计划地形图"
+				},
 				"users": {
 					"title": "用户",
 					"action": "查看用户目录"
@@ -71,6 +78,17 @@
 					"headline": "敬请期待",
 					"description": "类似高德地图的地图服务仍在规划中，后续将作为独立站点上线",
 					"imageAlt": "地图预告展示图"
+				},
+				"committee": {
+					"title": "管理委员会",
+					"badges": {
+						"chair": "主席",
+						"owner": "服主",
+						"member": "常务委员",
+						"advisor": "顾问委员",
+						"viceOwner": "副服主",
+						"councilOfEldersSecretary": "元老院书记"
+					}
 				}
 			},
 			"directories": {

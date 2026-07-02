@@ -36,6 +36,13 @@
 					"cta": "If you would like to help keep the server running for the long term, you are welcome to support us on Afdian.",
 					"action": "Open Afdian"
 				},
+				"seasonEightTerrain": {
+					"title": "Season 8 terrain is now in active production, and the new season will officially launch in late July!",
+					"subtitle": "Terrain mastermind CatPillager is preparing the finest map design for the server!",
+					"openPreview": "Open the Season 8 terrain plan",
+					"previewAlt": "Season 8 terrain plan",
+					"previewCaption": "Season 8 terrain plan"
+				},
 				"users": {
 					"title": "User",
 					"action": "View User Directory"
@@ -71,6 +78,17 @@
 					"headline": "Coming Soon",
 					"description": "A map service similar to Amap is still being planned and will later launch as a standalone site",
 					"imageAlt": "Map preview artwork"
+				},
+				"committee": {
+					"title": "Management Committee",
+					"badges": {
+						"chair": "Chair",
+						"owner": "Owner",
+						"member": "Executive Member",
+						"advisor": "Advisory Member",
+						"viceOwner": "Vice Owner",
+						"councilOfEldersSecretary": "Council Secretary"
+					}
 				}
 			},
 			"directories": {

@@ -2,7 +2,7 @@
 	<div class="site-shell pb-16">
 		<div v-if="showInitialSkeleton" class="grid gap-12">
 			<div class="grid gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
-				<USkeleton class="h-[40rem] rounded-xl lg:row-span-2" />
+				<USkeleton class="h-160 rounded-xl lg:row-span-2" />
 				<ServerOverviewMapShell
 					class="h-full"
 					:title="t('content.serverOverview.cards.satellite.title')"
@@ -88,6 +88,7 @@
 				</ClientOnly>
 			</section>
 
+			<ServerOverviewSeasonEightTerrainCard />
 			<ServerOverviewSponsorCard :summary="sponsorSummary" />
 			<ServerOverviewUsersSection
 				:users="overview.recommendedUsers"
@@ -101,6 +102,7 @@
 			<ServerOverviewRailwayDataSection />
 			<ServerOverviewCompanySection />
 			<ServerOverviewMapSection />
+			<ServerOverviewCommitteeSection />
 		</div>
 
 		<PageInlineException

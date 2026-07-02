@@ -36,6 +36,13 @@
 					"cta": "サーバーの長期運営を支えていただけるなら、Afdian でのご支援を歓迎します。",
 					"action": "Afdian を開く"
 				},
+				"seasonEightTerrain": {
+					"title": "第八周目の地形を鋭意制作中、新しい周目は 7 月末に正式始動予定！",
+					"subtitle": "地形づくりの名手 CatPillager が、サーバーに最高のマップデザインを届けます！",
+					"openPreview": "第八周目の予定地形図を見る",
+					"previewAlt": "第八周目の予定地形図",
+					"previewCaption": "第八周目の予定地形図"
+				},
 				"users": {
 					"title": "ユーザー",
 					"action": "ユーザー一覧を見る"
@@ -71,6 +78,17 @@
 					"headline": "近日公開",
 					"description": "高徳地図のような地図サービスは現在も企画中で、今後は独立したサイトとして公開予定です",
 					"imageAlt": "地図の予告イメージ"
+				},
+				"committee": {
+					"title": "管理委員会",
+					"badges": {
+						"chair": "主席",
+						"owner": "サーバーオーナー",
+						"member": "常務委員",
+						"advisor": "顧問委員",
+						"viceOwner": "副服主",
+						"councilOfEldersSecretary": "元老院書記"
+					}
 				}
 			},
 			"directories": {
