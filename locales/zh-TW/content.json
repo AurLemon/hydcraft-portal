@@ -537,7 +537,10 @@
 			}
 		},
 		"timeline": {
-			"title": "氫氣是怎麼走到現在的?"
+			"title": "氫氣是怎麼走到現在的?",
+			"postscriptCard": {
+				"title": "伺服器服主寫的後記看這裡"
+			}
 		},
 		"partners": {
 			"hero": {
@@ -638,11 +641,6 @@
 			"openPreview": "打開圖片預覽：{alt}",
 			"scrollLeft": "向左捲動圖片",
 			"scrollRight": "向右捲動圖片"
-		},
-		"timeline": {
-			"postscriptCard": {
-				"title": "伺服器服主寫的後記看這裡"
-			}
 		}
 	}
 }

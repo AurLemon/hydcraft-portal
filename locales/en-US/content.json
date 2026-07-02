@@ -542,7 +542,10 @@
 			}
 		},
 		"timeline": {
-			"title": "How HydCraft Got Here?"
+			"title": "How HydCraft Got Here?",
+			"postscriptCard": {
+				"title": "Read the server owner postscript here"
+			}
 		},
 		"partners": {
 			"hero": {
@@ -643,11 +646,6 @@
 			"openPreview": "Open image preview: {alt}",
 			"scrollLeft": "Scroll images left",
 			"scrollRight": "Scroll images right"
-		},
-		"timeline": {
-			"postscriptCard": {
-				"title": "Read the server owner postscript here"
-			}
 		}
 	}
 }

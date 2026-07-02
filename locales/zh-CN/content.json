@@ -537,7 +537,10 @@
 			}
 		},
 		"timeline": {
-			"title": "氢气是怎么走到现在的?"
+			"title": "氢气是怎么走到现在的?",
+			"postscriptCard": {
+				"title": "服务器服主写的后记看这里"
+			}
 		},
 		"partners": {
 			"hero": {
@@ -638,11 +641,6 @@
 			"openPreview": "打开图片预览：{alt}",
 			"scrollLeft": "向左滚动图片",
 			"scrollRight": "向右滚动图片"
-		},
-		"timeline": {
-			"postscriptCard": {
-				"title": "服务器服主写的后记看这里"
-			}
 		}
 	}
 }
