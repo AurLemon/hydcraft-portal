@@ -1,5 +1,5 @@
 ---
-updatedAt: 2026-07-02T20:05:00+08:00
+updatedAt: 2026-07-03T02:16:46+08:00
 ---
 
 How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback. Since 2018, the server has made it through seven seasons, and Season 8 is almost here.
@@ -132,7 +132,11 @@ Leaving the sad parts aside for a moment, Season 6 also left a lot of memes behi
 
 The collective spamming of "1" after a WorldEdit command froze the server's main thread also became part of how people made bitter fun of the time. It was not just heckling. When the main thread froze, player movement, block updates, and most in-game actions all stopped, but chat could sometimes still go through. So everyone kept sending "1" to confirm whether the server was still alive. If chat still came through, that at least meant the server had not completely died yet. If even chat was gone, that usually meant the save might already be too late to preserve, and people would start worrying about rollbacks next.
 
-Back then we also held "discussion meetings." In reality they were just Tencent Meetings where we chatted and, truthfully, did not reach many results. At the time I really believed that if we just held enough meetings and made the systems detailed enough, many old problems could be solved all at once. Looking back now, that was too simple a way of thinking. It is not that those discussions were entirely useless. It is just that they could not solve as much as we thought they could. In an acquaintance community, manpower, execution cost, and relationship complexity are always there. In the end, many meetings were really just a bunch of people seriously imagining what the server might become in the future.
+Another funny thing from that period was the music plugin. People often used the request booth to play songs they liked. But sooner or later everyone realized that basically all players had permission to force-play a track. A feature that was originally meant for major server ceremonies turned into a jukebox for the entire server. People would frantically spam commands to show off their taste in music. Whoever typed faster got to force everyone else to listen to their song.
+
+If someone really could not stand it anymore, their only options were to quietly mute the game or leave the server altogether as a form of protest. And aside from that wonderfully rustic musical tradition, the other common pastime was making noise next to people who were AFK. Box them in, trap them, toss explosives nearby. Anything to make enough racket that they could not rest in peace. Oh, and a lot of people really did AFK on the server for absurd stretches of time, logging in at 10 in the morning and going offline at 10 at night, leaving the client open for a full twelve-hour hardware stress test while doing absolutely nothing. Or, when they needed to think something through, they would just walk in circles on the server and use it as external memory. The server felt as if it had become part of their daily life.
+
+Back then we also held "discussion meetings." In reality they were just Tencent Meetings where we chatted and, truthfully, did not reach many results. At the time I really believed that if we just held enough meetings and made the systems detailed enough, many old problems could be solved all at once. Looking back now, that was too simple a way of thinking. It is not that those discussions were entirely useless. It is just that they could not solve as much as we thought they could. In an acquaintance community, manpower, execution cost, and relationship complexity are always there. In the end, many meetings were really just a bunch of people gathered together and failing to discuss anything into existence.
 
 For me, Season 6 holds both good memories and bad ones. Old friends left. Managers left because of factional disputes. People formed cliques, excluded others, and attacked people recklessly. All of that happened in 2023. For me, 2023 is not a good number. I never expected such a small online community to end up carrying all of my emotions. I lacked a sense of security too badly. I wanted to keep everyone, and in the end I pleased neither side and kept no one. I will not write those stories into the server history here, though. I will write them on my personal website instead, maybe as the owner's postscript.
 
@@ -263,7 +267,9 @@ If the cities, railways, and buildings inside the game preserve the traces playe
 ::image-grid{class="grid-cols-1" images='[{"src":"timeline/gallery/season_7/player_group_20250713_005755.webp","height":"18rem"}]'}
 ::
 
-HydCraft is not a perfect server. It had a chaotic early period, several lively summers, failed institutional experiments, and many arguments and separations that are hard to write down completely. Many people once took it seriously. It also left some people tired, disappointed, and even willing to walk away.
+HydCraft is not a perfect server. HydCraft is also a shoestring operation.
+
+It had a chaotic early period, several lively summers, failed institutional experiments, and many arguments and separations that are hard to write down completely. Many people once took it seriously. It also left some people tired, disappointed, and even willing to walk away.
 
 For newcomers, if there still are newcomers, entering a community that has already existed for many years inevitably takes some time to adapt to. There are old place names, old buildings, old memes, and many habits and tacit understandings that were never written into the rules. We do not want those things to become barriers, but we also have to admit that a community cannot start from zero the way a newly opened server can. People who come later need time to find their place, and we need to keep learning how to leave a clear and friendly enough entry point for them.
 
