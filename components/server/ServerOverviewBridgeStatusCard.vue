@@ -20,7 +20,7 @@
 						<div class="flex items-baseline gap-2 text-right">
 							<div class="flex items-end gap-1 text-slate-950 dark:text-white">
 								<span class="text-7xl leading-none font-semibold translate-y-1">
-									{{ selectedServer.bridgeStatus.onlineCount }}
+									{{ onlineCountText }}
 								</span>
 								<span
 									class="pb-1 text-2xl leading-none text-slate-500 dark:text-slate-400"
@@ -181,10 +181,24 @@ const selectedServer = computed(
 )
 
 const maxPlayersText = computed(() => {
+	if (!shouldShowPlayerCount.value) {
+		return '-'
+	}
+
 	const maxPlayers = selectedServer.value?.bridgeStatus.maxPlayers
 
 	return maxPlayers == null ? '-' : String(maxPlayers)
 })
+
+const shouldShowPlayerCount = computed(
+	() => selectedServer.value?.bridgeStatus.connected ?? false,
+)
+
+const onlineCountText = computed(() =>
+	shouldShowPlayerCount.value
+		? String(selectedServer.value?.bridgeStatus.onlineCount ?? 0)
+		: '-',
+)
 
 const statusDotClass = computed(() => {
 	const bridgeStatus = selectedServer.value?.bridgeStatus
