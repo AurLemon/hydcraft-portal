@@ -23,11 +23,7 @@
 					size="lg"
 					@click="handleJoinGroup"
 				>
-					<img
-						:src="qqLogoUrl"
-						alt="QQ"
-						class="size-5 shrink-0 filter-[invert(1)]"
-					/>
+					<QqLogo aria-hidden="true" class="size-5 shrink-0 fill-current" />
 					<span class="leading-[normal]"
 						>{{ t('content.intro.joinUs.actions.qq') }}
 						{{ qqGroupNumber }}</span
@@ -52,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import qqLogoUrl from '~/assets/resources/brands/logo_QQ.svg'
+import QqLogo from '~/assets/resources/brands/logo_QQ.svg'
 
 const qqGroupNumber = '895248412'
 

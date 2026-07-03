@@ -411,7 +411,9 @@ const summarizeDirectoryPlayTime = (
 		}
 	}
 
-	return observedPlayers.reduce(
+	return observedPlayers.reduce<
+		Pick<ServerDirectoryPlayerItem, 'playTimeTicks' | 'hasStats'>
+	>(
 		(aggregate, player) => ({
 			playTimeTicks:
 				aggregate.playTimeTicks + player.playerProfile.playTimeTicks,

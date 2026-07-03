@@ -43,9 +43,16 @@ interface ExternalSyncTaskInput {
 
 const CHECK_INTERVAL_MS = 60_000
 const MIN_INTERVAL_SECONDS = 60
+const MIN_STALE_RUNNING_TIMEOUT_MS = 10 * 60_000
 
 const normalizeIntervalSeconds = (value: number): number =>
 	Math.max(MIN_INTERVAL_SECONDS, Math.floor(value || 1800))
+
+const getStaleRunningTimeoutMs = (intervalSeconds: number): number =>
+	Math.max(
+		normalizeIntervalSeconds(intervalSeconds) * 2 * 1000,
+		MIN_STALE_RUNNING_TIMEOUT_MS,
+	)
 
 export const getExternalSyncTaskKey = (source: ExternalSyncSource): string =>
 	source.toLowerCase()
@@ -75,6 +82,36 @@ const shouldRunTask = async (input: {
 	)
 }
 
+const reclaimStaleRunningTask = async (input: {
+	source: ExternalSyncSource
+	intervalSeconds: number
+}): Promise<void> => {
+	const timeoutMs = getStaleRunningTimeoutMs(input.intervalSeconds)
+	const staleStartedBefore = new Date(Date.now() - timeoutMs)
+
+	await prisma.externalSyncState.updateMany({
+		where: {
+			source: input.source,
+			running: true,
+			OR: [
+				{
+					lastStartedAt: null,
+				},
+				{
+					lastStartedAt: {
+						lt: staleStartedBefore,
+					},
+				},
+			],
+		},
+		data: {
+			running: false,
+			lastFinishedAt: new Date(),
+			lastError: 'External sync task lock expired and was reclaimed.',
+		},
+	})
+}
+
 export const runExternalSyncTask = async (
 	input: ExternalSyncTaskInput,
 ): Promise<ExternalSyncTaskResult | null> => {
@@ -97,6 +134,11 @@ export const runExternalSyncTask = async (
 			enabled: input.enabled,
 			intervalSeconds,
 		},
+	})
+
+	await reclaimStaleRunningTask({
+		source: input.source,
+		intervalSeconds,
 	})
 
 	const claimed = await prisma.externalSyncState.updateMany({

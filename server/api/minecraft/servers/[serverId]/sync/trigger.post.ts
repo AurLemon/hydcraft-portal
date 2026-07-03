@@ -8,6 +8,10 @@ import {
 	triggerAuthMeSyncForServer,
 	triggerLuckPermsSyncForServer,
 } from '../../../../../utils/external-sync/orchestrator'
+import {
+	readAuthMeSourceConfig,
+	readLuckPermsSourceConfig,
+} from '../../../../../utils/external-sync/source-config'
 import { portalBridgeManager } from '../../../../../utils/portal-bridge/client'
 
 type ManualSyncTarget = 'portalBridge' | 'authme' | 'luckperms'
@@ -125,6 +129,15 @@ export default defineEventHandler(async (event) => {
 	}
 
 	if (body.target === 'authme') {
+		const authMeConfig = readAuthMeSourceConfig()
+
+		if (!authMeConfig.enabled) {
+			throw createApiError({
+				statusCode: 404,
+				code: 'AUTHME_SOURCE_CONFIG_NOT_FOUND',
+			})
+		}
+
 		const result = await triggerAuthMeSyncForServer({
 			serverId,
 			reason: 'MANUAL',
@@ -132,14 +145,23 @@ export default defineEventHandler(async (event) => {
 
 		if (!result) {
 			throw createApiError({
-				statusCode: 404,
-				code: 'AUTHME_SOURCE_CONFIG_NOT_FOUND',
+				statusCode: 409,
+				code: 'AUTHME_SYNC_ALREADY_RUNNING',
 			})
 		}
 
 		return {
 			tasks: await readTasks(serverId, body.target),
 		}
+	}
+
+	const luckPermsConfig = readLuckPermsSourceConfig()
+
+	if (!luckPermsConfig.enabled) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'LUCKPERMS_SOURCE_CONFIG_NOT_FOUND',
+		})
 	}
 
 	const result = await triggerLuckPermsSyncForServer({
@@ -149,8 +171,8 @@ export default defineEventHandler(async (event) => {
 
 	if (!result) {
 		throw createApiError({
-			statusCode: 404,
-			code: 'LUCKPERMS_SOURCE_CONFIG_NOT_FOUND',
+			statusCode: 409,
+			code: 'LUCKPERMS_SYNC_ALREADY_RUNNING',
 		})
 	}
 
