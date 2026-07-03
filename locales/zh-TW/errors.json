@@ -84,6 +84,7 @@
 			"ATTACHMENT_NOT_FOUND": "附件不存在或不可用。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "附件缺少可用圖片版本。",
 			"ATTACHMENT_NOT_OWNED": "你無權操作該附件。",
+			"ATTACHMENT_DELETE_FORBIDDEN": "該附件已被正式業務物件接管，不能從這裡刪除。",
 			"PARTNER_NOT_FOUND": "夥伴資料不存在。",
 			"FRIEND_LINK_NOT_FOUND": "友情連結不存在。",
 			"FRIEND_LINK_APPLICATION_NOT_FOUND": "友情連結申請不存在。",

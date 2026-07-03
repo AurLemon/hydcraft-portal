@@ -84,6 +84,7 @@
 			"ATTACHMENT_NOT_FOUND": "The attachment was not found or is unavailable.",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "The attachment has no usable image variant.",
 			"ATTACHMENT_NOT_OWNED": "You do not have permission to manage this attachment.",
+			"ATTACHMENT_DELETE_FORBIDDEN": "This attachment is already managed by a live resource and cannot be deleted here.",
 			"PARTNER_NOT_FOUND": "The partner profile was not found.",
 			"FRIEND_LINK_NOT_FOUND": "Friend link not found.",
 			"FRIEND_LINK_APPLICATION_NOT_FOUND": "Friend link application not found.",

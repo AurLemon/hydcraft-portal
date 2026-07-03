@@ -84,6 +84,7 @@
 			"ATTACHMENT_NOT_FOUND": "添付ファイルが見つからないか利用できません。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "利用可能な画像バージョンがありません。",
 			"ATTACHMENT_NOT_OWNED": "この添付ファイルを操作する権限がありません。",
+			"ATTACHMENT_DELETE_FORBIDDEN": "この添付ファイルは正式な業務オブジェクトに引き継がれているため、ここからは削除できません。",
 			"PARTNER_NOT_FOUND": "パートナープロフィールが見つかりません。",
 			"FRIEND_LINK_NOT_FOUND": "リンクが見つかりません。",
 			"FRIEND_LINK_APPLICATION_NOT_FOUND": "リンク申請が見つかりません。",

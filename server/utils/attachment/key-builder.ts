@@ -1,9 +1,4 @@
-import type {
-	AttachmentCategory,
-	AttachmentOwnerType,
-	AttachmentPurpose,
-	StorageProfileName,
-} from './types'
+import type { AttachmentCategory, AttachmentPurpose } from './types'
 
 interface BaseKeyInput {
 	app: string
@@ -13,10 +8,7 @@ interface BaseKeyInput {
 }
 
 interface FinalObjectKeyInput extends BaseKeyInput {
-	profile: StorageProfileName
 	basePrefix: string
-	ownerType: AttachmentOwnerType
-	ownerId: string | null
 	variantName: string
 	ext: string
 }
@@ -34,8 +26,6 @@ export const buildFinalObjectKey = (input: FinalObjectKeyInput): string =>
 		sanitizeKeyPart(input.app),
 		sanitizeKeyPart(input.category),
 		sanitizeKeyPart(input.purpose),
-		sanitizeKeyPart(input.ownerType),
-		sanitizeKeyPart(input.ownerId ?? 'unknown'),
 		sanitizeKeyPart(input.attachmentId),
 		`${sanitizeKeyPart(input.variantName)}.${input.ext}`,
 	].join('/')

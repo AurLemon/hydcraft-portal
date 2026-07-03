@@ -111,6 +111,22 @@ const requireOwnedAttachment = async (
 	return attachment
 }
 
+const requireDeletableAttachment = async (
+	attachmentId: string,
+	user: User,
+): Promise<Attachment & { variants: AttachmentVariant[] }> => {
+	const attachment = await requireOwnedAttachment(attachmentId, user)
+
+	if (attachment.ownerType !== 'user' || attachment.ownerId !== user.id) {
+		throw createApiError({
+			statusCode: 403,
+			code: 'ATTACHMENT_DELETE_FORBIDDEN',
+		})
+	}
+
+	return attachment
+}
+
 const resolveUploadContext = (
 	actorUserId: string | null,
 	input: UploadAttachmentInput,
@@ -259,6 +275,36 @@ export class AttachmentService {
 		}
 	}
 
+	private async rollbackUploadedObjects(objectKeys: string[]): Promise<void> {
+		const uniqueObjectKeys = [...new Set(objectKeys)]
+
+		for (const objectKey of uniqueObjectKeys) {
+			try {
+				await this.storage.deleteObject({
+					profile: 'publicAssets',
+					objectKey,
+				})
+			} catch (error) {
+				console.error('ATTACHMENT_UPLOAD_ROLLBACK_FAILED', error)
+			}
+		}
+	}
+
+	private async markAttachmentFailed(attachmentId: string): Promise<void> {
+		try {
+			await prisma.attachment.update({
+				where: {
+					id: attachmentId,
+				},
+				data: {
+					status: 'FAILED',
+				},
+			})
+		} catch (error) {
+			console.error('ATTACHMENT_MARK_FAILED_STATUS_FAILED', error)
+		}
+	}
+
 	async uploadAttachment(
 		user: User,
 		input: UploadAttachmentInput,
@@ -316,12 +362,14 @@ export class AttachmentService {
 			},
 		})
 
+		const variantCreates: AttachmentVariantCreateInput[] = []
+		const uploadedObjectKeys: string[] = []
+
 		try {
 			const processed = await processImageAttachment({
 				originalBuffer: input.buffer,
 				policy,
 			})
-			const variantCreates: AttachmentVariantCreateInput[] = []
 
 			for (const variant of processed.variants) {
 				const objectKey = buildFinalObjectKey({
@@ -330,10 +378,7 @@ export class AttachmentService {
 						(attachment.category as AttachmentCategory | null) ??
 						policy.category,
 					purpose: attachment.purpose as AttachmentPurpose,
-					ownerType: attachment.ownerType as AttachmentOwnerType,
-					ownerId: attachment.ownerId,
 					attachmentId: attachment.id,
-					profile: 'publicAssets',
 					basePrefix: this.storageProfiles.publicAssets.basePrefix,
 					variantName: variant.name,
 					ext: variant.ext,
@@ -345,6 +390,7 @@ export class AttachmentService {
 					body: variant.buffer,
 					contentType: variant.contentType,
 				})
+				uploadedObjectKeys.push(objectKey)
 
 				variantCreates.push({
 					name: variant.name,
@@ -397,14 +443,8 @@ export class AttachmentService {
 
 			return toAttachmentSummary(this.storage, readyAttachment)
 		} catch (error) {
-			await prisma.attachment.update({
-				where: {
-					id: attachment.id,
-				},
-				data: {
-					status: 'FAILED',
-				},
-			})
+			await this.markAttachmentFailed(attachment.id)
+			await this.rollbackUploadedObjects(uploadedObjectKeys)
 
 			console.error('IMAGE_PROCESSING_FAILED', error)
 			throw error
@@ -421,7 +461,7 @@ export class AttachmentService {
 	}
 
 	async deleteAttachment(user: User, attachmentId: string): Promise<void> {
-		const attachment = await requireOwnedAttachment(attachmentId, user)
+		const attachment = await requireDeletableAttachment(attachmentId, user)
 
 		await prisma.attachment.update({
 			where: {
