@@ -30,6 +30,7 @@
 					:selected-account="selectedAccount"
 					:saving-id="savingId"
 					:unbinding-id="unbindingId"
+					:unbind-success-token="unbindSuccessToken"
 					@select="selectedAccountId = $event"
 					@bind="bindOpen = true"
 					@save="saveAccount"
@@ -67,9 +68,11 @@ definePageMeta({
 
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
-const { fetchCurrentUser } = usePortalAuth()
+const { fetchCurrentUser, bindMinecraftAccount, unbindMinecraftAccount } =
+	usePortalAuth()
 const savingId = ref<string | null>(null)
 const unbindingId = ref<string | null>(null)
+const unbindSuccessToken = ref(0)
 const binding = ref(false)
 const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
@@ -182,17 +185,14 @@ const saveAccount = async (account: MinecraftAccountForm): Promise<void> => {
 }
 
 const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
-	if (!body.username || !body.password || binding.value) {
+	if (!body.username || !body.password || !body.captchaToken || binding.value) {
 		return
 	}
 
 	binding.value = true
 
 	try {
-		await $fetch(minecraftAccountsEndpoint, {
-			method: 'POST',
-			body,
-		})
+		await bindMinecraftAccount(body)
 		await fetchCurrentUser()
 		bindSuccessToken.value += 1
 		await refresh()
@@ -209,19 +209,22 @@ const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
 	}
 }
 
-const unbindAccount = async (account: MinecraftAccountForm): Promise<void> => {
-	if (!account.id || unbindingId.value) {
+const unbindAccount = async (payload: {
+	account: MinecraftAccountForm
+	captchaToken: string
+}): Promise<void> => {
+	if (!payload.account.id || !payload.captchaToken || unbindingId.value) {
 		return
 	}
 
-	const endpoint = `/api/users/me/minecraft-accounts/${account.id}` as string
-	unbindingId.value = account.id
+	unbindingId.value = payload.account.id
 
 	try {
-		await $fetch(endpoint, {
-			method: 'DELETE',
+		await unbindMinecraftAccount(payload.account.id, {
+			captchaToken: payload.captchaToken,
 		})
 		await refresh()
+		unbindSuccessToken.value += 1
 		notifySuccess({
 			title: t('minecraftAccounts.notifications.unbindSuccess'),
 		})

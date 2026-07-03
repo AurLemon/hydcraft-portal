@@ -97,6 +97,11 @@ export interface MinecraftAccountsResponse {
 export interface BindMinecraftAccountBody {
 	username: string
 	password: string
+	captchaToken?: string
+}
+
+export interface UnbindMinecraftAccountBody {
+	captchaToken?: string
 }
 
 export const formatMinecraftDateTime = (

@@ -10,15 +10,20 @@ import {
 	recordMinecraftAccountVerification,
 	syncMinecraftAccountFromVerifiedAuthMe,
 } from '../../../utils/minecraft/account-binding'
+import { validateCapToken } from '../../../utils/security/cap'
 import { verifyAuthMeCredentials } from '../../../utils/authme/verification'
 
 interface MinecraftRegisterTicketBody {
 	username: string
 	password: string
+	captchaToken?: string
 }
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<MinecraftRegisterTicketBody>(event)
+	await validateCapToken({
+		token: body.captchaToken,
+	})
 
 	const verifiedAccount = await verifyAuthMeCredentials(
 		body.username,

@@ -118,9 +118,9 @@
 				</div>
 
 				<CapWidget
-					v-if="captcha.required.value"
-					ref="captchaWidgetRef"
-					v-model="captcha.token.value"
+					v-if="passwordCaptcha.required.value"
+					ref="passwordCaptchaWidgetRef"
+					v-model="passwordCaptcha.token.value"
 				/>
 
 				<UButton
@@ -198,6 +198,11 @@
 					</label>
 				</div>
 
+				<CapWidget
+					ref="minecraftCaptchaWidgetRef"
+					v-model="minecraftCaptcha.token.value"
+				/>
+
 				<UButton
 					type="submit"
 					icon="i-lucide-gamepad-2"
@@ -260,8 +265,10 @@ const rememberMe = ref(true)
 const passwordVisible = ref(false)
 const gamePasswordVisible = ref(false)
 const authMode = ref<LoginAuthMode>(parseAuthMode(route.query.mode))
-const captcha = useCap(false)
-const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const passwordCaptcha = useCap(false)
+const passwordCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const minecraftCaptcha = useCap(true)
+const minecraftCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const passwordForm = reactive<LoginFormState>({
 	handleOrEmail: '',
 	password: '',
@@ -282,7 +289,11 @@ watch(
 	authMode,
 	(mode, previousMode) => {
 		if (previousMode === 'game') {
-			captcha.reset(false)
+			resetMinecraftCaptcha()
+		}
+
+		if (previousMode === 'password' && mode !== 'password') {
+			resetPasswordCaptcha()
 		}
 	},
 	{
@@ -335,10 +346,14 @@ const passwordSubmitDisabled = computed(
 		!passwordForm.handleOrEmail ||
 		!passwordForm.password ||
 		submitting.value ||
-		(captcha.required.value && !captcha.token.value),
+		(passwordCaptcha.required.value && !passwordCaptcha.token.value),
 )
 const minecraftSubmitDisabled = computed(
-	() => !minecraftForm.username || !minecraftForm.password || submitting.value,
+	() =>
+		!minecraftForm.username ||
+		!minecraftForm.password ||
+		!minecraftCaptcha.token.value ||
+		submitting.value,
 )
 
 const getRedirectPath = (): string => {
@@ -348,22 +363,27 @@ const getRedirectPath = (): string => {
 	})
 }
 
-const resetCaptcha = (): void => {
-	captcha.reset()
-	captchaWidgetRef.value?.reset()
+const resetPasswordCaptcha = (): void => {
+	passwordCaptcha.reset()
+	passwordCaptchaWidgetRef.value?.reset()
 }
 
-const handleAuthFailure = (
+const resetMinecraftCaptcha = (): void => {
+	minecraftCaptcha.reset(true)
+	minecraftCaptchaWidgetRef.value?.reset()
+}
+
+const handlePasswordAuthFailure = (
 	error: unknown,
 	fallbackTitle: string,
 	fallbackDescription: string,
 ): void => {
 	if (getErrorCode(error) === 'CAPTCHA_REQUIRED') {
-		captcha.markRequired()
+		passwordCaptcha.markRequired()
 	}
 
-	if (captcha.required.value) {
-		resetCaptcha()
+	if (passwordCaptcha.required.value) {
+		resetPasswordCaptcha()
 	}
 
 	notifyError(error, {
@@ -395,14 +415,14 @@ const submitPasswordLogin = async (): Promise<void> => {
 	try {
 		await login({
 			...passwordForm,
-			captchaToken: captcha.consumeToken(),
+			captchaToken: passwordCaptcha.consumeToken(),
 		})
 		notifySuccess({
 			title: t('login.notifications.successTitle'),
 		})
 		await navigateTo(getRedirectPath())
 	} catch (error) {
-		handleAuthFailure(
+		handlePasswordAuthFailure(
 			error,
 			t('login.notifications.failedTitle'),
 			t('login.notifications.failedDescription'),
@@ -422,7 +442,9 @@ const submitMinecraftLogin = async (): Promise<void> => {
 	try {
 		await loginWithMinecraft({
 			...minecraftForm,
+			captchaToken: minecraftCaptcha.consumeToken(),
 		})
+		resetMinecraftCaptcha()
 		notifySuccess({
 			title: t('minecraftLogin.notifications.successTitle'),
 		})
@@ -437,9 +459,7 @@ const submitMinecraftLogin = async (): Promise<void> => {
 				: null
 
 		if (errorCode === 'MINECRAFT_ACCOUNT_NOT_BOUND' && registrationToken) {
-			if (captcha.required.value) {
-				resetCaptcha()
-			}
+			resetMinecraftCaptcha()
 			notifySuccess({
 				title: t('minecraftLogin.notifications.registrationRequiredTitle'),
 				description: t(
@@ -450,11 +470,11 @@ const submitMinecraftLogin = async (): Promise<void> => {
 			return
 		}
 
-		handleAuthFailure(
-			error,
-			t('minecraftLogin.notifications.failedTitle'),
-			t('minecraftLogin.notifications.failedDescription'),
-		)
+		resetMinecraftCaptcha()
+		notifyError(error, {
+			title: t('minecraftLogin.notifications.failedTitle'),
+			description: t('minecraftLogin.notifications.failedDescription'),
+		})
 	} finally {
 		submitting.value = false
 	}

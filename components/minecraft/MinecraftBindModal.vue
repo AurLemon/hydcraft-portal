@@ -50,6 +50,8 @@
 						</UInput>
 					</label>
 
+					<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+
 					<div class="flex justify-end">
 						<UButton
 							type="submit"
@@ -84,7 +86,9 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const open = defineModel<boolean>('open', { default: false })
 const passwordVisible = ref(false)
-const form = reactive<BindMinecraftAccountBody>({
+const captcha = useCap(true)
+const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const form = reactive({
 	username: '',
 	password: '',
 })
@@ -95,13 +99,20 @@ const bindDescriptionLines = computed(() => [
 ])
 
 const submitDisabled = computed(
-	() => !form.username || !form.password || props.binding,
+	() =>
+		!form.username || !form.password || !captcha.token.value || props.binding,
 )
+
+const resetCaptcha = (): void => {
+	captcha.reset(true)
+	captchaWidgetRef.value?.reset()
+}
 
 const resetForm = (): void => {
 	form.username = ''
 	form.password = ''
 	passwordVisible.value = false
+	resetCaptcha()
 }
 
 const submit = (): void => {
@@ -112,6 +123,7 @@ const submit = (): void => {
 	emit('submit', {
 		username: form.username,
 		password: form.password,
+		captchaToken: captcha.consumeToken(),
 	})
 }
 
@@ -120,6 +132,24 @@ watch(
 	() => {
 		open.value = false
 		resetForm()
+	},
+)
+
+watch(open, (value) => {
+	if (!value) {
+		resetForm()
+		return
+	}
+
+	resetCaptcha()
+})
+
+watch(
+	() => props.binding,
+	(binding, previousBinding) => {
+		if (previousBinding && !binding) {
+			resetCaptcha()
+		}
 	},
 )
 </script>

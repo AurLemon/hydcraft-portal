@@ -2,14 +2,24 @@ import { requireCurrentUser } from '../../../../utils/auth/session'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
 import { unbindMinecraftAccountFromUser } from '../../../../utils/minecraft/account-binding'
+import { validateCapToken } from '../../../../utils/security/cap'
+
+interface UnbindMinecraftAccountBody {
+	captchaToken?: string
+}
 
 export default defineEventHandler(async (event) => {
 	const currentUser = await requireCurrentUser(event)
 	const accountId = getRouterParam(event, 'accountId')
+	const body = await readBody<UnbindMinecraftAccountBody>(event)
 
 	if (!accountId) {
 		throw createBadRequestError('MINECRAFT_ACCOUNT_ID_REQUIRED')
 	}
+
+	await validateCapToken({
+		token: body.captchaToken,
+	})
 
 	const account = await prisma.minecraftAccount.findFirst({
 		where: {

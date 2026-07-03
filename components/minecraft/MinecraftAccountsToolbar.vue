@@ -109,26 +109,33 @@
 			:ui="{ content: 'max-w-lg' }"
 		>
 			<template #body>
-				<div class="flex items-start gap-3">
-					<div class="relative size-10 shrink-0 overflow-hidden rounded-lg">
-						<SkeletonImage
-							:src="resolveAvatarUrl(selectedAccount)"
-							:alt="resolveDisplayName(selectedAccount)"
-							class="size-10 select-none"
-							skeleton-class="rounded-lg"
-							:image-class="'size-10 rounded-lg object-cover drop-shadow-sm'"
-						/>
+				<div class="space-y-4">
+					<div class="flex items-start gap-3">
+						<div class="relative size-10 shrink-0 overflow-hidden rounded-lg">
+							<SkeletonImage
+								:src="resolveAvatarUrl(selectedAccount)"
+								:alt="resolveDisplayName(selectedAccount)"
+								class="size-10 select-none"
+								skeleton-class="rounded-lg"
+								:image-class="'size-10 rounded-lg object-cover drop-shadow-sm'"
+							/>
+						</div>
+						<div class="min-w-0">
+							<p class="truncate font-medium text-slate-950 dark:text-white">
+								{{ resolveDisplayName(selectedAccount) }}
+							</p>
+							<p
+								class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400"
+							>
+								{{ t('minecraftAccounts.settings.confirmations.unbind') }}
+							</p>
+						</div>
 					</div>
-					<div class="min-w-0">
-						<p class="truncate font-medium text-slate-950 dark:text-white">
-							{{ resolveDisplayName(selectedAccount) }}
-						</p>
-						<p
-							class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400"
-						>
-							{{ t('minecraftAccounts.settings.confirmations.unbind') }}
-						</p>
-					</div>
+
+					<CapWidget
+						ref="unbindCaptchaWidgetRef"
+						v-model="unbindCaptcha.token.value"
+					/>
 				</div>
 			</template>
 
@@ -150,6 +157,7 @@
 						color="error"
 						icon="i-lucide-unlink"
 						:loading="unbindingId === selectedAccount.id"
+						:disabled="unbindSubmitDisabled"
 						@click="submitUnbind"
 					>
 						{{ t('minecraftAccounts.actions.unbind') }}
@@ -171,6 +179,7 @@ interface MinecraftAccountsToolbarProps {
 	selectedAccount: MinecraftAccountForm | null
 	savingId: string | null
 	unbindingId: string | null
+	unbindSuccessToken: number
 }
 
 const props = defineProps<MinecraftAccountsToolbarProps>()
@@ -179,14 +188,27 @@ const emit = defineEmits<{
 	select: [accountId: string]
 	bind: []
 	save: [account: MinecraftAccountForm]
-	unbind: [account: MinecraftAccountForm]
+	unbind: [
+		payload: {
+			account: MinecraftAccountForm
+			captchaToken: string
+		},
+	]
 }>()
 
 const { t } = useI18n()
 const settingsOpen = ref(false)
 const unbindConfirmOpen = ref(false)
+const unbindCaptcha = useCap(true)
+const unbindCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 
 const hasAccounts = computed(() => props.accounts.length > 0)
+const unbindSubmitDisabled = computed(
+	() =>
+		!props.selectedAccount ||
+		!unbindCaptcha.token.value ||
+		props.unbindingId === props.selectedAccount.id,
+)
 
 const resolveDisplayName = (account: MinecraftAccountForm): string =>
 	account.playerIdentity.playerId || account.username
@@ -208,17 +230,55 @@ const getAvatarClass = (account: MinecraftAccountForm): string => {
 	return `${baseClass} opacity-50 saturate-[80%] hover:scale-[1.02]`
 }
 
+const resetUnbindCaptcha = (): void => {
+	unbindCaptcha.reset(true)
+	unbindCaptchaWidgetRef.value?.reset()
+}
+
 const submitUnbind = (): void => {
-	if (
-		!props.selectedAccount ||
-		props.unbindingId === props.selectedAccount.id
-	) {
+	if (unbindSubmitDisabled.value || !props.selectedAccount) {
 		return
 	}
 
-	emit('unbind', props.selectedAccount)
-	unbindConfirmOpen.value = false
+	emit('unbind', {
+		account: props.selectedAccount,
+		captchaToken: unbindCaptcha.consumeToken(),
+	})
 }
+
+watch(unbindConfirmOpen, () => {
+	resetUnbindCaptcha()
+})
+
+watch(
+	() => props.selectedAccount?.id ?? null,
+	(selectedAccountId) => {
+		if (!selectedAccountId && unbindConfirmOpen.value) {
+			unbindConfirmOpen.value = false
+		}
+
+		if (unbindConfirmOpen.value) {
+			resetUnbindCaptcha()
+		}
+	},
+)
+
+watch(
+	() => props.unbindingId,
+	(current, previous) => {
+		if (previous && !current) {
+			resetUnbindCaptcha()
+		}
+	},
+)
+
+watch(
+	() => props.unbindSuccessToken,
+	() => {
+		unbindConfirmOpen.value = false
+		resetUnbindCaptcha()
+	},
+)
 </script>
 
 <style scoped>

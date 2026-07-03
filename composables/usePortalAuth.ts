@@ -65,6 +65,16 @@ interface PortalMinecraftRegisterTicketBody {
 	captchaToken?: string
 }
 
+interface PortalBindMinecraftAccountBody {
+	username: string
+	password: string
+	captchaToken?: string
+}
+
+interface PortalUnbindMinecraftAccountBody {
+	captchaToken?: string
+}
+
 interface PortalRegistrationCompleteBody {
 	ticketToken: string
 	handle: string
@@ -255,6 +265,25 @@ export const usePortalAuth = () => {
 		)
 	}
 
+	const bindMinecraftAccount = async (
+		body: PortalBindMinecraftAccountBody,
+	): Promise<void> => {
+		await $fetch('/api/users/me/minecraft-accounts', {
+			method: 'POST',
+			body,
+		})
+	}
+
+	const unbindMinecraftAccount = async (
+		accountId: string,
+		body: PortalUnbindMinecraftAccountBody,
+	): Promise<void> => {
+		await $fetch(`/api/users/me/minecraft-accounts/${accountId}`, {
+			method: 'DELETE',
+			body,
+		})
+	}
+
 	const getRegistrationTicket = async (
 		token: string,
 	): Promise<PortalRegistrationTicketSummary> => {
@@ -362,6 +391,8 @@ export const usePortalAuth = () => {
 		loginWithMinecraft,
 		register,
 		requestMinecraftRegisterTicket,
+		bindMinecraftAccount,
+		unbindMinecraftAccount,
 		getRegistrationTicket,
 		completeRegistrationWithTicket,
 		requestEmailCodeLogin,

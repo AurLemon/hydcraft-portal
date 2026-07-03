@@ -87,6 +87,11 @@
 					</label>
 				</div>
 
+				<CapWidget
+					ref="gameCaptchaWidgetRef"
+					v-model="gameCaptcha.token.value"
+				/>
+
 				<UButton
 					type="submit"
 					:icon="submitIcon"
@@ -209,7 +214,10 @@
 						</UInput>
 					</label>
 
-					<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+					<CapWidget
+						ref="detailsCaptchaWidgetRef"
+						v-model="detailsCaptcha.token.value"
+					/>
 				</div>
 
 				<UButton
@@ -298,8 +306,8 @@
 					</UButton>
 					<CapWidget
 						v-if="showCodeStepCaptcha"
-						ref="captchaWidgetRef"
-						v-model="captcha.token.value"
+						ref="detailsCaptchaWidgetRef"
+						v-model="detailsCaptcha.token.value"
 					/>
 				</div>
 
@@ -396,8 +404,10 @@ const ticketToken = ref('')
 const ticketPreview = ref<PortalRegistrationTicketSummary | null>(null)
 const checkedHandle = ref('')
 let resendTimer: number | null = null
-const captcha = useCap(true)
-const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const gameCaptcha = useCap(true)
+const gameCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const detailsCaptcha = useCap(true)
+const detailsCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive<RegisterFormState>({
 	gameUsername: '',
 	gamePassword: '',
@@ -494,7 +504,12 @@ const showCodeStepCaptcha = computed(() => {
 })
 const submitDisabled = computed(() => {
 	if (mode.value === 'game' && step.value === 'auth') {
-		return !form.gameUsername || !form.gamePassword || submitting.value
+		return (
+			!form.gameUsername ||
+			!form.gamePassword ||
+			!gameCaptcha.token.value ||
+			submitting.value
+		)
 	}
 
 	if (step.value === 'details') {
@@ -503,7 +518,7 @@ const submitDisabled = computed(() => {
 				!form.handle ||
 				!normalizedEmail.value ||
 				!form.password ||
-				!captcha.token.value ||
+				!detailsCaptcha.token.value ||
 				submitting.value
 			)
 		}
@@ -511,7 +526,7 @@ const submitDisabled = computed(() => {
 		return (
 			!form.handle ||
 			!normalizedEmail.value ||
-			!captcha.token.value ||
+			!detailsCaptcha.token.value ||
 			submitting.value
 		)
 	}
@@ -535,7 +550,7 @@ const resendDisabled = computed(() => {
 		return true
 	}
 
-	if (showCodeStepCaptcha.value && !captcha.token.value) {
+	if (showCodeStepCaptcha.value && !detailsCaptcha.token.value) {
 		return true
 	}
 
@@ -651,9 +666,14 @@ const startResendCountdown = (): void => {
 	}, 1000)
 }
 
-const resetCaptcha = (): void => {
-	captcha.reset(true)
-	captchaWidgetRef.value?.reset()
+const resetGameCaptcha = (): void => {
+	gameCaptcha.reset(true)
+	gameCaptchaWidgetRef.value?.reset()
+}
+
+const resetDetailsCaptcha = (): void => {
+	detailsCaptcha.reset(true)
+	detailsCaptchaWidgetRef.value?.reset()
 }
 
 const syncModeFromRoute = async (): Promise<void> => {
@@ -666,11 +686,17 @@ const syncModeFromRoute = async (): Promise<void> => {
 		ticketToken.value = ''
 		ticketPreview.value = null
 		step.value = mode.value === 'game' ? 'auth' : 'details'
+		if (mode.value === 'game') {
+			resetGameCaptcha()
+		} else {
+			resetDetailsCaptcha()
+		}
 		return
 	}
 
 	ticketToken.value = nextTicketToken
 	step.value = 'details'
+	resetDetailsCaptcha()
 
 	try {
 		const ticket = await getRegistrationTicket(nextTicketToken)
@@ -686,6 +712,7 @@ const syncModeFromRoute = async (): Promise<void> => {
 		}
 	} catch (error) {
 		ticketToken.value = ''
+		step.value = mode.value === 'game' ? 'auth' : 'details'
 		notifyError(error)
 	}
 }
@@ -737,7 +764,7 @@ const goBack = async (): Promise<void> => {
 const resetCodeStep = (): void => {
 	form.code = ''
 	stopResendCountdown()
-	resetCaptcha()
+	resetDetailsCaptcha()
 	step.value = 'details'
 }
 
@@ -775,8 +802,9 @@ const verifyMinecraftAccount = async (): Promise<void> => {
 		const response = await requestMinecraftRegisterTicket({
 			username: form.gameUsername,
 			password: form.gamePassword,
+			captchaToken: gameCaptcha.consumeToken(),
 		})
-		resetCaptcha()
+		resetGameCaptcha()
 		applyLocalGameTicketPreview(response.registrationToken, response.account)
 		void navigateTo({
 			path: localePath('/register'),
@@ -791,7 +819,7 @@ const verifyMinecraftAccount = async (): Promise<void> => {
 			description: t('minecraftRegister.notifications.verifiedDescription'),
 		})
 	} catch (error) {
-		resetCaptcha()
+		resetGameCaptcha()
 		notifyError(error, {
 			title: t('minecraftRegister.notifications.failedTitle'),
 			description: t('minecraftRegister.notifications.failedDescription'),
@@ -806,7 +834,7 @@ const sendRegisterCode = async (): Promise<void> => {
 		!normalizedHandle.value ||
 		!normalizedEmail.value ||
 		(mode.value === 'email' && !form.password) ||
-		!captcha.token.value ||
+		!detailsCaptcha.token.value ||
 		submitting.value
 	) {
 		return
@@ -832,18 +860,18 @@ const sendRegisterCode = async (): Promise<void> => {
 			email: normalizedEmail.value,
 			intent: 'REGISTER',
 			locale: locale.value,
-			captchaToken: captcha.consumeToken(),
+			captchaToken: detailsCaptcha.consumeToken(),
 		})
 		checkedHandle.value = availability.username
 		step.value = 'code'
-		resetCaptcha()
+		resetDetailsCaptcha()
 		startResendCountdown()
 		notifySuccess({
 			title: t('emailCodeLogin.notifications.codeSentTitle'),
 			description: t('emailCodeLogin.notifications.codeSentDescription'),
 		})
 	} catch (error) {
-		resetCaptcha()
+		resetDetailsCaptcha()
 		notifyError(error)
 	} finally {
 		submitting.value = false
@@ -919,7 +947,7 @@ const confirmRegister = async (): Promise<void> => {
 		}
 
 		if (mode.value === 'email' || step.value === 'details') {
-			resetCaptcha()
+			resetDetailsCaptcha()
 		}
 
 		notifyError(error, {
