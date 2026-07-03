@@ -115,7 +115,9 @@
 					"title": "用户目录",
 					"fields": {
 						"user": "用户",
-						"minecraft": "Minecraft",
+						"hydrolineId": "Hydroline ID",
+						"minecraftAccounts": "Minecraft 账户",
+						"registeredAt": "注册时间",
 						"joinedAt": "加入时间"
 					},
 					"filters": {

@@ -115,7 +115,9 @@
 					"title": "用戶目錄",
 					"fields": {
 						"user": "用戶",
-						"minecraft": "Minecraft",
+						"hydrolineId": "Hydroline ID",
+						"minecraftAccounts": "Minecraft 帳戶",
+						"registeredAt": "註冊時間",
 						"joinedAt": "加入時間"
 					},
 					"filters": {

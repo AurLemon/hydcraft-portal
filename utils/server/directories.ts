@@ -9,13 +9,39 @@ export interface ServerDirectoryUserMinecraftSummary {
 	username: string
 }
 
+export interface ServerDirectoryUserBadgeSummary {
+	id: string
+	badgeId: string | null
+	key: string | null
+	label: string
+	labelZhCn: string
+	labelZhTw: string
+	labelEnUs: string
+	labelJaJp: string
+	color: string | null
+	sortOrder: number
+}
+
+export interface ServerDirectoryUserVerifiedSummary {
+	enabled: boolean
+	textZhCn: string | null
+	textZhTw: string | null
+	textEnUs: string | null
+	textJaJp: string | null
+}
+
 export interface ServerDirectoryUserItem {
+	hydrolineId: string | null
 	username: string
 	displayName: string | null
 	avatarUrl: string | null
 	bio: string | null
+	registeredAt: string | null
 	joinedAt: string | null
-	minecraft: ServerDirectoryUserMinecraftSummary | null
+	minecraftAccounts: ServerDirectoryUserMinecraftSummary[]
+	badges: ServerDirectoryUserBadgeSummary[]
+	roleBadge: ServerDirectoryUserBadgeSummary | null
+	verified: ServerDirectoryUserVerifiedSummary
 }
 
 export interface ServerDirectoryUsersResponse {
@@ -33,6 +59,7 @@ export interface ServerDirectoryPlayerItem {
 	uuid: string | null
 	isPrimary: boolean
 	luckPermsPrimaryGroup: string | null
+	authMeRegisteredAt: string | null
 	authMeLastLoginAt: string | null
 	playTimeTicks: number
 	hasStats: boolean

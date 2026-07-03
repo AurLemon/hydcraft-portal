@@ -65,8 +65,8 @@ export const toBadgeSummary = (
 	}
 }
 
-const toRoleBadgeSummary = (
-	user: ProfileUser,
+export const toRoleBadgeSummary = (
+	user: Pick<ProfileUser, 'role'>,
 ): UserProfileBadgeSummary | null =>
 	ROLE_BADGE_VISIBLE_ROLES.has(user.role)
 		? {
@@ -114,7 +114,16 @@ const resolveDisplayTimezone = (user: ProfileUser): string | null => {
 	return 'Asia/Shanghai'
 }
 
-const toVerifiedSummary = (user: ProfileUser) => ({
+export const toVerifiedSummary = (
+	user: Pick<
+		ProfileUser,
+		| 'verified'
+		| 'verifiedTextZhCn'
+		| 'verifiedTextZhTw'
+		| 'verifiedTextEnUs'
+		| 'verifiedTextJaJp'
+	>,
+) => ({
 	enabled: user.verified,
 	textZhCn: user.verifiedTextZhCn,
 	textZhTw: user.verifiedTextZhTw,

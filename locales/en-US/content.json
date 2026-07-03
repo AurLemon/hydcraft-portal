@@ -115,8 +115,10 @@
 					"title": "User Directory",
 					"fields": {
 						"user": "User",
-						"minecraft": "Minecraft",
-						"joinedAt": "Joined"
+						"hydrolineId": "Hydroline ID",
+						"minecraftAccounts": "Minecraft Accounts",
+						"registeredAt": "Registration time",
+						"joinedAt": "Join time"
 					},
 					"filters": {
 						"search": "Search username, display name, or bio"
@@ -129,8 +131,8 @@
 						"linkedUser": "Linked user",
 						"group": "Primary group",
 						"playTime": "Play time",
-						"lastLogin": "Last login",
-						"registeredAt": "Registered at"
+						"lastLogin": "Recent login",
+						"registeredAt": "Registration time"
 					},
 					"filters": {
 						"search": "Search player, login name, or linked user",

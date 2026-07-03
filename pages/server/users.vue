@@ -84,10 +84,36 @@
 						:alt="row.original.displayName || row.original.username"
 					/>
 					<span class="min-w-0">
-						<span
-							class="block truncate font-medium text-slate-900 dark:text-white"
-						>
-							{{ row.original.displayName || row.original.username }}
+						<span class="flex flex-wrap items-center gap-2">
+							<span class="truncate font-medium text-slate-900 dark:text-white">
+								{{ row.original.displayName || row.original.username }}
+							</span>
+							<UTooltip
+								v-if="row.original.verified.enabled"
+								:text="verifiedText(row.original.verified)"
+							>
+								<UIcon
+									name="i-lucide-badge-check"
+									class="size-4 shrink-0 text-sky-500"
+								/>
+							</UTooltip>
+							<UBadge
+								v-for="badge in visibleBadges(row.original)"
+								:key="badge.id"
+								color="neutral"
+								variant="subtle"
+								class="max-w-full gap-1 rounded-md px-2 py-1 text-xs font-semibold"
+								:class="getProfileBadgeStyle(badge.color).class"
+							>
+								<UIcon
+									:name="getProfileBadgeStyle(badge.color).icon"
+									class="size-3.5 shrink-0"
+									:class="getProfileBadgeStyle(badge.color).iconClass"
+								/>
+								<span class="truncate">
+									{{ badgeLabel(badge) }}
+								</span>
+							</UBadge>
 						</span>
 						<span class="block truncate text-xs text-slate-500">
 							@{{ row.original.username }}
@@ -95,24 +121,47 @@
 					</span>
 				</NuxtLink>
 			</template>
-			<template #minecraft-cell="{ row }">
-				<NuxtLink
-					v-if="row.original.minecraft"
-					:to="localePath(`/players/${row.original.minecraft.mcid}`)"
-					class="inline-flex items-center gap-2 text-sm text-slate-900 dark:text-white"
+			<template #hydrolineId-cell="{ row }">
+				<span
+					v-if="row.original.hydrolineId"
+					class="text-sm text-slate-900 dark:text-white"
 				>
-					<SkeletonImage
-						:src="getMinecraftHeadRendererUrl(row.original.minecraft.username)"
-						:alt="row.original.minecraft.username"
-						class="size-7 shrink-0 overflow-hidden rounded-md"
-						image-class="size-7 object-cover"
-						skeleton-class="rounded-md"
-					/>
-					<span class="truncate">{{ row.original.minecraft.username }}</span>
-				</NuxtLink>
+					{{ row.original.hydrolineId }}
+				</span>
 				<span v-else class="text-sm text-slate-500">
 					{{ t('content.serverOverview.states.notAvailable') }}
 				</span>
+			</template>
+			<template #minecraftAccounts-cell="{ row }">
+				<div
+					v-if="row.original.minecraftAccounts.length"
+					class="flex flex-wrap items-center gap-1.5"
+				>
+					<UTooltip
+						v-for="account in row.original.minecraftAccounts"
+						:key="account.mcid"
+						:text="account.username"
+					>
+						<NuxtLink
+							:to="localePath(`/players/${account.mcid}`)"
+							class="inline-flex"
+						>
+							<SkeletonImage
+								:src="getMinecraftHeadRendererUrl(account.username)"
+								:alt="account.username"
+								class="size-7 shrink-0 overflow-hidden rounded-md"
+								image-class="size-7 object-cover"
+								skeleton-class="rounded-md"
+							/>
+						</NuxtLink>
+					</UTooltip>
+				</div>
+				<span v-else class="text-sm text-slate-500">
+					{{ t('content.serverOverview.states.notAvailable') }}
+				</span>
+			</template>
+			<template #registeredAt-cell="{ row }">
+				{{ formatDate(row.original.registeredAt) }}
 			</template>
 			<template #joinedAt-cell="{ row }">
 				{{ formatDate(row.original.joinedAt) }}
@@ -130,9 +179,15 @@
 
 <script setup lang="ts">
 import PageInlineException from '~/components/common/PageInlineException.vue'
-import type { ServerDirectoryUsersResponse } from '~/utils/server/directories'
+import type {
+	ServerDirectoryUserBadgeSummary,
+	ServerDirectoryUserItem,
+	ServerDirectoryUserVerifiedSummary,
+	ServerDirectoryUsersResponse,
+} from '~/utils/server/directories'
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
+import { getProfileBadgeStyle } from '~/utils/profile/badges'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -170,8 +225,18 @@ const columns = [
 		header: t('content.serverOverview.directories.users.fields.user'),
 	},
 	{
-		accessorKey: 'minecraft',
-		header: t('content.serverOverview.directories.users.fields.minecraft'),
+		accessorKey: 'hydrolineId',
+		header: t('content.serverOverview.directories.users.fields.hydrolineId'),
+	},
+	{
+		accessorKey: 'minecraftAccounts',
+		header: t(
+			'content.serverOverview.directories.users.fields.minecraftAccounts',
+		),
+	},
+	{
+		accessorKey: 'registeredAt',
+		header: t('content.serverOverview.directories.users.fields.registeredAt'),
 	},
 	{
 		accessorKey: 'joinedAt',
@@ -180,8 +245,16 @@ const columns = [
 ]
 const sortFieldItems = [
 	{
+		label: t('content.serverOverview.directories.users.fields.registeredAt'),
+		value: 'createdAt',
+	},
+	{
 		label: t('content.serverOverview.directories.users.fields.joinedAt'),
 		value: 'joinedAt',
+	},
+	{
+		label: t('content.serverOverview.directories.users.fields.hydrolineId'),
+		value: 'hydrolineId',
 	},
 	{ label: t('admin.users.fields.username'), value: 'username' },
 	{ label: t('admin.users.fields.displayName'), value: 'displayName' },
@@ -222,6 +295,49 @@ const formatDate = (value: string | null): string => {
 		dateStyle: 'short',
 		timeStyle: 'short',
 	}).format(new Date(value))
+}
+
+const visibleBadges = (
+	user: ServerDirectoryUserItem,
+): ServerDirectoryUserBadgeSummary[] => [
+	...user.badges,
+	...(user.roleBadge ? [user.roleBadge] : []),
+]
+
+const verifiedText = (verified: ServerDirectoryUserVerifiedSummary): string => {
+	if (locale.value === 'zh-TW') {
+		return verified.textZhTw || verified.textZhCn || t('profile.verified.text')
+	}
+
+	if (locale.value === 'en-US') {
+		return verified.textEnUs || verified.textZhCn || t('profile.verified.text')
+	}
+
+	if (locale.value === 'ja-JP') {
+		return verified.textJaJp || verified.textZhCn || t('profile.verified.text')
+	}
+
+	return verified.textZhCn || t('profile.verified.text')
+}
+
+const badgeLabel = (badge: ServerDirectoryUserBadgeSummary): string => {
+	if (badge.key === 'server-member') {
+		return t('profile.badges.serverMember')
+	}
+
+	if (locale.value === 'zh-TW') {
+		return badge.labelZhTw || badge.labelZhCn || badge.label
+	}
+
+	if (locale.value === 'en-US') {
+		return badge.labelEnUs || badge.labelZhCn || badge.label
+	}
+
+	if (locale.value === 'ja-JP') {
+		return badge.labelJaJp || badge.labelZhCn || badge.label
+	}
+
+	return badge.labelZhCn || badge.label
 }
 
 const resetFilters = (): void => {

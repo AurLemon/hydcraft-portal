@@ -159,6 +159,9 @@
 			<template #playTime-cell="{ row }">
 				{{ formatPlayTime(row.original.playTimeTicks, row.original.hasStats) }}
 			</template>
+			<template #authMeRegisteredAt-cell="{ row }">
+				{{ formatDate(row.original.authMeRegisteredAt) }}
+			</template>
 			<template #authMeLastLoginAt-cell="{ row }">
 				{{ formatDate(row.original.authMeLastLoginAt) }}
 			</template>
@@ -232,6 +235,10 @@ const columns = [
 	{
 		accessorKey: 'playTime',
 		header: t('content.serverOverview.directories.players.fields.playTime'),
+	},
+	{
+		accessorKey: 'authMeRegisteredAt',
+		header: t('content.serverOverview.directories.players.fields.registeredAt'),
 	},
 	{
 		accessorKey: 'authMeLastLoginAt',

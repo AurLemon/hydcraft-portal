@@ -6,9 +6,16 @@ import type {
 import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
 import { prisma } from '../db/prisma'
 import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import {
+	toBadgeSummary,
+	toRoleBadgeSummary,
+	toVerifiedSummary,
+} from '../profile/mapper'
 import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 
 const USER_SORT_FIELDS = new Set([
+	'createdAt',
+	'hydrolineId',
 	'joinedAt',
 	'updatedAt',
 	'username',
@@ -260,16 +267,34 @@ export const listPublicServerUsers = async (input: {
 			skip: (input.page - 1) * input.pageSize,
 			take: input.pageSize,
 			select: {
+				hydrolineId: true,
 				username: true,
 				displayName: true,
 				avatarUrl: true,
 				bio: true,
+				role: true,
+				verified: true,
+				verifiedTextZhCn: true,
+				verifiedTextZhTw: true,
+				verifiedTextEnUs: true,
+				verifiedTextJaJp: true,
+				createdAt: true,
 				joinedAt: true,
+				badges: {
+					orderBy: {
+						sortOrder: 'asc',
+					},
+					include: {
+						badge: true,
+					},
+				},
 				privacy: {
 					select: {
 						publicProfile: true,
 						showBio: true,
+						showHydrolineId: true,
 						showJoinedAt: true,
+						showBadges: true,
 						showMinecraftProfileLink: true,
 						searchableInUserDirectory: true,
 					},
@@ -286,7 +311,6 @@ export const listPublicServerUsers = async (input: {
 							updatedAt: 'desc',
 						},
 					],
-					take: 1,
 					select: {
 						username: true,
 					},
@@ -298,22 +322,34 @@ export const listPublicServerUsers = async (input: {
 	const items: ServerDirectoryUserItem[] = users
 		.filter((user) => isPublicDirectoryUser(user.privacy))
 		.map((user) => ({
+			hydrolineId:
+				(user.privacy?.showHydrolineId ?? true) ? user.hydrolineId : null,
 			username: user.username,
 			displayName: user.displayName,
 			avatarUrl: user.avatarUrl,
 			bio: (user.privacy?.showBio ?? true) ? user.bio : null,
+			registeredAt:
+				(user.privacy?.showJoinedAt ?? true)
+					? user.createdAt.toISOString()
+					: null,
 			joinedAt:
 				(user.privacy?.showJoinedAt ?? true)
 					? user.joinedAt.toISOString()
 					: null,
-			minecraft:
-				(user.privacy?.showMinecraftProfileLink ?? true) &&
-				user.minecraftAccounts[0]
-					? {
-							mcid: user.minecraftAccounts[0].username,
-							username: user.minecraftAccounts[0].username,
-						}
-					: null,
+			minecraftAccounts:
+				(user.privacy?.showMinecraftProfileLink ?? true)
+					? user.minecraftAccounts.map((account) => ({
+							mcid: account.username,
+							username: account.username,
+						}))
+					: [],
+			badges:
+				(user.privacy?.showBadges ?? true)
+					? user.badges.map(toBadgeSummary)
+					: [],
+			roleBadge:
+				(user.privacy?.showBadges ?? true) ? toRoleBadgeSummary(user) : null,
+			verified: toVerifiedSummary(user),
 		}))
 
 	return {
@@ -361,6 +397,31 @@ const readDirectoryServerPlayers = async (
 		include: PUBLIC_PLAYERDATA_INCLUDE,
 		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
 	})
+}
+
+const summarizeDirectoryPlayTime = (
+	summary: ReturnType<typeof buildMinecraftAccountSummary>,
+): Pick<ServerDirectoryPlayerItem, 'playTimeTicks' | 'hasStats'> => {
+	const observedPlayers = summary.playerIdentity.observedPlayers
+
+	if (!observedPlayers.length) {
+		return {
+			playTimeTicks: summary.playerProfile.playTimeTicks,
+			hasStats: summary.playerProfile.hasStats,
+		}
+	}
+
+	return observedPlayers.reduce(
+		(aggregate, player) => ({
+			playTimeTicks:
+				aggregate.playTimeTicks + player.playerProfile.playTimeTicks,
+			hasStats: aggregate.hasStats || player.playerProfile.hasStats,
+		}),
+		{
+			playTimeTicks: 0,
+			hasStats: false,
+		},
+	)
 }
 
 export const listPublicServerPlayers = async (input: {
@@ -484,6 +545,7 @@ export const listPublicServerPlayers = async (input: {
 			[],
 			luckPermsResolver,
 		)
+		const playTimeSummary = summarizeDirectoryPlayTime(summary)
 		const linkedUser =
 			account.user && canExposeBoundUser(account.user.privacy)
 				? {
@@ -502,10 +564,12 @@ export const listPublicServerPlayers = async (input: {
 			uuid: summary.uuid,
 			isPrimary: summary.isPrimary,
 			luckPermsPrimaryGroup: summary.luckPermsPrimaryGroup,
+			authMeRegisteredAt:
+				account.authMeAccount?.registeredAt?.toISOString() ?? null,
 			authMeLastLoginAt:
 				account.authMeAccount?.lastLoginAt?.toISOString() ?? null,
-			playTimeTicks: summary.playerProfile.playTimeTicks,
-			hasStats: summary.playerProfile.hasStats,
+			playTimeTicks: playTimeSummary.playTimeTicks,
+			hasStats: playTimeSummary.hasStats,
 			linkedUser,
 		}
 	})

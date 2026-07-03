@@ -115,7 +115,9 @@
 					"title": "ユーザー一覧",
 					"fields": {
 						"user": "ユーザー",
-						"minecraft": "Minecraft",
+						"hydrolineId": "Hydroline ID",
+						"minecraftAccounts": "Minecraft アカウント",
+						"registeredAt": "登録日時",
 						"joinedAt": "参加日時"
 					},
 					"filters": {
@@ -129,7 +131,7 @@
 						"linkedUser": "連携ユーザー",
 						"group": "権限グループ",
 						"playTime": "プレイ時間",
-						"lastLogin": "最終ログイン",
+						"lastLogin": "最近のログイン",
 						"registeredAt": "登録日時"
 					},
 					"filters": {
