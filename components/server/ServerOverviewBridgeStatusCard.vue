@@ -76,7 +76,7 @@
 						</div>
 					</div>
 
-					<div class="flex items-center justify-between gap-4">
+					<div class="flex items-start justify-between gap-4">
 						<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
 							<div class="truncate">
 								{{ selectedServer.name }}
@@ -85,7 +85,7 @@
 
 						<div
 							v-if="headItems.length"
-							class="flex max-w-[50%] flex-wrap content-start justify-end gap-1.5"
+							class="flex max-w-[50%] flex-wrap content-start justify-end gap-1.5 mt-1"
 						>
 							<UTooltip
 								v-for="player in headItems"
