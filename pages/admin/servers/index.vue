@@ -39,9 +39,24 @@
 							</p>
 						</div>
 					</div>
-					<UBadge :color="sourceStatusColor(source)" variant="soft">
-						{{ sourceStatusLabel(source) }}
-					</UBadge>
+					<div class="flex items-center gap-2">
+						<UBadge :color="sourceStatusColor(source)" variant="soft">
+							{{ sourceStatusLabel(source) }}
+						</UBadge>
+						<UButton
+							size="xs"
+							color="neutral"
+							variant="ghost"
+							icon="i-lucide-sliders-horizontal"
+							@click="
+								openExternalSyncSourceStatus(
+									sourceNameFromStatus(source.source),
+								)
+							"
+						>
+							{{ t('admin.servers.externalSync.openStatus') }}
+						</UButton>
+					</div>
 				</div>
 				<div
 					class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600 dark:text-slate-300"
@@ -117,22 +132,6 @@
 						}}
 					</UBadge>
 				</template>
-				<template #authMe-cell="{ row }">
-					<UBadge
-						:color="sourceConfiguredColor(row.original.authMe)"
-						variant="subtle"
-					>
-						{{ sourceConfiguredLabel(row.original.authMe) }}
-					</UBadge>
-				</template>
-				<template #luckPerms-cell="{ row }">
-					<UBadge
-						:color="sourceConfiguredColor(row.original.luckPerms)"
-						variant="subtle"
-					>
-						{{ sourceConfiguredLabel(row.original.luckPerms) }}
-					</UBadge>
-				</template>
 				<template #status-cell="{ row }">
 					<UBadge
 						:color="row.original.enabled ? 'success' : 'neutral'"
@@ -159,14 +158,89 @@
 				</template>
 			</UTable>
 		</div>
+
+		<UModal
+			v-model:open="externalSyncStatusOpen"
+			:ui="{ content: 'max-w-2xl', body: 'p-0' }"
+		>
+			<template #content>
+				<div class="grid max-h-[82vh] grid-rows-[auto_minmax(0,1fr)]">
+					<StatusModalHeader
+						:title="externalSyncStatusTitle"
+						:loading="externalSyncStatusLoading"
+						@refresh="loadExternalSyncSourceStatus"
+						@close="externalSyncStatusOpen = false"
+					/>
+					<div class="overflow-y-auto p-5">
+						<div
+							class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+						>
+							<div class="flex items-center gap-2">
+								<UBadge
+									:color="externalSyncConnectionTone"
+									variant="soft"
+									:icon="externalSyncConnectionIcon"
+								>
+									{{ externalSyncConnectionLabel }}
+								</UBadge>
+							</div>
+							<div class="flex flex-wrap justify-end gap-2">
+								<UButton
+									size="xs"
+									variant="soft"
+									icon="i-lucide-plug"
+									:disabled="externalSyncControlsDisabled"
+									:loading="externalSyncActionLoading === 'connect'"
+									@click="probeExternalSyncSource('connect')"
+								>
+									{{ t('admin.servers.externalSync.modal.checkConnection') }}
+								</UButton>
+								<UButton
+									size="xs"
+									variant="soft"
+									icon="i-lucide-refresh-cw"
+									:disabled="externalSyncControlsDisabled"
+									:loading="externalSyncActionLoading === 'reconnect'"
+									@click="probeExternalSyncSource('reconnect')"
+								>
+									{{ t('admin.servers.externalSync.modal.recheckConnection') }}
+								</UButton>
+								<UButton
+									size="xs"
+									variant="soft"
+									icon="i-lucide-database"
+									:disabled="externalSyncControlsDisabled"
+									:loading="externalSyncActionLoading === 'sync'"
+									@click="syncExternalSyncSource"
+								>
+									{{ t('admin.servers.externalSync.modal.syncNow') }}
+								</UButton>
+								<UButton
+									size="xs"
+									variant="ghost"
+									icon="i-lucide-rotate-cw"
+									:loading="externalSyncStatusLoading"
+									@click="loadExternalSyncSourceStatus"
+								>
+									{{ t('admin.servers.externalSync.modal.refreshSync') }}
+								</UButton>
+							</div>
+						</div>
+
+						<InfoGrid :items="externalSyncStatusItems" />
+					</div>
+				</div>
+			</template>
+		</UModal>
 	</div>
 </template>
 
 <script setup lang="ts">
 import type {
+	AdminExternalSyncSourceDetailResponse,
+	AdminExternalSyncSourceName,
 	AdminExternalSyncSourceStatus,
 	AdminExternalSyncStatusResponse,
-	MysqlSourceSummary,
 	MinecraftServerSummary,
 	MinecraftServersResponse,
 } from '~/components/admin/types'
@@ -180,16 +254,28 @@ const { notifyError } = useAdminToast()
 const { data, pending, error } = await useFetch<MinecraftServersResponse>(
 	'/api/minecraft/servers',
 )
-const { data: externalSyncData, error: externalSyncError } =
-	await useFetch<AdminExternalSyncStatusResponse>(
-		'/api/admin/external-sync/status',
-	)
+const {
+	data: externalSyncData,
+	error: externalSyncError,
+	refresh: refreshExternalSyncData,
+} = await useFetch<AdminExternalSyncStatusResponse>(
+	'/api/admin/external-sync/status',
+)
 
 const localePath = useLocalePath()
 const { locale, t } = useI18n()
 const servers = computed(() => data.value?.servers ?? [])
 const externalSyncSources = computed(
 	() => externalSyncData.value?.sources ?? [],
+)
+const externalSyncStatusOpen = ref(false)
+const externalSyncStatusLoading = ref(false)
+const externalSyncActionLoading = ref<'connect' | 'reconnect' | 'sync' | null>(
+	null,
+)
+const activeExternalSyncSource = ref<AdminExternalSyncSourceName>('authme')
+const externalSyncStatus = ref<AdminExternalSyncSourceDetailResponse | null>(
+	null,
 )
 const columns = [
 	{ accessorKey: 'server', header: t('admin.servers.fields.server') },
@@ -199,11 +285,13 @@ const columns = [
 		accessorKey: 'portalBridge',
 		header: t('admin.servers.fields.portalBridge'),
 	},
-	{ accessorKey: 'authMe', header: 'AuthMe' },
-	{ accessorKey: 'luckPerms', header: 'LuckPerms' },
 	{ accessorKey: 'status', header: t('admin.servers.fields.status') },
 	{ id: 'actions', header: t('admin.servers.fields.actions') },
 ]
+
+const sourceNameFromStatus = (
+	source: AdminExternalSyncSourceStatus['source'],
+): AdminExternalSyncSourceName => (source === 'AUTHME' ? 'authme' : 'luckperms')
 
 const sourceLabel = (
 	source: AdminExternalSyncSourceStatus['source'],
@@ -256,17 +344,228 @@ const formatSourceMeta = (source: AdminExternalSyncSourceStatus): string =>
 			})
 		: t('admin.servers.externalSync.databaseMissing')
 
-const sourceConfiguredLabel = (source: MysqlSourceSummary | null): string =>
-	!source
-		? t('admin.serverDetail.states.notConfigured')
-		: source.enabled
-			? t('admin.serverDetail.states.enabled')
-			: t('admin.serverDetail.states.disabled')
+const activeExternalSyncSummary = computed(
+	() =>
+		externalSyncSources.value.find(
+			(source) =>
+				sourceNameFromStatus(source.source) === activeExternalSyncSource.value,
+		) ?? null,
+)
 
-const sourceConfiguredColor = (
-	source: MysqlSourceSummary | null,
-): 'success' | 'neutral' =>
-	!source ? 'neutral' : source.enabled ? 'success' : 'neutral'
+const externalSyncStatusTitle = computed(() =>
+	activeExternalSyncSource.value === 'authme'
+		? t('admin.servers.externalSync.modal.authMeTitle')
+		: t('admin.servers.externalSync.modal.luckPermsTitle'),
+)
+
+const externalSyncControlsDisabled = computed(() => {
+	const status = externalSyncStatus.value
+
+	if (status) {
+		return !status.config.enabled || !status.config.configured
+	}
+
+	return (
+		!activeExternalSyncSummary.value?.enabled ||
+		!activeExternalSyncSummary.value?.configured
+	)
+})
+
+const externalSyncConnectionLabel = computed(() => {
+	const status = externalSyncStatus.value
+
+	if (!status) return t('admin.servers.externalSync.modal.states.notChecked')
+	if (!status.config.configured) {
+		return t('admin.servers.externalSync.modal.states.notConfigured')
+	}
+	if (!status.config.enabled) {
+		return t('admin.servers.externalSync.modal.states.disabled')
+	}
+	if (status.connection.ok) {
+		return t('admin.servers.externalSync.modal.states.connected')
+	}
+	if (status.connection.checkedAt) {
+		return t('admin.servers.externalSync.modal.states.failed')
+	}
+
+	return t('admin.servers.externalSync.modal.states.notChecked')
+})
+
+const externalSyncConnectionTone = computed(() => {
+	const status = externalSyncStatus.value
+
+	if (!status || !status.config.configured || !status.config.enabled) {
+		return 'neutral'
+	}
+
+	return status.connection.ok ? 'success' : 'error'
+})
+
+const externalSyncConnectionIcon = computed(() => {
+	const status = externalSyncStatus.value
+
+	if (!status) return 'i-lucide-circle-help'
+	if (!status.config.configured) return 'i-lucide-circle-off'
+	if (!status.config.enabled) return 'i-lucide-circle-pause'
+	if (status.connection.ok) return 'i-lucide-circle-check'
+
+	return 'i-lucide-circle-alert'
+})
+
+const formatInterval = (value: number): string =>
+	value % 60 === 0
+		? t('admin.servers.externalSync.modal.everyMinutes', {
+				minutes: value / 60,
+			})
+		: t('admin.servers.externalSync.modal.everySeconds', {
+				seconds: value,
+			})
+
+const externalSyncStatusItems = computed(() => {
+	const status = externalSyncStatus.value
+
+	if (!status) {
+		return []
+	}
+
+	return [
+		{
+			label: t('admin.servers.externalSync.modal.fields.database'),
+			value:
+				status.config.database ??
+				t('admin.servers.externalSync.modal.states.notConfigured'),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.configured'),
+			value: status.config.configured
+				? t('admin.servers.externalSync.modal.states.configured')
+				: t('admin.servers.externalSync.modal.states.notConfigured'),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.enabled'),
+			value: status.config.enabled
+				? t('admin.serverDetail.states.enabled')
+				: t('admin.serverDetail.states.disabled'),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.syncInterval'),
+			value: formatInterval(status.config.intervalSeconds),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.checkedAt'),
+			value: formatDate(status.connection.checkedAt),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.latency'),
+			value:
+				status.connection.latencyMs == null
+					? t('admin.servers.externalSync.never')
+					: `${status.connection.latencyMs} ms`,
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.lastStartedAt'),
+			value: formatDate(status.sync.lastStartedAt),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.lastFinishedAt'),
+			value: formatDate(status.sync.lastFinishedAt),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.lastSuccessAt'),
+			value: formatDate(status.sync.lastSuccessAt),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.rowsRead'),
+			value: String(status.sync.rowsRead),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.rowsMatched'),
+			value: String(status.sync.rowsMatched),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.rowsChanged'),
+			value: String(status.sync.rowsChanged),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.rowsSkipped'),
+			value: String(status.sync.rowsSkipped),
+		},
+		{
+			label: t('admin.servers.externalSync.modal.fields.error'),
+			value:
+				status.connection.errorMessage ??
+				status.sync.lastError ??
+				t('admin.serverDetail.states.empty'),
+		},
+	]
+})
+
+let externalSyncStatusTimer: ReturnType<typeof setInterval> | null = null
+
+const loadExternalSyncSourceStatus = async () => {
+	externalSyncStatusLoading.value = true
+	try {
+		externalSyncStatus.value =
+			await $fetch<AdminExternalSyncSourceDetailResponse>(
+				`/api/admin/external-sync/sources/${activeExternalSyncSource.value}/status`,
+			)
+		await refreshExternalSyncData()
+	} catch (value) {
+		notifyError(value, {
+			title: t('admin.servers.externalSync.modal.loadFailed'),
+		})
+	} finally {
+		externalSyncStatusLoading.value = false
+	}
+}
+
+const openExternalSyncSourceStatus = (source: AdminExternalSyncSourceName) => {
+	activeExternalSyncSource.value = source
+	externalSyncStatusOpen.value = true
+	void loadExternalSyncSourceStatus()
+}
+
+const probeExternalSyncSource = async (
+	action: 'connect' | 'reconnect',
+): Promise<void> => {
+	externalSyncActionLoading.value = action
+	try {
+		externalSyncStatus.value =
+			await $fetch<AdminExternalSyncSourceDetailResponse>(
+				`/api/admin/external-sync/sources/${activeExternalSyncSource.value}/probe`,
+				{
+					method: 'POST',
+					body: { action },
+				},
+			)
+	} catch (value) {
+		notifyError(value, {
+			title: t('admin.servers.externalSync.modal.controlFailed'),
+		})
+	} finally {
+		externalSyncActionLoading.value = null
+	}
+}
+
+const syncExternalSyncSource = async (): Promise<void> => {
+	externalSyncActionLoading.value = 'sync'
+	try {
+		externalSyncStatus.value =
+			await $fetch<AdminExternalSyncSourceDetailResponse>(
+				`/api/admin/external-sync/sources/${activeExternalSyncSource.value}/sync`,
+				{
+					method: 'POST',
+				},
+			)
+		await refreshExternalSyncData()
+	} catch (value) {
+		notifyError(value, {
+			title: t('admin.servers.externalSync.modal.manualSyncFailed'),
+		})
+	} finally {
+		externalSyncActionLoading.value = null
+	}
+}
 
 watch(
 	error,
@@ -291,6 +590,30 @@ watch(
 	},
 	{ immediate: true },
 )
+
+watch(externalSyncStatusOpen, (value) => {
+	if (!value) {
+		if (externalSyncStatusTimer) {
+			clearInterval(externalSyncStatusTimer)
+			externalSyncStatusTimer = null
+		}
+		return
+	}
+
+	if (externalSyncStatusTimer) {
+		clearInterval(externalSyncStatusTimer)
+	}
+
+	externalSyncStatusTimer = setInterval(() => {
+		void loadExternalSyncSourceStatus()
+	}, 5_000)
+})
+
+onBeforeUnmount(() => {
+	if (externalSyncStatusTimer) {
+		clearInterval(externalSyncStatusTimer)
+	}
+})
 
 const openServer = async (server: MinecraftServerSummary): Promise<void> => {
 	await navigateTo(localePath(`/admin/servers/${server.serverId}`))

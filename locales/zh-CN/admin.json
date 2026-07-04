@@ -94,6 +94,7 @@
 			"externalSync": {
 				"authMe": "AuthMe 同步状态",
 				"luckPerms": "LuckPerms 同步状态",
+				"openStatus": "操作",
 				"running": "同步中",
 				"error": "异常",
 				"notConfigured": "未配置",
@@ -104,7 +105,44 @@
 				"rowsRead": "读取行数",
 				"never": "从未",
 				"database": "数据库：{database}",
-				"databaseMissing": "数据库未配置"
+				"databaseMissing": "数据库未配置",
+				"modal": {
+					"authMeTitle": "AuthMe 状态",
+					"luckPermsTitle": "LuckPerms 状态",
+					"checkConnection": "连接检测",
+					"recheckConnection": "重连检测",
+					"syncNow": "直接同步",
+					"refreshSync": "刷新同步状态",
+					"everyMinutes": "每 {minutes} 分钟",
+					"everySeconds": "每 {seconds} 秒",
+					"loadFailed": "读取状态失败",
+					"controlFailed": "连接检测失败",
+					"manualSyncFailed": "直接同步失败",
+					"states": {
+						"configured": "已配置",
+						"notConfigured": "未配置",
+						"disabled": "已停用",
+						"connected": "连接正常",
+						"failed": "连接失败",
+						"notChecked": "未检测"
+					},
+					"fields": {
+						"database": "数据库",
+						"configured": "配置状态",
+						"enabled": "启用状态",
+						"syncInterval": "同步间隔",
+						"checkedAt": "检测时间",
+						"latency": "检测延迟",
+						"lastStartedAt": "最近开始",
+						"lastFinishedAt": "最近结束",
+						"lastSuccessAt": "最近成功",
+						"rowsRead": "读取行数",
+						"rowsMatched": "匹配行数",
+						"rowsChanged": "变更行数",
+						"rowsSkipped": "跳过行数",
+						"error": "错误"
+					}
+				}
 			}
 		},
 		"serverCreate": {

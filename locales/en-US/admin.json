@@ -94,6 +94,7 @@
 			"externalSync": {
 				"authMe": "AuthMe Sync Status",
 				"luckPerms": "LuckPerms Sync Status",
+				"openStatus": "Manage",
 				"running": "Running",
 				"error": "Error",
 				"notConfigured": "Not configured",
@@ -104,7 +105,44 @@
 				"rowsRead": "Rows read",
 				"never": "Never",
 				"database": "Database: {database}",
-				"databaseMissing": "Database not configured"
+				"databaseMissing": "Database not configured",
+				"modal": {
+					"authMeTitle": "AuthMe Status",
+					"luckPermsTitle": "LuckPerms Status",
+					"checkConnection": "Check connection",
+					"recheckConnection": "Recheck connection",
+					"syncNow": "Sync now",
+					"refreshSync": "Refresh sync status",
+					"everyMinutes": "Every {minutes} minute(s)",
+					"everySeconds": "Every {seconds} second(s)",
+					"loadFailed": "Failed to load status",
+					"controlFailed": "Connection check failed",
+					"manualSyncFailed": "Manual sync failed",
+					"states": {
+						"configured": "Configured",
+						"notConfigured": "Not configured",
+						"disabled": "Disabled",
+						"connected": "Connection OK",
+						"failed": "Connection failed",
+						"notChecked": "Not checked"
+					},
+					"fields": {
+						"database": "Database",
+						"configured": "Configured",
+						"enabled": "Enabled",
+						"syncInterval": "Sync interval",
+						"checkedAt": "Checked at",
+						"latency": "Latency",
+						"lastStartedAt": "Last started",
+						"lastFinishedAt": "Last finished",
+						"lastSuccessAt": "Last success",
+						"rowsRead": "Rows read",
+						"rowsMatched": "Rows matched",
+						"rowsChanged": "Rows changed",
+						"rowsSkipped": "Rows skipped",
+						"error": "Error"
+					}
+				}
 			}
 		},
 		"serverCreate": {

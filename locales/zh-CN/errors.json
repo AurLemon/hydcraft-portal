@@ -125,6 +125,7 @@
 			"AUTHME_PASSWORD_INVALID": "游戏密码不正确。",
 			"AUTHME_ACCOUNT_INVALID": "AuthMe 账号数据异常。",
 			"AUTHME_SYNC_ALREADY_RUNNING": "AuthMe 同步任务仍在进行中，请稍后再试。",
+			"EXTERNAL_SYNC_PROBE_ACTION_UNSUPPORTED": "不支持的连接检测操作。",
 			"REGISTRATION_TICKET_REQUIRED": "缺少注册凭据，请重新开始注册流程。",
 			"REGISTRATION_TICKET_NOT_FOUND": "注册凭据不存在或已过期。",
 			"REGISTRATION_TICKET_INVALID": "注册凭据无效，请重新开始注册流程。",

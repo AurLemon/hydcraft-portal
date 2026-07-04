@@ -94,6 +94,7 @@
 			"externalSync": {
 				"authMe": "AuthMe 同期状態",
 				"luckPerms": "LuckPerms 同期状態",
+				"openStatus": "操作",
 				"running": "同期中",
 				"error": "エラー",
 				"notConfigured": "未設定",
@@ -104,7 +105,44 @@
 				"rowsRead": "読み取り行数",
 				"never": "なし",
 				"database": "データベース: {database}",
-				"databaseMissing": "データベース未設定"
+				"databaseMissing": "データベース未設定",
+				"modal": {
+					"authMeTitle": "AuthMe 状態",
+					"luckPermsTitle": "LuckPerms 状態",
+					"checkConnection": "接続確認",
+					"recheckConnection": "再接続確認",
+					"syncNow": "今すぐ同期",
+					"refreshSync": "同期状態を更新",
+					"everyMinutes": "{minutes} 分ごと",
+					"everySeconds": "{seconds} 秒ごと",
+					"loadFailed": "状態の読み込みに失敗しました",
+					"controlFailed": "接続確認に失敗しました",
+					"manualSyncFailed": "手動同期に失敗しました",
+					"states": {
+						"configured": "設定済み",
+						"notConfigured": "未設定",
+						"disabled": "無効",
+						"connected": "接続成功",
+						"failed": "接続失敗",
+						"notChecked": "未確認"
+					},
+					"fields": {
+						"database": "データベース",
+						"configured": "設定状態",
+						"enabled": "有効状態",
+						"syncInterval": "同期間隔",
+						"checkedAt": "確認日時",
+						"latency": "レイテンシ",
+						"lastStartedAt": "最終開始",
+						"lastFinishedAt": "最終終了",
+						"lastSuccessAt": "最終成功",
+						"rowsRead": "読み取り行数",
+						"rowsMatched": "一致行数",
+						"rowsChanged": "変更行数",
+						"rowsSkipped": "スキップ行数",
+						"error": "エラー"
+					}
+				}
 			}
 		},
 		"serverCreate": {

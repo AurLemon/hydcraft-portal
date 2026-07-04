@@ -125,6 +125,7 @@
 			"AUTHME_PASSWORD_INVALID": "The game password is incorrect.",
 			"AUTHME_ACCOUNT_INVALID": "The AuthMe account data is invalid.",
 			"AUTHME_SYNC_ALREADY_RUNNING": "An AuthMe sync task is still running. Please try again later.",
+			"EXTERNAL_SYNC_PROBE_ACTION_UNSUPPORTED": "This external sync connection check action is not supported.",
 			"REGISTRATION_TICKET_REQUIRED": "The registration ticket is missing. Start the registration flow again.",
 			"REGISTRATION_TICKET_NOT_FOUND": "The registration ticket was not found or has expired.",
 			"REGISTRATION_TICKET_INVALID": "The registration ticket is invalid. Start the registration flow again.",

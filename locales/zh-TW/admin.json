@@ -94,6 +94,7 @@
 			"externalSync": {
 				"authMe": "AuthMe 同步狀態",
 				"luckPerms": "LuckPerms 同步狀態",
+				"openStatus": "操作",
 				"running": "同步中",
 				"error": "異常",
 				"notConfigured": "未設定",
@@ -104,7 +105,44 @@
 				"rowsRead": "讀取列數",
 				"never": "從未",
 				"database": "資料庫：{database}",
-				"databaseMissing": "資料庫未設定"
+				"databaseMissing": "資料庫未設定",
+				"modal": {
+					"authMeTitle": "AuthMe 狀態",
+					"luckPermsTitle": "LuckPerms 狀態",
+					"checkConnection": "連線檢測",
+					"recheckConnection": "重連檢測",
+					"syncNow": "直接同步",
+					"refreshSync": "刷新同步狀態",
+					"everyMinutes": "每 {minutes} 分鐘",
+					"everySeconds": "每 {seconds} 秒",
+					"loadFailed": "讀取狀態失敗",
+					"controlFailed": "連線檢測失敗",
+					"manualSyncFailed": "直接同步失敗",
+					"states": {
+						"configured": "已設定",
+						"notConfigured": "未設定",
+						"disabled": "已停用",
+						"connected": "連線正常",
+						"failed": "連線失敗",
+						"notChecked": "未檢測"
+					},
+					"fields": {
+						"database": "資料庫",
+						"configured": "設定狀態",
+						"enabled": "啟用狀態",
+						"syncInterval": "同步間隔",
+						"checkedAt": "檢測時間",
+						"latency": "檢測延遲",
+						"lastStartedAt": "最近開始",
+						"lastFinishedAt": "最近結束",
+						"lastSuccessAt": "最近成功",
+						"rowsRead": "讀取列數",
+						"rowsMatched": "匹配列數",
+						"rowsChanged": "變更列數",
+						"rowsSkipped": "跳過列數",
+						"error": "錯誤"
+					}
+				}
 			}
 		},
 		"serverCreate": {

@@ -76,6 +76,36 @@ export interface AdminExternalSyncStatusResponse {
 	sources: AdminExternalSyncSourceStatus[]
 }
 
+export type AdminExternalSyncSourceName = 'authme' | 'luckperms'
+
+export interface AdminExternalSyncSourceDetailResponse {
+	source: AdminExternalSyncSourceName
+	config: {
+		configured: boolean
+		database: string | null
+		enabled: boolean
+		intervalSeconds: number
+	}
+	sync: {
+		running: boolean
+		lastStartedAt: string | null
+		lastFinishedAt: string | null
+		lastSuccessAt: string | null
+		lastError: string | null
+		rowsRead: number
+		rowsMatched: number
+		rowsChanged: number
+		rowsSkipped: number
+	}
+	connection: {
+		ok: boolean
+		skipped: boolean
+		latencyMs: number | null
+		errorMessage: string | null
+		checkedAt: string | null
+	}
+}
+
 export interface MinecraftServerResponse {
 	server: MinecraftServerSummary
 }
