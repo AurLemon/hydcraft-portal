@@ -1,5 +1,5 @@
 ---
-updatedAt: 2026-07-03T02:16:46+08:00
+updatedAt: 2026-07-04T18:11:15+08:00
 ---
 
 How did HydCraft end up where it is today? If I really had to get into it, I still could not give you some grand narrative. The server never had a blueprint. It just muddled its way here through one round after another of positive and negative feedback. Since 2018, the server has made it through seven seasons, and Season 8 is almost here.
@@ -289,7 +289,7 @@ Some things simply stayed behind. Someone gave a city a name and then stopped co
 
 We simply try to keep what is still worth keeping, leave an entry point for people willing to come back, and leave a record for the people who once lived together here. And of course, if anyone still wants to join us, this light will keep making room for new stories too.
 
-After all, the story is still going on.
+After all, the story is still going on. In the elders' group, people are still vigorously discussing Season 8 and route planning standards. There is still friction inside, still small tensions. Scheming and passive-aggressive sniping have not disappeared either, only the intensity is lower now. I still vent to the other admins from time to time over some player's outrageous behavior. Fewer and fewer people speak in the main server group now, and the center of conversation has gradually shifted to smaller side groups with even fewer people.
 
 It is not only HydCraft. Somewhere in the corners of the internet, there are probably many servers, many groups, and many small places where friends and people with shared interests gather together, all going through their own liveliness, chaos, construction, and farewells. There may even still be middle school and high school students like we were in 2018, somewhere in a group chat, on some map, or inside some newly opened server, seriously and clumsily writing down stories of their own.
 
