@@ -5,6 +5,7 @@ import {
 } from '~/components/content/utils/content-image'
 
 type ScrollDirection = 'left' | 'right'
+type ScrollMode = 'idle' | 'button' | 'jump' | 'manual'
 
 interface ImageCarouselStateOptions {
 	images: Ref<string | Array<string | ContentImageItem> | undefined>
@@ -18,20 +19,21 @@ interface CarouselImageItem extends ReturnType<typeof normalizeContentImage> {
 	sourceIndex: number
 }
 
+const MANUAL_SCROLL_SETTLE_MS = 120
+
 export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 	const scrollContainer = ref<HTMLDivElement | null>(null)
-	const canScrollLeft = ref(false)
-	const canScrollRight = ref(false)
 	const currentImageIndex = ref(0)
 	const activeImageIndex = ref<number | null>(null)
-	const isAdjustingLoopPosition = ref(false)
-	const isProgrammaticScroll = ref(false)
+	const canScrollLeft = ref(false)
+	const canScrollRight = ref(false)
+	const scrollMode = ref<ScrollMode>('idle')
 	const hasUserNavigated = ref(false)
-	const loopSyncFrameId = ref<number | null>(null)
+	const pendingLayoutSync = ref(false)
 	const resizeFrameId = ref<number | null>(null)
 	const settleFrameId = ref<number | null>(null)
-	const programmaticScrollResetTimeoutId = ref<number | null>(null)
-	const scrollSettleTimeoutId = ref<number | null>(null)
+	const manualScrollTimeoutId = ref<number | null>(null)
+	const programmaticScrollTimeoutId = ref<number | null>(null)
 	const settleTimeoutIds = new Set<number>()
 	let carouselResizeObserver: ResizeObserver | null = null
 
@@ -75,33 +77,6 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 
 		return options.cycle.value !== false
 	})
-
-	const canPreviewCarouselItem = (displayIndex: number): boolean => {
-		if (buttonAlwaysVisible.value || normalizedImages.value.length <= 1) {
-			return true
-		}
-
-		const realItemStartIndex = getRealItemStartIndex()
-
-		return (
-			displayIndex >= realItemStartIndex &&
-			displayIndex < realItemStartIndex + normalizedImages.value.length
-		)
-	}
-
-	const isLoopDecorationItem = (displayIndex: number): boolean => {
-		if (!cycleEnabled.value || normalizedImages.value.length <= 1) {
-			return false
-		}
-
-		const realItemStartIndex = getRealItemStartIndex()
-
-		return (
-			displayIndex < realItemStartIndex ||
-			displayIndex >= realItemStartIndex + normalizedImages.value.length
-		)
-	}
-
 	const carouselImages = computed<CarouselImageItem[]>(() => {
 		const images = orderedNormalizedImages.value
 
@@ -114,10 +89,52 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 	const activeImage = computed(() =>
 		activeImageIndex.value === null
 			? null
-			: (carouselImages.value.find(
+			: (orderedNormalizedImages.value.find(
 					(image) => image.sourceIndex === activeImageIndex.value,
 				) ?? null),
 	)
+
+	const imageCount = computed(() => normalizedImages.value.length)
+
+	const getRealItemStartIndex = (): number =>
+		cycleEnabled.value && imageCount.value > 1 ? imageCount.value : 0
+
+	const normalizeOrderedIndex = (index: number): number => {
+		if (imageCount.value <= 0) {
+			return 0
+		}
+
+		return ((index % imageCount.value) + imageCount.value) % imageCount.value
+	}
+
+	const getDisplayIndexForOrderedIndex = (
+		orderedIndex: number,
+		options?: {
+			direction?: ScrollDirection
+			fromOrderedIndex?: number
+		},
+	): number => {
+		const realItemStartIndex = getRealItemStartIndex()
+		const direction = options?.direction
+		const fromOrderedIndex = options?.fromOrderedIndex ?? orderedIndex
+
+		if (!cycleEnabled.value || imageCount.value <= 1) {
+			return Math.min(
+				Math.max(orderedIndex, 0),
+				Math.max(imageCount.value - 1, 0),
+			)
+		}
+
+		if (direction === 'left' && fromOrderedIndex === 0) {
+			return realItemStartIndex - 1
+		}
+
+		if (direction === 'right' && fromOrderedIndex === imageCount.value - 1) {
+			return realItemStartIndex + imageCount.value
+		}
+
+		return realItemStartIndex + orderedIndex
+	}
 
 	const getCarouselSidePadding = (itemWidth?: string): string => {
 		if (!itemWidth) {
@@ -139,46 +156,39 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 			: 'pointer-events-none scale-90 opacity-0',
 	)
 	const rightButtonClass = computed(() =>
-		buttonAlwaysVisible.value ||
-		currentImageIndex.value < normalizedImages.value.length - 1
+		buttonAlwaysVisible.value || currentImageIndex.value < imageCount.value - 1
 			? 'scale-100 opacity-100'
 			: 'pointer-events-none scale-90 opacity-0',
 	)
 
+	const canPreviewCarouselItem = (displayIndex: number): boolean => {
+		if (buttonAlwaysVisible.value || imageCount.value <= 1) {
+			return true
+		}
+
+		const realItemStartIndex = getRealItemStartIndex()
+
+		return (
+			displayIndex >= realItemStartIndex &&
+			displayIndex < realItemStartIndex + imageCount.value
+		)
+	}
+
+	const isLoopDecorationItem = (displayIndex: number): boolean => {
+		if (!cycleEnabled.value || imageCount.value <= 1) {
+			return false
+		}
+
+		const realItemStartIndex = getRealItemStartIndex()
+
+		return (
+			displayIndex < realItemStartIndex ||
+			displayIndex >= realItemStartIndex + imageCount.value
+		)
+	}
+
 	const getCarouselItemElements = (container: HTMLDivElement): HTMLElement[] =>
 		Array.from(container.querySelectorAll<HTMLElement>('figure'))
-
-	const setScrollPosition = (
-		left: number,
-		behavior: ScrollBehavior = 'auto',
-	): void => {
-		const container = scrollContainer.value
-
-		if (!container) {
-			return
-		}
-
-		isProgrammaticScroll.value = true
-		container.scrollTo({
-			left,
-			behavior,
-		})
-	}
-
-	const clearProgrammaticScrollResetTimeout = (): void => {
-		if (programmaticScrollResetTimeoutId.value !== null) {
-			clearTimeout(programmaticScrollResetTimeoutId.value)
-			programmaticScrollResetTimeoutId.value = null
-		}
-	}
-
-	const scheduleProgrammaticScrollReset = (): void => {
-		clearProgrammaticScrollResetTimeout()
-		programmaticScrollResetTimeoutId.value = window.setTimeout(() => {
-			programmaticScrollResetTimeoutId.value = null
-			isProgrammaticScroll.value = false
-		}, 180)
-	}
 
 	const getItemScrollOffsets = (
 		container: HTMLDivElement,
@@ -208,13 +218,7 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 		return Math.min(Math.max(targetScrollLeft, 0), maxScrollLeft)
 	}
 
-	const getRealItemStartIndex = (): number => {
-		return cycleEnabled.value && normalizedImages.value.length > 1
-			? normalizedImages.value.length
-			: 0
-	}
-
-	const getNearestItemIndex = (
+	const getNearestDisplayIndex = (
 		container: HTMLDivElement,
 		itemElements: HTMLElement[],
 	): number => {
@@ -237,83 +241,44 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 	}
 
 	const updateScrollState = (): void => {
-		const container = scrollContainer.value
+		if (imageCount.value <= 1) {
+			const container = scrollContainer.value
 
-		if (!container) {
-			canScrollLeft.value = false
-			canScrollRight.value = false
-			return
-		}
-
-		if (normalizedImages.value.length > 1) {
-			canScrollLeft.value = true
-			canScrollRight.value = true
-			return
-		}
-
-		const maxScrollLeft = container.scrollWidth - container.clientWidth
-		canScrollLeft.value = container.scrollLeft > 1
-		canScrollRight.value = container.scrollLeft < maxScrollLeft - 1
-	}
-
-	const updateCurrentImageIndex = (): void => {
-		const container = scrollContainer.value
-
-		if (!container || !normalizedImages.value.length) {
-			currentImageIndex.value = 0
-			return
-		}
-
-		if (normalizedImages.value.length === 1) {
-			currentImageIndex.value = 0
-			return
-		}
-
-		if (!hasUserNavigated.value) {
-			currentImageIndex.value = 0
-			return
-		}
-
-		const itemElements = getCarouselItemElements(container)
-		const realItemStartIndex = getRealItemStartIndex()
-		const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
-		const viewportCenter = container.scrollLeft + container.clientWidth / 2
-		let nearestRealIndex = 0
-		let nearestDistance = Number.POSITIVE_INFINITY
-
-		for (let index = 0; index < normalizedImages.value.length; index += 1) {
-			const realIndex = realItemStartIndex + index
-			const element = itemElements[realIndex]
-			const itemStart = itemScrollOffsets[realIndex]
-
-			if (!element || itemStart === undefined) {
-				continue
+			if (!container) {
+				canScrollLeft.value = false
+				canScrollRight.value = false
+				return
 			}
 
-			const itemCenter = itemStart + element.offsetWidth / 2
-			const distance = Math.abs(itemCenter - viewportCenter)
-
-			if (distance < nearestDistance) {
-				nearestDistance = distance
-				nearestRealIndex = index
-			}
+			const maxScrollLeft = container.scrollWidth - container.clientWidth
+			canScrollLeft.value = container.scrollLeft > 1
+			canScrollRight.value = container.scrollLeft < maxScrollLeft - 1
+			return
 		}
 
-		currentImageIndex.value = nearestRealIndex
+		canScrollLeft.value = true
+		canScrollRight.value = true
 	}
 
-	const syncLoopPosition = (
-		behavior: ScrollBehavior = 'smooth',
-		forceRealItem = false,
-	): void => {
+	const clearManualScrollTimeout = (): void => {
+		if (manualScrollTimeoutId.value !== null) {
+			clearTimeout(manualScrollTimeoutId.value)
+			manualScrollTimeoutId.value = null
+		}
+	}
+
+	const clearProgrammaticScrollTimeout = (): void => {
+		if (programmaticScrollTimeoutId.value !== null) {
+			clearTimeout(programmaticScrollTimeoutId.value)
+			programmaticScrollTimeoutId.value = null
+		}
+	}
+
+	const syncCurrentIndexFromViewport = (): void => {
 		const container = scrollContainer.value
 
-		if (
-			!container ||
-			!cycleEnabled.value ||
-			normalizedImages.value.length <= 1 ||
-			isAdjustingLoopPosition.value
-		) {
+		if (!container || imageCount.value <= 1) {
+			currentImageIndex.value = 0
 			return
 		}
 
@@ -323,114 +288,25 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 			return
 		}
 
-		const realItemStartIndex = getRealItemStartIndex()
-		const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
-		const nearestItemIndex = getNearestItemIndex(container, itemElements)
-
-		if (
-			!forceRealItem &&
-			nearestItemIndex >= realItemStartIndex &&
-			nearestItemIndex <= realItemStartIndex + normalizedImages.value.length - 1
-		) {
-			return
-		}
-
-		const targetOrderedIndex = hasUserNavigated.value
-			? nearestItemIndex % normalizedImages.value.length
-			: 0
-		const targetIndex = realItemStartIndex + targetOrderedIndex
-		const targetElement = itemElements[targetIndex]
-		const targetItemStart = itemScrollOffsets[targetIndex]
-
-		if (!targetElement || targetItemStart === undefined) {
-			return
-		}
-
-		const targetScrollLeft = getCenteredScrollLeft(
-			container,
-			targetElement,
-			targetItemStart,
+		const nearestDisplayIndex = getNearestDisplayIndex(container, itemElements)
+		currentImageIndex.value = normalizeOrderedIndex(
+			nearestDisplayIndex - getRealItemStartIndex(),
 		)
-		isAdjustingLoopPosition.value = true
-		setScrollPosition(targetScrollLeft, behavior)
-		requestAnimationFrame(() => {
-			isAdjustingLoopPosition.value = false
-			currentImageIndex.value = targetOrderedIndex
-			updateScrollState()
-		})
 	}
 
-	const queueLoopPositionSync = (
-		behavior: ScrollBehavior = 'smooth',
-		forceRealItem = false,
-	): void => {
-		if (loopSyncFrameId.value !== null) {
-			window.cancelAnimationFrame(loopSyncFrameId.value)
-		}
-
-		loopSyncFrameId.value = window.requestAnimationFrame(() => {
-			loopSyncFrameId.value = null
-			syncLoopPosition(behavior, forceRealItem)
-		})
-	}
-
-	const clearScrollSettleTimeout = (): void => {
-		if (scrollSettleTimeoutId.value !== null) {
-			clearTimeout(scrollSettleTimeoutId.value)
-			scrollSettleTimeoutId.value = null
-		}
-	}
-
-	const scheduleScrollSettle = (): void => {
-		clearScrollSettleTimeout()
-		scrollSettleTimeoutId.value = window.setTimeout(() => {
-			scrollSettleTimeoutId.value = null
-
-			if (!cycleEnabled.value || isAdjustingLoopPosition.value) {
-				return
-			}
-
-			queueLoopPositionSync('smooth', true)
-		}, 140)
-	}
-
-	const handleScroll = (): void => {
-		const isLoopAdjustmentScroll = isAdjustingLoopPosition.value
-		const isInternalScroll =
-			isLoopAdjustmentScroll || isProgrammaticScroll.value
-
-		if (isProgrammaticScroll.value) {
-			scheduleProgrammaticScrollReset()
-		}
-
-		if (!isInternalScroll) {
-			hasUserNavigated.value = true
-		}
-
-		if (cycleEnabled.value && !isLoopAdjustmentScroll) {
-			scheduleScrollSettle()
-		}
-
-		updateScrollState()
-		updateCurrentImageIndex()
-	}
-
-	const centerImageAtIndex = (
-		sourceIndex: number,
-		behavior: ScrollBehavior = 'auto',
+	const scrollToDisplayIndex = (
+		displayIndex: number,
+		behavior: ScrollBehavior,
+		mode: Extract<ScrollMode, 'button' | 'jump'>,
 	): void => {
 		const container = scrollContainer.value
 
-		if (!container || !normalizedImages.value.length) {
+		if (!container) {
 			return
 		}
 
 		const itemElements = getCarouselItemElements(container)
-		const targetIndex =
-			normalizedImages.value.length > 1
-				? getRealItemStartIndex() + sourceIndex
-				: sourceIndex
-		const targetElement = itemElements[targetIndex]
+		const targetElement = itemElements[displayIndex]
 
 		if (!targetElement) {
 			return
@@ -440,15 +316,135 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 		const targetScrollLeft = getCenteredScrollLeft(
 			container,
 			targetElement,
-			itemScrollOffsets[targetIndex] ?? 0,
+			itemScrollOffsets[displayIndex] ?? 0,
 		)
 
-		setScrollPosition(targetScrollLeft, behavior)
+		scrollMode.value = mode
+		container.scrollTo({
+			left: targetScrollLeft,
+			behavior,
+		})
+		clearProgrammaticScrollTimeout()
+		programmaticScrollTimeoutId.value = window.setTimeout(() => {
+			programmaticScrollTimeoutId.value = null
+			finalizeProgrammaticScroll()
+		}, MANUAL_SCROLL_SETTLE_MS)
 	}
 
-	const centerCurrentImage = (): void => {
-		centerImageAtIndex(hasUserNavigated.value ? currentImageIndex.value : 0)
-		handleScroll()
+	const centerCurrentImage = (
+		behavior: ScrollBehavior = 'auto',
+		mode: Extract<ScrollMode, 'button' | 'jump'> = 'jump',
+	): void => {
+		if (imageCount.value <= 0) {
+			return
+		}
+
+		scrollToDisplayIndex(
+			getDisplayIndexForOrderedIndex(currentImageIndex.value),
+			behavior,
+			mode,
+		)
+	}
+
+	const flushPendingLayoutSync = (): void => {
+		if (!pendingLayoutSync.value) {
+			return
+		}
+
+		pendingLayoutSync.value = false
+		void nextTick(() => {
+			if (scrollMode.value !== 'idle') {
+				pendingLayoutSync.value = true
+				return
+			}
+
+			centerCurrentImage('auto', 'jump')
+		})
+	}
+
+	const settleManualScroll = (): void => {
+		if (scrollMode.value !== 'manual') {
+			return
+		}
+
+		syncCurrentIndexFromViewport()
+		scrollMode.value = 'idle'
+		centerCurrentImage('smooth', 'jump')
+	}
+
+	const scheduleManualScrollSettle = (): void => {
+		clearManualScrollTimeout()
+		manualScrollTimeoutId.value = window.setTimeout(() => {
+			manualScrollTimeoutId.value = null
+			settleManualScroll()
+		}, MANUAL_SCROLL_SETTLE_MS)
+	}
+
+	const finalizeProgrammaticScroll = (): void => {
+		const mode = scrollMode.value
+
+		if (mode !== 'button' && mode !== 'jump') {
+			return
+		}
+
+		clearProgrammaticScrollTimeout()
+		scrollMode.value = 'idle'
+		const container = scrollContainer.value
+
+		if (!container || imageCount.value <= 1) {
+			updateScrollState()
+			flushPendingLayoutSync()
+			return
+		}
+
+		const itemElements = getCarouselItemElements(container)
+
+		if (!itemElements.length) {
+			flushPendingLayoutSync()
+			return
+		}
+
+		const nearestDisplayIndex = getNearestDisplayIndex(container, itemElements)
+		const realItemStartIndex = getRealItemStartIndex()
+
+		if (
+			nearestDisplayIndex < realItemStartIndex ||
+			nearestDisplayIndex >= realItemStartIndex + imageCount.value
+		) {
+			centerCurrentImage('auto', 'jump')
+			return
+		}
+
+		updateScrollState()
+		flushPendingLayoutSync()
+	}
+
+	const handleScroll = (): void => {
+		updateScrollState()
+
+		if (scrollMode.value === 'button' || scrollMode.value === 'jump') {
+			clearProgrammaticScrollTimeout()
+			programmaticScrollTimeoutId.value = window.setTimeout(() => {
+				programmaticScrollTimeoutId.value = null
+				finalizeProgrammaticScroll()
+			}, MANUAL_SCROLL_SETTLE_MS)
+			return
+		}
+
+		hasUserNavigated.value = true
+		scrollMode.value = 'manual'
+		syncCurrentIndexFromViewport()
+		scheduleManualScrollSettle()
+	}
+
+	const handleScrollEnd = (): void => {
+		if (scrollMode.value === 'manual') {
+			clearManualScrollTimeout()
+			settleManualScroll()
+			return
+		}
+
+		finalizeProgrammaticScroll()
 	}
 
 	const clearInitialSettleTasks = (): void => {
@@ -470,17 +466,14 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 		}
 
 		currentImageIndex.value = 0
-		centerImageAtIndex(0)
-		handleScroll()
-		queueLoopPositionSync('auto', true)
+		centerCurrentImage('auto', 'jump')
 	}
 
 	const scheduleInitialPositionSettle = (): void => {
 		clearInitialSettleTasks()
 
 		const settle = (): void => {
-			if (hasUserNavigated.value) {
-				clearInitialSettleTasks()
+			if (hasUserNavigated.value || scrollMode.value !== 'idle') {
 				return
 			}
 
@@ -504,7 +497,13 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 
 	const syncCarouselLayout = async (): Promise<void> => {
 		await nextTick()
-		centerCurrentImage()
+
+		if (scrollMode.value !== 'idle') {
+			pendingLayoutSync.value = true
+			return
+		}
+
+		centerCurrentImage('auto', 'jump')
 	}
 
 	const handleResize = (): void => {
@@ -519,39 +518,21 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 	}
 
 	const notifyLayoutChange = (): void => {
+		if (scrollMode.value !== 'idle') {
+			pendingLayoutSync.value = true
+			return
+		}
+
 		handleResize()
 	}
 
 	const initializeLoopPosition = async (): Promise<void> => {
 		await nextTick()
+
+		scrollMode.value = 'idle'
 		currentImageIndex.value = 0
-
-		const container = scrollContainer.value
-
-		if (!container || normalizedImages.value.length <= 1) {
-			handleScroll()
-			return
-		}
-
-		const itemElements = getCarouselItemElements(container)
-		const realItemStartIndex = getRealItemStartIndex()
-		const firstRealItem = itemElements[realItemStartIndex]
-
-		if (!firstRealItem) {
-			handleScroll()
-			return
-		}
-
-		const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
-		const firstRealItemStart = itemScrollOffsets[realItemStartIndex] ?? 0
-		const targetScrollLeft = getCenteredScrollLeft(
-			container,
-			firstRealItem,
-			firstRealItemStart,
-		)
-		setScrollPosition(targetScrollLeft, 'auto')
-		handleScroll()
-		queueLoopPositionSync('auto', true)
+		updateScrollState()
+		forceInitialPosition()
 		scheduleInitialPositionSettle()
 	}
 
@@ -559,80 +540,26 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 		scheduleInitialPositionSettle()
 	}
 
-	const getTargetItemIndex = (
-		itemCenters: number[],
-		currentViewportCenter: number,
-		direction: ScrollDirection,
-	): number => {
-		if (direction === 'right') {
-			return itemCenters.findIndex(
-				(center) => center > currentViewportCenter + 1,
-			)
-		}
-
-		for (let index = itemCenters.length - 1; index >= 0; index -= 1) {
-			const center = itemCenters[index]
-
-			if (center !== undefined && center < currentViewportCenter - 1) {
-				return index
-			}
-		}
-
-		return -1
-	}
-
 	const scrollImages = (direction: ScrollDirection): void => {
-		const container = scrollContainer.value
-
-		if (!container) {
-			return
-		}
-
-		const itemElements = getCarouselItemElements(container)
-
-		if (!itemElements.length) {
+		if (imageCount.value <= 1) {
 			return
 		}
 
 		hasUserNavigated.value = true
+		clearManualScrollTimeout()
 
-		const currentScrollLeft = container.scrollLeft
-		const maxScrollLeft = container.scrollWidth - container.clientWidth
-		const itemScrollOffsets = getItemScrollOffsets(container, itemElements)
-		const currentViewportCenter = currentScrollLeft + container.clientWidth / 2
-		const itemCenters = itemElements.map((element, index) => {
-			const itemStart = itemScrollOffsets[index] ?? 0
-
-			return itemStart + element.offsetWidth / 2
-		})
-		let targetIndex = getTargetItemIndex(
-			itemCenters,
-			currentViewportCenter,
-			direction,
-		)
-
-		if (targetIndex === -1 && normalizedImages.value.length > 1) {
-			targetIndex = direction === 'left' ? itemElements.length - 2 : 1
-		}
-
-		const targetOrderedIndex =
-			targetIndex >= 0
-				? targetIndex % normalizedImages.value.length
-				: currentImageIndex.value
-
+		const delta = direction === 'right' ? 1 : -1
+		const fromOrderedIndex = currentImageIndex.value
+		const targetOrderedIndex = normalizeOrderedIndex(fromOrderedIndex + delta)
 		currentImageIndex.value = targetOrderedIndex
-		const targetElement = itemElements[targetIndex]
-		const targetScrollLeft = targetElement
-			? getCenteredScrollLeft(
-					container,
-					targetElement,
-					itemScrollOffsets[targetIndex] ?? 0,
-				)
-			: direction === 'left'
-				? 0
-				: maxScrollLeft
-
-		setScrollPosition(targetScrollLeft, 'smooth')
+		scrollToDisplayIndex(
+			getDisplayIndexForOrderedIndex(targetOrderedIndex, {
+				direction,
+				fromOrderedIndex,
+			}),
+			'smooth',
+			'button',
+		)
 	}
 
 	const openPreview = (sourceIndex: number, displayIndex: number): void => {
@@ -657,21 +584,19 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 		if (scrollContainer.value) {
 			carouselResizeObserver = new ResizeObserver(handleResize)
 			carouselResizeObserver.observe(scrollContainer.value)
+			scrollContainer.value.addEventListener('scrollend', handleScrollEnd)
 		}
 	})
 
 	onBeforeUnmount(() => {
 		window.removeEventListener('resize', handleResize)
 		window.removeEventListener('pageshow', handlePageShow)
+		scrollContainer.value?.removeEventListener('scrollend', handleScrollEnd)
 		carouselResizeObserver?.disconnect()
 		carouselResizeObserver = null
 		clearInitialSettleTasks()
-		clearProgrammaticScrollResetTimeout()
-		clearScrollSettleTimeout()
-
-		if (loopSyncFrameId.value !== null) {
-			window.cancelAnimationFrame(loopSyncFrameId.value)
-		}
+		clearManualScrollTimeout()
+		clearProgrammaticScrollTimeout()
 
 		if (resizeFrameId.value !== null) {
 			window.cancelAnimationFrame(resizeFrameId.value)
@@ -680,6 +605,7 @@ export const useImageCarouselState = (options: ImageCarouselStateOptions) => {
 
 	watch(normalizedImages, async () => {
 		hasUserNavigated.value = false
+		pendingLayoutSync.value = false
 		currentImageIndex.value = 0
 		await initializeLoopPosition()
 	})
