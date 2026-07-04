@@ -163,6 +163,14 @@
 					<div class="inline-flex flex-nowrap gap-1 whitespace-nowrap">
 						<UButton
 							size="xs"
+							color="neutral"
+							variant="soft"
+							@click="openLoginHistory(row.original)"
+						>
+							{{ t('admin.players.dataEntries.loginHistory') }}
+						</UButton>
+						<UButton
+							size="xs"
 							:color="
 								hasAdvancementsEntry(row.original) ? 'primary' : 'neutral'
 							"
@@ -202,6 +210,16 @@
 				@update:page-size="setPageSize"
 			/>
 		</div>
+
+		<MinecraftSessionHistoryModal
+			:open="loginHistoryOpen"
+			:title="loginHistoryTitle"
+			:recent-sessions-label="t('admin.players.sessionHistory.allSessions')"
+			:not-available-label="t('admin.players.empty.unknown')"
+			:show-server="true"
+			:fetch-sessions="fetchLoginHistorySessions"
+			@update:open="loginHistoryOpen = $event"
+		/>
 	</div>
 </template>
 
@@ -210,10 +228,12 @@ import { h } from 'vue'
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
 import type {
 	AdminMinecraftAccountInfo,
+	AdminMinecraftAccountSessionHistoryResponse,
 	AdminMinecraftAccountsResponse,
 	IpLocationSummary,
 } from '~/components/admin/types'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
+import type { ServerOverviewPlayerPresenceSession } from '~/utils/server/overview'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -225,6 +245,8 @@ const localePath = useLocalePath()
 const ALL_FILTER_VALUE = '__all__'
 const page = ref(1)
 const pageSize = ref(20)
+const loginHistoryOpen = ref(false)
+const selectedAccount = ref<AdminMinecraftAccountInfo | null>(null)
 const filters = reactive({
 	search: '',
 	linked: ALL_FILTER_VALUE,
@@ -252,6 +274,13 @@ const pageMeta = computed(() => ({
 	total: data.value?.total ?? 0,
 	pageCount: data.value?.pageCount ?? 1,
 }))
+const loginHistoryTitle = computed(
+	() =>
+		selectedAccount.value?.username ??
+		selectedAccount.value?.authmeName ??
+		selectedAccount.value?.uuid ??
+		'-',
+)
 const tableHeader = (label: string) => () =>
 	h('span', { class: 'whitespace-nowrap' }, label)
 const columns = [
@@ -399,6 +428,29 @@ const getDataEntryRoute = (
 		path: `/admin/servers/${type}`,
 		query: { player: account.normalizedUsername || account.username },
 	})
+}
+
+const openLoginHistory = (account: AdminMinecraftAccountInfo): void => {
+	selectedAccount.value = account
+	loginHistoryOpen.value = true
+}
+
+const fetchLoginHistorySessions = async (): Promise<{
+	sessions: ServerOverviewPlayerPresenceSession[]
+}> => {
+	if (!selectedAccount.value?.id) {
+		return {
+			sessions: [],
+		}
+	}
+
+	const response = await $fetch<AdminMinecraftAccountSessionHistoryResponse>(
+		`/api/admin/players/${selectedAccount.value.id}/sessions`,
+	)
+
+	return {
+		sessions: response.sessions,
+	}
 }
 
 watch(

@@ -572,8 +572,12 @@
 				"noDataEntries": "暂无"
 			},
 			"dataEntries": {
+				"loginHistory": "登录历史",
 				"stats": "统计",
 				"advancements": "成就"
+			},
+			"sessionHistory": {
+				"allSessions": "全部登录记录"
 			}
 		},
 		"users": {

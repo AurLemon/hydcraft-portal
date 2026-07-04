@@ -98,6 +98,21 @@
 			"unbindSuccess": "Minecraft 账号已解绑",
 			"unbindFailed": "解绑 Minecraft 账号失败",
 			"unbindFailedDescription": "请检查登录状态、账号归属，或稍后再试。"
+		},
+		"sessionHistory": {
+			"server": "服务器",
+			"sessionLabel": "第 {index} 次",
+			"sessionOpenedAt": "上线时间",
+			"sessionClosedAt": "离线时间",
+			"stillOnline": "仍在线",
+			"emptySessions": "暂时没有可展示的上线记录。",
+			"loadFailed": "玩家在线记录暂时无法加载。",
+			"duration": {
+				"days": "{count}天",
+				"hours": "{count}小时",
+				"minutes": "{count}分钟",
+				"lessThanMinute": "不足 1 分钟"
+			}
 		}
 	}
 }

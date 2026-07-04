@@ -98,6 +98,21 @@
 			"unbindSuccess": "Minecraft アカウントのバインドを解除しました",
 			"unbindFailed": "Minecraft アカウントのバインド解除に失敗しました",
 			"unbindFailedDescription": "セッション、アカウント所有権、または時間をおいて再試行してください。"
+		},
+		"sessionHistory": {
+			"server": "サーバー",
+			"sessionLabel": "{index} 回目",
+			"sessionOpenedAt": "ログイン時刻",
+			"sessionClosedAt": "ログアウト時刻",
+			"stillOnline": "オンライン中",
+			"emptySessions": "表示できるログイン記録はまだありません。",
+			"loadFailed": "プレイヤーのオンライン記録を読み込めませんでした。",
+			"duration": {
+				"days": "{count}日",
+				"hours": "{count}時間",
+				"minutes": "{count}分",
+				"lessThanMinute": "1分未満"
+			}
 		}
 	}
 }

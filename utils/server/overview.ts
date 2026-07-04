@@ -77,6 +77,8 @@ export interface ServerOverviewLiveResponse {
 }
 
 export interface ServerOverviewPlayerPresenceSession {
+	serverId?: string | null
+	serverName?: string | null
 	openedAt: string
 	closedAt: string | null
 }

@@ -5,6 +5,7 @@ import {
 	normalizeIpAddressForDisplay,
 } from '../ip-location/ip-location'
 import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
+import { normalizePlayerSessionHistory } from '../minecraft/player-session-history'
 import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 
 const SORT_FIELDS = new Set([
@@ -680,4 +681,111 @@ export const listAdminMinecraftAccountOverviewCandidates = async () => {
 		},
 		orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
 	})
+}
+
+export const getAdminMinecraftAccountSessionHistory = async (
+	accountId: string,
+) => {
+	const account = await prisma.minecraftAccount.findUnique({
+		where: {
+			id: accountId,
+		},
+		include: adminMinecraftAccountInclude,
+	})
+
+	if (!account) {
+		return null
+	}
+
+	const enrichment = await readAccountEnrichment([account])
+	const accountEnrichment = enrichment.get(account.id) ?? {
+		luckPerms: null,
+		worldJoin: {
+			firstJoinedAt: null,
+			lastJoinedAt: null,
+		},
+		serverLinks: [],
+	}
+	const sessionPairs = new Map<string, Set<string>>()
+
+	for (const link of accountEnrichment.serverLinks) {
+		const uuids = sessionPairs.get(link.serverId) ?? new Set<string>()
+		uuids.add(link.uuid)
+		sessionPairs.set(link.serverId, uuids)
+	}
+
+	if (account.uuid) {
+		const globalUuids = sessionPairs.get('*') ?? new Set<string>()
+		globalUuids.add(account.uuid)
+		sessionPairs.set('*', globalUuids)
+	}
+
+	const sessionFilters = [...sessionPairs.entries()].flatMap(
+		([serverId, uuids]) => {
+			const uuidList = [...uuids]
+
+			if (uuidList.length === 0) {
+				return []
+			}
+
+			if (serverId === '*') {
+				return [
+					{
+						uuid: {
+							in: uuidList,
+						},
+					},
+				]
+			}
+
+			return [
+				{
+					serverId,
+					uuid: {
+						in: uuidList,
+					},
+				},
+			]
+		},
+	)
+	const sessions =
+		sessionFilters.length > 0
+			? await prisma.serverPlayerSession.findMany({
+					where: {
+						OR: sessionFilters,
+					},
+					orderBy: {
+						openedAt: 'desc',
+					},
+					select: {
+						serverId: true,
+						sessionId: true,
+						openedAt: true,
+						closedAt: true,
+						server: {
+							select: {
+								name: true,
+							},
+						},
+					},
+				})
+			: []
+
+	return {
+		account: {
+			id: account.id,
+			username: account.username,
+			normalizedUsername: account.normalizedUsername,
+			uuid: account.uuid,
+		},
+		sessions: await normalizePlayerSessionHistory(
+			sessions.map((session) => ({
+				serverId: session.serverId,
+				serverName: session.server?.name ?? null,
+				sessionId: session.sessionId,
+				openedAt: session.openedAt,
+				closedAt: session.closedAt,
+			})),
+		),
+	}
 }

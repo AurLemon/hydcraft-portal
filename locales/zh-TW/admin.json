@@ -582,8 +582,12 @@
 				"noDataEntries": "暫無"
 			},
 			"dataEntries": {
+				"loginHistory": "登入歷史",
 				"stats": "統計",
 				"advancements": "成就"
+			},
+			"sessionHistory": {
+				"allSessions": "全部登入記錄"
 			}
 		},
 		"users": {

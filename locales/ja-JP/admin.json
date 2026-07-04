@@ -582,8 +582,12 @@
 				"noDataEntries": "なし"
 			},
 			"dataEntries": {
+				"loginHistory": "ログイン履歴",
 				"stats": "統計",
 				"advancements": "進捗"
+			},
+			"sessionHistory": {
+				"allSessions": "すべてのログイン記録"
 			}
 		},
 		"users": {

@@ -359,6 +359,23 @@ export interface AdminMinecraftAccountServerLink {
 	hasAdvancements: boolean
 }
 
+export interface AdminMinecraftAccountSessionHistoryItem {
+	serverId: string
+	serverName: string | null
+	openedAt: string
+	closedAt: string | null
+}
+
+export interface AdminMinecraftAccountSessionHistoryResponse {
+	account: {
+		id: string
+		username: string
+		normalizedUsername: string
+		uuid: string | null
+	}
+	sessions: AdminMinecraftAccountSessionHistoryItem[]
+}
+
 export interface AdminMinecraftAccountsResponse {
 	items: AdminMinecraftAccountInfo[]
 	page: number

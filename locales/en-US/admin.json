@@ -572,8 +572,12 @@
 				"noDataEntries": "None"
 			},
 			"dataEntries": {
+				"loginHistory": "Login history",
 				"stats": "Stats",
 				"advancements": "Advancements"
+			},
+			"sessionHistory": {
+				"allSessions": "All session history"
 			}
 		},
 		"users": {

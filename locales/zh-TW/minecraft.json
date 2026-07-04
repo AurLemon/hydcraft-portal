@@ -98,6 +98,21 @@
 			"unbindSuccess": "Minecraft 帳號已解除綁定",
 			"unbindFailed": "解除綁定 Minecraft 帳號失敗",
 			"unbindFailedDescription": "請檢查登入狀態、帳號歸屬，或稍後再試。"
+		},
+		"sessionHistory": {
+			"server": "伺服器",
+			"sessionLabel": "第 {index} 次",
+			"sessionOpenedAt": "上線時間",
+			"sessionClosedAt": "離線時間",
+			"stillOnline": "仍在線",
+			"emptySessions": "暫時沒有可展示的上線記錄。",
+			"loadFailed": "玩家在線記錄暫時無法載入。",
+			"duration": {
+				"days": "{count}天",
+				"hours": "{count}小時",
+				"minutes": "{count}分鐘",
+				"lessThanMinute": "不足 1 分鐘"
+			}
 		}
 	}
 }

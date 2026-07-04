@@ -98,6 +98,21 @@
 			"unbindSuccess": "Minecraft account unbound",
 			"unbindFailed": "Failed to unbind Minecraft account",
 			"unbindFailedDescription": "Check your session, account ownership, or try again later."
+		},
+		"sessionHistory": {
+			"server": "Server",
+			"sessionLabel": "Session {index}",
+			"sessionOpenedAt": "Login Time",
+			"sessionClosedAt": "Logout Time",
+			"stillOnline": "Still online",
+			"emptySessions": "No session history is available yet.",
+			"loadFailed": "Unable to load player activity right now.",
+			"duration": {
+				"days": "{count}d",
+				"hours": "{count}h",
+				"minutes": "{count}m",
+				"lessThanMinute": "< 1m"
+			}
 		}
 	}
 }
