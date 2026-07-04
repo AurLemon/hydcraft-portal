@@ -44,6 +44,7 @@
 - 优先复用 `app.config.ts` 中的 Nuxt UI 主题配置，以及 `assets/styles/base/tailwind.css` 中的 design token，不要在页面里重新发明一套颜色、表面层级、尺寸语义。
 - 颜色、语义色、表面层级、字号与字体倾向，优先通过 token 与 class 表达，不要在局部组件里散落硬编码色值。
 - 对 Nuxt UI 组件的定制，优先走 theme / config / class 扩展，不要为了一个局部视觉点把整个组件手写替换掉。
+- 基础信息卡片默认优先使用 `rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950` 这套配色与圆角；只有在语义或视觉方向明确不同的时候再局部调整。
 
 ## Utils Directory Discipline
 

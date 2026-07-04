@@ -1,6 +1,7 @@
 <template>
 	<div class="flex flex-col gap-16">
 		<IntroHeroBanner />
+		<IntroRequirementsCard />
 		<IntroMarquee
 			:title="t('content.intro.ourWorks.title')"
 			:images="serverShowcaseImages"

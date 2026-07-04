@@ -196,7 +196,17 @@
 			},
 			"ourWorks": {
 				"title": "私たちの成果",
-				"imageAlt": "HydCraft 成果画像 {index}"
+				"imageAlt": "HydCraft 成果画像 {index}",
+				"requirements": {
+					"summaryPrefix": "サーバー向けの推奨メモリは",
+					"summaryMemory": "16GB",
+					"summaryMiddle": "以上で、端末は",
+					"summaryYear": "2020 年以降",
+					"summaryConnector": "かつ",
+					"summaryTier": "中級クラス以上",
+					"summarySuffix": "が望ましいです。",
+					"detail": "最低でも 8GB は欲しく、クライアントだけで 4GB は持っていかれるので、OS も少なくとも Windows 10 は前提です。Apple シリコンの MacBook なら何とか動きます。Windows ノートは CPU 次第で、7840HS 級ならかなり余裕があります。結局いちばん大事なのは CPU 性能で、Core i5 第 8 世代や Ryzen 5 3000 系以降だとかなり楽になります。古い環境でも絶対に起動不可というわけではなく、G4560 + 8GB + 内蔵グラフィックでもサーバーに入れている人はいますが、そこは我慢が必要です。"
+				}
 			},
 			"goodAndBad": {
 				"title": "良いものもあれば悪いものもある",

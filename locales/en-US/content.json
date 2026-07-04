@@ -196,7 +196,17 @@
 			},
 			"ourWorks": {
 				"title": "Our Works",
-				"imageAlt": "HydCraft showcase image {index}"
+				"imageAlt": "HydCraft showcase image {index}",
+				"requirements": {
+					"summaryPrefix": "We recommend at least",
+					"summaryMemory": "16 GB",
+					"summaryMiddle": "of RAM, and ideally a",
+					"summaryYear": "2020 or newer",
+					"summaryConnector": "device in the",
+					"summaryTier": "mid-range or above",
+					"summarySuffix": "tier.",
+					"detail": "Realistically, 8 GB is the bare minimum, because the client alone wants at least 4 GB, and the system should be at least Windows 10. A MacBook with Apple silicon can get by. On Windows laptops, the CPU matters far more, and something like a 7840HS is more than enough. CPU performance is the real key here. A Core i5 8th gen or Ryzen 5 3000 series and up will feel much better. Older hardware is not completely locked out, though. One player can even get into the server on a G4560 with 8 GB RAM and integrated graphics. You just have to tolerate the rough edges."
+				}
 			},
 			"goodAndBad": {
 				"title": "Some Good, Some Bad",

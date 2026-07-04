@@ -191,7 +191,17 @@
 			},
 			"ourWorks": {
 				"title": "我们的成果",
-				"imageAlt": "HydCraft 成果展示图 {index}"
+				"imageAlt": "HydCraft 成果展示图 {index}",
+				"requirements": {
+					"summaryPrefix": "服务器推荐计算机内存不低于",
+					"summaryMemory": "16G",
+					"summaryMiddle": "，设备最好是",
+					"summaryYear": "2020 年以后",
+					"summaryConnector": "且定位",
+					"summaryTier": "中端及以上",
+					"summarySuffix": "。",
+					"detail": "内存至少也要 8G，因为客户端至少要分走 4G 内存，系统至少 Windows 10。MacBook M 系列凑合能跑，Windows 笔记本看 CPU，7840HS 这种非常够了。CPU 性能才是核心，Core i5 8 代或者 Ryzen 5 3000 系往上会好很多。老平台不是打不开，有玩家用 G4560 + 8G + 核显都能进服，就是要忍忍。"
+				}
 			},
 			"goodAndBad": {
 				"title": "有好的肯定也有坏的",
