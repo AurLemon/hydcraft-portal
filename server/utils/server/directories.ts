@@ -426,6 +426,97 @@ const summarizeDirectoryPlayTime = (
 	)
 }
 
+const compareNullableStrings = (
+	left: string | null,
+	right: string | null,
+): number => {
+	if (left === right) {
+		return 0
+	}
+
+	if (left === null) {
+		return 1
+	}
+
+	if (right === null) {
+		return -1
+	}
+
+	return left.localeCompare(right)
+}
+
+const compareDirectoryPlayerPlayTime = (
+	left: ServerDirectoryPlayerItem,
+	right: ServerDirectoryPlayerItem,
+	direction: 'asc' | 'desc',
+): number => {
+	const leftPlayTime = left.hasStats ? left.playTimeTicks : null
+	const rightPlayTime = right.hasStats ? right.playTimeTicks : null
+
+	if (leftPlayTime === null && rightPlayTime === null) {
+		const usernameResult = left.username.localeCompare(right.username)
+		return usernameResult || compareNullableStrings(left.uuid, right.uuid)
+	}
+
+	if (leftPlayTime === null) {
+		return 1
+	}
+
+	if (rightPlayTime === null) {
+		return -1
+	}
+
+	if (leftPlayTime !== rightPlayTime) {
+		return direction === 'asc'
+			? leftPlayTime - rightPlayTime
+			: rightPlayTime - leftPlayTime
+	}
+
+	const usernameResult = left.username.localeCompare(right.username)
+	return usernameResult || compareNullableStrings(left.uuid, right.uuid)
+}
+
+const buildDirectoryPlayerItems = (
+	accounts: PublicPlayerEntity[],
+	players: PublicServerPlayerEntity[],
+	luckPermsResolver: ReturnType<typeof createLuckPermsPrimaryGroupResolver>,
+): ServerDirectoryPlayerItem[] =>
+	accounts.map((account) => {
+		const summary = buildMinecraftAccountSummary(
+			account,
+			players,
+			[],
+			luckPermsResolver,
+		)
+		const playTimeSummary = summarizeDirectoryPlayTime(summary)
+		const linkedUser =
+			account.user && canExposeBoundUser(account.user.privacy)
+				? {
+						username: account.user.username,
+						displayName: account.user.displayName,
+						avatarUrl: account.user.avatarUrl,
+					}
+				: null
+		const mcid =
+			summary.playerIdentity.playerId || summary.username || account.username
+
+		return {
+			id: account.id,
+			mcid,
+			username: summary.username,
+			uuid: summary.uuid,
+			isPrimary: summary.isPrimary,
+			luckPermsPrimaryGroup: summary.luckPermsPrimaryGroup,
+			authMeRegisteredAt:
+				account.authMeAccount?.registeredAt?.toISOString() ?? null,
+			authMeLastLoginAt:
+				account.authMeAccount?.lastLoginAt?.toISOString() ?? null,
+			playTimeTicks: playTimeSummary.playTimeTicks,
+			hasStats: playTimeSummary.hasStats,
+			linkedUser,
+		}
+	})
+
 export const listPublicServerPlayers = async (input: {
 	page: number
 	pageSize: number
@@ -519,18 +610,52 @@ export const listPublicServerPlayers = async (input: {
 				}
 			: {}),
 	}
-	const [total, accounts] = await Promise.all([
-		prisma.minecraftAccount.count({
+	const sortDirection = input.sortDirection ?? 'desc'
+	const total = await prisma.minecraftAccount.count({
+		where,
+	})
+
+	if (input.sortField === 'playTimeTicks') {
+		const accounts = await prisma.minecraftAccount.findMany({
 			where,
-		}),
-		prisma.minecraftAccount.findMany({
-			where,
-			orderBy: buildPlayerOrderBy(input.sortField, input.sortDirection),
-			skip: (input.page - 1) * input.pageSize,
-			take: input.pageSize,
+			orderBy: buildPlayerOrderBy('username', 'asc'),
 			include: publicPlayerInclude,
-		}),
-	])
+		})
+		const players = await readDirectoryServerPlayers(accounts)
+		const luckPermsResolver = createLuckPermsPrimaryGroupResolver(
+			await readLuckPermsSnapshotBundle({
+				uuids: players.map((player) => player.uuid),
+				normalizedUsernames: accounts.map(
+					(account) => account.normalizedUsername,
+				),
+			}),
+		)
+		const items = buildDirectoryPlayerItems(
+			accounts,
+			players,
+			luckPermsResolver,
+		)
+			.sort((left, right) =>
+				compareDirectoryPlayerPlayTime(left, right, sortDirection),
+			)
+			.slice((input.page - 1) * input.pageSize, input.page * input.pageSize)
+
+		return {
+			items,
+			page: input.page,
+			pageSize: input.pageSize,
+			total,
+			pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+		}
+	}
+
+	const accounts = await prisma.minecraftAccount.findMany({
+		where,
+		orderBy: buildPlayerOrderBy(input.sortField, input.sortDirection),
+		skip: (input.page - 1) * input.pageSize,
+		take: input.pageSize,
+		include: publicPlayerInclude,
+	})
 	const players = await readDirectoryServerPlayers(accounts)
 	const luckPermsResolver = createLuckPermsPrimaryGroupResolver(
 		await readLuckPermsSnapshotBundle({
@@ -540,41 +665,7 @@ export const listPublicServerPlayers = async (input: {
 			),
 		}),
 	)
-	const items: ServerDirectoryPlayerItem[] = accounts.map((account) => {
-		const summary = buildMinecraftAccountSummary(
-			account,
-			players,
-			[],
-			luckPermsResolver,
-		)
-		const playTimeSummary = summarizeDirectoryPlayTime(summary)
-		const linkedUser =
-			account.user && canExposeBoundUser(account.user.privacy)
-				? {
-						username: account.user.username,
-						displayName: account.user.displayName,
-						avatarUrl: account.user.avatarUrl,
-					}
-				: null
-		const mcid =
-			summary.playerIdentity.playerId || summary.username || account.username
-
-		return {
-			id: account.id,
-			mcid,
-			username: summary.username,
-			uuid: summary.uuid,
-			isPrimary: summary.isPrimary,
-			luckPermsPrimaryGroup: summary.luckPermsPrimaryGroup,
-			authMeRegisteredAt:
-				account.authMeAccount?.registeredAt?.toISOString() ?? null,
-			authMeLastLoginAt:
-				account.authMeAccount?.lastLoginAt?.toISOString() ?? null,
-			playTimeTicks: playTimeSummary.playTimeTicks,
-			hasStats: playTimeSummary.hasStats,
-			linkedUser,
-		}
-	})
+	const items = buildDirectoryPlayerItems(accounts, players, luckPermsResolver)
 
 	return {
 		items,

@@ -256,6 +256,10 @@ const sortFieldItems = [
 		value: 'authMeLastLoginAt',
 	},
 	{
+		label: t('content.serverOverview.directories.players.fields.playTime'),
+		value: 'playTimeTicks',
+	},
+	{
 		label: t('content.serverOverview.directories.players.fields.player'),
 		value: 'username',
 	},
