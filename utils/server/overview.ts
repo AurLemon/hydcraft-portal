@@ -75,3 +75,23 @@ export interface ServerOverviewLiveResponse {
 	totalUsers: number
 	totalPlayers: number
 }
+
+export interface ServerOverviewPlayerPresenceSession {
+	openedAt: string
+	closedAt: string | null
+}
+
+export interface ServerOverviewPlayerPresenceResponse {
+	server: {
+		serverId: string
+		name: string
+	}
+	player: {
+		uuid: string
+		username: string | null
+		online: boolean
+	}
+	currentSessionOpenedAt: string | null
+	totalOnlineSeconds: number
+	recentSessions: ServerOverviewPlayerPresenceSession[]
+}

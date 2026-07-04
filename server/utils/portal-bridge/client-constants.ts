@@ -9,7 +9,7 @@ export const RECONNECT_MAX_DELAY_MS = 60_000
 export const RECONNECT_JITTER_RATIO = 0.2
 // 最大重试次数；null = 无限重试。达到上限后 RetryController 置 manualRequired，停止调度。
 export const RECONNECT_MAX_ATTEMPTS: number | null = null
-export const PORTAL_BRIDGE_PLAYER_SYNC_INTERVAL_SECONDS = 60
+export const PORTAL_BRIDGE_PLAYER_SYNC_INTERVAL_SECONDS = 10
 export const DEFAULT_HEARTBEAT_INTERVAL_SECONDS = 60
 // liveness 看门狗阈值 = 协商心跳间隔 × 此倍数。任意消息（不限于心跳）都会重置计时。
 // 取 2.5× 留抖动余量（业界 liveness 通常 2-3 倍心跳）。

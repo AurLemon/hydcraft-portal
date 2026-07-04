@@ -17,6 +17,26 @@
 				},
 				"bridge": {
 					"selectServer": "選擇伺服器",
+					"playerDialog": {
+						"title": "{player} 的在線記錄",
+						"minecraftId": "Minecraft ID",
+						"server": "所在伺服器",
+						"onlineSince": "本次上線時間",
+						"totalOnlineTime": "總上線時長",
+						"recentSessions": "最近 5 次上線記錄",
+						"sessionLabel": "第 {index} 次",
+						"sessionOpenedAt": "上線時間",
+						"sessionClosedAt": "離線時間",
+						"stillOnline": "仍在線",
+						"emptySessions": "暫時沒有可展示的上線記錄。",
+						"loadFailed": "玩家在線記錄暫時無法載入。",
+						"duration": {
+							"days": "{count}天",
+							"hours": "{count}小時",
+							"minutes": "{count}分鐘",
+							"lessThanMinute": "不足 1 分鐘"
+						}
+					},
 					"links": {
 						"charter": "伺服器章程",
 						"communityCovenant": "社群公約",

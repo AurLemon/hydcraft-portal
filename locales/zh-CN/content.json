@@ -17,6 +17,26 @@
 				},
 				"bridge": {
 					"selectServer": "选择服务器",
+					"playerDialog": {
+						"title": "{player} 的在线记录",
+						"minecraftId": "Minecraft ID",
+						"server": "所在服务器",
+						"onlineSince": "本次上线时间",
+						"totalOnlineTime": "总上线时长",
+						"recentSessions": "最近 5 次上线记录",
+						"sessionLabel": "第 {index} 次",
+						"sessionOpenedAt": "上线时间",
+						"sessionClosedAt": "离线时间",
+						"stillOnline": "仍在线",
+						"emptySessions": "暂时没有可展示的上线记录。",
+						"loadFailed": "玩家在线记录暂时无法加载。",
+						"duration": {
+							"days": "{count}天",
+							"hours": "{count}小时",
+							"minutes": "{count}分钟",
+							"lessThanMinute": "不足 1 分钟"
+						}
+					},
 					"links": {
 						"charter": "服务器章程",
 						"communityCovenant": "社区公约",

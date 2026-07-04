@@ -210,7 +210,7 @@ watch(
 onMounted(() => {
 	refreshTimer = setInterval(() => {
 		void refreshLiveOverview()
-	}, 60_000)
+	}, 10_000)
 })
 
 onBeforeUnmount(() => {

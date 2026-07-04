@@ -17,6 +17,26 @@
 				},
 				"bridge": {
 					"selectServer": "Select server",
+					"playerDialog": {
+						"title": "{player}'s Online Activity",
+						"minecraftId": "Minecraft ID",
+						"server": "Server",
+						"onlineSince": "Online Since",
+						"totalOnlineTime": "Total Online Time",
+						"recentSessions": "Recent 5 Sessions",
+						"sessionLabel": "Session {index}",
+						"sessionOpenedAt": "Login Time",
+						"sessionClosedAt": "Logout Time",
+						"stillOnline": "Still online",
+						"emptySessions": "No recent session history is available yet.",
+						"loadFailed": "Unable to load player activity right now.",
+						"duration": {
+							"days": "{count}d",
+							"hours": "{count}h",
+							"minutes": "{count}m",
+							"lessThanMinute": "< 1m"
+						}
+					},
 					"links": {
 						"charter": "Server Charter",
 						"communityCovenant": "Community Covenant",

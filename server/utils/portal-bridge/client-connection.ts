@@ -75,6 +75,7 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 	private resumeSeqCursor = 0
 	private resumeSeqCursorDirty = false
 	private resumeSeqFlushTimer: NodeJS.Timeout | null = null
+	private messageProcessingChain: Promise<void> = Promise.resolve()
 	private readonly pendingCommandWaiters = new Map<
 		string,
 		PendingCommandWaiter
@@ -318,7 +319,17 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 				return
 			}
 
-			void this.handleMessage(event.data)
+			this.messageProcessingChain = this.messageProcessingChain
+				.then(() => this.handleMessage(event.data))
+				.catch((error) => {
+					this.closeReason = 'unexpected'
+					void this.reportConnectionError({
+						fingerprint: `message-processing:${String(error)}`,
+						message: 'message processing failed',
+						persistedError: 'PortalBridge message processing failed',
+						error,
+					})
+				})
 		})
 
 		socket.addEventListener('close', (event) => {

@@ -85,19 +85,31 @@
 
 						<div
 							v-if="headItems.length"
-							class="flex max-w-[55%] flex-wrap justify-end gap-2"
+							class="flex max-w-[50%] flex-wrap content-start justify-end gap-1.5"
 						>
-							<SkeletonImage
+							<UTooltip
 								v-for="player in headItems"
 								:key="player.uuid"
-								:src="
-									getMinecraftHeadRendererUrl(player.username || player.uuid)
-								"
-								:alt="player.username || player.uuid"
-								class="size-8 overflow-hidden rounded-lg"
-								image-class="block size-8 object-cover"
-								skeleton-class="rounded-lg"
-							/>
+								:text="player.username || player.uuid"
+							>
+								<button
+									type="button"
+									class="rounded-md transition hover:opacity-85 focus:outline-none"
+									@click="openPlayerPresence(player)"
+								>
+									<SkeletonImage
+										:src="
+											getMinecraftHeadRendererUrl(
+												player.username || player.uuid,
+											)
+										"
+										:alt="player.username || player.uuid"
+										class="size-6 overflow-hidden rounded-md drop-shadow"
+										image-class="block size-6 object-cover"
+										skeleton-class="rounded-lg"
+									/>
+								</button>
+							</UTooltip>
 						</div>
 					</div>
 				</div>
@@ -150,12 +162,21 @@
 		>
 			{{ t('content.serverOverview.states.emptyServers') }}
 		</div>
+
+		<ServerOverviewPlayerPresenceModal
+			v-model:open="playerPresenceOpen"
+			:server-id="selectedServer?.serverId ?? null"
+			:player="selectedPlayer"
+		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
-import type { ServerOverviewServerItem } from '~/utils/server/overview'
+import type {
+	ServerOverviewObservedPlayer,
+	ServerOverviewServerItem,
+} from '~/utils/server/overview'
 
 interface Props {
 	servers: ServerOverviewServerItem[]
@@ -170,6 +191,8 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const localePath = useLocalePath()
 const serverMenuOpen = ref(false)
+const playerPresenceOpen = ref(false)
+const selectedPlayer = ref<ServerOverviewObservedPlayer | null>(null)
 
 const selectedServer = computed(
 	() =>
@@ -228,6 +251,11 @@ const statusDotClass = computed(() => {
 const headItems = computed(
 	() => selectedServer.value?.bridgeStatus.observedPlayers ?? [],
 )
+
+const openPlayerPresence = (player: ServerOverviewObservedPlayer): void => {
+	selectedPlayer.value = player
+	playerPresenceOpen.value = true
+}
 
 const mapLinkItems = computed(() => [
 	{
