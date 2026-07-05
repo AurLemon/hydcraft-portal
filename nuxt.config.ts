@@ -213,11 +213,31 @@ export default defineNuxtConfig({
 	},
 	sitemap: {
 		autoLastmod: true,
-		exclude: ['/me/**', '/admin/**'],
+		exclude: [
+			'/me/**',
+			'/admin/**',
+			'/login',
+			'/register',
+			'/forgot-password',
+			'/reset-password',
+			'/minecraft-accounts',
+			'/profile',
+		],
 	},
 	robots: {
 		sitemap: '/sitemap.xml',
-		disallow: ['/me', '/me/**', '/admin', '/admin/**'],
+		disallow: [
+			'/me',
+			'/me/**',
+			'/admin',
+			'/admin/**',
+			'/login',
+			'/register',
+			'/forgot-password',
+			'/reset-password',
+			'/minecraft-accounts',
+			'/profile',
+		],
 	},
 	linkChecker: {
 		failOnError: true,

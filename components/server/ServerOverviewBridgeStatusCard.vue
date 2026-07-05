@@ -92,10 +92,10 @@
 								:key="player.uuid"
 								:text="player.username || player.uuid"
 							>
-								<button
-									type="button"
-									class="rounded-md transition hover:opacity-85 focus:outline-none"
-									@click="openPlayerPresence(player)"
+								<NuxtLink
+									v-if="playerLink(player)"
+									:to="playerLink(player)"
+									class="block rounded-md transition hover:opacity-85 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
 									<SkeletonImage
 										:src="
@@ -108,7 +108,20 @@
 										image-class="block size-6 object-cover"
 										skeleton-class="rounded-lg"
 									/>
-								</button>
+								</NuxtLink>
+								<span v-else class="block rounded-md">
+									<SkeletonImage
+										:src="
+											getMinecraftHeadRendererUrl(
+												player.username || player.uuid,
+											)
+										"
+										:alt="player.username || player.uuid"
+										class="size-6 overflow-hidden rounded-md drop-shadow"
+										image-class="block size-6 object-cover"
+										skeleton-class="rounded-lg"
+									/>
+								</span>
 							</UTooltip>
 						</div>
 					</div>
@@ -162,12 +175,6 @@
 		>
 			{{ t('content.serverOverview.states.emptyServers') }}
 		</div>
-
-		<ServerOverviewPlayerPresenceModal
-			v-model:open="playerPresenceOpen"
-			:server-id="selectedServer?.serverId ?? null"
-			:player="selectedPlayer"
-		/>
 	</div>
 </template>
 
@@ -191,8 +198,6 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const localePath = useLocalePath()
 const serverMenuOpen = ref(false)
-const playerPresenceOpen = ref(false)
-const selectedPlayer = ref<ServerOverviewObservedPlayer | null>(null)
 
 const selectedServer = computed(
 	() =>
@@ -252,9 +257,10 @@ const headItems = computed(
 	() => selectedServer.value?.bridgeStatus.observedPlayers ?? [],
 )
 
-const openPlayerPresence = (player: ServerOverviewObservedPlayer): void => {
-	selectedPlayer.value = player
-	playerPresenceOpen.value = true
+const playerLink = (player: ServerOverviewObservedPlayer): string | null => {
+	const mcid = player.mcid?.trim()
+
+	return mcid ? localePath(`/players/${mcid}`) : null
 }
 
 const mapLinkItems = computed(() => [

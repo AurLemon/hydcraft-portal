@@ -53,8 +53,26 @@ const {
 const mobileRouteListInner = ref<HTMLElement | null>(null)
 const mobileRouteListHeight = ref<number | null>(null)
 
+type MobileActionKind = 'back' | 'route' | null
+
 let mobileRouteListAnimationFrame: number | null = null
 let mobileRouteListResizeObserver: ResizeObserver | null = null
+
+const currentMobileAction = computed<MobileActionKind>(() => {
+	if (canGoBack.value) {
+		return 'back'
+	}
+
+	if (displayedGroup.value.key !== routeGroupKey.value) {
+		return 'route'
+	}
+
+	return null
+})
+
+const hasCurrentMobileAction = computed(
+	() => currentMobileAction.value !== null,
+)
 
 const syncMobileRouteListHeight = () => {
 	const inner = mobileRouteListInner.value
@@ -427,53 +445,38 @@ onBeforeUnmount(() => {
 							</Transition>
 						</div>
 
-						<div class="flex items-center">
-							<div
-								class="overflow-hidden transition-[width,margin-right,opacity] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-								:class="
-									canGoBack ? 'mr-2 w-7 opacity-80' : 'mr-0 w-0 opacity-0'
-								"
-							>
-								<button
-									type="button"
-									class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-[opacity,transform] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-									:class="
-										canGoBack
-											? 'pointer-events-auto translate-x-0 opacity-100'
-											: 'pointer-events-none -translate-x-2 opacity-0'
-									"
-									:aria-hidden="!canGoBack"
-									:aria-label="backButtonLabel"
-									:tabindex="canGoBack ? 0 : -1"
-									@click="showParentMenu"
-								>
-									<UIcon name="i-lucide-arrow-left" class="h-5 w-5" />
-								</button>
-							</div>
+						<div
+							class="overflow-hidden transition-[width,margin-right,opacity] duration-[180ms] ease-out"
+							:class="
+								hasCurrentMobileAction
+									? 'mr-2 w-7 opacity-80'
+									: 'mr-0 w-0 opacity-0'
+							"
+						>
+							<div class="relative h-7 w-7">
+								<Transition name="header-mobile-action" mode="out-in">
+									<button
+										v-if="currentMobileAction === 'back'"
+										key="back"
+										type="button"
+										class="absolute inset-0 flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+										:aria-label="backButtonLabel"
+										@click="showParentMenu"
+									>
+										<UIcon name="i-lucide-arrow-left" class="h-5 w-5" />
+									</button>
 
-							<div
-								class="overflow-hidden transition-[width,opacity] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-								:class="
-									displayedGroup.key !== routeGroupKey
-										? 'w-7 opacity-80'
-										: 'w-0 opacity-0'
-								"
-							>
-								<button
-									type="button"
-									class="flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white transition-[opacity,transform] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-									:class="
-										displayedGroup.key !== routeGroupKey
-											? 'pointer-events-auto translate-x-0 opacity-100'
-											: 'pointer-events-none -translate-x-2 opacity-0'
-									"
-									:aria-hidden="displayedGroup.key === routeGroupKey"
-									:aria-label="t('header.nav.currentGroup')"
-									:tabindex="displayedGroup.key !== routeGroupKey ? 0 : -1"
-									@click="showRouteMenu"
-								>
-									<UIcon name="i-lucide-corner-down-right" class="h-5 w-5" />
-								</button>
+									<button
+										v-else-if="currentMobileAction === 'route'"
+										key="route"
+										type="button"
+										class="absolute inset-0 flex h-7 w-7 items-center justify-center border-0 bg-transparent p-0 text-white hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+										:aria-label="t('header.nav.currentGroup')"
+										@click="showRouteMenu"
+									>
+										<UIcon name="i-lucide-corner-down-right" class="h-5 w-5" />
+									</button>
+								</Transition>
 							</div>
 						</div>
 					</div>
@@ -525,6 +528,34 @@ onBeforeUnmount(() => {
 .header-menu-right-action-enter-to,
 .header-menu-right-action-leave-from {
 	opacity: 0.8;
+}
+
+.header-mobile-action-enter-active {
+	transition:
+		opacity 180ms ease-out,
+		transform 180ms ease-out;
+}
+
+.header-mobile-action-leave-active {
+	transition:
+		opacity 140ms ease-in,
+		transform 140ms ease-in;
+}
+
+.header-mobile-action-enter-from {
+	opacity: 0;
+	transform: translateX(5px);
+}
+
+.header-mobile-action-leave-to {
+	opacity: 0;
+	transform: translateX(-5px);
+}
+
+.header-mobile-action-enter-to,
+.header-mobile-action-leave-from {
+	opacity: 1;
+	transform: translateX(0);
 }
 
 @keyframes mobile-menu-pop-in {

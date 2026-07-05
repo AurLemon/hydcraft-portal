@@ -22,6 +22,7 @@
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:studio": "prisma studio",
 		"test:portal-bridge": "tsx tests/portal-bridge/schema-smoke.ts",
+		"test:cropper": "tsx tests/cropper/geometry-smoke.ts",
 		"sync:authme": "tsx scripts/sync-external.ts authme",
 		"sync:luckperms": "tsx scripts/sync-external.ts luckperms",
 		"sync:external": "tsx scripts/sync-external.ts all",

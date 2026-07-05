@@ -14,6 +14,7 @@ export const DEFAULT_SERVER_OVERVIEW_PLAYER_ACCENT: Readonly<ServerOverviewRgbCo
 export interface ServerOverviewObservedPlayer {
 	uuid: string
 	username: string | null
+	mcid: string | null
 }
 
 export interface ServerOverviewOnlineHistoryPoint {
@@ -74,26 +75,4 @@ export interface ServerOverviewLiveResponse {
 	defaultServerId: string | null
 	totalUsers: number
 	totalPlayers: number
-}
-
-export interface ServerOverviewPlayerPresenceSession {
-	serverId?: string | null
-	serverName?: string | null
-	openedAt: string
-	closedAt: string | null
-}
-
-export interface ServerOverviewPlayerPresenceResponse {
-	server: {
-		serverId: string
-		name: string
-	}
-	player: {
-		uuid: string
-		username: string | null
-		online: boolean
-	}
-	currentSessionOpenedAt: string | null
-	totalOnlineSeconds: number
-	recentSessions: ServerOverviewPlayerPresenceSession[]
 }

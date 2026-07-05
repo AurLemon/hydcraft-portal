@@ -18,8 +18,12 @@
 			>
 				<div class="flex flex-col items-start gap-2">
 					<UBadge
-						class="gap-1.5"
-						:color="isOnline ? 'success' : 'neutral'"
+						class="gap-1.5 text-white"
+						:class="
+							isOnline
+								? '!bg-emerald-500 !text-white'
+								: '!bg-slate-500 !text-white'
+						"
 						variant="solid"
 					>
 						<span
@@ -33,7 +37,11 @@
 								: t('minecraftAccounts.identity.offline')
 						}}
 					</UBadge>
-					<UBadge v-if="selectedAccount.isPrimary" color="primary">
+					<UBadge
+						v-if="selectedAccount.isPrimary"
+						class="!bg-sky-500 !text-white"
+						variant="solid"
+					>
 						{{ t('minecraftAccounts.badges.primary') }}
 					</UBadge>
 				</div>

@@ -34,7 +34,7 @@ const readPlayerCount = (payload: unknown): number | null => {
 
 const readObservedPlayers = (
 	payload: unknown,
-): Array<{ uuid: string; username: string | null }> => {
+): Array<{ uuid: string; username: string | null; mcid: string | null }> => {
 	if (!payload || typeof payload !== 'object') {
 		return []
 	}
@@ -61,6 +61,11 @@ const readObservedPlayers = (
 			{
 				uuid,
 				username: typeof record.username === 'string' ? record.username : null,
+				mcid:
+					typeof record.username === 'string' &&
+					record.username.trim().length > 0
+						? record.username
+						: null,
 			},
 		]
 	})
