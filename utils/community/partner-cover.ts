@@ -19,6 +19,9 @@ const getPartnerCoverIndex = (seed: string): number => {
 	return hash % partnerFallbackCovers.length
 }
 
+const getPartnerFallbackCover = (seed: string): string =>
+	partnerFallbackCovers[getPartnerCoverIndex(seed)] ?? partnerFallbackCovers[0]
+
 export const getPartnerDisplayCover = (
 	partner: Pick<PartnerSummary, 'id' | 'name' | 'coverUrl'> | null | undefined,
 ): string => {
@@ -27,5 +30,5 @@ export const getPartnerDisplayCover = (
 	}
 
 	const seed = partner?.id || partner?.name || 'partner-cover'
-	return partnerFallbackCovers[getPartnerCoverIndex(seed)]
+	return getPartnerFallbackCover(seed)
 }
