@@ -4,12 +4,14 @@ import { Pool } from 'pg'
 import {
 	PrismaClient,
 	type FriendLink,
-	type FriendLinkCategory,
 	type PartnerEntry,
-	type PartnerSection,
-} from '../generated/prisma/client'
-import { hashPassword } from '../server/utils/auth/password'
-import { productionInitConfig } from './config/production-init'
+} from '../generated/prisma/client.js'
+import type {
+	FriendLinkCategory,
+	PartnerSection,
+} from '../generated/prisma/enums.js'
+import { hashPassword } from '../server/utils/auth/password.js'
+import { productionInitConfig } from './config/production-init.js'
 
 interface CliOptions {
 	scopes: Set<ProductionInitScope>

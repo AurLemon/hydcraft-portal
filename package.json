@@ -5,6 +5,7 @@
 	"packageManager": "pnpm@10.14.0",
 	"scripts": {
 		"build": "nuxt build",
+		"build:production-init-cli": "tsc -p tsconfig.production-init.json",
 		"dev": "nuxt dev",
 		"format": "prettier --write .",
 		"generate": "nuxt generate",
@@ -13,6 +14,7 @@
 		"preview": "nuxt preview",
 		"mail:preview": "tsx scripts/preview-mail.ts",
 		"data:production-init": "tsx scripts/production-init.ts",
+		"data:production-init:artifact": "node dist-cli/scripts/production-init.js",
 		"data:dev-reset": "tsx scripts/reset-db.ts",
 		"prisma:deploy": "prisma migrate deploy",
 		"prisma:seed": "tsx prisma/seed.ts",

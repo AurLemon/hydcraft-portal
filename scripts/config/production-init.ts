@@ -5,7 +5,7 @@ import type {
 	UserGender,
 	UserProfileLanguage,
 	UserRole,
-} from '../../generated/prisma/client'
+} from '../../generated/prisma/enums.js'
 
 export interface ProductionOwnerConfig {
 	handle: string

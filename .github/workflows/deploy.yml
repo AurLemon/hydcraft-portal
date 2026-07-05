@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      run_production_init:
+        description: 'Run production init after migrations on the remote host'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -71,6 +76,7 @@ jobs:
               corepack prepare pnpm@10.14.0 --activate
               pnpm install --frozen-lockfile
               pnpm exec prisma generate
+              pnpm build:production-init-cli
 
               if [ -n "$DEPLOY_RUNTIME_ENV" ]; then
                 printf "%s\n" "$DEPLOY_RUNTIME_ENV" > .env
@@ -82,6 +88,7 @@ jobs:
               mkdir -p /app/deploy-artifact
 
               cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
+              cp -R /app/dist-cli /app/deploy-artifact/dist-cli
               cp -R /app/prisma /app/deploy-artifact/prisma
               cp -R /app/.output/public \
                     /app/.output/server \
@@ -93,6 +100,7 @@ jobs:
               pnpm install --prod --frozen-lockfile --dir /app/deploy-artifact
 
               test -f /app/deploy-artifact/package.json
+              test -f /app/deploy-artifact/dist-cli/scripts/production-init.js
               test -f /app/deploy-artifact/prisma.config.ts
               test -f /app/deploy-artifact/prisma/migrations/migration_lock.toml
               test -f /app/deploy-artifact/node_modules/.bin/prisma
@@ -155,7 +163,8 @@ jobs:
             REMOTE_TEMP_DIR='$REMOTE_TEMP_DIR' \
             PM2_APP_NAME='$PM2_APP_NAME' \
             DEPLOY_RUNTIME_ENV='$DEPLOY_RUNTIME_ENV' \
-            BASELINE_EXISTING_DB='${{ github.event.inputs.baseline_existing_db || 'false' }}'; bash -s" <<'EOF'
+            BASELINE_EXISTING_DB='${{ github.event.inputs.baseline_existing_db || 'false' }}' \
+            RUN_PRODUCTION_INIT='${{ github.event.inputs.run_production_init || 'false' }}'; bash -s" <<'EOF'
           set -euo pipefail
           export PATH="$HOME/.local/bin:$PATH"
           export DEPLOY_TOOL_ROOT="$HOME/.local/share/hydcraft-deploy"
@@ -231,6 +240,10 @@ jobs:
           fi
 
           pnpm prisma:deploy
+
+          if [ "$RUN_PRODUCTION_INIT" = "true" ]; then
+            node ./dist-cli/scripts/production-init.js
+          fi
 
           if pm2 describe "$PM2_APP_NAME" >/dev/null 2>&1; then
             pm2 restart "$PM2_APP_NAME" --update-env

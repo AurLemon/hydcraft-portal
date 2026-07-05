@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"rootDir": ".",
+		"outDir": "dist-cli",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"declaration": false,
+		"sourceMap": false,
+		"verbatimModuleSyntax": true
+	},
+	"include": [
+		"generated/prisma/**/*.ts",
+		"scripts/production-init.ts",
+		"scripts/config/production-init.ts",
+		"server/utils/auth/password.ts"
+	]
+}
