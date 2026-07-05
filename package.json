@@ -37,6 +37,7 @@
 		"cos-nodejs-sdk-v5": "^2.15.4",
 		"cropperjs": "^2.1.1",
 		"dayjs": "^1.11.13",
+		"dotenv": "^17.4.2",
 		"ip2region.js": "^3.1.8",
 		"leaflet": "^1.9.4",
 		"lunar-typescript": "^1.8.6",

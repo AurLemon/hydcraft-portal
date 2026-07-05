@@ -24,8 +24,13 @@ jobs:
       # BACKEND_DEPLOY_SSH_PRIVATE_KEY
       # BACKEND_PM2_APP_NAME
       # ARTIFACT_BUCKET
+      #   Example: hydcraft-portal-artifact-1254268741
       # ARTIFACT_UPLOAD_ENDPOINT
+      #   Example: cos.ap-shanghai.myqcloud.com
+      #   Do not include the bucket name or https://
       # ARTIFACT_DOWNLOAD_ENDPOINT
+      #   Example: cos.ap-shanghai.myqcloud.com
+      #   Do not include the bucket name or https://
       # COS_ACCESS_KEY_ID
       # COS_SECRET_ACCESS_KEY
       #
@@ -153,8 +158,42 @@ jobs:
           export PM2_APP_NAME="$PM2_APP_NAME"
           export DEPLOY_RUNTIME_ENV="$DEPLOY_RUNTIME_ENV"
           export BASELINE_EXISTING_DB="${{ github.event.inputs.baseline_existing_db || 'false' }}"
+          export PATH="$HOME/.local/bin:$PATH"
 
           mkdir -p "$REMOTE_DEPLOY_PATH"
+          mkdir -p "$REMOTE_TEMP_DIR"
+
+          if ! command -v node >/dev/null 2>&1; then
+            echo "DEPLOY_RUNTIME_MISSING_NODE: node is required on remote host" >&2
+            exit 1
+          fi
+
+          if ! command -v python3 >/dev/null 2>&1; then
+            echo "DEPLOY_RUNTIME_MISSING_PYTHON3: python3 is required on remote host" >&2
+            exit 1
+          fi
+
+          if ! command -v pip3 >/dev/null 2>&1; then
+            python3 -m ensurepip --upgrade >/dev/null 2>&1 || true
+          fi
+
+          if ! command -v coscmd >/dev/null 2>&1; then
+            python3 -m pip install --user -U coscmd
+            hash -r
+          fi
+
+          if ! command -v pnpm >/dev/null 2>&1; then
+            if command -v corepack >/dev/null 2>&1; then
+              corepack enable
+              corepack prepare pnpm@10.14.0 --activate
+            elif command -v npm >/dev/null 2>&1; then
+              npm install -g pnpm@10.14.0
+            else
+              echo "DEPLOY_RUNTIME_MISSING_PNPM: neither corepack nor npm is available on remote host" >&2
+              exit 1
+            fi
+            hash -r
+          fi
 
           coscmd config -a "$AWS_ACCESS_KEY_ID" -s "$AWS_SECRET_ACCESS_KEY" -b "$ARTIFACT_BUCKET" -e "$ARTIFACT_DOWNLOAD_ENDPOINT" -m 20 --retry 10 --timeout 120
           rm -f "$REMOTE_TEMP_DIR/deploy-artifact.tar.gz"
@@ -174,7 +213,7 @@ jobs:
 
           cd "$REMOTE_DEPLOY_PATH"
           set -a
-          source ./.env
+          source <(sed 's/\r$//' ./.env)
           set +a
 
           if [ "$BASELINE_EXISTING_DB" = "true" ]; then
