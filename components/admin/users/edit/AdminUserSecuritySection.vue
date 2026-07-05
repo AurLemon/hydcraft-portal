@@ -216,7 +216,10 @@
 								{{ formatDateTime(email.createdAt) }}
 							</p>
 						</div>
-						<div class="flex shrink-0 flex-wrap items-center gap-2">
+						<div
+							v-if="email.kind !== 'PRIMARY'"
+							class="flex shrink-0 flex-wrap items-center gap-2"
+						>
 							<UButton
 								v-if="email.kind !== 'PRIMARY'"
 								type="button"

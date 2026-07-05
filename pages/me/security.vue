@@ -113,7 +113,12 @@
 												}}
 											</UBadge>
 										</div>
-										<div class="flex shrink-0 flex-wrap items-center gap-2">
+										<div
+											v-if="
+												!email.verifiedAt || email.kind !== 'PRIMARY'
+											"
+											class="flex shrink-0 flex-wrap items-center gap-2"
+										>
 											<UButton
 												v-if="!email.verifiedAt"
 												type="button"
