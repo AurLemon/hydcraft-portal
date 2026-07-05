@@ -5,7 +5,7 @@
 	"packageManager": "pnpm@10.14.0",
 	"scripts": {
 		"build": "nuxt build",
-		"build:production-init-cli": "tsc -p tsconfig.production-init.json",
+		"build:production-init-cli": "node scripts/build-production-init-cli.mjs",
 		"dev": "nuxt dev",
 		"format": "prettier --write .",
 		"generate": "nuxt generate",
