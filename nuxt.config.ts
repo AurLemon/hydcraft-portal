@@ -298,6 +298,8 @@ export default defineNuxtConfig({
 		},
 	},
 	css: [
+		'cropperjs/dist/cropper.css',
+		'vue-picture-cropper/style.css',
 		'~/assets/styles/fonts/index.css',
 		'~/assets/styles/base/main.css',
 		'~/assets/styles/base/tailwind.css',

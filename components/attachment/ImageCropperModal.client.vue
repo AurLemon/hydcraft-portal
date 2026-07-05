@@ -24,9 +24,15 @@
 
 				<div class="mt-5 grid min-h-0 gap-5">
 					<div
-						ref="cropperContainer"
 						class="image-cropper-canvas h-[min(54dvh,32rem)] min-h-80 overflow-hidden rounded-lg border border-slate-200 bg-slate-950 dark:border-slate-800"
-					/>
+						:class="
+							props.previewShape === 'circle'
+								? 'image-cropper-circle'
+								: 'image-cropper-rounded'
+						"
+					>
+						<CropperComponent v-if="objectUrl" :key="objectUrl" />
+					</div>
 				</div>
 
 				<div
@@ -45,7 +51,7 @@
 						class="justify-center w-32 lg:w-auto"
 						type="button"
 						icon="i-lucide-check"
-						:disabled="!cropper"
+						:disabled="!cropperReady"
 						@click="confirm"
 					>
 						{{ t('attachments.crop.confirm') }}
@@ -57,8 +63,12 @@
 </template>
 
 <script setup lang="ts">
-import Cropper from 'cropperjs'
-import type { CropperCanvas, CropperImage, CropperSelection } from 'cropperjs'
+import type {
+	Cropper,
+	CropperInstance,
+	VuePictureCropperProps,
+} from 'vue-picture-cropper'
+import { useCropper } from 'vue-picture-cropper'
 import type {
 	ImageCropperConfirmPayload,
 	ImageCropperPreviewShape,
@@ -72,16 +82,9 @@ interface ImageCropperModalProps {
 	previewShape?: ImageCropperPreviewShape
 }
 
-interface CropperSelectionChangeDetail {
-	x: number
-	y: number
-	width: number
-	height: number
-}
-
 interface CropperBounds {
-	x: number
-	y: number
+	left: number
+	top: number
 	width: number
 	height: number
 }
@@ -98,68 +101,13 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const cropperContainer = ref<HTMLElement | null>(null)
-const cropper = shallowRef<Cropper | null>(null)
 const objectUrl = ref('')
-let removeCropperListeners: (() => void) | null = null
-let setupToken = 0
+const cropperReady = ref(false)
 
-const waitForFrame = (): Promise<void> =>
-	new Promise((resolve) => {
-		requestAnimationFrame(() => resolve())
-	})
-
-const waitForFrames = async (count: number): Promise<void> => {
-	for (let index = 0; index < count; index += 1) {
-		await waitForFrame()
-	}
-}
-
-const waitForStableContainerSize = async (
-	container: HTMLElement,
-): Promise<void> => {
-	let previousWidth = 0
-	let previousHeight = 0
-	let stableFrames = 0
-
-	for (let attempt = 0; attempt < 24; attempt += 1) {
-		await waitForFrame()
-
-		const width = Math.round(container.clientWidth)
-		const height = Math.round(container.clientHeight)
-
-		if (!width || !height) {
-			stableFrames = 0
-			continue
-		}
-
-		if (width === previousWidth && height === previousHeight) {
-			stableFrames += 1
-		} else {
-			previousWidth = width
-			previousHeight = height
-			stableFrames = 0
-		}
-
-		if (stableFrames >= 2) {
-			return
-		}
-	}
-}
-
-const cleanup = (): void => {
-	setupToken += 1
-	removeCropperListeners?.()
-	removeCropperListeners = null
-
-	cropper.value?.destroy()
-	cropper.value = null
-
-	if (objectUrl.value) {
-		URL.revokeObjectURL(objectUrl.value)
-		objectUrl.value = ''
-	}
-}
+const cropperBoxStyle = {
+	height: '100%',
+	width: '100%',
+} as const
 
 const getCanvasSize = (
 	selection: { width: number; height: number },
@@ -182,33 +130,6 @@ const getCanvasSize = (
 	}
 }
 
-const getImageBounds = (
-	canvas: CropperCanvas,
-	image: CropperImage,
-): CropperBounds | null => {
-	const canvasRect = canvas.getBoundingClientRect()
-	const imageRect = image.getBoundingClientRect()
-
-	if (
-		!canvasRect.width ||
-		!canvasRect.height ||
-		!imageRect.width ||
-		!imageRect.height
-	) {
-		return null
-	}
-
-	const x = imageRect.left - canvasRect.left
-	const y = imageRect.top - canvasRect.top
-
-	return {
-		x,
-		y,
-		width: imageRect.width,
-		height: imageRect.height,
-	}
-}
-
 const fitAspectRatioInBounds = (
 	bounds: CropperBounds,
 	aspectRatio: number,
@@ -219,8 +140,8 @@ const fitAspectRatioInBounds = (
 		const width = widthByHeight
 
 		return {
-			x: bounds.x + (bounds.width - width) / 2,
-			y: bounds.y,
+			left: bounds.left + (bounds.width - width) / 2,
+			top: bounds.top,
 			width,
 			height: bounds.height,
 		}
@@ -229,365 +150,124 @@ const fitAspectRatioInBounds = (
 	const height = bounds.width / aspectRatio
 
 	return {
-		x: bounds.x,
-		y: bounds.y + (bounds.height - height) / 2,
+		left: bounds.left,
+		top: bounds.top + (bounds.height - height) / 2,
 		width: bounds.width,
 		height,
 	}
 }
 
-const getInitialSelectionBounds = (
-	imageBounds: CropperBounds,
-): CropperBounds => {
+const applyInitialCropBox = (instance: CropperInstance): void => {
+	const imageData = instance.getImageData()
+	const imageBounds: CropperBounds = {
+		left: imageData.left,
+		top: imageData.top,
+		width: imageData.width,
+		height: imageData.height,
+	}
+
 	if (!props.aspectRatio) {
-		return imageBounds
+		instance.setCropBoxData(imageBounds)
+		return
 	}
 
-	return fitAspectRatioInBounds(imageBounds, props.aspectRatio)
+	instance.setCropBoxData(
+		fitAspectRatioInBounds(imageBounds, props.aspectRatio),
+	)
 }
 
-const clampSelectionToImage = (
-	nextSelection: CropperSelectionChangeDetail,
-	imageBounds: CropperBounds,
-): CropperBounds => {
-	let width = Math.min(Math.max(nextSelection.width, 1), imageBounds.width)
-	let height = Math.min(Math.max(nextSelection.height, 1), imageBounds.height)
-
-	if (props.aspectRatio) {
-		const fitted = fitAspectRatioInBounds(
-			{
-				x: 0,
-				y: 0,
-				width,
-				height,
-			},
-			props.aspectRatio,
-		)
-
-		width = fitted.width
-		height = fitted.height
-	}
-
-	const x = Math.min(
-		Math.max(nextSelection.x, imageBounds.x),
-		imageBounds.x + imageBounds.width - width,
-	)
-	const y = Math.min(
-		Math.max(nextSelection.y, imageBounds.y),
-		imageBounds.y + imageBounds.height - height,
-	)
-
-	return {
-		x,
-		y,
-		width,
-		height,
-	}
-}
-
-const isSameSelection = (
-	left: CropperSelectionChangeDetail,
-	right: CropperBounds,
-): boolean =>
-	Math.abs(left.x - right.x) < 0.5 &&
-	Math.abs(left.y - right.y) < 0.5 &&
-	Math.abs(left.width - right.width) < 0.5 &&
-	Math.abs(left.height - right.height) < 0.5
-
-const isSameBounds = (left: CropperBounds, right: CropperBounds): boolean =>
-	Math.abs(left.x - right.x) < 0.5 &&
-	Math.abs(left.y - right.y) < 0.5 &&
-	Math.abs(left.width - right.width) < 0.5 &&
-	Math.abs(left.height - right.height) < 0.5
-
-const applySelectionBounds = (
-	selection: CropperSelection,
-	bounds: CropperBounds,
+const handleCropperReady = (
+	event: Cropper.ReadyEvent<HTMLImageElement>,
 ): void => {
-	selection.$change(
-		bounds.x,
-		bounds.y,
-		bounds.width,
-		bounds.height,
-		props.aspectRatio,
-		true,
-	)
-}
+	const instance = event.currentTarget.cropper as CropperInstance | undefined
 
-const initializeSelection = (
-	cropperCanvas: CropperCanvas | null,
-	cropperImage: CropperImage | null,
-	selection: CropperSelection | null,
-): void => {
-	if (!cropperCanvas || !cropperImage || !selection) {
+	if (!instance) {
 		return
 	}
 
-	const imageBounds = getImageBounds(cropperCanvas, cropperImage)
-
-	if (!imageBounds) {
-		return
-	}
-
-	applySelectionBounds(selection, getInitialSelectionBounds(imageBounds))
-}
-
-const syncSelectionInsideImage = (
-	cropperCanvas: CropperCanvas | null,
-	cropperImage: CropperImage | null,
-	selection: CropperSelection | null,
-): void => {
-	if (!cropperCanvas || !cropperImage || !selection) {
-		return
-	}
-
-	const imageBounds = getImageBounds(cropperCanvas, cropperImage)
-
-	if (!imageBounds) {
-		return
-	}
-
-	applySelectionBounds(
-		selection,
-		clampSelectionToImage(
-			{
-				x: selection.x,
-				y: selection.y,
-				width: selection.width,
-				height: selection.height,
-			},
-			imageBounds,
-		),
-	)
-}
-
-const waitForStableImageBounds = (
-	activeCropper: Cropper,
-	cropperCanvas: CropperCanvas | null,
-	cropperImage: CropperImage | null,
-): Promise<CropperBounds | null> =>
-	new Promise((resolve) => {
-		if (!cropperCanvas || !cropperImage) {
-			resolve(null)
-			return
-		}
-
-		let frameId = 0
-		let attempts = 0
-		let stableFrames = 0
-		let previousBounds: CropperBounds | null = null
-
-		const cleanupStabilityListener = (): void => {
-			if (frameId) {
-				cancelAnimationFrame(frameId)
-				frameId = 0
-			}
-
-			cropperImage.removeEventListener('transform', scheduleMeasure)
-		}
-
-		const finish = (bounds: CropperBounds | null): void => {
-			cleanupStabilityListener()
-			resolve(bounds)
-		}
-
-		const measure = (): void => {
-			frameId = 0
-
-			if (cropper.value !== activeCropper) {
-				finish(null)
-				return
-			}
-
-			attempts += 1
-
-			const currentBounds = getImageBounds(cropperCanvas, cropperImage)
-
-			if (!currentBounds) {
-				if (attempts >= 24) {
-					finish(null)
-					return
-				}
-
-				frameId = requestAnimationFrame(measure)
-				return
-			}
-
-			if (previousBounds && isSameBounds(previousBounds, currentBounds)) {
-				stableFrames += 1
-			} else {
-				stableFrames = 0
-				previousBounds = currentBounds
-			}
-
-			if (stableFrames >= 2 || attempts >= 24) {
-				finish(currentBounds)
-				return
-			}
-
-			frameId = requestAnimationFrame(measure)
-		}
-
-		const scheduleMeasure = (): void => {
-			if (frameId) {
-				cancelAnimationFrame(frameId)
-			}
-
-			frameId = requestAnimationFrame(measure)
-		}
-
-		cropperImage.addEventListener('transform', scheduleMeasure)
-		scheduleMeasure()
+	requestAnimationFrame(() => {
+		applyInitialCropBox(instance)
+		cropperReady.value = true
 	})
+}
 
-const canvasToBlob = (
-	canvas: HTMLCanvasElement,
-	type: string,
-	quality: number,
-): Promise<Blob | null> =>
-	new Promise((resolve) => {
-		canvas.toBlob(resolve, type, quality)
-	})
+const cropperOptions = computed<CropperInstance.Options>(() => ({
+	aspectRatio: props.aspectRatio ?? NaN,
+	autoCrop: true,
+	autoCropArea: 1,
+	background: true,
+	center: false,
+	checkOrientation: true,
+	cropBoxMovable: true,
+	cropBoxResizable: true,
+	dragMode: 'none',
+	guides: true,
+	highlight: true,
+	modal: true,
+	movable: false,
+	responsive: true,
+	restore: false,
+	rotatable: false,
+	scalable: false,
+	toggleDragModeOnDblclick: false,
+	viewMode: 2,
+	wheelZoomRatio: 0,
+	zoomOnTouch: false,
+	zoomOnWheel: false,
+	zoomable: false,
+	ready: handleCropperReady,
+}))
+
+const cropperProps = computed<VuePictureCropperProps>(() => ({
+	img: objectUrl.value,
+	boxStyle: cropperBoxStyle,
+	options: cropperOptions.value,
+}))
+
+const [CropperComponent, cropper] = useCropper(cropperProps)
+const cropperInstance = computed<CropperInstance | null>(() =>
+	cropper.getInstance(),
+)
+
+const cleanup = (): void => {
+	cropperReady.value = false
+
+	if (objectUrl.value) {
+		URL.revokeObjectURL(objectUrl.value)
+		objectUrl.value = ''
+	}
+}
 
 const buildCroppedFile = async (): Promise<File | null> => {
-	const selection = cropper.value?.getCropperSelection()
+	const instance = cropperInstance.value
 
-	if (!selection || !props.file) {
+	if (!instance || !props.file) {
 		return null
 	}
 
 	const outputSize = getCanvasSize(
-		selection,
+		instance.getData(true),
 		props.previewShape === 'cover' ? 1440 : 512,
 	)
-	const canvas = await selection.$toCanvas(outputSize)
-	const blob = await canvasToBlob(canvas, 'image/webp', 0.92)
+	const canvas = instance.getCroppedCanvas({
+		...outputSize,
+		imageSmoothingEnabled: true,
+		imageSmoothingQuality: 'high',
+	})
+
+	const blob = await new Promise<Blob | null>((resolve) => {
+		canvas.toBlob(resolve, 'image/webp', 0.92)
+	})
 
 	if (!blob) {
 		return null
 	}
 
 	const baseName = props.file.name.replace(/\.[^.]+$/, '') || 'image'
+
 	return new File([blob], `${baseName}-cropped.webp`, {
 		type: 'image/webp',
 	})
-}
-
-const setupCropper = async (): Promise<void> => {
-	cleanup()
-
-	if (!props.file || !cropperContainer.value || !props.open) {
-		return
-	}
-
-	const currentSetupToken = setupToken
-	const activeContainer = cropperContainer.value
-	await waitForStableContainerSize(activeContainer)
-
-	if (
-		currentSetupToken !== setupToken ||
-		!props.file ||
-		!cropperContainer.value ||
-		!props.open
-	) {
-		return
-	}
-
-	objectUrl.value = URL.createObjectURL(props.file)
-
-	const image = new Image()
-	image.src = objectUrl.value
-	await image.decode()
-
-	const activeCropper = new Cropper(image, {
-		container: activeContainer,
-		template: `
-			<cropper-canvas background>
-				<cropper-image></cropper-image>
-				<cropper-shade hidden></cropper-shade>
-				<cropper-handle action="select" plain></cropper-handle>
-				<cropper-selection
-					movable
-					resizable
-					outlined
-					aspect-ratio="${props.aspectRatio ?? NaN}"
-				>
-					<cropper-grid role="grid" covered></cropper-grid>
-					<cropper-crosshair centered></cropper-crosshair>
-					<cropper-handle action="move" theme-color="rgba(255,255,255,0.32)"></cropper-handle>
-					<cropper-handle action="n-resize"></cropper-handle>
-					<cropper-handle action="e-resize"></cropper-handle>
-					<cropper-handle action="s-resize"></cropper-handle>
-					<cropper-handle action="w-resize"></cropper-handle>
-					<cropper-handle action="ne-resize"></cropper-handle>
-					<cropper-handle action="nw-resize"></cropper-handle>
-					<cropper-handle action="se-resize"></cropper-handle>
-					<cropper-handle action="sw-resize"></cropper-handle>
-				</cropper-selection>
-			</cropper-canvas>
-			`,
-	})
-	cropper.value = activeCropper
-
-	await nextTick()
-
-	if (cropper.value !== activeCropper) {
-		return
-	}
-
-	const cropperImage = activeCropper.getCropperImage()
-	const cropperCanvas = activeCropper.getCropperCanvas()
-	const selection = activeCropper.getCropperSelection()
-	const keepSelectionInsideImage = (event: Event): void => {
-		const changeEvent = event as CustomEvent<CropperSelectionChangeDetail>
-
-		if (!cropperCanvas || !cropperImage || !selection || !changeEvent.detail) {
-			return
-		}
-
-		const imageBounds = getImageBounds(cropperCanvas, cropperImage)
-
-		if (!imageBounds) {
-			return
-		}
-
-		const nextSelection = clampSelectionToImage(changeEvent.detail, imageBounds)
-
-		if (isSameSelection(changeEvent.detail, nextSelection)) {
-			return
-		}
-
-		event.preventDefault()
-		requestAnimationFrame(() => {
-			if (cropper.value !== activeCropper) {
-				return
-			}
-
-			applySelectionBounds(selection, nextSelection)
-		})
-	}
-
-	selection?.addEventListener('change', keepSelectionInsideImage)
-	removeCropperListeners = () => {
-		selection?.removeEventListener('change', keepSelectionInsideImage)
-	}
-
-	await cropperImage?.$ready()
-	await nextTick()
-	await waitForFrame()
-
-	if (cropper.value !== activeCropper) {
-		return
-	}
-
-	await waitForStableImageBounds(activeCropper, cropperCanvas, cropperImage)
-
-	if (cropper.value !== activeCropper) {
-		return
-	}
-
-	initializeSelection(cropperCanvas, cropperImage, selection)
-	syncSelectionInsideImage(cropperCanvas, cropperImage, selection)
 }
 
 const handleOpenChange = (value: boolean): void => {
@@ -618,12 +298,14 @@ const confirm = async (): Promise<void> => {
 
 watch(
 	() => [props.open, props.file] as const,
-	() => {
-		if (props.open) {
-			void nextTick(setupCropper)
-		} else {
-			cleanup()
+	([open, file]) => {
+		cleanup()
+
+		if (!open || !file) {
+			return
 		}
+
+		objectUrl.value = URL.createObjectURL(file)
 	},
 	{ immediate: true },
 )
@@ -632,8 +314,33 @@ onBeforeUnmount(cleanup)
 </script>
 
 <style scoped>
-.image-cropper-canvas :deep(cropper-canvas) {
-	height: 100%;
-	width: 100%;
+.image-cropper-canvas :deep(.vpc-root),
+.image-cropper-canvas :deep(.cropper-container) {
+	height: 100% !important;
+	width: 100% !important;
+}
+
+.image-cropper-canvas :deep(.cropper-bg) {
+	background-image:
+		linear-gradient(45deg, rgb(71 85 105 / 0.65) 25%, transparent 25%),
+		linear-gradient(-45deg, rgb(71 85 105 / 0.65) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, rgb(71 85 105 / 0.65) 75%),
+		linear-gradient(-45deg, transparent 75%, rgb(71 85 105 / 0.65) 75%);
+	background-position:
+		0 0,
+		0 0.5rem,
+		0.5rem -0.5rem,
+		-0.5rem 0;
+	background-size: 1rem 1rem;
+}
+
+.image-cropper-canvas :deep(.cropper-view-box),
+.image-cropper-canvas :deep(.cropper-face) {
+	border-radius: 0.5rem;
+}
+
+.image-cropper-circle :deep(.cropper-view-box),
+.image-cropper-circle :deep(.cropper-face) {
+	border-radius: 9999px;
 }
 </style>

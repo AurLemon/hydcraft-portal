@@ -39,7 +39,7 @@
 		"@tailwindcss/vite": "^4.2.2",
 		"chart.js": "^4.5.1",
 		"cos-nodejs-sdk-v5": "^2.15.4",
-		"cropperjs": "^2.1.1",
+		"cropperjs": "^1.6.2",
 		"dayjs": "^1.11.13",
 		"dotenv": "^17.4.2",
 		"ip2region.js": "^3.1.8",
@@ -58,6 +58,7 @@
 		"vue": "^3.5.31",
 		"vue-chartjs": "^5.3.3",
 		"vue-i18n": "^11.4.4",
+		"vue-picture-cropper": "^1.0.0",
 		"vue-router": "5.1.0",
 		"vuedraggable": "^4.1.0"
 	},
