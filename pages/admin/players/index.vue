@@ -228,12 +228,12 @@ import { h } from 'vue'
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
 import type {
 	AdminMinecraftAccountInfo,
+	AdminMinecraftAccountSessionHistoryItem,
 	AdminMinecraftAccountSessionHistoryResponse,
 	AdminMinecraftAccountsResponse,
 	IpLocationSummary,
 } from '~/components/admin/types'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
-import type { ServerOverviewPlayerPresenceSession } from '~/utils/server/overview'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -436,7 +436,7 @@ const openLoginHistory = (account: AdminMinecraftAccountInfo): void => {
 }
 
 const fetchLoginHistorySessions = async (): Promise<{
-	sessions: ServerOverviewPlayerPresenceSession[]
+	sessions: AdminMinecraftAccountSessionHistoryItem[]
 }> => {
 	if (!selectedAccount.value?.id) {
 		return {

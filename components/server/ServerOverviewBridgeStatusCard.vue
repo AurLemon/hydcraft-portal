@@ -257,10 +257,12 @@ const headItems = computed(
 	() => selectedServer.value?.bridgeStatus.observedPlayers ?? [],
 )
 
-const playerLink = (player: ServerOverviewObservedPlayer): string | null => {
+const playerLink = (
+	player: ServerOverviewObservedPlayer,
+): string | undefined => {
 	const mcid = player.mcid?.trim()
 
-	return mcid ? localePath(`/players/${mcid}`) : null
+	return mcid ? localePath(`/players/${mcid}`) : undefined
 }
 
 const mapLinkItems = computed(() => [
