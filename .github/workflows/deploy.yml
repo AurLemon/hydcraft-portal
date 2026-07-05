@@ -33,7 +33,6 @@ jobs:
       # BACKEND_DEPLOY_SSH_PORT
       # BACKEND_REMOTE_DEPLOY_PATH
       # ARTIFACT_REGION
-      # DEPLOY_DATABASE_URL
       # DEPLOY_RUNTIME_ENV
       SSH_HOST: ${{ secrets.BACKEND_DEPLOY_HOST }}
       SSH_PORT: ${{ secrets.BACKEND_DEPLOY_SSH_PORT || '233' }}
@@ -48,33 +47,10 @@ jobs:
       ARTIFACT_REGION: ${{ secrets.ARTIFACT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.COS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.COS_SECRET_ACCESS_KEY }}
-      DEPLOY_DATABASE_URL: ${{ secrets.DEPLOY_DATABASE_URL }}
       DEPLOY_RUNTIME_ENV: ${{ secrets.DEPLOY_RUNTIME_ENV }}
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Apply Prisma migrations
-        if: ${{ env.DEPLOY_DATABASE_URL != '' }}
-        run: |
-          docker run --rm \
-            -e DATABASE_URL="$DEPLOY_DATABASE_URL" \
-            -e BASELINE_EXISTING_DB="${{ github.event.inputs.baseline_existing_db || 'false' }}" \
-            -v "$GITHUB_WORKSPACE":/app \
-            -w /app \
-            node:24-bookworm \
-            bash -lc '
-              set -euo pipefail
-              corepack enable
-              corepack prepare pnpm@10.14.0 --activate
-              pnpm install --frozen-lockfile
-
-              if [ "$BASELINE_EXISTING_DB" = "true" ]; then
-                pnpm prisma migrate resolve --applied 0_init
-              fi
-
-              pnpm prisma migrate deploy
-            '
 
       - name: Build app in Docker
         run: |
@@ -97,14 +73,21 @@ jobs:
               pnpm build
 
               rm -rf /app/deploy-artifact
-              mkdir -p /app/deploy-artifact
+              pnpm deploy --prod /app/deploy-artifact
 
               cp -R /app/.output/public \
                     /app/.output/server \
                     /app/deploy-artifact/
               mkdir -p /app/deploy-artifact/server/data
               cp -R /app/data/ip2region /app/deploy-artifact/server/data/
+              cp -R /app/prisma /app/deploy-artifact/prisma
               cp /app/.output/nitro.json /app/deploy-artifact/nitro.json
+              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
+
+              test -f /app/deploy-artifact/package.json
+              test -f /app/deploy-artifact/prisma.config.ts
+              test -f /app/deploy-artifact/prisma/migrations/migration_lock.toml
+              test -f /app/deploy-artifact/node_modules/.bin/prisma
             '
 
       - name: Install COSCMD
@@ -164,6 +147,7 @@ jobs:
           export REMOTE_TEMP_DIR="$REMOTE_TEMP_DIR"
           export PM2_APP_NAME="$PM2_APP_NAME"
           export DEPLOY_RUNTIME_ENV="$DEPLOY_RUNTIME_ENV"
+          export BASELINE_EXISTING_DB="${{ github.event.inputs.baseline_existing_db || 'false' }}"
 
           mkdir -p "$REMOTE_DEPLOY_PATH"
 
@@ -183,11 +167,24 @@ jobs:
             "$REMOTE_TEMP_DIR/extracted/" \
             "$REMOTE_DEPLOY_PATH/"
 
+          cd "$REMOTE_DEPLOY_PATH"
+          set -a
+          source ./.env
+          set +a
+
+          if [ "$BASELINE_EXISTING_DB" = "true" ]; then
+            pnpm prisma migrate resolve --applied 0_init
+          fi
+
+          pnpm prisma:deploy
+
           if pm2 describe "$PM2_APP_NAME" >/dev/null 2>&1; then
             pm2 restart "$PM2_APP_NAME" --update-env
           else
             pm2 start "$REMOTE_DEPLOY_PATH/server/index.mjs" --name "$PM2_APP_NAME" --cwd "$REMOTE_DEPLOY_PATH"
           fi
+
+          pm2 save
 
           rm -rf "$REMOTE_TEMP_DIR"
           EOF
