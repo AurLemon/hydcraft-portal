@@ -55,6 +55,7 @@ jobs:
       - name: Build app in Docker
         run: |
           docker run --rm \
+            -e DATABASE_URL="postgresql://prisma:prisma@127.0.0.1:5432/prisma?schema=public" \
             -e DEPLOY_RUNTIME_ENV="$DEPLOY_RUNTIME_ENV" \
             -v "$GITHUB_WORKSPACE":/app \
             -w /app \
