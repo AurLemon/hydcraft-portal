@@ -74,16 +74,18 @@ jobs:
               pnpm build
 
               rm -rf /app/deploy-artifact
-              pnpm deploy --prod /app/deploy-artifact
+              mkdir -p /app/deploy-artifact
 
+              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
+              cp -R /app/prisma /app/deploy-artifact/prisma
               cp -R /app/.output/public \
                     /app/.output/server \
                     /app/deploy-artifact/
               mkdir -p /app/deploy-artifact/server/data
               cp -R /app/data/ip2region /app/deploy-artifact/server/data/
-              cp -R /app/prisma /app/deploy-artifact/prisma
               cp /app/.output/nitro.json /app/deploy-artifact/nitro.json
-              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
+
+              pnpm install --prod --frozen-lockfile --dir /app/deploy-artifact
 
               test -f /app/deploy-artifact/package.json
               test -f /app/deploy-artifact/prisma.config.ts
