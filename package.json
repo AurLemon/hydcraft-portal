@@ -25,7 +25,7 @@
 		"sync:authme": "tsx scripts/sync-external.ts authme",
 		"sync:luckperms": "tsx scripts/sync-external.ts luckperms",
 		"sync:external": "tsx scripts/sync-external.ts all",
-		"start": "node start-server.mjs"
+		"start": "node .output/server/index.mjs"
 	},
 	"dependencies": {
 		"@internationalized/date": "^3.12.2",

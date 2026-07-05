@@ -55,7 +55,10 @@ export const getMailRuntimeConfig = (): MailRuntimeConfig => {
 			trimOptional(process.env.MAIL_FROM) ??
 			'HydCraft <no-reply@hydcraft.local>',
 		replyTo: trimOptional(process.env.MAIL_REPLY_TO),
-		siteUrl: trimOptional(process.env.NUXT_SITE_URL) ?? 'http://localhost:3000',
+		siteUrl:
+			trimOptional(process.env.NUXT_PUBLIC_SITE_URL) ??
+			trimOptional(process.env.NUXT_SITE_URL) ??
+			'http://localhost:3000',
 	}
 }
 
