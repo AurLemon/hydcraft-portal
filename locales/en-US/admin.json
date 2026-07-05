@@ -591,6 +591,8 @@
 				"identity": "Identity & Status",
 				"profile": "Profile",
 				"attachments": "Avatar & Cover",
+				"minecraftAccounts": "Minecraft binding",
+				"security": "Account security",
 				"preferences": "Preferences",
 				"social": "Social Links",
 				"privacy": "Visibility",
@@ -679,6 +681,133 @@
 				"back": "Back to users",
 				"fallbackTitle": "User",
 				"loadFailed": "Failed to load user"
+			},
+			"security": {
+				"sections": {
+					"overview": "Security overview",
+					"oauth": "OAuth connections",
+					"emails": "Email management",
+					"sessions": "Login devices",
+					"events": "Recent security events",
+					"dangerZone": "Danger zone"
+				},
+				"fields": {
+					"accountStatus": "Account status",
+					"currentRole": "Current role",
+					"credentialType": "Password credential",
+					"primaryEmail": "Primary email",
+					"lastLogin": "Last login",
+					"activeSessionCount": "Active sessions",
+					"recentSecurityEvents": "Security event count",
+					"providerAccountId": "Provider account ID",
+					"providerUsername": "Provider username",
+					"providerEmail": "Provider email",
+					"connectedAt": "Connected at",
+					"lastUsedAt": "Last used at",
+					"disconnectedAt": "Disconnected at",
+					"newPassword": "New password"
+				},
+				"actions": {
+					"resetPassword": "Reset password",
+					"confirmResetPassword": "Confirm reset",
+					"setPrimaryEmail": "Set as primary",
+					"confirmSetPrimaryEmail": "Confirm primary email",
+					"deleteEmail": "Delete email",
+					"confirmDeleteEmail": "Confirm delete email",
+					"revokeSession": "Revoke session",
+					"confirmRevokeSession": "Confirm revoke session",
+					"revokeAllSessions": "Revoke all other sessions",
+					"confirmRevokeAllSessions": "Confirm revoke all",
+					"unlinkOAuth": "Unlink OAuth",
+					"confirmUnlinkOAuth": "Confirm unlink",
+					"deleteUser": "Delete account directly",
+					"confirmDeleteUser": "Confirm direct delete"
+				},
+				"states": {
+					"connected": "Connected",
+					"disconnected": "Disconnected",
+					"primaryEmail": "Primary",
+					"verified": "Verified",
+					"unverified": "Unverified"
+				},
+				"sessions": {
+					"activeCount": "{count} active",
+					"current": "Current session"
+				},
+				"empty": {
+					"loadFailed": "Failed to load security details",
+					"oauthConnections": "No OAuth connections yet.",
+					"emails": "No email records yet.",
+					"sessions": "No active sessions.",
+					"events": "No security events yet."
+				},
+				"values": {
+					"empty": "None",
+					"passwordSet": "Password set",
+					"passwordNotSet": "Password not set",
+					"noRecord": "No record",
+					"unknownLocation": "Unknown location",
+					"unknownIp": "Unknown IP",
+					"ipAddress": "IP: {ip}"
+				},
+				"devices": {
+					"unknown": "Unknown device"
+				},
+				"notifications": {
+					"passwordReset": "Password reset",
+					"passwordResetFailed": "Failed to reset password",
+					"primaryEmailChanged": "Primary email updated",
+					"primaryEmailChangeFailed": "Failed to update primary email",
+					"emailDeleted": "Email deleted",
+					"emailDeleteFailed": "Failed to delete email",
+					"sessionRevoked": "Session revoked",
+					"sessionRevokeFailed": "Failed to revoke session",
+					"allSessionsRevoked": "All other sessions revoked",
+					"allSessionsRevokeFailed": "Failed to revoke sessions in batch",
+					"oauthUnlinked": "OAuth connection unlinked",
+					"oauthUnlinkFailed": "Failed to unlink OAuth connection",
+					"deletePreviewFailed": "Failed to load delete preview",
+					"userDeleted": "Account deleted directly",
+					"userDeleteFailed": "Failed to delete account directly"
+				},
+				"modals": {
+					"passwordReset": {
+						"title": "Admin password reset",
+						"description": "This overwrites the current password directly and never reveals the plain password back to the UI."
+					},
+					"setPrimaryEmail": {
+						"title": "Set as primary email",
+						"description": "Set {email} as the primary email for this user."
+					},
+					"deleteEmail": {
+						"title": "Delete secondary email",
+						"description": "Delete email {email}?"
+					},
+					"revokeSession": {
+						"title": "Revoke login device",
+						"description": "Revoke the login session for {device}?"
+					},
+					"revokeAllSessions": {
+						"title": "Revoke all other sessions",
+						"description": "Revoke all other active sessions for this user. If the target is the current admin account, the current session is preserved."
+					},
+					"unlinkOAuth": {
+						"title": "Unlink OAuth connection",
+						"description": "Unlink the {provider} OAuth connection?"
+					},
+					"deleteUser": {
+						"title": "Delete account directly",
+						"description": "Delete user {username} ({userId}) directly? This cannot be undone."
+					}
+				},
+				"deleteImpact": {
+					"emails": "Email records",
+					"oauthConnections": "OAuth connections",
+					"refreshTokens": "Login sessions",
+					"securityEvents": "Security events",
+					"minecraftAccounts": "Minecraft bindings",
+					"attachments": "Attachments"
+				}
 			}
 		},
 		"attachments": {

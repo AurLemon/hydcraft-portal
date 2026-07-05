@@ -228,10 +228,11 @@
 										{{ t('admin.partners.fields.cover') }}
 									</span>
 									<div
-										class="h-28 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800"
+										class="h-28 overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-700"
 									>
 										<SkeletonImage
-											:src="current?.coverUrl || defaultCover"
+											v-if="current?.coverUrl"
+											:src="current.coverUrl"
 											:alt="current?.name || form.name"
 											class="h-full w-full"
 											image-class="block h-full w-full object-cover transition-opacity duration-200"
@@ -379,7 +380,6 @@
 <script setup lang="ts">
 import type { AdminUser, AdminUsersResponse } from '~/components/admin/types'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
-import defaultCover from '~/assets/resources/pages/partners_cover.webp'
 import type {
 	PartnerCoreMemberSummary,
 	PartnerKind,

@@ -601,6 +601,8 @@
 				"identity": "身份與狀態",
 				"profile": "個人資料",
 				"attachments": "頭像與封面",
+				"minecraftAccounts": "Minecraft 綁定管理",
+				"security": "帳號安全",
 				"preferences": "偏好",
 				"social": "社交連結",
 				"privacy": "公開資訊",
@@ -689,6 +691,133 @@
 				"back": "返回使用者列表",
 				"fallbackTitle": "使用者",
 				"loadFailed": "載入使用者資訊失敗"
+			},
+			"security": {
+				"sections": {
+					"overview": "安全概覽",
+					"oauth": "OAuth 綁定",
+					"emails": "信箱管理",
+					"sessions": "登入裝置",
+					"events": "最近安全事件",
+					"dangerZone": "危險操作"
+				},
+				"fields": {
+					"accountStatus": "帳號狀態",
+					"currentRole": "目前角色",
+					"credentialType": "密碼憑證",
+					"primaryEmail": "主信箱",
+					"lastLogin": "最後登入",
+					"activeSessionCount": "活躍會話數",
+					"recentSecurityEvents": "安全事件總數",
+					"providerAccountId": "平台帳號 ID",
+					"providerUsername": "平台使用者名稱",
+					"providerEmail": "平台信箱",
+					"connectedAt": "綁定時間",
+					"lastUsedAt": "最近使用",
+					"disconnectedAt": "解除綁定時間",
+					"newPassword": "新密碼"
+				},
+				"actions": {
+					"resetPassword": "重設密碼",
+					"confirmResetPassword": "確認重設密碼",
+					"setPrimaryEmail": "設為主信箱",
+					"confirmSetPrimaryEmail": "確認設為主信箱",
+					"deleteEmail": "刪除信箱",
+					"confirmDeleteEmail": "確認刪除信箱",
+					"revokeSession": "撤銷會話",
+					"confirmRevokeSession": "確認撤銷會話",
+					"revokeAllSessions": "撤銷全部其他會話",
+					"confirmRevokeAllSessions": "確認全部撤銷",
+					"unlinkOAuth": "解除 OAuth 綁定",
+					"confirmUnlinkOAuth": "確認解除綁定",
+					"deleteUser": "直接刪除帳號",
+					"confirmDeleteUser": "確認直接刪除"
+				},
+				"states": {
+					"connected": "已綁定",
+					"disconnected": "已解除綁定",
+					"primaryEmail": "主信箱",
+					"verified": "已驗證",
+					"unverified": "未驗證"
+				},
+				"sessions": {
+					"activeCount": "{count} 個活躍",
+					"current": "目前會話"
+				},
+				"empty": {
+					"loadFailed": "安全資訊載入失敗",
+					"oauthConnections": "暫無 OAuth 綁定記錄。",
+					"emails": "暫無信箱記錄。",
+					"sessions": "暫無活躍會話。",
+					"events": "暫無安全事件記錄。"
+				},
+				"values": {
+					"empty": "暫無",
+					"passwordSet": "已設定密碼",
+					"passwordNotSet": "未設定密碼",
+					"noRecord": "暫無記錄",
+					"unknownLocation": "未知位置",
+					"unknownIp": "未知 IP",
+					"ipAddress": "IP：{ip}"
+				},
+				"devices": {
+					"unknown": "未知裝置"
+				},
+				"notifications": {
+					"passwordReset": "密碼已重設",
+					"passwordResetFailed": "重設密碼失敗",
+					"primaryEmailChanged": "主信箱已更新",
+					"primaryEmailChangeFailed": "更新主信箱失敗",
+					"emailDeleted": "信箱已刪除",
+					"emailDeleteFailed": "刪除信箱失敗",
+					"sessionRevoked": "會話已撤銷",
+					"sessionRevokeFailed": "撤銷會話失敗",
+					"allSessionsRevoked": "其他會話已全部撤銷",
+					"allSessionsRevokeFailed": "批次撤銷會話失敗",
+					"oauthUnlinked": "OAuth 綁定已解除",
+					"oauthUnlinkFailed": "解除 OAuth 綁定失敗",
+					"deletePreviewFailed": "載入刪號預檢失敗",
+					"userDeleted": "帳號已直接刪除",
+					"userDeleteFailed": "直接刪除帳號失敗"
+				},
+				"modals": {
+					"passwordReset": {
+						"title": "管理員重設密碼",
+						"description": "將直接覆蓋該使用者目前密碼，不會展示或回顯明文密碼。"
+					},
+					"setPrimaryEmail": {
+						"title": "設為主信箱",
+						"description": "確認將 {email} 設為該使用者的主信箱。"
+					},
+					"deleteEmail": {
+						"title": "刪除次信箱",
+						"description": "確認刪除信箱 {email}。"
+					},
+					"revokeSession": {
+						"title": "撤銷登入裝置",
+						"description": "確認撤銷 {device} 對應的登入會話。"
+					},
+					"revokeAllSessions": {
+						"title": "撤銷全部其他會話",
+						"description": "確認撤銷該使用者的全部其他活躍會話。若目標就是目前管理員本人，會保留目前會話。"
+					},
+					"unlinkOAuth": {
+						"title": "解除 OAuth 綁定",
+						"description": "確認解除 {provider} OAuth 綁定。"
+					},
+					"deleteUser": {
+						"title": "直接刪除帳號",
+						"description": "確認直接刪除使用者 {username}（{userId}）。此操作不可恢復。"
+					}
+				},
+				"deleteImpact": {
+					"emails": "信箱記錄",
+					"oauthConnections": "OAuth 綁定",
+					"refreshTokens": "登入會話",
+					"securityEvents": "安全事件",
+					"minecraftAccounts": "Minecraft 綁定",
+					"attachments": "附件"
+				}
 			}
 		},
 		"attachments": {

@@ -111,7 +111,9 @@
 						/>
 						<span class="truncate">{{ verifiedText }}</span>
 					</div>
-					<div class="flex flex-wrap justify-center gap-2 md:justify-end">
+					<div
+						class="flex flex-wrap justify-center gap-2 md:justify-end md:ml-auto"
+					>
 						<UBadge
 							v-for="badge in visibleBadges"
 							:key="badge.id"

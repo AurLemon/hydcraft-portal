@@ -103,6 +103,8 @@
 			"COS_CONFIG_MISSING": "Object storage configuration is missing.",
 			"COS_PUBLIC_BASE_URL_MISSING": "The public object storage URL is missing.",
 			"OWNER_ROLE_REQUIRES_OWNER": "Only OWNER can grant or remove the OWNER role.",
+			"OWNER_SECURITY_ACTION_REQUIRES_OWNER": "Only OWNER can perform security actions on an OWNER account.",
+			"ADMIN_SELF_DELETE_FORBIDDEN": "You cannot delete the currently signed-in admin account directly.",
 			"ROLE_INVALID": "The role parameter is invalid.",
 			"STATUS_INVALID": "The status parameter is invalid.",
 			"BADGE_IDS_INVALID": "The badge parameters are invalid.",

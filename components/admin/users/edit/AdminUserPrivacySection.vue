@@ -7,7 +7,7 @@
 		</div>
 		<div :class="profileCardClass" class="grid gap-x-4 gap-y-2 md:grid-cols-2">
 			<ProfileSwitchField
-				v-for="item in privacyItems"
+				v-for="item in localizedPrivacyItems"
 				:key="item.key"
 				control-class="w-fit"
 				control-wrapper-class=""
@@ -32,4 +32,11 @@ import type { AdminUserForm } from '~/utils/admin/users/edit'
 
 const { t } = useI18n()
 const form = defineModel<AdminUserForm>('form', { required: true })
+
+const localizedPrivacyItems = computed(() =>
+	privacyItems.map((item) => ({
+		...item,
+		label: t(`profile.privacy.${item.key}`),
+	})),
+)
 </script>

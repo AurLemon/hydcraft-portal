@@ -60,7 +60,7 @@
 								variant="subtle"
 								icon="i-lucide-pencil"
 								:aria-label="t('admin.actions.edit')"
-								class="text-white"
+								class="bg-white/92 text-slate-700 shadow-sm ring-1 ring-black/5 backdrop-blur-sm hover:bg-white dark:bg-slate-900/82 dark:text-slate-100 dark:ring-white/10 dark:hover:bg-slate-900"
 								@click="emit('edit', partner)"
 							/>
 							<UButton
@@ -71,7 +71,7 @@
 								color="neutral"
 								variant="subtle"
 								icon="i-lucide-external-link"
-								class="text-white"
+								class="bg-white/92 text-slate-700 shadow-sm ring-1 ring-black/5 backdrop-blur-sm hover:bg-white dark:bg-slate-900/82 dark:text-slate-100 dark:ring-white/10 dark:hover:bg-slate-900"
 							>
 								{{ t('content.partners.actions.visit') }}
 							</UButton>
@@ -197,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import defaultCover from '~/assets/resources/pages/partners_cover.webp'
+import { getPartnerDisplayCover } from '~/utils/community/partner-cover'
 import type { PartnerSummary } from '~/utils/community/partners'
 
 interface PartnerDetailModalProps {
@@ -214,7 +214,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const localePath = useLocalePath()
 
-const coverSrc = computed(() => props.partner?.coverUrl || defaultCover)
+const coverSrc = computed(() => getPartnerDisplayCover(props.partner))
 const coverImageClass = computed(() =>
 	[
 		'block h-full w-full object-cover transition-opacity duration-200',

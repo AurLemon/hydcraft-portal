@@ -601,6 +601,8 @@
 				"identity": "識別情報と状態",
 				"profile": "プロフィール",
 				"attachments": "アバターとカバー",
+				"minecraftAccounts": "Minecraft 連携管理",
+				"security": "アカウントセキュリティ",
 				"preferences": "設定",
 				"social": "ソーシャルリンク",
 				"privacy": "公開情報",
@@ -689,6 +691,133 @@
 				"back": "ユーザー一覧に戻る",
 				"fallbackTitle": "ユーザー",
 				"loadFailed": "ユーザー情報の読み込みに失敗しました"
+			},
+			"security": {
+				"sections": {
+					"overview": "セキュリティ概要",
+					"oauth": "OAuth 連携",
+					"emails": "メール管理",
+					"sessions": "ログイン端末",
+					"events": "最近のセキュリティイベント",
+					"dangerZone": "危険な操作"
+				},
+				"fields": {
+					"accountStatus": "アカウント状態",
+					"currentRole": "現在のロール",
+					"credentialType": "パスワード認証",
+					"primaryEmail": "メインメール",
+					"lastLogin": "最終ログイン",
+					"activeSessionCount": "有効セッション数",
+					"recentSecurityEvents": "セキュリティイベント総数",
+					"providerAccountId": "プロバイダーアカウント ID",
+					"providerUsername": "プロバイダーユーザー名",
+					"providerEmail": "プロバイダーメール",
+					"connectedAt": "連携日時",
+					"lastUsedAt": "最終利用",
+					"disconnectedAt": "解除日時",
+					"newPassword": "新しいパスワード"
+				},
+				"actions": {
+					"resetPassword": "パスワードをリセット",
+					"confirmResetPassword": "リセットを確定",
+					"setPrimaryEmail": "メインメールに設定",
+					"confirmSetPrimaryEmail": "メインメールに設定",
+					"deleteEmail": "メールを削除",
+					"confirmDeleteEmail": "メール削除を確定",
+					"revokeSession": "セッションを無効化",
+					"confirmRevokeSession": "セッション無効化を確定",
+					"revokeAllSessions": "他の全セッションを無効化",
+					"confirmRevokeAllSessions": "すべて無効化を確定",
+					"unlinkOAuth": "OAuth 連携を解除",
+					"confirmUnlinkOAuth": "連携解除を確定",
+					"deleteUser": "アカウントを直接削除",
+					"confirmDeleteUser": "直接削除を確定"
+				},
+				"states": {
+					"connected": "連携済み",
+					"disconnected": "解除済み",
+					"primaryEmail": "メイン",
+					"verified": "認証済み",
+					"unverified": "未認証"
+				},
+				"sessions": {
+					"activeCount": "{count} 件有効",
+					"current": "現在のセッション"
+				},
+				"empty": {
+					"loadFailed": "セキュリティ情報の読み込みに失敗しました",
+					"oauthConnections": "OAuth 連携はまだありません。",
+					"emails": "メール記録はまだありません。",
+					"sessions": "有効なセッションはありません。",
+					"events": "セキュリティイベントはまだありません。"
+				},
+				"values": {
+					"empty": "なし",
+					"passwordSet": "パスワード設定済み",
+					"passwordNotSet": "パスワード未設定",
+					"noRecord": "記録なし",
+					"unknownLocation": "不明な場所",
+					"unknownIp": "不明な IP",
+					"ipAddress": "IP: {ip}"
+				},
+				"devices": {
+					"unknown": "不明な端末"
+				},
+				"notifications": {
+					"passwordReset": "パスワードをリセットしました",
+					"passwordResetFailed": "パスワードのリセットに失敗しました",
+					"primaryEmailChanged": "メインメールを更新しました",
+					"primaryEmailChangeFailed": "メインメールの更新に失敗しました",
+					"emailDeleted": "メールを削除しました",
+					"emailDeleteFailed": "メールの削除に失敗しました",
+					"sessionRevoked": "セッションを無効化しました",
+					"sessionRevokeFailed": "セッションの無効化に失敗しました",
+					"allSessionsRevoked": "他のセッションをすべて無効化しました",
+					"allSessionsRevokeFailed": "セッションの一括無効化に失敗しました",
+					"oauthUnlinked": "OAuth 連携を解除しました",
+					"oauthUnlinkFailed": "OAuth 連携の解除に失敗しました",
+					"deletePreviewFailed": "削除プレビューの読み込みに失敗しました",
+					"userDeleted": "アカウントを直接削除しました",
+					"userDeleteFailed": "アカウントの直接削除に失敗しました"
+				},
+				"modals": {
+					"passwordReset": {
+						"title": "管理者によるパスワードリセット",
+						"description": "現在のパスワードを直接上書きします。平文パスワードは UI に表示されません。"
+					},
+					"setPrimaryEmail": {
+						"title": "メインメールに設定",
+						"description": "{email} をこのユーザーのメインメールに設定します。"
+					},
+					"deleteEmail": {
+						"title": "サブメールを削除",
+						"description": "メール {email} を削除しますか。"
+					},
+					"revokeSession": {
+						"title": "ログイン端末を無効化",
+						"description": "{device} のログインセッションを無効化しますか。"
+					},
+					"revokeAllSessions": {
+						"title": "他の全セッションを無効化",
+						"description": "このユーザーの他の有効セッションをすべて無効化します。対象が現在の管理者本人なら現在のセッションは維持されます。"
+					},
+					"unlinkOAuth": {
+						"title": "OAuth 連携を解除",
+						"description": "{provider} OAuth 連携を解除しますか。"
+					},
+					"deleteUser": {
+						"title": "アカウントを直接削除",
+						"description": "ユーザー {username}（{userId}）を直接削除しますか。この操作は元に戻せません。"
+					}
+				},
+				"deleteImpact": {
+					"emails": "メール記録",
+					"oauthConnections": "OAuth 連携",
+					"refreshTokens": "ログインセッション",
+					"securityEvents": "セキュリティイベント",
+					"minecraftAccounts": "Minecraft 連携",
+					"attachments": "添付ファイル"
+				}
 			}
 		},
 		"attachments": {

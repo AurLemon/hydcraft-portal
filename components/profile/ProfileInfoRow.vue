@@ -1,5 +1,7 @@
 <template>
-	<div class="flex items-center justify-between gap-4 text-sm">
+	<div
+		class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4 text-sm"
+	>
 		<span class="text-slate-500 dark:text-slate-400">{{ label }}</span>
 		<a
 			v-if="href"

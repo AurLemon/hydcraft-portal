@@ -1,4 +1,4 @@
-import { randomInt } from 'node:crypto'
+import type { H3Event } from 'h3'
 import type {
 	Prisma,
 	User,
@@ -10,6 +10,7 @@ import { getPublicAttachmentUrl } from '../attachment/runtime'
 import { createApiError, createBadRequestError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from '../profile/defaults'
+import { createUniqueHydrolineId } from '../profile/hydroline-id'
 import {
 	normalizeAuthMeUsername,
 	readVerifiedAuthMeAccountByUsername,
@@ -39,6 +40,13 @@ import {
 	normalizeUsername,
 	normalizeUsernameForComparison,
 } from '../profile/validation'
+import { assertPassword } from '../auth/validation'
+import { hashPassword } from '../auth/password'
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../ip-location/ip-location'
+import { recordSecurityEvent } from '../security/security-events'
 
 const USER_ROLES = new Set<UserRole>(['USER', 'MEMBER', 'ADMIN', 'OWNER'])
 const USER_STATUSES = new Set<UserStatus>([
@@ -57,7 +65,6 @@ const USER_SORT_FIELDS = new Set([
 	'role',
 	'status',
 ])
-const HYDROLINE_RANDOM_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const MINECRAFT_UUID_PATTERN =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -137,53 +144,6 @@ const normalizeRegenerateHydrolineId = (value: unknown): boolean => {
 	}
 
 	return normalizeBoolean(value, 'regenerateHydrolineId') ?? false
-}
-
-const formatHydrolineDatePart = (date: Date): string => {
-	const year = date.getUTCFullYear().toString().slice(-2)
-	const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-	const day = String(date.getUTCDate()).padStart(2, '0')
-
-	return `${year}${month}${day}`
-}
-
-const generateHydrolineRandomPart = (): string =>
-	Array.from(
-		{ length: 6 },
-		() =>
-			HYDROLINE_RANDOM_ALPHABET[randomInt(HYDROLINE_RANDOM_ALPHABET.length)] ??
-			'0',
-	).join('')
-
-const generateUniqueHydrolineId = async (
-	userId: string,
-	joinedAt: Date,
-): Promise<string> => {
-	const datePart = formatHydrolineDatePart(joinedAt)
-
-	for (let attempt = 0; attempt < 20; attempt += 1) {
-		const hydrolineId = `H-${datePart}${generateHydrolineRandomPart()}`
-		const exists = await prisma.user.findFirst({
-			where: {
-				hydrolineId,
-				id: {
-					not: userId,
-				},
-			},
-			select: {
-				id: true,
-			},
-		})
-
-		if (!exists) {
-			return hydrolineId
-		}
-	}
-
-	throw createApiError({
-		statusCode: 500,
-		code: 'HYDROLINE_ID_GENERATION_FAILED',
-	})
 }
 
 const resolveReadyAttachmentUrl = async (
@@ -867,7 +827,11 @@ export const updateAdminUser = async (
 	}
 
 	const generatedHydrolineId = regenerateHydrolineId
-		? await generateUniqueHydrolineId(userId, joinedAt ?? targetUser.joinedAt)
+		? await createUniqueHydrolineId({
+				userId,
+				joinedAt: joinedAt ?? targetUser.joinedAt,
+				errorCode: 'HYDROLINE_ID_GENERATION_FAILED',
+			})
 		: undefined
 	const avatarUrl = resetAvatar
 		? null
@@ -1006,4 +970,750 @@ export const updateAdminUser = async (
 	}
 
 	return await getAdminUser(userId)
+}
+
+const ADMIN_SECURITY_EVENT_LIMIT = 10
+
+const getTargetUserForAdminAction = async (userId: string) => {
+	const targetUser = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			id: true,
+			username: true,
+			displayName: true,
+			email: true,
+			emailVerifiedAt: true,
+			role: true,
+			status: true,
+			lastLoginAt: true,
+		},
+	})
+
+	if (!targetUser) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'USER_NOT_FOUND',
+		})
+	}
+
+	return targetUser
+}
+
+const assertOwnerSecurityActionAllowed = (
+	actingUser: User,
+	targetUserRole: UserRole,
+): void => {
+	if (targetUserRole === 'OWNER' && actingUser.role !== 'OWNER') {
+		throw createApiError({
+			statusCode: 403,
+			code: 'OWNER_SECURITY_ACTION_REQUIRES_OWNER',
+		})
+	}
+}
+
+const ensurePrimaryEmailRecord = async (input: {
+	userId: string
+	email: string | null
+	emailVerifiedAt: Date | null
+}): Promise<void> => {
+	if (!input.email) {
+		return
+	}
+
+	await prisma.userEmail.upsert({
+		where: {
+			email: input.email,
+		},
+		create: {
+			userId: input.userId,
+			email: input.email,
+			kind: 'PRIMARY',
+			verifiedAt: input.emailVerifiedAt,
+		},
+		update: {
+			userId: input.userId,
+			kind: 'PRIMARY',
+			verifiedAt: input.emailVerifiedAt,
+		},
+	})
+}
+
+const serializeIpLocation = (
+	location: Awaited<ReturnType<typeof lookupIpLocation>>,
+) =>
+	location
+		? {
+				raw: location.raw,
+				country: location.country,
+				countryCode: location.countryCode,
+				region: location.region,
+				province: location.province,
+				city: location.city,
+				district: location.district,
+				isp: location.isp,
+				display: location.display,
+			}
+		: null
+
+const readSecuritySessions = async (
+	userId: string,
+	currentSessionId?: string | null,
+) => {
+	const sessions = await prisma.refreshToken.findMany({
+		where: {
+			userId,
+			revokedAt: null,
+			expiresAt: {
+				gt: new Date(),
+			},
+		},
+		orderBy: {
+			updatedAt: 'desc',
+		},
+		select: {
+			id: true,
+			userAgent: true,
+			ipAddress: true,
+			expiresAt: true,
+			createdAt: true,
+			updatedAt: true,
+		},
+	})
+
+	return await Promise.all(
+		sessions.map(async (session) => ({
+			...session,
+			ipAddress:
+				normalizeIpAddressForDisplay(session.ipAddress) ?? session.ipAddress,
+			ipLocation: serializeIpLocation(
+				await lookupIpLocation(session.ipAddress),
+			),
+			current: session.id === currentSessionId,
+		})),
+	)
+}
+
+const readSecurityEvents = async (userId: string) => {
+	const events = await prisma.securityEvent.findMany({
+		where: {
+			userId,
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+		take: ADMIN_SECURITY_EVENT_LIMIT,
+	})
+
+	return await Promise.all(
+		events.map(async (securityEvent) => ({
+			...securityEvent,
+			ipAddress:
+				normalizeIpAddressForDisplay(securityEvent.ipAddress) ??
+				securityEvent.ipAddress,
+			ipLocation: serializeIpLocation(
+				await lookupIpLocation(securityEvent.ipAddress),
+			),
+		})),
+	)
+}
+
+export const getAdminUserSecurity = async (
+	userId: string,
+	currentSessionId?: string | null,
+) => {
+	const targetUser = await getTargetUserForAdminAction(userId)
+
+	await ensurePrimaryEmailRecord({
+		userId: targetUser.id,
+		email: targetUser.email,
+		emailVerifiedAt: targetUser.emailVerifiedAt,
+	})
+
+	const [
+		credential,
+		emails,
+		oauthConnections,
+		sessions,
+		events,
+		securityEventCount,
+	] = await Promise.all([
+		prisma.userCredential.findUnique({
+			where: {
+				userId,
+			},
+			select: {
+				id: true,
+			},
+		}),
+		prisma.userEmail.findMany({
+			where: {
+				userId,
+			},
+			orderBy: [{ kind: 'asc' }, { createdAt: 'asc' }],
+		}),
+		prisma.externalAccount.findMany({
+			where: {
+				userId,
+			},
+			orderBy: [{ disconnectedAt: 'asc' }, { connectedAt: 'desc' }],
+			select: {
+				id: true,
+				provider: true,
+				providerAccountId: true,
+				providerUsername: true,
+				providerEmail: true,
+				avatarAttachmentId: true,
+				avatarUrl: true,
+				scope: true,
+				connectedAt: true,
+				lastUsedAt: true,
+				disconnectedAt: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		}),
+		readSecuritySessions(userId, currentSessionId),
+		readSecurityEvents(userId),
+		prisma.securityEvent.count({
+			where: {
+				userId,
+			},
+		}),
+	])
+
+	return {
+		security: {
+			overview: {
+				status: targetUser.status,
+				role: targetUser.role,
+				primaryEmail: targetUser.email,
+				emailVerifiedAt: targetUser.emailVerifiedAt,
+				hasPassword: Boolean(credential),
+				lastLoginAt: targetUser.lastLoginAt,
+				activeSessionCount: sessions.length,
+				securityEventCount,
+			},
+			oauthConnections,
+			emails,
+			sessions,
+			events,
+		},
+	}
+}
+
+export const adminSetUserPassword = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	password: string
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const password = assertPassword(input.password)
+	const passwordHash = await hashPassword(password)
+
+	await prisma.userCredential.upsert({
+		where: {
+			userId: input.userId,
+		},
+		create: {
+			userId: input.userId,
+			passwordHash,
+		},
+		update: {
+			passwordHash,
+		},
+	})
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'PASSWORD_CHANGED',
+		title: 'Password changed',
+		description: `Reset by admin ${input.actingUser.username}`,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+		},
+	})
+
+	return {
+		ok: true,
+	}
+}
+
+export const adminSetPrimaryEmail = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	emailId: string
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const email = await prisma.userEmail.findFirst({
+		where: {
+			id: input.emailId,
+			userId: input.userId,
+		},
+	})
+
+	if (!email) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'EMAIL_NOT_FOUND',
+		})
+	}
+
+	if (!email.verifiedAt) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'EMAIL_NOT_VERIFIED',
+		})
+	}
+
+	await prisma.$transaction(async (tx) => {
+		await tx.userEmail.updateMany({
+			where: {
+				userId: input.userId,
+				kind: 'PRIMARY',
+			},
+			data: {
+				kind: 'SECONDARY',
+			},
+		})
+		await tx.userEmail.update({
+			where: {
+				id: email.id,
+			},
+			data: {
+				kind: 'PRIMARY',
+			},
+		})
+		await tx.user.update({
+			where: {
+				id: input.userId,
+			},
+			data: {
+				email: email.email,
+				emailVerifiedAt: email.verifiedAt,
+			},
+		})
+	})
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'PRIMARY_EMAIL_CHANGED',
+		title: 'Primary email changed',
+		description: email.email,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+			emailId: email.id,
+			email: email.email,
+		},
+	})
+
+	return {
+		ok: true,
+		primaryEmail: email.email,
+	}
+}
+
+export const adminDeleteSecondaryEmail = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	emailId: string
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const email = await prisma.userEmail.findFirst({
+		where: {
+			id: input.emailId,
+			userId: input.userId,
+		},
+	})
+
+	if (!email) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'EMAIL_NOT_FOUND',
+		})
+	}
+
+	if (email.kind === 'PRIMARY') {
+		throw badRequest('PRIMARY_EMAIL_CANNOT_BE_REMOVED')
+	}
+
+	await prisma.userEmail.delete({
+		where: {
+			id: email.id,
+		},
+	})
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'SECONDARY_EMAIL_REMOVED',
+		title: 'Secondary email removed',
+		description: email.email,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+			emailId: email.id,
+			email: email.email,
+		},
+	})
+
+	return {
+		ok: true,
+	}
+}
+
+export const adminRevokeUserSession = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	sessionId: string
+	currentSessionId?: string | null
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const session = await prisma.refreshToken.findFirst({
+		where: {
+			id: input.sessionId,
+			userId: input.userId,
+			revokedAt: null,
+		},
+	})
+
+	if (!session) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'SESSION_NOT_FOUND',
+		})
+	}
+
+	await prisma.refreshToken.update({
+		where: {
+			id: session.id,
+		},
+		data: {
+			revokedAt: new Date(),
+		},
+	})
+
+	const isCurrentSession = input.currentSessionId === session.id
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'SESSION_REVOKED',
+		title: isCurrentSession
+			? 'Current login device revoked'
+			: 'Login device revoked',
+		description: session.userAgent,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+			sessionId: session.id,
+			current: isCurrentSession,
+		},
+	})
+
+	return {
+		ok: true,
+		current: isCurrentSession,
+	}
+}
+
+export const adminRevokeAllUserSessions = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	currentSessionId?: string | null
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const preserveCurrentSession =
+		input.currentSessionId && input.actingUser.id === input.userId
+			? input.currentSessionId
+			: null
+	const result = await prisma.refreshToken.updateMany({
+		where: {
+			userId: input.userId,
+			revokedAt: null,
+			id: preserveCurrentSession
+				? {
+						not: preserveCurrentSession,
+					}
+				: undefined,
+		},
+		data: {
+			revokedAt: new Date(),
+		},
+	})
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'SESSIONS_REVOKED',
+		title: 'Other login devices revoked',
+		description: `Revoked ${result.count} device(s)`,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+			count: result.count,
+			preservedSessionId: preserveCurrentSession,
+		},
+	})
+
+	return {
+		ok: true,
+		count: result.count,
+	}
+}
+
+export const adminUnlinkOAuthConnection = async (input: {
+	event: H3Event
+	actingUser: User
+	userId: string
+	connectionId: string
+}) => {
+	const targetUser = await getTargetUserForAdminAction(input.userId)
+	assertOwnerSecurityActionAllowed(input.actingUser, targetUser.role)
+
+	const account = await prisma.externalAccount.findFirst({
+		where: {
+			id: input.connectionId,
+			userId: input.userId,
+		},
+	})
+
+	if (!account) {
+		throw createApiError({
+			statusCode: 404,
+			code: 'OAUTH_CONNECTION_NOT_FOUND',
+		})
+	}
+
+	if (!account.disconnectedAt) {
+		const [credential, otherActiveExternalAccounts] = await Promise.all([
+			prisma.userCredential.findUnique({
+				where: {
+					userId: input.userId,
+				},
+				select: {
+					id: true,
+				},
+			}),
+			prisma.externalAccount.count({
+				where: {
+					userId: input.userId,
+					disconnectedAt: null,
+					id: {
+						not: account.id,
+					},
+				},
+			}),
+		])
+
+		if (!credential && otherActiveExternalAccounts < 1) {
+			throw createApiError({
+				statusCode: 400,
+				code: 'LAST_LOGIN_METHOD_REQUIRED',
+			})
+		}
+
+		await prisma.externalAccount.update({
+			where: {
+				id: account.id,
+			},
+			data: {
+				disconnectedAt: new Date(),
+				avatarAttachmentId: null,
+				avatarUrl: null,
+			},
+		})
+	}
+
+	await recordSecurityEvent({
+		event: input.event,
+		userId: input.userId,
+		type: 'OAUTH_UNLINKED',
+		title: 'OAuth account unlinked',
+		description: account.provider,
+		metadata: {
+			source: 'admin',
+			actorUserId: input.actingUser.id,
+			provider: account.provider,
+			providerAccountId: account.providerAccountId,
+			accountId: account.id,
+		},
+	})
+
+	await emitEvent('user.oauth.unlinked', {
+		userId: input.userId,
+		provider: account.provider,
+		externalAccountId: account.id,
+		avatarAttachmentId: account.avatarAttachmentId,
+		avatarUrl: account.avatarUrl,
+		updatedAt: new Date(),
+	})
+
+	return {
+		ok: true,
+	}
+}
+
+const readAdminUserDeletePreviewData = async (userId: string) => {
+	const user = await getTargetUserForAdminAction(userId)
+	const externalAccountIds = (
+		await prisma.externalAccount.findMany({
+			where: {
+				userId,
+			},
+			select: {
+				id: true,
+			},
+		})
+	).map((account) => account.id)
+
+	const [
+		emails,
+		oauthConnections,
+		refreshTokens,
+		securityEvents,
+		minecraftAccounts,
+		profileAttachments,
+		externalAccountAttachments,
+	] = await Promise.all([
+		prisma.userEmail.count({
+			where: {
+				userId,
+			},
+		}),
+		prisma.externalAccount.count({
+			where: {
+				userId,
+			},
+		}),
+		prisma.refreshToken.count({
+			where: {
+				userId,
+			},
+		}),
+		prisma.securityEvent.count({
+			where: {
+				userId,
+			},
+		}),
+		prisma.minecraftAccount.count({
+			where: {
+				userId,
+			},
+		}),
+		prisma.attachment.count({
+			where: {
+				ownerType: 'user',
+				ownerId: userId,
+			},
+		}),
+		externalAccountIds.length
+			? prisma.attachment.count({
+					where: {
+						ownerType: 'external-account',
+						ownerId: {
+							in: externalAccountIds,
+						},
+					},
+				})
+			: Promise.resolve(0),
+	])
+
+	return {
+		user: {
+			id: user.id,
+			username: user.username,
+			displayName: user.displayName,
+			email: user.email,
+			role: user.role,
+		},
+		impact: {
+			emails,
+			oauthConnections,
+			refreshTokens,
+			securityEvents,
+			minecraftAccounts,
+			attachments: profileAttachments + externalAccountAttachments,
+		},
+		externalAccountIds,
+	}
+}
+
+export const previewAdminUserDeletion = async (
+	actingUser: User,
+	userId: string,
+) => {
+	if (actingUser.role !== 'OWNER') {
+		throw ownerRoleError()
+	}
+
+	const preview = await readAdminUserDeletePreviewData(userId)
+
+	if (actingUser.id === userId) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'ADMIN_SELF_DELETE_FORBIDDEN',
+		})
+	}
+
+	return {
+		user: preview.user,
+		impact: preview.impact,
+	}
+}
+
+export const adminDeleteUser = async (input: {
+	actingUser: User
+	userId: string
+}) => {
+	if (input.actingUser.role !== 'OWNER') {
+		throw ownerRoleError()
+	}
+
+	if (input.actingUser.id === input.userId) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'ADMIN_SELF_DELETE_FORBIDDEN',
+		})
+	}
+
+	const preview = await readAdminUserDeletePreviewData(input.userId)
+
+	await prisma.user.delete({
+		where: {
+			id: input.userId,
+		},
+	})
+
+	await emitEvent('admin.user.deleted', {
+		userId: input.userId,
+		externalAccountIds: preview.externalAccountIds,
+		deletedAt: new Date(),
+	})
+
+	return {
+		ok: true,
+		deletedUser: preview.user,
+		impact: preview.impact,
+	}
 }

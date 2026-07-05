@@ -470,6 +470,92 @@ export interface AdminUser {
 	minecraftAccounts: MinecraftAccountSummary[]
 }
 
+export interface AdminUserSecurityOverview {
+	status: AdminUserStatus
+	role: AdminUserRole
+	primaryEmail: string | null
+	emailVerifiedAt: string | null
+	hasPassword: boolean
+	lastLoginAt: string | null
+	activeSessionCount: number
+	securityEventCount: number
+}
+
+export interface AdminUserOAuthConnection {
+	id: string
+	provider: string
+	providerAccountId: string
+	providerUsername: string | null
+	providerEmail: string | null
+	avatarAttachmentId: string | null
+	avatarUrl: string | null
+	scope: string | null
+	connectedAt: string
+	lastUsedAt: string | null
+	disconnectedAt: string | null
+	createdAt: string
+	updatedAt: string
+}
+
+export interface AdminUserEmail {
+	id: string
+	email: string
+	kind: 'PRIMARY' | 'SECONDARY'
+	verifiedAt: string | null
+	createdAt: string
+	updatedAt: string
+}
+
+export interface AdminUserSession {
+	id: string
+	userAgent: string | null
+	ipAddress: string | null
+	ipLocation: IpLocationSummary | null
+	expiresAt: string
+	createdAt: string
+	updatedAt: string
+	current: boolean
+}
+
+export interface AdminUserSecurityEvent {
+	id: string
+	type: string
+	title: string
+	description: string | null
+	ipAddress: string | null
+	ipLocation: IpLocationSummary | null
+	userAgent: string | null
+	createdAt: string
+}
+
+export interface AdminUserSecurityResponse {
+	security: {
+		overview: AdminUserSecurityOverview
+		oauthConnections: AdminUserOAuthConnection[]
+		emails: AdminUserEmail[]
+		sessions: AdminUserSession[]
+		events: AdminUserSecurityEvent[]
+	}
+}
+
+export interface AdminUserDeletePreviewResponse {
+	user: {
+		id: string
+		username: string
+		displayName: string | null
+		email: string | null
+		role: AdminUserRole
+	}
+	impact: {
+		emails: number
+		oauthConnections: number
+		refreshTokens: number
+		securityEvents: number
+		minecraftAccounts: number
+		attachments: number
+	}
+}
+
 export interface AdminUsersResponse {
 	items: AdminUser[]
 	page: number

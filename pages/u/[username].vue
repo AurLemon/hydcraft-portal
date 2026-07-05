@@ -1,5 +1,5 @@
 <template>
-	<div class="site-shell mx-auto pb-16">
+	<div class="site-shell pb-16">
 		<div v-if="pending" class="grid gap-5">
 			<USkeleton class="h-80 rounded-lg" />
 			<div class="grid gap-4 lg:grid-cols-3">
@@ -187,11 +187,11 @@
 						</div>
 					</section>
 
-					<section :class="sideCardClass">
+					<section v-if="hasSocialActions" :class="sideCardClass">
 						<h3 :class="sideTitleClass">
 							{{ t('profile.public.sections.social') }}
 						</h3>
-						<div v-if="socialActions.length" class="mt-4 flex flex-wrap gap-2">
+						<div class="mt-4 flex flex-wrap gap-2">
 							<UTooltip
 								v-for="action in socialActions"
 								:key="action.label"
@@ -218,9 +218,6 @@
 									<!-- eslint-enable vue/no-v-html -->
 								</UButton>
 							</UTooltip>
-						</div>
-						<div v-else class="mt-4 text-sm text-slate-500 dark:text-slate-400">
-							{{ t('profile.public.empty.social') }}
 						</div>
 					</section>
 				</div>
@@ -655,6 +652,8 @@ const socialActions = computed<SocialAction[]>(() => {
 
 	return actions
 })
+
+const hasSocialActions = computed<boolean>(() => socialActions.value.length > 0)
 
 // Minecraft 账号数组 + 选中态（复刻 /me/minecraft 的选中逻辑，裁掉 save/bind）。
 const { data: minecraftAccountsData, pending: minecraftAccountsPending } =

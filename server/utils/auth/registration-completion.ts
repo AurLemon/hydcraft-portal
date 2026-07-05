@@ -2,10 +2,8 @@ import type { ExternalProvider, Prisma, User } from '~/generated/prisma/client'
 import { getAttachmentService } from '../attachment/runtime'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
-import {
-	createUniqueHydrolineId,
-	ensureUserProfileDefaults,
-} from '../profile/defaults'
+import { ensureUserProfileDefaults } from '../profile/defaults'
+import { createUniqueHydrolineId } from '../profile/hydroline-id'
 import { consumeAuthEmailCode } from './email-code'
 import { assertEmail, assertHandle } from './validation'
 import { getRegistrationTicket } from './registration-ticket'

@@ -1,5 +1,4 @@
 import { prisma } from '../db/prisma'
-import { createApiError } from '../errors'
 import type { UserProfilePrivacySummary } from './types'
 
 export const defaultProfilePrivacy: UserProfilePrivacySummary = {
@@ -16,37 +15,6 @@ export const defaultProfilePrivacy: UserProfilePrivacySummary = {
 	showActivityStatus: true,
 	searchableInUserDirectory: true,
 	allowMinecraftProfileDiscovery: true,
-}
-
-const createHydrolineId = (): string => {
-	const now = new Date()
-	const year = now.getUTCFullYear()
-	const suffix = Math.floor(100000 + Math.random() * 900000)
-
-	return `H-${year}${suffix}`
-}
-
-export const createUniqueHydrolineId = async (): Promise<string> => {
-	for (let attempt = 0; attempt < 8; attempt += 1) {
-		const hydrolineId = createHydrolineId()
-		const exists = await prisma.user.findUnique({
-			where: {
-				hydrolineId,
-			},
-			select: {
-				id: true,
-			},
-		})
-
-		if (!exists) {
-			return hydrolineId
-		}
-	}
-
-	throw createApiError({
-		statusCode: 500,
-		code: 'HYDROLINE_ID_CREATE_FAILED',
-	})
 }
 
 export const ensureUserProfileDefaults = async (

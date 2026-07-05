@@ -19,7 +19,9 @@
 
 			<div class="mx-auto mt-16 grid w-full max-w-3xl gap-16">
 				<section class="grid gap-3">
-					<div class="mx-1 flex items-center justify-between gap-3">
+					<div
+						class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+					>
 						<div :class="profileSectionTitleClass">
 							{{ t('profile.security.sections.overview') }}
 						</div>
@@ -64,9 +66,7 @@
 				</section>
 
 				<section class="grid gap-3">
-					<div
-						class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-					>
+					<div class="mx-1 flex items-center justify-between gap-3">
 						<div :class="profileSectionTitleClass">
 							{{ t('profile.security.sections.emails') }}
 						</div>

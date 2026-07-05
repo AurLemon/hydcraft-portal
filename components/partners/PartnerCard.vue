@@ -13,7 +13,7 @@
 		>
 			<div class="relative h-46 overflow-hidden">
 				<SkeletonImage
-					:src="coverSrc"
+					:src="displayCover"
 					:alt="partner.name"
 					class="block h-full w-full"
 					:image-class="coverImageClass"
@@ -53,7 +53,7 @@
 							:src="partner.avatarUrl || undefined"
 							:alt="partner.name"
 							size="3xl"
-							class="shrink-0 w-14 h-14 rounded-lg ring-2 ring-white/24 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
+							class="shrink-0 w-14 h-14 rounded-lg ring-2 ring-white/24"
 							:ui="{
 								root: 'rounded-lg overflow-hidden bg-white/14 text-white backdrop-blur-sm',
 								fallback: 'rounded-lg bg-transparent text-white',
@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import defaultCover from '~/assets/resources/pages/partners_cover.webp'
+import { getPartnerDisplayCover } from '~/utils/community/partner-cover'
 import type { PartnerSummary } from '~/utils/community/partners'
 
 const props = defineProps<{
@@ -117,7 +117,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const opensExternally = computed(() => Boolean(props.partner.websiteUrl))
-const coverSrc = computed(() => props.partner.coverUrl || defaultCover)
+const displayCover = computed(() => getPartnerDisplayCover(props.partner))
 const coverImageClass = computed(() =>
 	[
 		'block h-full w-full object-cover brightness-[0.82] transition duration-300 group-hover:brightness-[0.96]',

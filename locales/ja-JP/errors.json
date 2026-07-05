@@ -103,6 +103,8 @@
 			"COS_CONFIG_MISSING": "オブジェクトストレージ設定が不足しています。",
 			"COS_PUBLIC_BASE_URL_MISSING": "オブジェクトストレージの公開 URL が不足しています。",
 			"OWNER_ROLE_REQUIRES_OWNER": "OWNER ロールの付与または削除は OWNER のみ可能です。",
+			"OWNER_SECURITY_ACTION_REQUIRES_OWNER": "OWNER アカウントへのセキュリティ操作は OWNER のみ可能です。",
+			"ADMIN_SELF_DELETE_FORBIDDEN": "現在ログイン中の管理者アカウントは直接削除できません。",
 			"ROLE_INVALID": "ロールパラメータが無効です。",
 			"STATUS_INVALID": "ステータスパラメータが無効です。",
 			"BADGE_IDS_INVALID": "Badge パラメータが無効です。",

@@ -7,10 +7,8 @@ import {
 	assertHandle,
 	assertPassword,
 } from '../../utils/auth/validation'
-import {
-	createUniqueHydrolineId,
-	ensureUserProfileDefaults,
-} from '../../utils/profile/defaults'
+import { ensureUserProfileDefaults } from '../../utils/profile/defaults'
+import { createUniqueHydrolineId } from '../../utils/profile/hydroline-id'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
 import { emitEvent } from '../../utils/events/event-bus'

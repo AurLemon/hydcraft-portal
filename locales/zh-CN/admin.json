@@ -592,6 +592,7 @@
 				"profile": "个人资料",
 				"attachments": "头像与封面",
 				"minecraftAccounts": "Minecraft 绑定管理",
+				"security": "账号安全",
 				"preferences": "偏好",
 				"social": "社交链接",
 				"privacy": "公开信息",
@@ -680,6 +681,133 @@
 				"back": "返回用户列表",
 				"fallbackTitle": "用户",
 				"loadFailed": "加载用户信息失败"
+			},
+			"security": {
+				"sections": {
+					"overview": "安全概览",
+					"oauth": "OAuth 绑定",
+					"emails": "邮箱管理",
+					"sessions": "登录设备",
+					"events": "最近安全事件",
+					"dangerZone": "危险操作"
+				},
+				"fields": {
+					"accountStatus": "账号状态",
+					"currentRole": "当前角色",
+					"credentialType": "密码凭证",
+					"primaryEmail": "主邮箱",
+					"lastLogin": "最后登录",
+					"activeSessionCount": "活跃会话数",
+					"recentSecurityEvents": "安全事件总数",
+					"providerAccountId": "平台账号 ID",
+					"providerUsername": "平台用户名",
+					"providerEmail": "平台邮箱",
+					"connectedAt": "绑定时间",
+					"lastUsedAt": "最近使用",
+					"disconnectedAt": "解绑时间",
+					"newPassword": "新密码"
+				},
+				"actions": {
+					"resetPassword": "重置密码",
+					"confirmResetPassword": "确认重置密码",
+					"setPrimaryEmail": "设为主邮箱",
+					"confirmSetPrimaryEmail": "确认设为主邮箱",
+					"deleteEmail": "删除邮箱",
+					"confirmDeleteEmail": "确认删除邮箱",
+					"revokeSession": "撤销会话",
+					"confirmRevokeSession": "确认撤销会话",
+					"revokeAllSessions": "撤销全部其他会话",
+					"confirmRevokeAllSessions": "确认全部撤销",
+					"unlinkOAuth": "解除 OAuth 绑定",
+					"confirmUnlinkOAuth": "确认解除绑定",
+					"deleteUser": "直接删除账号",
+					"confirmDeleteUser": "确认直接删除"
+				},
+				"states": {
+					"connected": "已绑定",
+					"disconnected": "已解绑",
+					"primaryEmail": "主邮箱",
+					"verified": "已验证",
+					"unverified": "未验证"
+				},
+				"sessions": {
+					"activeCount": "{count} 个活跃",
+					"current": "当前会话"
+				},
+				"empty": {
+					"loadFailed": "安全信息加载失败",
+					"oauthConnections": "暂无 OAuth 绑定记录。",
+					"emails": "暂无邮箱记录。",
+					"sessions": "暂无活跃会话。",
+					"events": "暂无安全事件记录。"
+				},
+				"values": {
+					"empty": "暂无",
+					"passwordSet": "已设置密码",
+					"passwordNotSet": "未设置密码",
+					"noRecord": "暂无记录",
+					"unknownLocation": "未知位置",
+					"unknownIp": "未知 IP",
+					"ipAddress": "IP：{ip}"
+				},
+				"devices": {
+					"unknown": "未知设备"
+				},
+				"notifications": {
+					"passwordReset": "密码已重置",
+					"passwordResetFailed": "重置密码失败",
+					"primaryEmailChanged": "主邮箱已更新",
+					"primaryEmailChangeFailed": "更新主邮箱失败",
+					"emailDeleted": "邮箱已删除",
+					"emailDeleteFailed": "删除邮箱失败",
+					"sessionRevoked": "会话已撤销",
+					"sessionRevokeFailed": "撤销会话失败",
+					"allSessionsRevoked": "其他会话已全部撤销",
+					"allSessionsRevokeFailed": "批量撤销会话失败",
+					"oauthUnlinked": "OAuth 绑定已解除",
+					"oauthUnlinkFailed": "解除 OAuth 绑定失败",
+					"deletePreviewFailed": "加载删号预检失败",
+					"userDeleted": "账号已直接删除",
+					"userDeleteFailed": "直接删除账号失败"
+				},
+				"modals": {
+					"passwordReset": {
+						"title": "管理员重置密码",
+						"description": "将直接覆盖该用户当前密码，不会展示或回显明文密码。"
+					},
+					"setPrimaryEmail": {
+						"title": "设为主邮箱",
+						"description": "确认将 {email} 设为该用户的主邮箱。"
+					},
+					"deleteEmail": {
+						"title": "删除次邮箱",
+						"description": "确认删除邮箱 {email}。"
+					},
+					"revokeSession": {
+						"title": "撤销登录设备",
+						"description": "确认撤销 {device} 对应的登录会话。"
+					},
+					"revokeAllSessions": {
+						"title": "撤销全部其他会话",
+						"description": "确认撤销该用户的全部其他活跃会话。若目标就是当前管理员本人，会保留当前会话。"
+					},
+					"unlinkOAuth": {
+						"title": "解除 OAuth 绑定",
+						"description": "确认解除 {provider} OAuth 绑定。"
+					},
+					"deleteUser": {
+						"title": "直接删除账号",
+						"description": "确认直接删除用户 {username}（{userId}）。此操作不可恢复。"
+					}
+				},
+				"deleteImpact": {
+					"emails": "邮箱记录",
+					"oauthConnections": "OAuth 绑定",
+					"refreshTokens": "登录会话",
+					"securityEvents": "安全事件",
+					"minecraftAccounts": "Minecraft 绑定",
+					"attachments": "附件"
+				}
 			}
 		},
 		"attachments": {

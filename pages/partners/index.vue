@@ -50,7 +50,7 @@
 							class="rounded-md px-2 py-1 text-sm transition-colors"
 							:class="
 								activeCommunityKind === item.value
-									? activeCommunityTabClass
+									? 'bg-primary-500 text-white dark:bg-white dark:text-slate-950'
 									: 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
 							"
 							@click="activeCommunityKind = item.value"
@@ -126,7 +126,6 @@ import type {
 } from '~/utils/community/partners'
 
 const { t } = useI18n()
-const colorMode = useColorMode()
 const { data, pending } =
 	await useFetch<PartnersPublicResponse>('/api/partners')
 
@@ -140,11 +139,6 @@ type CommunityTabValue = 'ALL' | Extract<PartnerKind, 'SERVER' | 'ORGANIZATION'>
 const activeCommunityKind = ref<CommunityTabValue>('ALL')
 const emptyStateClass =
 	'rounded-xl bg-white p-8 text-center text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400'
-
-const isLightMode = computed(() => colorMode.value === 'light')
-const activeCommunityTabClass = computed(() =>
-	isLightMode.value ? 'bg-primary-500 text-white' : 'bg-white text-slate-950',
-)
 const communityTabs = computed<CommunityTabItem[]>(() => [
 	{ label: t('content.partners.kinds.ALL'), value: 'ALL' },
 	{ label: t('content.partners.kinds.SERVER'), value: 'SERVER' },

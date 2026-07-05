@@ -144,6 +144,11 @@ interface EventMap {
 		userId: string
 		occurredAt: Date
 	}
+	'admin.user.deleted': {
+		userId: string
+		externalAccountIds: string[]
+		deletedAt: Date
+	}
 	'partner.created': {
 		partnerId: string
 		actorUserId: string

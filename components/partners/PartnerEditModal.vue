@@ -68,10 +68,10 @@
 							{{ t('admin.partners.fields.cover') }}
 						</span>
 						<div
-							class="h-28 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800"
+							class="h-28 overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-700"
 						>
 							<SkeletonImage
-								:src="coverSrc"
+								:src="displayCover"
 								:alt="currentPartner?.name || ''"
 								class="h-full w-full"
 								image-class="block h-full w-full object-cover transition-opacity duration-200"
@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
-import defaultCover from '~/assets/resources/pages/partners_cover.webp'
+import { getPartnerDisplayCover } from '~/utils/community/partner-cover'
 import type { PartnerSummary } from '~/utils/community/partners'
 
 interface PartnerEditModalProps {
@@ -164,7 +164,9 @@ const form = reactive({
 	websiteUrl: '',
 })
 
-const coverSrc = computed(() => currentPartner.value?.coverUrl || defaultCover)
+const displayCover = computed(() =>
+	getPartnerDisplayCover(currentPartner.value),
+)
 
 const syncForm = (): void => {
 	currentPartner.value = props.partner

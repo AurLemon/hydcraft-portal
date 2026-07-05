@@ -87,12 +87,16 @@
 					</label>
 				</div>
 
-				<div class="flex items-center justify-between gap-4 text-sm">
+				<div
+					class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm"
+				>
 					<UCheckbox
 						v-model="rememberMe"
 						:label="t('login.fields.rememberMe')"
 					/>
-					<div class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
+					<div
+						class="flex flex-wrap items-center md:justify-end gap-x-3 gap-y-1"
+					>
 						<button
 							type="button"
 							class="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"

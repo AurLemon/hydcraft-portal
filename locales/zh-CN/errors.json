@@ -103,6 +103,8 @@
 			"COS_CONFIG_MISSING": "对象存储配置缺失。",
 			"COS_PUBLIC_BASE_URL_MISSING": "对象存储公开访问地址缺失。",
 			"OWNER_ROLE_REQUIRES_OWNER": "只有 OWNER 可以授予或移除 OWNER 角色。",
+			"OWNER_SECURITY_ACTION_REQUIRES_OWNER": "只有 OWNER 可以对 OWNER 账号执行安全操作。",
+			"ADMIN_SELF_DELETE_FORBIDDEN": "不能直接删除当前登录的管理员账号。",
 			"ROLE_INVALID": "角色参数无效。",
 			"STATUS_INVALID": "状态参数无效。",
 			"BADGE_IDS_INVALID": "Badge 参数无效。",
