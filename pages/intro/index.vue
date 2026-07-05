@@ -35,6 +35,7 @@
 			</div>
 			<IntroFitCard />
 		</section>
+		<IntroCommunityChatSection />
 		<section class="flex flex-col gap-6">
 			<div class="flex justify-center">
 				<h2

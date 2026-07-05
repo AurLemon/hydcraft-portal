@@ -404,6 +404,70 @@
 					"charterLinkLabel": "View the full community covenant"
 				}
 			},
+			"communityChat": {
+				"title": "Looking Is One Thing. This Is How We Actually Chat.",
+				"cards": {
+					"performance": {
+						"messages": [
+							"Why can’t I log in again? My client is lagging like crazy too. Do we have an even lighter pack?",
+							"Tell me your specs first. At this point I really should put minimum and recommended requirements right on the page so we stop redoing this conversation every time.",
+							"A netbook. 8 GB of RAM.",
+							"Yeah, then the only real option is to slash graphics and view distance and make the best of it."
+						]
+					},
+					"housing": {
+						"messages": [
+							"Come claim your house, come claim your house, Big Noble Garden is now open for business!",
+							"Everyone, there are still empty lots. First come, first pick!",
+							"You’ve posted that often enough to sound like a real estate office.",
+							"Tone it down. You’re about to flood the whole chat.",
+							"At least post the floor plan first, or I’m just going to mute this."
+						]
+					},
+					"subgroup": {
+						"messages": [
+							"Oh my god, you listen to J-pop and magic-core stuff too? I’ve been looping it nonstop lately...!",
+							"Isn’t that way cooler than the main group? Nobody says anything there for half a day. I’m honestly tempted to make a new chat for people who are actually alive.",
+							"I’m still thinking about whether that phrase from Jiege was really written as \"zhuan da lang\", Tng-tua-lang and all that.",
+							"I still haven’t forgiven 25K for flinging my phone out of my pocket into a pit. That beat-up green bus was miserable. I am never taking it again.",
+							"Hold on, my Token plan is almost up and I still haven’t used the quota. I’m weirdly stressed about this."
+						]
+					},
+					"airport": {
+						"messages": [
+							"Now that the map has this much room, flying finally feels properly satisfying.",
+							"GOOD. I’m officially drafting airport regulations now: one city, one airport, no negotiations.",
+							"The dream is nice, but flying on the server is still pretty laggy, so we should solve the performance side first.",
+							"With a map like this, low-altitude routes and wilderness airstrips suddenly start feeling like Far Cry.",
+							"One city, one airport is fine, but that really does sound extremely American."
+						]
+					},
+					"pullUp": {
+						"messages": [
+							"Do people really do pull-ups that easily?",
+							"If you can’t, don’t panic. Most people in this group probably can’t either.",
+							"It’s less about brute force than people think. Get lighter, train your back and grip properly, and the movement gets much more realistic."
+						]
+					},
+					"college": {
+						"messages": [
+							"Damn, I’m really ending up at a non-elite school. Shenzhen University, here I come.",
+							"Staying in-province and still landing somewhere you can live with is honestly not bad, right?",
+							"Wait, wasn’t your earlier target HEFEI University of Technology?",
+							"Not enough points. Reality moved faster than the plan. Let me sit with it for a minute before I celebrate."
+						]
+					},
+					"exam": {
+						"messages": [
+							"Why is the transfer exam this hard? Group owner, save me.",
+							"Start with your region and track. These things fall apart fast if you copy a plan from the wrong province.",
+							"Are you on the arts side or the science side? Go look up successful cases from your province over the last two years first. I can only give you the general framework.",
+							"Southwest.",
+							"Then read your provincial policy first and do not force another region’s playbook onto it. The pace there may be looser than what we’re used to."
+						]
+					}
+				}
+			},
 			"staff": {
 				"title": "Who Keeps This Place Running",
 				"owner": {
