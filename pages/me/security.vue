@@ -20,7 +20,7 @@
 			<div class="mx-auto mt-16 grid w-full max-w-3xl gap-16">
 				<section class="grid gap-3">
 					<div
-						class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+						class="mx-1 flex gap-3 items-center justify-between"
 					>
 						<div :class="profileSectionTitleClass">
 							{{ t('profile.security.sections.overview') }}
@@ -171,7 +171,7 @@
 
 				<section class="grid gap-3">
 					<div
-						class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+						class="mx-1 flex flex-col gap-3 md:items-center md:justify-between"
 					>
 						<div class="flex items-center gap-2">
 							<div :class="profileSectionTitleClass">
@@ -226,9 +226,9 @@
 							<div
 								v-for="session in activeSessions"
 								:key="session.id"
-								class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+								class="flex gap-3 sm:items-start sm:justify-between"
 							>
-								<div class="flex min-w-0 items-start gap-3">
+								<div class="flex flex-1 min-w-0 items-start gap-3">
 									<UIcon
 										:name="parseDeviceFromUA(session.userAgent).icon"
 										class="mt-1 size-5 shrink-0 text-slate-400"
@@ -246,18 +246,19 @@
 												{{ t('profile.security.sessions.current') }}
 											</UBadge>
 										</div>
-										<p class="mt-0.5 text-sm text-slate-500">
+										<p class="mt-0.5 text-sm text-slate-500 break-all">
 											{{ getIpLocationDisplay(session) }}
 										</p>
-										<p class="text-sm text-slate-500">
+										<p class="text-sm text-slate-500 break-all">
 											{{ getIpAddressDisplay(session.ipAddress) }}
 										</p>
-										<p class="text-sm text-slate-500">
+										<p class="text-sm text-slate-500 break-all">
 											{{ formatDateTime(session.updatedAt) }}
 										</p>
 									</div>
 								</div>
 								<UButton
+								class="h-fit"
 									type="button"
 									color="error"
 									variant="soft"
@@ -361,7 +362,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"
@@ -412,7 +413,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"
@@ -460,7 +461,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"
@@ -539,7 +540,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"
@@ -601,7 +602,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"
@@ -669,7 +670,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-2 justify-end"
 					>
 						<UButton
 							type="button"

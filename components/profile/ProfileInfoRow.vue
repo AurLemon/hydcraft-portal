@@ -8,10 +8,10 @@
 			:href="href"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="flex min-w-0 items-center justify-end gap-2 transition-colors hover:text-slate-950 dark:hover:text-white"
+			class="flex min-w-0 items-center md:justify-end gap-2 transition-colors hover:text-slate-950 dark:hover:text-white"
 		>
 			<span
-				class="min-w-0 truncate text-right text-slate-800 dark:text-slate-100"
+				class="min-w-0 truncate md:text-right text-slate-800 dark:text-slate-100"
 			>
 				{{ value }}
 			</span>
@@ -22,7 +22,7 @@
 		</a>
 		<span
 			v-else
-			class="min-w-0 truncate text-right text-slate-800 dark:text-slate-100"
+			class="min-w-0 truncate md:text-right text-slate-800 dark:text-slate-100"
 		>
 			{{ value }}
 		</span>

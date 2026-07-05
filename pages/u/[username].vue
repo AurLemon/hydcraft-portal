@@ -23,7 +23,7 @@
 				<div class="flex flex-col gap-8 lg:gap-10 lg:col-span-3">
 					<section class="grid gap-3">
 						<div
-							class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+							class="mx-1 flex gap-3 items-center justify-between"
 						>
 							<div class="flex items-center gap-2">
 								<div :class="profileSectionTitleClass">
