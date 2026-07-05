@@ -102,7 +102,7 @@ jobs:
               test -f /app/deploy-artifact/package.json
               test -f /app/deploy-artifact/dist-cli/scripts/production-init.js
               test -f /app/deploy-artifact/prisma.config.ts
-              test -f /app/deploy-artifact/prisma/migrations/migration_lock.toml
+              test -f /app/deploy-artifact/prisma/schema/migrations/migration_lock.toml
               test -f /app/deploy-artifact/node_modules/.bin/prisma
 
               chown -R "$(stat -c "%u:%g" /app)" /app/deploy-artifact
