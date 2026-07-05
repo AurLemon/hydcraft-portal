@@ -16,6 +16,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    environment: production
     env:
       # Required secrets:
       # BACKEND_DEPLOY_HOST
