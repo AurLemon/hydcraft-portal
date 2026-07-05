@@ -86,3 +86,55 @@ export const profileBadgeStyles: Record<string, ProfileBadgeStyle> =
 
 export const getProfileBadgeStyle = (color: string | null): ProfileBadgeStyle =>
 	profileBadgeStyles[color ?? 'neutral'] ?? neutralBadgeStyle
+
+const darkNeutralBadgeStyle: ProfileBadgeStyle = {
+	class:
+		'border border-white/20 bg-slate-950/38 text-slate-100 ring-1 ring-white/10',
+	icon: 'i-lucide-shield',
+	iconClass: 'text-slate-300',
+}
+
+export const profileBadgeDarkStyles: Record<string, ProfileBadgeStyle> = {
+	amber: {
+		class:
+			'border border-amber-400/70 bg-amber-950/32 text-amber-200 ring-1 ring-amber-300/18',
+		icon: 'i-lucide-star',
+		iconClass: 'text-amber-300',
+	},
+	sky: {
+		class:
+			'border border-sky-400/70 bg-sky-950/32 text-sky-200 ring-1 ring-sky-300/18',
+		icon: 'i-lucide-badge-check',
+		iconClass: 'text-sky-300',
+	},
+	emerald: {
+		class:
+			'border border-emerald-400/70 bg-emerald-950/32 text-emerald-200 ring-1 ring-emerald-300/18',
+		icon: 'i-lucide-circle-check',
+		iconClass: 'text-emerald-300',
+	},
+	rose: {
+		class:
+			'border border-rose-400/70 bg-rose-950/32 text-rose-200 ring-1 ring-rose-300/18',
+		icon: 'i-lucide-heart',
+		iconClass: 'text-rose-300',
+	},
+	violet: {
+		class:
+			'border border-violet-400/70 bg-violet-950/32 text-violet-200 ring-1 ring-violet-300/18',
+		icon: 'i-lucide-sparkles',
+		iconClass: 'text-violet-300',
+	},
+	cyan: {
+		class:
+			'border border-cyan-400/70 bg-cyan-950/32 text-cyan-200 ring-1 ring-cyan-300/18',
+		icon: 'i-lucide-gem',
+		iconClass: 'text-cyan-300',
+	},
+	neutral: darkNeutralBadgeStyle,
+}
+
+export const getProfileBadgeDarkStyle = (
+	color: string | null,
+): ProfileBadgeStyle =>
+	profileBadgeDarkStyles[color ?? 'neutral'] ?? darkNeutralBadgeStyle

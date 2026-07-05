@@ -125,12 +125,12 @@
 							color="neutral"
 							variant="subtle"
 							class="gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold shadow-[0_10px_26px_rgba(0,0,0,0.26)] backdrop-blur-md"
-							:class="getProfileBadgeStyle(badge.color).class"
+							:class="getProfileBadgeDarkStyle(badge.color).class"
 						>
 							<UIcon
-								:name="getProfileBadgeStyle(badge.color).icon"
+								:name="getProfileBadgeDarkStyle(badge.color).icon"
 								class="h-4 w-4"
-								:class="getProfileBadgeStyle(badge.color).iconClass"
+								:class="getProfileBadgeDarkStyle(badge.color).iconClass"
 							/>
 							{{ badgeLabel(badge) }}
 						</UBadge>
@@ -139,12 +139,14 @@
 							color="neutral"
 							variant="subtle"
 							class="gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold shadow-[0_10px_26px_rgba(0,0,0,0.26)] backdrop-blur-md"
-							:class="getProfileBadgeStyle(profile.roleBadge.color).class"
+							:class="getProfileBadgeDarkStyle(profile.roleBadge.color).class"
 						>
 							<UIcon
-								:name="getProfileBadgeStyle(profile.roleBadge.color).icon"
+								:name="getProfileBadgeDarkStyle(profile.roleBadge.color).icon"
 								class="h-4 w-4"
-								:class="getProfileBadgeStyle(profile.roleBadge.color).iconClass"
+								:class="
+									getProfileBadgeDarkStyle(profile.roleBadge.color).iconClass
+								"
 							/>
 							{{ badgeLabel(profile.roleBadge) }}
 						</UBadge>
@@ -167,7 +169,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
-import { getProfileBadgeStyle } from '~/utils/profile/badges'
+import { getProfileBadgeDarkStyle } from '~/utils/profile/badges'
 
 interface PublicProfileBadge {
 	id: string

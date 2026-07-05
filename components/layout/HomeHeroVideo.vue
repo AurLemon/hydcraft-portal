@@ -19,10 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import backgroundVideo from '~/assets/resources/homepage/promotional_video.webm'
 import { hasHeroVideoBackground } from '~/utils/layout/hero-video'
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 const route = useRoute()
+const backgroundVideo = getSiteMediaUrl('homepage/promotional_video.webm')
 
 const isHeroVideoPage = computed(() => hasHeroVideoBackground(route))
 </script>

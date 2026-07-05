@@ -87,21 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import gameImage1 from '~/assets/resources/livelihood/game_1.webp'
-import gameImage2 from '~/assets/resources/livelihood/game_2.webp'
-import gameImage3 from '~/assets/resources/livelihood/game_3.webp'
-import lifeImage1 from '~/assets/resources/livelihood/life_1.webp'
-import lifeImage2 from '~/assets/resources/livelihood/life_2.webp'
-import lifeImage3 from '~/assets/resources/livelihood/life_3.webp'
-import lifeImage4 from '~/assets/resources/livelihood/life_4.webp'
-import meetupImage1 from '~/assets/resources/meetups/meetups_1.webp'
-import meetupImage2 from '~/assets/resources/meetups/meetups_2.webp'
-import meetupImage3 from '~/assets/resources/meetups/meetups_3.webp'
-import meetupImage4 from '~/assets/resources/meetups/meetups_4.webp'
-import meetupImage5 from '~/assets/resources/meetups/meetups_5.webp'
-import meetupImage6 from '~/assets/resources/meetups/meetups_6.webp'
-import meetupImage7 from '~/assets/resources/meetups/meetups_7.webp'
-import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 interface IntroBeyondServerImage {
 	alt: string
@@ -126,26 +112,26 @@ const CARD_ROTATION_INTERVAL_MS = 3600
 const { t } = useI18n()
 
 const stableMeetupImages = [
-	getStableAssetUrl(meetupImage1),
-	getStableAssetUrl(meetupImage2),
-	getStableAssetUrl(meetupImage3),
-	getStableAssetUrl(meetupImage4),
-	getStableAssetUrl(meetupImage5),
-	getStableAssetUrl(meetupImage6),
-	getStableAssetUrl(meetupImage7),
+	getSiteMediaUrl('meetups/meetups_1.webp'),
+	getSiteMediaUrl('meetups/meetups_2.webp'),
+	getSiteMediaUrl('meetups/meetups_3.webp'),
+	getSiteMediaUrl('meetups/meetups_4.webp'),
+	getSiteMediaUrl('meetups/meetups_5.webp'),
+	getSiteMediaUrl('meetups/meetups_6.webp'),
+	getSiteMediaUrl('meetups/meetups_7.webp'),
 ]
 
 const stableGameImages = [
-	getStableAssetUrl(gameImage1),
-	getStableAssetUrl(gameImage2),
-	getStableAssetUrl(gameImage3),
+	getSiteMediaUrl('livelihood/game_1.webp'),
+	getSiteMediaUrl('livelihood/game_2.webp'),
+	getSiteMediaUrl('livelihood/game_3.webp'),
 ]
 
 const stableLifeImages = [
-	getStableAssetUrl(lifeImage1),
-	getStableAssetUrl(lifeImage2),
-	getStableAssetUrl(lifeImage3),
-	getStableAssetUrl(lifeImage4),
+	getSiteMediaUrl('livelihood/life_1.webp'),
+	getSiteMediaUrl('livelihood/life_2.webp'),
+	getSiteMediaUrl('livelihood/life_3.webp'),
+	getSiteMediaUrl('livelihood/life_4.webp'),
 ]
 
 const cards = computed<IntroBeyondServerCard[]>(() => [

@@ -14,13 +14,7 @@ import {
 	getMinecraftBodyRendererUrl,
 	getMinecraftSkinRendererUrl,
 } from '~/utils/minecraft/body-renderer'
-import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
-import seniorArchitectAfeImage from '~/assets/resources/minecraft-gallery/season_7/jianghu_screenshots_1.webp'
-import seniorArchitectChuxiaImage from '~/assets/resources/minecraft-gallery/season_7/jiuxiang_screenshots_1.webp'
-import seniorArchitectDotkkImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_2.webp'
-import seniorArchitectQishuiImage from '~/assets/resources/minecraft-gallery/season_7/qinjing_screenshots_1.webp'
-import seniorArchitectQixuanImage from '~/assets/resources/minecraft-gallery/season_7/guangyang_screenshots_6.webp'
-import seniorArchitectXxlmImage from "~/assets/resources/minecraft-gallery/season_7/bei'an_screenshots_5.webp"
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 interface SeniorArchitectDefinition {
 	key: 'afe' | 'qishui' | 'qixuan' | 'xxlm' | 'dotkk' | 'chuxia'
@@ -40,32 +34,44 @@ const seniorArchitectDefinitions: SeniorArchitectDefinition[] = [
 	{
 		key: 'afe',
 		id: 'Nina_Naganohara',
-		imageUrl: getStableAssetUrl(seniorArchitectAfeImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/jianghu_screenshots_1.webp',
+		),
 	},
 	{
 		key: 'qishui',
 		id: 'QiShui233',
-		imageUrl: getStableAssetUrl(seniorArchitectQishuiImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/qinjing_screenshots_1.webp',
+		),
 	},
 	{
 		key: 'qixuan',
 		id: 'qixuanjun233',
-		imageUrl: getStableAssetUrl(seniorArchitectQixuanImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/guangyang_screenshots_6.webp',
+		),
 	},
 	{
 		key: 'xxlm',
 		id: 'xxlm233',
-		imageUrl: getStableAssetUrl(seniorArchitectXxlmImage),
+		imageUrl: getSiteMediaUrl(
+			"minecraft-gallery/season_7/bei'an_screenshots_5.webp",
+		),
 	},
 	{
 		key: 'dotkk',
 		id: 'Dotkk',
-		imageUrl: getStableAssetUrl(seniorArchitectDotkkImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/guangyang_screenshots_2.webp',
+		),
 	},
 	{
 		key: 'chuxia',
 		id: 'Chuxia_SF',
-		imageUrl: getStableAssetUrl(seniorArchitectChuxiaImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/jiuxiang_screenshots_1.webp',
+		),
 	},
 ]
 

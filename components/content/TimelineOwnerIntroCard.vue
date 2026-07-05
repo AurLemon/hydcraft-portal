@@ -12,7 +12,9 @@
 			>
 				<span>{{ t('content.intro.staff.owner.roleLine') }}</span>
 				<span class="text-slate-300 dark:text-slate-600">/</span>
-				<span class="inline-flex flex-wrap justify-center items-center gap-2 whitespace-nowrap">
+				<span
+					class="inline-flex flex-wrap justify-center items-center gap-2 whitespace-nowrap"
+				>
 					<img
 						:src="ownerHeadUrl"
 						alt="Aurora_Lemon Minecraft avatar"

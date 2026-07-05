@@ -16,10 +16,7 @@ import {
 	getMinecraftBodyRendererUrl,
 	getMinecraftSkinRendererUrl,
 } from '~/utils/minecraft/body-renderer'
-import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
-import chiefArchitectCatImage from '~/assets/resources/minecraft-gallery/season_7/owen_screenshots_1.webp'
-import chiefArchitectFisheyeImage from '~/assets/resources/minecraft-gallery/season_7/gtr_screenshots_1.webp'
-import chiefArchitectXwImage from '~/assets/resources/minecraft-gallery/misc/marclen_screenshots_1.webp'
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 interface ChiefArchitectDefinition {
 	key: 'cat' | 'xw' | 'fisheye'
@@ -39,17 +36,23 @@ const chiefArchitectDefinitions: ChiefArchitectDefinition[] = [
 	{
 		key: 'cat',
 		id: 'CatPillager',
-		imageUrl: getStableAssetUrl(chiefArchitectCatImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/owen_screenshots_1.webp',
+		),
 	},
 	{
 		key: 'xw',
 		id: 'xwTeng',
-		imageUrl: getStableAssetUrl(chiefArchitectXwImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/misc/marclen_screenshots_1.webp',
+		),
 	},
 	{
 		key: 'fisheye',
 		id: 'FisheyeArtist59',
-		imageUrl: getStableAssetUrl(chiefArchitectFisheyeImage),
+		imageUrl: getSiteMediaUrl(
+			'minecraft-gallery/season_7/gtr_screenshots_1.webp',
+		),
 	},
 ]
 

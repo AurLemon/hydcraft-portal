@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import type { NormalizedContentImageItem } from '~/components/content/utils/content-image'
-import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -67,101 +67,83 @@ interface IntroImageGroupOptions {
 	paths: string[]
 }
 
-const { t } = useI18n()
-
-const introImageModules = import.meta.glob<string>(
-	'~/assets/resources/minecraft-gallery/**/*.webp',
-	{
-		eager: true,
-		import: 'default',
-	},
-)
-
-const normalizeIntroImagePath = (path: string): string =>
-	path
-		.replace(/^.*\/assets\/resources\/minecraft-gallery\//, '')
-		.replace(/^\//, '')
-
-const introImageMap = Object.fromEntries(
-	Object.entries(introImageModules).flatMap(([path, url]) => {
-		const normalizedPath = normalizeIntroImagePath(path)
-		const filename = normalizedPath.split('/').at(-1) ?? normalizedPath
-		const stableUrl = getStableAssetUrl(url)
-
-		return [
-			[normalizedPath, stableUrl],
-			[`minecraft-gallery/${normalizedPath}`, stableUrl],
-			[filename, stableUrl],
-		]
-	}),
-) as Record<string, string>
-
-const serverShowcaseImagePaths = [
-	"season_7/bei'an_screenshots_2.webp",
-	"season_7/bei'an_screenshots_3.webp",
-	"season_7/bei'an_screenshots_4.webp",
-	"season_7/bei'an_screenshots_5.webp",
-	"season_7/bei'an_screenshots_6.webp",
-	'season_7/gtr_screenshots_1.webp',
-	'season_7/gtr_screenshots_2.webp',
-	'season_7/guangyang_screenshots_1.webp',
-	'season_7/guangyang_screenshots_2.webp',
-	'season_7/guangyang_screenshots_3.webp',
-	'season_7/guangyang_screenshots_4.webp',
-	'season_7/guangyang_screenshots_6.webp',
-	'season_7/owen_screenshots_1.webp',
-	'season_7/owen_screenshots_2.webp',
-	'season_7/owen_screenshots_3.webp',
-	'season_7/owen_screenshots_4.webp',
-	'season_7/owen_screenshots_5.webp',
-	'season_7/spawnpoint_screenshots_1.webp',
-	'season_7/xw_hotel_screenshots_2.webp',
+const unfinishedImagePaths = [
+	'minecraft-gallery/unfinished/unfinished_screenshots_1.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_2.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_3.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_4.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_5.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_6.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_7.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_8.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_9.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_10.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_11.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_12.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_13.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_14.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_15.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_16.webp',
+	'minecraft-gallery/unfinished/unfinished_screenshots_17.webp',
 ]
 
-const serverDarkSideImagePaths = Object.keys(introImageModules)
-	.map(normalizeIntroImagePath)
-	.filter((path) => path.startsWith('unfinished/unfinished_screenshots_'))
-	.sort((left, right) => {
+const { t } = useI18n()
+
+const serverShowcaseImagePaths = [
+	"minecraft-gallery/season_7/bei'an_screenshots_2.webp",
+	"minecraft-gallery/season_7/bei'an_screenshots_3.webp",
+	"minecraft-gallery/season_7/bei'an_screenshots_4.webp",
+	"minecraft-gallery/season_7/bei'an_screenshots_5.webp",
+	"minecraft-gallery/season_7/bei'an_screenshots_6.webp",
+	'minecraft-gallery/season_7/gtr_screenshots_1.webp',
+	'minecraft-gallery/season_7/gtr_screenshots_2.webp',
+	'minecraft-gallery/season_7/guangyang_screenshots_1.webp',
+	'minecraft-gallery/season_7/guangyang_screenshots_2.webp',
+	'minecraft-gallery/season_7/guangyang_screenshots_3.webp',
+	'minecraft-gallery/season_7/guangyang_screenshots_4.webp',
+	'minecraft-gallery/season_7/guangyang_screenshots_6.webp',
+	'minecraft-gallery/season_7/owen_screenshots_1.webp',
+	'minecraft-gallery/season_7/owen_screenshots_2.webp',
+	'minecraft-gallery/season_7/owen_screenshots_3.webp',
+	'minecraft-gallery/season_7/owen_screenshots_4.webp',
+	'minecraft-gallery/season_7/owen_screenshots_5.webp',
+	'minecraft-gallery/season_7/spawnpoint_screenshots_1.webp',
+	'minecraft-gallery/season_7/xw_hotel_screenshots_2.webp',
+]
+
+const serverDarkSideImagePaths = [...unfinishedImagePaths].sort(
+	(left, right) => {
 		const leftIndex = Number(left.match(/(\d+)\.webp$/)?.[1] ?? 0)
 		const rightIndex = Number(right.match(/(\d+)\.webp$/)?.[1] ?? 0)
 
 		return leftIndex - rightIndex
-	})
+	},
+)
 
 const dailyLifeImagePaths = [
-	'season_7/daily_screenshots_1_mixue.webp',
-	'season_7/daily_screenshots_2_cafe.webp',
-	'season_7/daily_screenshots_3_noodle.webp',
-	'season_7/daily_screenshots_4_noodle.webp',
-	'season_7/daily_screenshots_5_711.webp',
-	'season_7/daily_screenshots_6_711.webp',
-	'season_7/daily_screenshots_7_xiaomi.webp',
-	'season_7/daily_screenshots_8_classroom.webp',
+	'minecraft-gallery/season_7/daily_screenshots_1_mixue.webp',
+	'minecraft-gallery/season_7/daily_screenshots_2_cafe.webp',
+	'minecraft-gallery/season_7/daily_screenshots_3_noodle.webp',
+	'minecraft-gallery/season_7/daily_screenshots_4_noodle.webp',
+	'minecraft-gallery/season_7/daily_screenshots_5_711.webp',
+	'minecraft-gallery/season_7/daily_screenshots_6_711.webp',
+	'minecraft-gallery/season_7/daily_screenshots_7_xiaomi.webp',
+	'minecraft-gallery/season_7/daily_screenshots_8_classroom.webp',
 ]
 
 const buildIntroImages = (
 	options: IntroImageGroupOptions,
 ): NormalizedContentImageItem[] =>
-	options.paths.flatMap((path, index) => {
-		const src = introImageMap[path]
-
-		if (!src) {
-			return []
-		}
-
-		return [
-			{
-				alt: t(options.altKey, {
-					index: index + 1,
-				}),
-				aspectRatio: 1.8,
-				caption: '',
-				height: '10rem',
-				src,
-				width: '18rem',
-			},
-		]
-	})
+	options.paths.map((path, index) => ({
+		alt: t(options.altKey, {
+			index: index + 1,
+		}),
+		aspectRatio: 1.8,
+		caption: '',
+		height: '10rem',
+		src: getSiteMediaUrl(path),
+		width: '18rem',
+	}))
 
 const serverShowcaseImages = computed<NormalizedContentImageItem[]>(() =>
 	buildIntroImages({
@@ -178,29 +160,19 @@ const serverDarkSideImages = computed<NormalizedContentImageItem[]>(() =>
 )
 
 const dailyLifeItems = computed(() =>
-	dailyLifeImagePaths.flatMap((path, index) => {
-		const src = introImageMap[path]
-
-		if (!src) {
-			return []
-		}
-
-		return [
-			{
-				image: {
-					alt: t('content.intro.dailyLife.imageAlt', {
-						index: index + 1,
-					}),
-					aspectRatio: null,
-					caption: '',
-					height: '100%',
-					src,
-					width: '100%',
-				},
-				subtitle: t(`content.intro.dailyLife.items.${index}.subtitle`),
-				title: t(`content.intro.dailyLife.items.${index}.title`),
-			},
-		]
-	}),
+	dailyLifeImagePaths.map((path, index) => ({
+		image: {
+			alt: t('content.intro.dailyLife.imageAlt', {
+				index: index + 1,
+			}),
+			aspectRatio: null,
+			caption: '',
+			height: '100%',
+			src: getSiteMediaUrl(path),
+			width: '100%',
+		},
+		subtitle: t(`content.intro.dailyLife.items.${index}.subtitle`),
+		title: t(`content.intro.dailyLife.items.${index}.title`),
+	})),
 )
 </script>

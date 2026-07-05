@@ -286,22 +286,7 @@ import {
 	loadImageAccentColor,
 	type ImageAccentRgbColor,
 } from '~/utils/minecraft/skin-accent'
-import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
-import gtrBackgroundImage from '~/assets/resources/minecraft-gallery/routes/gtr_bg.webp'
-import gtrGalleryImage1 from '~/assets/resources/minecraft-gallery/routes/gtr_gallery_1.webp'
-import gtrGalleryImage2 from '~/assets/resources/minecraft-gallery/routes/gtr_gallery_2.webp'
-import gtrGalleryImage3 from '~/assets/resources/minecraft-gallery/routes/gtr_gallery_3.webp'
-import hrJianghuBackgroundImage from '~/assets/resources/minecraft-gallery/routes/hr_jianghu_bg.webp'
-import hrJianghuGalleryImage1 from '~/assets/resources/minecraft-gallery/routes/hr_jianghu_gallery_1.webp'
-import hrJianghuGalleryImage2 from '~/assets/resources/minecraft-gallery/routes/hr_jianghu_gallery_2.webp'
-import hrJianghuGalleryImage3 from '~/assets/resources/minecraft-gallery/routes/hr_jianghu_gallery_3.webp'
-import hrYihengBackgroundImage from '~/assets/resources/minecraft-gallery/routes/hr_yiheng_bg.webp'
-import hrYihengGalleryImage1 from '~/assets/resources/minecraft-gallery/routes/hr_yiheng_gallery_1.webp'
-import hrYihengGalleryImage2 from '~/assets/resources/minecraft-gallery/routes/hr_yiheng_gallery_2.webp'
-import hrYihengGalleryImage3 from '~/assets/resources/minecraft-gallery/routes/hr_yiheng_gallery_3.webp'
-import gtrRouteMapImage from '~/assets/resources/routes-map/gtr_routes_map.webp'
-import hrYihengRouteMapImage from '~/assets/resources/routes-map/hr_yiheng_routes_map.webp'
-import gtrLogoImage from '~/assets/resources/routes-system/gtr_logo.webp'
+import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 type RailwayRouteId = 'gtr' | 'hrJianghu' | 'hrYiheng'
 type RailwayTag = 'create' | 'mtr'
@@ -345,38 +330,42 @@ const RAILWAY_CAROUSEL_INTERVAL = 5000
 const railwayRouteDefinitions: RailwayRouteDefinition[] = [
 	{
 		id: 'gtr',
-		logoSrc: getStableAssetUrl(gtrLogoImage),
-		backgroundSrc: getStableAssetUrl(gtrBackgroundImage),
-		routeMapSrc: getStableAssetUrl(gtrRouteMapImage),
+		logoSrc: getSiteMediaUrl('routes-system/gtr_logo.webp'),
+		backgroundSrc: getSiteMediaUrl('minecraft-gallery/routes/gtr_bg.webp'),
+		routeMapSrc: getSiteMediaUrl('routes-map/gtr_routes_map.webp'),
 		tags: ['create'],
 		operatorId: 'FisheyeArtist59',
 		gallerySrcs: [
-			getStableAssetUrl(gtrGalleryImage1),
-			getStableAssetUrl(gtrGalleryImage2),
-			getStableAssetUrl(gtrGalleryImage3),
+			getSiteMediaUrl('minecraft-gallery/routes/gtr_gallery_1.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/gtr_gallery_2.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/gtr_gallery_3.webp'),
 		],
 	},
 	{
 		id: 'hrJianghu',
-		backgroundSrc: getStableAssetUrl(hrJianghuBackgroundImage),
+		backgroundSrc: getSiteMediaUrl(
+			'minecraft-gallery/routes/hr_jianghu_bg.webp',
+		),
 		tags: ['mtr'],
 		operatorId: 'Nina_Naganohara',
 		gallerySrcs: [
-			getStableAssetUrl(hrJianghuGalleryImage1),
-			getStableAssetUrl(hrJianghuGalleryImage2),
-			getStableAssetUrl(hrJianghuGalleryImage3),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_jianghu_gallery_1.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_jianghu_gallery_2.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_jianghu_gallery_3.webp'),
 		],
 	},
 	{
 		id: 'hrYiheng',
-		backgroundSrc: getStableAssetUrl(hrYihengBackgroundImage),
-		routeMapSrc: getStableAssetUrl(hrYihengRouteMapImage),
+		backgroundSrc: getSiteMediaUrl(
+			'minecraft-gallery/routes/hr_yiheng_bg.webp',
+		),
+		routeMapSrc: getSiteMediaUrl('routes-map/hr_yiheng_routes_map.webp'),
 		tags: ['mtr'],
 		operatorId: 'larker_package',
 		gallerySrcs: [
-			getStableAssetUrl(hrYihengGalleryImage1),
-			getStableAssetUrl(hrYihengGalleryImage2),
-			getStableAssetUrl(hrYihengGalleryImage3),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_yiheng_gallery_1.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_yiheng_gallery_2.webp'),
+			getSiteMediaUrl('minecraft-gallery/routes/hr_yiheng_gallery_3.webp'),
 		],
 	},
 ]

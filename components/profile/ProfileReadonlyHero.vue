@@ -120,12 +120,12 @@
 							color="neutral"
 							variant="subtle"
 							class="gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold shadow-[0_10px_26px_rgba(0,0,0,0.26)] backdrop-blur-md"
-							:class="getProfileBadgeStyle(badge.color).class"
+							:class="getProfileBadgeDarkStyle(badge.color).class"
 						>
 							<UIcon
-								:name="getProfileBadgeStyle(badge.color).icon"
+								:name="getProfileBadgeDarkStyle(badge.color).icon"
 								class="h-4 w-4"
-								:class="getProfileBadgeStyle(badge.color).iconClass"
+								:class="getProfileBadgeDarkStyle(badge.color).iconClass"
 							/>
 							{{ badgeLabel(badge) }}
 						</UBadge>
@@ -148,7 +148,7 @@
 import dayjs from 'dayjs'
 import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
 import type { EditableProfile, ProfileBadge } from '~/utils/profile/edit'
-import { getProfileBadgeStyle } from '~/utils/profile/badges'
+import { getProfileBadgeDarkStyle } from '~/utils/profile/badges'
 
 interface ProfileReadonlyHeroAction {
 	label: string
