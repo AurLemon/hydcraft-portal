@@ -1,0 +1,471 @@
+{
+	"content": {
+		"intro": {
+			"hero": {
+				"coverAlt": "HydCraft intro cover",
+				"eyebrow": "HYDCRAFT INTRO",
+				"title": "HydCraft",
+				"subtitle": "Season 7 Recruitment",
+				"toasts": {
+					"pipeline": "This hydrogen pipeline is not for sale",
+					"anniversaryPrefix": "Year",
+					"anniversarySuffix": "online"
+				},
+				"highlights": [
+					"Creative mode / City & railway construction",
+					"Modded server / MTR + Create / 1.20.1 Forge",
+					"No premium verification / No whitelist review",
+					"Community-run / No monetization / Build freely / Just have fun"
+				],
+				"highlightBadges": [
+					"Excellent",
+					"Very fun",
+					"Very civil",
+					"Pure conscience"
+				]
+			},
+			"ourWorks": {
+				"title": "Our Works",
+				"imageAlt": "HydCraft showcase image {index}",
+				"requirements": {
+					"summaryPrefix": "We recommend at least",
+					"summaryMemory": "16 GB",
+					"summaryMiddle": "of RAM, and ideally a",
+					"summaryYear": "2020 or newer",
+					"summaryConnector": "device in the",
+					"summaryTier": "mid-range or above",
+					"summarySuffix": "tier.",
+					"detail": "Realistically, 8 GB is the bare minimum, because the client alone wants at least 4 GB, and the system should be at least Windows 10. A MacBook with Apple silicon can get by. On Windows laptops, the CPU matters far more, and something like a 7840HS is more than enough. CPU performance is the real key here. A Core i5 8th gen or Ryzen 5 3000 series and up will feel much better. Older hardware is not completely locked out, though. One player can even get into the server on a G4560 with 8 GB RAM and integrated graphics. You just have to tolerate the rough edges."
+				}
+			},
+			"goodAndBad": {
+				"title": "Some Good, Some Bad",
+				"imageAlt": "HydCraft showcase image {index}"
+			},
+			"dailyLife": {
+				"title": "Daily Life in the City",
+				"imageAlt": "HydCraft city daily life image {index}",
+				"items": [
+					{
+						"title": "Mixue Bingcheng",
+						"subtitle": "In the Jiuxiang seaside area of Season 7. Yes, Mixue really made it to HydCraft."
+					},
+					{
+						"title": "Fashion Coffee",
+						"subtitle": "In the core district of Guangyang in Season 7, the appointed afternoon tea spot of Guangyang's grand leader."
+					},
+					{
+						"title": "Bei'an Noodle House #1",
+						"subtitle": "The only automated noodle shop in Guangyang's Bei'an area."
+					},
+					{
+						"title": "Bei'an Noodle House #2",
+						"subtitle": "If you did not know better, you would think this was conveyor-belt sushi."
+					},
+					{
+						"title": "Jiuliju 7-Eleven",
+						"subtitle": "A 7-Eleven sitting right beside a Guangyang local private railway station."
+					},
+					{
+						"title": "Another 7-Eleven",
+						"subtitle": "A 7-Eleven located in the core district of Guangyang."
+					},
+					{
+						"title": "The Mysterious Xiaomi Home",
+						"subtitle": "The only Xiaomi Home in all of Bei'an."
+					},
+					{
+						"title": "Whose Youth Was This",
+						"subtitle": "Jianghu's grand leader, because this was a classroom at his alma mater."
+					}
+				]
+			},
+			"railways": {
+				"title": "We Build More Than Houses",
+				"prev": "Previous operator",
+				"next": "Next operator",
+				"goto": "Go to operator {index}",
+				"routeMapLabel": "Route Map",
+				"openGalleryImage": "Open gallery image {index} for {route}",
+				"openRouteMap": "Open the route map of {route}",
+				"tags": {
+					"create": "Create",
+					"mtr": "MTR"
+				},
+				"routes": {
+					"gtr": {
+						"nameZh": "通运铁路",
+						"nameEn": "GT Railway",
+						"summary": "GT Railway serves multiple prefectures and counties in Season 7. It began in 2023 and is built and operated by Tongyun Transport Logistics Co., Ltd. Its civil works, rolling stock, and dispatching all rely on Create and related mods, and it remains the best-supported railway operator on the server.",
+						"logoAlt": "GT Railway logo",
+						"backgroundAlt": "Background image of GT Railway",
+						"routeMapAlt": "Route map of GT Railway",
+						"operator": {
+							"nickname": "题散",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "A GT Railway train boarding passengers at Yuanhu East Station",
+								"alt": "A GT Railway train boarding passengers at Yuanhu East Station"
+							},
+							{
+								"caption": "Platform and concourse level of Beilu Station",
+								"alt": "Platform and concourse level of GT Railway's Beilu Station"
+							},
+							{
+								"caption": "Chuanqiao Station in Artemis City",
+								"alt": "Chuanqiao Station of GT Railway in Artemis City"
+							}
+						]
+					},
+					"hrJianghu": {
+						"nameZh": "HR 江户",
+						"nameEn": "HydCraft Railway Jianghu",
+						"summary": "HydCraft Railway Jianghu was formed in 2024 after the original HR network split apart. It is a locally operated railway company based in Jianghu County, and its core services include routes such as the Central Line.",
+						"backgroundAlt": "Background image of HydCraft Railway Jianghu",
+						"operator": {
+							"nickname": "afe",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "The concourse of Yuanhu South Station beside spawn",
+								"alt": "The concourse of HR Jianghu's Yuanhu South Station beside spawn"
+							},
+							{
+								"caption": "Jvhao Beach Station platform in Jiuxiang County",
+								"alt": "The platform of HR Jianghu's Jvhao Beach Station in Jiuxiang County"
+							},
+							{
+								"caption": "Beilu Station in the Jianghu headquarters district",
+								"alt": "Beilu Station in the Jianghu headquarters district of HR Jianghu"
+							}
+						]
+					},
+					"hrYiheng": {
+						"nameZh": "HR 颐恒",
+						"nameEn": "HydCraft Railway Yiheng",
+						"summary": "HydCraft Railway Yiheng was also created in 2024 after the original HR network split apart. Working together with QR, it pushes a CR-style operating model across the server and is headquartered in Yiheng County.",
+						"backgroundAlt": "Background image of HydCraft Railway Yiheng",
+						"routeMapAlt": "Route map of HydCraft Railway Yiheng",
+						"operator": {
+							"nickname": "拉克",
+							"roleLabel": "Operations Lead"
+						},
+						"gallery": [
+							{
+								"caption": "The D3801 set waiting for departure inside the platform",
+								"alt": "An HR Yiheng D3801 set waiting for departure inside the platform"
+							},
+							{
+								"caption": "HR Yiheng's EMU depot in Guangyang County",
+								"alt": "The HR Yiheng EMU depot in Guangyang County"
+							},
+							{
+								"caption": "Yuanhu West Station beside spawn",
+								"alt": "HR Yiheng's Yuanhu West Station beside spawn"
+							}
+						]
+					}
+				}
+			},
+			"participation": {
+				"title": "How to Take Part in Building",
+				"prev": "Previous",
+				"next": "Next",
+				"goto": "Go to rule {index}",
+				"rules": [
+					{
+						"title": "What you do is up to you",
+						"desc": "Unoccupied land in the server, or plots left open for new settlers, can be freely built on as long as they do not conflict with others' existing work. The server provides no official mainline projects or mandatory tasks; architecture, railways, machinery and all other projects are initiated and built by players themselves."
+					},
+					{
+						"title": "Protect others' work",
+						"desc": "Free building rests on not infringing on others' existing work. Blocking others' roads, occupying reserved space, or damaging the integrity of existing builds without permission is strictly prohibited."
+					},
+					{
+						"title": "Communicate first on public matters",
+						"desc": "Any modification or connection involving public facilities (main railways, public stations, main roads) or others' territory must be discussed with the relevant parties in advance, and only carried out once a consensus is reached."
+					},
+					{
+						"title": "No unified building goal",
+						"desc": "HydCraft has no overall building blueprint enforced by the administration. How cities develop and how railways connect are entirely driven by spontaneous negotiation among players and progress step by step."
+					},
+					{
+						"title": "Non-intervention unless necessary",
+						"desc": "The admin team follows a principle of non-intervention unless necessary, mainly handling operations and resolving conflicts. Admins only step in cases of malicious griefing, long-term land squatting, impacts on public areas, or irreconcilable disputes."
+					},
+					{
+						"title": "Socializing is also part of building",
+						"desc": "HydCraft is essentially a community of acquaintances. All collaboration and planning are built on long-accumulated trust and mutual recognition among players. At its core, the point of playing is simply to have fun—and that remains our one guiding principle."
+					}
+				]
+			},
+			"fit": {
+				"title": "Who This Place Is For",
+				"fitColumn": {
+					"title": "For people who like to build slowly",
+					"items": [
+						"You enjoy long-term building and have a real interest in railways, cities, and architecture.",
+						"When roads, railways, terrain, or other people's plans are involved, you're willing to communicate in advance.",
+						"Being quiet is not a problem, as long as you're willing to explain your intent, respond when coordination is needed, and gradually build basic communication with the people around you.",
+						"You're comfortable with a server that has no fixed core gameplay loop, and you understand that much of the collaboration here is built on long-term trust among familiar players.",
+						"You respect other people's builds and don't damage or overwrite them at will."
+					]
+				},
+				"unfitColumn": {
+					"title": "May not be a good fit if you want quick results",
+					"items": [
+						"If what you're looking for is orderly construction, unified planning, or a stable place to prove your individual ability, this server may not be a good fit for you.",
+						"You don't want to communicate, but still want to reshape terrain, claim land, or force railway lines through.",
+						"You rely on strong in-game guidance and feel lost when no one tells you what to do next.",
+						"If you expect to arrive and immediately have a clear place, steady feedback, and ready-made collaborative relationships, this server may not be a good fit for you.",
+						"If you prefer to stay completely self-contained and don't want to respond to collaboration, communication, or relationship-building with others, you'll probably find it hard to fit in here."
+					]
+				},
+				"baseline": {
+					"title": "Community Baseline",
+					"items": [
+						"Follow the laws and regulations of mainland China. HydCraft has zero tolerance for illegal or non-compliant content.",
+						"The server is centered on building and collaboration. No real-world politics, no flame-baiting, and no factional hostility.",
+						"Do not form cliques to exclude others, and do not mock, attack, or damage other people's work. When disputes arise, contact the admin team for mediation first."
+					],
+					"charterLinkLabel": "View the full community covenant"
+				}
+			},
+			"communityChat": {
+				"title": "Looking Is One Thing. This Is How We Actually Chat.",
+				"cards": {
+					"performance": {
+						"messages": [
+							"Why can’t I log in again? My client is lagging like crazy too. Do we have an even lighter pack?",
+							"Tell me your specs first. At this point I really should put minimum and recommended requirements right on the page so we stop redoing this conversation every time.",
+							"A netbook. 8 GB of RAM.",
+							"Yeah, then the only real option is to slash graphics and view distance and make the best of it."
+						]
+					},
+					"housing": {
+						"messages": [
+							"Come claim your house, come claim your house, Big Noble Garden is now open for business!",
+							"Everyone, there are still empty lots. First come, first pick!",
+							"You’ve posted that often enough to sound like a real estate office.",
+							"Tone it down. You’re about to flood the whole chat.",
+							"At least post the floor plan first, or I’m just going to mute this."
+						]
+					},
+					"subgroup": {
+						"messages": [
+							"Oh my god, you listen to J-pop and magic-core stuff too? I’ve been looping it nonstop lately...!",
+							"Isn’t that way cooler than the main group? Nobody says anything there for half a day. I’m honestly tempted to make a new chat for people who are actually alive.",
+							"I’m still thinking about whether that phrase from Jiege was really written as \"zhuan da lang\", Tng-tua-lang and all that.",
+							"I still haven’t forgiven 25K for flinging my phone out of my pocket into a pit. That beat-up green bus was miserable. I am never taking it again.",
+							"Hold on, my Token plan is almost up and I still haven’t used the quota. I’m weirdly stressed about this."
+						]
+					},
+					"airport": {
+						"messages": [
+							"Now that the map has this much room, flying finally feels properly satisfying.",
+							"GOOD. I’m officially drafting airport regulations now: one city, one airport, no negotiations.",
+							"The dream is nice, but flying on the server is still pretty laggy, so we should solve the performance side first.",
+							"With a map like this, low-altitude routes and wilderness airstrips suddenly start feeling like Far Cry.",
+							"One city, one airport is fine, but that really does sound extremely American."
+						]
+					},
+					"pullUp": {
+						"messages": [
+							"Do people really do pull-ups that easily?",
+							"If you can’t, don’t panic. Most people in this group probably can’t either.",
+							"It’s less about brute force than people think. Get lighter, train your back and grip properly, and the movement gets much more realistic."
+						]
+					},
+					"college": {
+						"messages": [
+							"Damn, I’m really ending up at a non-elite school. Shenzhen University, here I come.",
+							"Staying in-province and still landing somewhere you can live with is honestly not bad, right?",
+							"Wait, wasn’t your earlier target HEFEI University of Technology?",
+							"Not enough points. Reality moved faster than the plan. Let me sit with it for a minute before I celebrate."
+						]
+					},
+					"exam": {
+						"messages": [
+							"Why is the transfer exam this hard? Group owner, save me.",
+							"Start with your region and track. These things fall apart fast if you copy a plan from the wrong province.",
+							"Are you on the arts side or the science side? Go look up successful cases from your province over the last two years first. I can only give you the general framework.",
+							"Southwest.",
+							"Then read your provincial policy first and do not force another region’s playbook onto it. The pace there may be looser than what we’re used to."
+						]
+					}
+				}
+			},
+			"staff": {
+				"title": "Who Keeps This Place Running",
+				"owner": {
+					"aliasLine": "AurLemon",
+					"roleLine": "Server Owner, Chair of the Management Committee",
+					"appointedLine": "Appointed on September 9, 2018",
+					"bioLine": "I'm from Fuzhou, Fujian, a junior at a local non-elite university on a transfer-track path, and a TypeScript full-stack developer. The job market feels rough, even though I built basically the whole HydCraft website myself, haha. I'm not really a railway enthusiast or an architecture enthusiast. I just thought it seemed fun at first, and before I knew it, we had somehow kept this server going until now."
+				},
+				"committee": {
+					"title": "Management Committee",
+					"subtitle": "The server's governing core"
+				},
+				"councilOfElders": {
+					"title": "Council of Elders",
+					"subtitle": "Where the old hands gather",
+					"count": "40+"
+				},
+				"chiefArchitect": {
+					"title": "Chief Architects",
+					"subtitle": "The core force behind the server's construction",
+					"prev": "Previous page",
+					"next": "Next page",
+					"goto": "Go to page {index}",
+					"members": {
+						"cat": {
+							"nickname": "仓鼠",
+							"motto": "Consilio et Motu.",
+							"intro": "From Shenzhen, Guangdong, and one of the map designers for Season 7 and Season 8. Excels at map drafting, small-scale design, and mechanical contraptions, with strong ideas and creativity in both architecture and structural mechanics. Handles European and American architectural styles especially well, particularly when weaving kinetic machinery into the overall design, and also enjoys musicals."
+						},
+						"xw": {
+							"nickname": "小万",
+							"motto": "Cura et Forma.",
+							"intro": "From Fuzhou, Fujian, and a close friend of catpillager. Specializes in small-scale European and American modern design, with standout work on both interiors and exteriors, especially in spatial detail, material texture, and atmosphere. He often collaborates with catpillager, forming a strong complement in architectural design and detail refinement."
+						},
+						"fisheye": {
+							"nickname": "题散",
+							"motto": "Order Leads Beyond.",
+							"intro": "From Shenyang, Liaoning, a Lindong City admin and the operator of Tongyun Railway. Known across the server for detailed structures and complete supporting works. Best at weaving clever machinery into a coherent system."
+						}
+					}
+				},
+				"seniorArchitect": {
+					"title": "Senior Architects",
+					"subtitle": "The server's native builders",
+					"prev": "Previous page",
+					"next": "Next page",
+					"goto": "Go to page {index}",
+					"members": {
+						"afe": {
+							"nickname": "afe",
+							"motto": "A city needs its outline first.",
+							"intro": "From Nanjing, Jiangsu, and a builder of Dongfeng in Season 6 and Edo in Season 7. Nina_Naganohara is good at organizing urban massing with clean block stacking, with Japanese style as the main axis and the occasional Chinese cadence. The work wins not by ornament, but by crisp silhouettes, clear district rhythm, and a steady skyline."
+						},
+						"qishui": {
+							"nickname": "汽水",
+							"motto": "AAA Nationwide Free Delivery.",
+							"intro": "From Guangzhou, Guangdong, a builder of Qinjing in Season 7, and afe's longtime partner. QiShui233 focuses on railways and stations, using refined material choices and unexpected station forms to make every stop worth a special visit."
+						},
+						"qixuan": {
+							"nickname": "七炫",
+							"motto": "Detail is not decoration.",
+							"intro": "From Langfang, Hebei, a builder of Guangyang in Seasons 5 and 7, a childhood friend of xxlm233, and a friend of Dotkk. qixuanjun233 likes hiding mechanical contraptions at street corners, shaping alleys with scenery that makes people slow down, and handling metro stations with a Beijing flavor."
+						},
+						"xxlm": {
+							"nickname": "宵宵狸猫",
+							"motto": "Get the scale and detail right, and the atmosphere follows.",
+							"intro": "From Langfang, Hebei, a builder of Guangyang in Seasons 5 and 7, and qixuanjun233's childhood friend. xxlm233 favors the restraint, compactness, and precision of small-scale Japanese architecture, compressing the city into a light yet ordered scale. From vehicles and route organization to platform layouts, the work carries a strong JR feel."
+						},
+						"dotkk": {
+							"nickname": "Dotkk",
+							"motto": "I'm still a newbie.",
+							"intro": "From Shanghai, one of Guangyang's builders in Season 7, and a friend of qixuanjun233. Dotkk is the kind of builder who can raise a city's skeleton the moment he steps in, turning empty ground into urban order through road networks, building massing, and public space."
+						},
+						"chuxia": {
+							"nickname": "初夏",
+							"motto": "Details decide success or failure.",
+							"intro": "From Tianjin, one of the builders of Jiuxiang in Season 7, and a close teammate of ColaFrog and LanYue_CN. Chuxia_SF is especially strong with interiors, from furnishings and room flow to lived-in detail, and feels most at ease in places that demand patience, taste, and everyday texture."
+						}
+					}
+				},
+				"badges": {
+					"member": "Member",
+					"advisor": "Advisor",
+					"viceOwner": "Vice Owner",
+					"councilOfEldersSecretary": "Council of Elders Secretary"
+				}
+			},
+			"beyondServer": {
+				"title": "More Than Just the Server",
+				"cards": {
+					"meetups": {
+						"title": "We Have Met Offline Too",
+						"description": "After seeing someone online for long enough, they can feel like just an ID. Meeting offline is when it suddenly clicks that the ID in the group and the real person are the same, and you realize what kind of person they actually are.",
+						"note": "The original photo has been privacy-processed, and the people shown are non-real-person representations.",
+						"imageAlt": "HydCraft offline meetup photo {index}"
+					},
+					"games": {
+						"title": "Queueing Up Together",
+						"description": "We also have smaller Steam and Kook groups, and there are even squads for Valorant and Bujidao.",
+						"imageAlt": "HydCraft gaming session photo {index}"
+					},
+					"interests": {
+						"title": "Shared Interests",
+						"description": "Coding, anime, musicals, ham radio, PC DIY, law, graduate exams, gaokao... pretty much every kind of person shows up here. There might even be a secret club or two.",
+						"imageAlt": "HydCraft shared interests photo {index}"
+					}
+				}
+			},
+			"faq": {
+				"title": "A Few Common Questions",
+				"items": [
+					{
+						"question": "Will the world save be released publicly?",
+						"answer": "No full public release is planned. Players can still take away the parts they built through blueprints, WorldEdit schematics, or similar export methods. If necessary, exports can also be assisted within a reasonable scope."
+					},
+					{
+						"question": "Why is there no official district map for Season 7?",
+						"answer": "The areas are too fragmented, and mostly, nobody has had the time to draw one."
+					},
+					{
+						"question": "Is QQ still the only main entry point right now?",
+						"answer": "Yes. The main communication entry is still the QQ group, because most members are mainland China players. We do also have WeChat, Xiaohongshu, and Douyin groups."
+					},
+					{
+						"question": "Can a newcomer start building right away?",
+						"answer": "Yes. If there is open space, you can build. If it touches someone else's area, just communicate with them first."
+					},
+					{
+						"question": "Does the server enforce a unified building style?",
+						"answer": "No forced unified style. Build however you want."
+					},
+					{
+						"question": "What if I only want to visit and look around?",
+						"answer": "That's fine. Just join the group and download the client."
+					},
+					{
+						"question": "Can I bring friends with me?",
+						"answer": "Absolutely. A lot of members were invited by friends, or were already classmates to begin with."
+					},
+					{
+						"question": "Can I still join if I'm not good at building?",
+						"answer": "Absolutely. Why wouldn't you be able to? Just come as you are."
+					},
+					{
+						"question": "Why do the buildings look so spread out on the satellite map?",
+						"answer": "Because the map is superflat, and there are not that many players who can just spread things out and build at that scale."
+					},
+					{
+						"question": "How long has Season 7 been running?",
+						"answer": "It started in August 2023. Season 8 is already being planned and is expected to officially start in mid-to-late July 2026."
+					}
+				]
+			},
+			"joinUs": {
+				"title": "If You're In, Join Us Now!",
+				"subtitle": "",
+				"notes": {
+					"client": "Join the group first to get the client download.",
+					"source": "We've had many ad accounts lately, so please say you came from the official site when joining."
+				},
+				"actions": {
+					"qq": "Join the QQ Group"
+				},
+				"notifications": {
+					"copied": "QQ group number copied.",
+					"copyFailed": "Failed to copy the QQ group number."
+				}
+			}
+		}
+	}
+}
