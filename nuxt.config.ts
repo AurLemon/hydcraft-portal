@@ -11,6 +11,13 @@ const INVALID_MDC_OPTIMIZE_DEPS = new Set([
 	'@nuxtjs/mdc > extend',
 ])
 
+const readRuntimeEnv = (
+	nuxtKey: string,
+	fallbackKey?: string,
+	defaultValue = '',
+): string =>
+	process.env[nuxtKey] ?? process.env[fallbackKey ?? ''] ?? defaultValue
+
 export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
@@ -228,7 +235,7 @@ export default defineNuxtConfig({
 		},
 	},
 	site: {
-		url: process.env.NUXT_SITE_URL,
+		url: readRuntimeEnv('NUXT_SITE_URL'),
 		name: 'HydCraft Portal',
 		description:
 			'氢气工艺 HydCraft 是一个 Minecraft 服务器社区，连接交通、科技、建筑与开发爱好者。',
@@ -236,32 +243,68 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		afdian: {
-			userId: process.env.AFDIAN_USER_ID ?? '',
-			apiKey: process.env.AFDIAN_API_KEY ?? '',
-			baseUrl: process.env.AFDIAN_BASE_URL ?? 'https://afdian.com',
+			userId: readRuntimeEnv('NUXT_AFDIAN_USER_ID', 'AFDIAN_USER_ID'),
+			apiKey: readRuntimeEnv('NUXT_AFDIAN_API_KEY', 'AFDIAN_API_KEY'),
+			baseUrl: readRuntimeEnv(
+				'NUXT_AFDIAN_BASE_URL',
+				'AFDIAN_BASE_URL',
+				'https://afdian.com',
+			),
 		},
 		cap: {
-			baseUrl: process.env.CAP_BASE_URL ?? '',
+			baseUrl: readRuntimeEnv('NUXT_CAP_BASE_URL', 'CAP_BASE_URL'),
 		},
 		cos: {
-			secretId: process.env.COS_SECRET_ID ?? '',
-			secretKey: process.env.COS_SECRET_KEY ?? '',
-			region: process.env.COS_REGION ?? '',
-			attachmentsBucket: process.env.COS_ATTACHMENTS_BUCKET ?? '',
-			publicBaseUrl: process.env.COS_PUBLIC_BASE_URL ?? '',
+			secretId: readRuntimeEnv('NUXT_COS_SECRET_ID', 'COS_SECRET_ID'),
+			secretKey: readRuntimeEnv('NUXT_COS_SECRET_KEY', 'COS_SECRET_KEY'),
+			region: readRuntimeEnv('NUXT_COS_REGION', 'COS_REGION'),
+			attachmentsBucket: readRuntimeEnv(
+				'NUXT_COS_ATTACHMENTS_BUCKET',
+				'COS_ATTACHMENTS_BUCKET',
+			),
+			publicBaseUrl: readRuntimeEnv(
+				'NUXT_COS_PUBLIC_BASE_URL',
+				'COS_PUBLIC_BASE_URL',
+			),
 		},
 		public: {
-			siteUrl: process.env.NUXT_SITE_URL ?? '',
-			capBaseUrl: process.env.CAP_BASE_URL ?? '',
+			siteUrl: readRuntimeEnv('NUXT_PUBLIC_SITE_URL', 'NUXT_SITE_URL'),
+			capBaseUrl: readRuntimeEnv('NUXT_PUBLIC_CAP_BASE_URL', 'CAP_BASE_URL'),
 			minecraftMap: {
-				dynmapTileBaseUrl: process.env.MINECRAFT_MAP_DYNMAP_TILE_BASE_URL ?? '',
-				dynmapWorldName: process.env.MINECRAFT_MAP_DYNMAP_WORLD_NAME ?? 'world',
-				dynmapMapName: process.env.MINECRAFT_MAP_DYNMAP_MAP_NAME ?? 'flat',
-				dynmapTileExtension:
-					process.env.MINECRAFT_MAP_DYNMAP_TILE_EXTENSION ?? 'jpg',
-				defaultCenterX: process.env.MINECRAFT_MAP_DEFAULT_CENTER_X ?? '811',
-				defaultCenterZ: process.env.MINECRAFT_MAP_DEFAULT_CENTER_Z ?? '2933',
-				defaultZoom: process.env.MINECRAFT_MAP_DEFAULT_ZOOM ?? '0',
+				dynmapTileBaseUrl: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DYNMAP_TILE_BASE_URL',
+					'MINECRAFT_MAP_DYNMAP_TILE_BASE_URL',
+				),
+				dynmapWorldName: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DYNMAP_WORLD_NAME',
+					'MINECRAFT_MAP_DYNMAP_WORLD_NAME',
+					'world',
+				),
+				dynmapMapName: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DYNMAP_MAP_NAME',
+					'MINECRAFT_MAP_DYNMAP_MAP_NAME',
+					'flat',
+				),
+				dynmapTileExtension: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DYNMAP_TILE_EXTENSION',
+					'MINECRAFT_MAP_DYNMAP_TILE_EXTENSION',
+					'jpg',
+				),
+				defaultCenterX: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DEFAULT_CENTER_X',
+					'MINECRAFT_MAP_DEFAULT_CENTER_X',
+					'811',
+				),
+				defaultCenterZ: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DEFAULT_CENTER_Z',
+					'MINECRAFT_MAP_DEFAULT_CENTER_Z',
+					'2933',
+				),
+				defaultZoom: readRuntimeEnv(
+					'NUXT_PUBLIC_MINECRAFT_MAP_DEFAULT_ZOOM',
+					'MINECRAFT_MAP_DEFAULT_ZOOM',
+					'0',
+				),
 			},
 		},
 	},
