@@ -114,9 +114,7 @@
 											</UBadge>
 										</div>
 										<div
-											v-if="
-												!email.verifiedAt || email.kind !== 'PRIMARY'
-											"
+											v-if="!email.verifiedAt || email.kind !== 'PRIMARY'"
 											class="flex shrink-0 flex-wrap items-center gap-2"
 										>
 											<UButton
