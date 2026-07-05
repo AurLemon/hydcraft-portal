@@ -1,6 +1,6 @@
 import {
-	findCurrentRefreshSession,
 	requireCurrentUser,
+	requireCurrentRefreshSession,
 } from '~/server/utils/auth/session'
 import { prisma } from '~/server/utils/db/prisma'
 import { createApiError, createBadRequestError } from '~/server/utils/errors'
@@ -8,6 +8,7 @@ import { recordSecurityEvent } from '~/server/utils/security/security-events'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
+	const currentSession = await requireCurrentRefreshSession(event)
 	const id = getRouterParam(event, 'id')
 
 	if (!id) {
@@ -29,6 +30,24 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
+	if (currentSession.id === id) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'CURRENT_SESSION_CANNOT_BE_REVOKED',
+		})
+	}
+
+	await recordSecurityEvent({
+		event,
+		userId: user.id,
+		type: 'SESSION_REVOKED',
+		title: '登录设备已退出',
+		description: session.userAgent,
+		metadata: {
+			sessionId: id,
+		},
+	})
+
 	await prisma.refreshToken.update({
 		where: {
 			id,
@@ -38,20 +57,8 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 
-	const currentSession = await findCurrentRefreshSession(event)
-	await recordSecurityEvent({
-		event,
-		userId: user.id,
-		type: 'SESSION_REVOKED',
-		title: currentSession?.id === id ? '当前设备已退出' : '登录设备已退出',
-		description: session.userAgent,
-		metadata: {
-			sessionId: id,
-		},
-	})
-
 	return {
 		ok: true,
-		current: currentSession?.id === id,
+		current: false,
 	}
 })

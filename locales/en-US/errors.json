@@ -37,6 +37,7 @@
 			"PRIMARY_EMAIL_CANNOT_BE_REMOVED": "The primary email cannot be removed directly.",
 			"SESSION_ID_REQUIRED": "The session ID is missing.",
 			"SESSION_NOT_FOUND": "The session was not found or has expired.",
+			"CURRENT_SESSION_CANNOT_BE_REVOKED": "The current device cannot be revoked here. Please sign out instead.",
 			"LAST_LOGIN_METHOD_REQUIRED": "At least one login method must remain.",
 			"LAST_LOGIN_METHOD_CANNOT_BE_REMOVED": "The last login method cannot be removed.",
 			"MAIL_SERVICE_NOT_CONFIGURED": "The mail service is not configured yet.",

@@ -217,11 +217,33 @@ export const findCurrentRefreshSession = async (event: H3Event) => {
 		return null
 	}
 
-	return await prisma.refreshToken.findUnique({
-		where: {
-			tokenHash: hashRefreshToken(token),
-		},
-	})
+	return await prisma.refreshToken
+		.findUnique({
+			where: {
+				tokenHash: hashRefreshToken(token),
+			},
+		})
+		.then((session) => {
+			if (!session || session.revokedAt || session.expiresAt <= new Date()) {
+				return null
+			}
+
+			return session
+		})
+}
+
+export const requireCurrentRefreshSession = async (event: H3Event) => {
+	const session = await findCurrentRefreshSession(event)
+
+	if (!session) {
+		clearAuthCookies(event)
+		throw createApiError({
+			statusCode: 401,
+			code: 'REFRESH_TOKEN_EXPIRED',
+		})
+	}
+
+	return session
 }
 
 export const rotateRefreshToken = async (
@@ -290,6 +312,7 @@ export const requireCurrentUser = async (
 	},
 ): Promise<UserForSummary> => {
 	const token = getAuthTokenFromEvent(event)
+	const authorization = getHeader(event, 'authorization')
 
 	if (!token) {
 		throw createApiError({
@@ -319,6 +342,18 @@ export const requireCurrentUser = async (
 		})
 	}
 
+	if (!authorization?.startsWith('Bearer ')) {
+		const currentSession = await findCurrentRefreshSession(event)
+
+		if (!currentSession || currentSession.userId !== user.id) {
+			clearAuthCookies(event)
+			throw createApiError({
+				statusCode: 401,
+				code: 'REFRESH_TOKEN_EXPIRED',
+			})
+		}
+	}
+
 	if (options?.observeActivity !== false) {
 		await observeUserAuthActivity({
 			userId: user.id,
@@ -343,6 +378,7 @@ export const getOptionalCurrentUser = async (
 	event: H3Event,
 ): Promise<UserForSummary | null> => {
 	const token = getAuthTokenFromEvent(event)
+	const authorization = getHeader(event, 'authorization')
 
 	if (!token) {
 		return null
@@ -371,6 +407,15 @@ export const getOptionalCurrentUser = async (
 
 	if (!user || user.status !== 'ACTIVE') {
 		return null
+	}
+
+	if (!authorization?.startsWith('Bearer ')) {
+		const currentSession = await findCurrentRefreshSession(event)
+
+		if (!currentSession || currentSession.userId !== user.id) {
+			clearAuthCookies(event)
+			return null
+		}
 	}
 
 	return user

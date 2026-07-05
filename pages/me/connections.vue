@@ -28,9 +28,11 @@
 						<div
 							v-for="provider in connections.providers"
 							:key="provider.provider"
-							class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 sm:flex-row sm:items-center sm:justify-between"
+							class="flex gap-4 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 sm:items-center sm:justify-between"
 						>
-							<div class="flex min-w-0 items-center gap-4">
+							<div
+								class="flex-1 flex flex-col sm:flex-row min-w-0 sm:items-center gap-4"
+							>
 								<div
 									class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-700 dark:bg-slate-900/70 dark:text-slate-200"
 								>
@@ -87,7 +89,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex shrink-0 gap-2">
+							<div class="h-fit flex shrink-0 gap-2 mt-2 sm:mt-0">
 								<UButton
 									v-if="!provider.connected"
 									type="button"

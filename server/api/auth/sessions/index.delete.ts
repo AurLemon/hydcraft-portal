@@ -1,30 +1,28 @@
 import {
 	clearAuthCookies,
-	getRefreshTokenHashFromEvent,
 	requireCurrentUser,
+	requireCurrentRefreshSession,
 } from '../../../utils/auth/session'
 import { recordSecurityEvent } from '../../../utils/security/security-events'
 import { prisma } from '../../../utils/db/prisma'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
+	const currentSession = await requireCurrentRefreshSession(event)
 	const query = getQuery(event)
 	const includeCurrent = query.includeCurrent === 'true'
 	const revokedAt = new Date()
-	const currentTokenHash = getRefreshTokenHashFromEvent(event)
 	const result = await prisma.refreshToken.updateMany({
 		where: {
 			userId: user.id,
 			revokedAt: null,
 			...(includeCurrent
 				? {}
-				: currentTokenHash
-					? {
-							tokenHash: {
-								not: currentTokenHash,
-							},
-						}
-					: {}),
+				: {
+						id: {
+							not: currentSession.id,
+						},
+					}),
 		},
 		data: {
 			revokedAt,

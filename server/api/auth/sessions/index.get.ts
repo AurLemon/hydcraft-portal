@@ -1,7 +1,7 @@
 import { prisma } from '../../../utils/db/prisma'
 import {
-	getRefreshTokenHashFromEvent,
 	requireCurrentUser,
+	requireCurrentRefreshSession,
 } from '../../../utils/auth/session'
 import {
 	lookupIpLocation,
@@ -10,7 +10,7 @@ import {
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
-	const currentTokenHash = getRefreshTokenHashFromEvent(event)
+	const currentSession = await requireCurrentRefreshSession(event)
 	const now = new Date()
 	const sessions = await prisma.refreshToken.findMany({
 		where: {
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
 				revokedAt: session.revokedAt,
 				createdAt: session.createdAt,
 				updatedAt: session.updatedAt,
-				isCurrent: session.tokenHash === currentTokenHash,
+				isCurrent: session.id === currentSession.id,
 				isActive: !session.revokedAt && session.expiresAt > now,
 			})),
 		),

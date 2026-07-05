@@ -1,13 +1,13 @@
 import { prisma } from '../../../../../utils/db/prisma'
 import {
-	findCurrentRefreshSession,
 	requireCurrentUser,
+	requireCurrentRefreshSession,
 } from '../../../../../utils/auth/session'
 import { recordSecurityEvent } from '../../../../../utils/security/security-events'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
-	const currentSession = await findCurrentRefreshSession(event)
+	const currentSession = await requireCurrentRefreshSession(event)
 	const result = await prisma.refreshToken.updateMany({
 		where: {
 			userId: user.id,

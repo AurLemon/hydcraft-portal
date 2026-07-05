@@ -201,6 +201,7 @@ const resolveDbPath = async (
 
 const getDbBaseDirs = (): string[] => [
 	path.resolve(process.cwd(), 'data', DB_BASE_DIR),
+	path.resolve(process.cwd(), 'server', 'data', DB_BASE_DIR),
 	path.resolve(process.cwd(), '.output', 'server', 'data', DB_BASE_DIR),
 	path.resolve(process.cwd(), '..', 'data', DB_BASE_DIR),
 	path.resolve(process.cwd(), '..', 'public', 'data', DB_BASE_DIR),

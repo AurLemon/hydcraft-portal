@@ -19,9 +19,7 @@
 
 			<div class="mx-auto mt-16 grid w-full max-w-3xl gap-16">
 				<section class="grid gap-3">
-					<div
-						class="mx-1 flex gap-3 items-center justify-between"
-					>
+					<div class="mx-1 flex gap-3 items-center justify-between">
 						<div :class="profileSectionTitleClass">
 							{{ t('profile.security.sections.overview') }}
 						</div>
@@ -171,7 +169,7 @@
 
 				<section class="grid gap-3">
 					<div
-						class="mx-1 flex flex-col gap-3 md:items-center md:justify-between"
+						class="mx-1 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
 					>
 						<div class="flex items-center gap-2">
 							<div :class="profileSectionTitleClass">
@@ -191,7 +189,7 @@
 								size="sm"
 								variant="link"
 								icon="i-lucide-shield-x"
-								:disabled="activeSessionCount <= 1"
+								:disabled="!canManageSessions || activeSessionCount <= 1"
 								@click="revokeSessionsModalOpen = true"
 							>
 								{{ t('profile.security.actions.revokeOtherSessions') }}
@@ -258,13 +256,13 @@
 									</div>
 								</div>
 								<UButton
-								class="h-fit"
+									class="h-fit"
 									type="button"
 									color="error"
 									variant="soft"
 									size="sm"
 									icon="i-lucide-x"
-									:disabled="session.current"
+									:disabled="!canManageSessions || session.current"
 									:loading="revokingSessionId === session.id"
 									@click="revokeSession(session)"
 								>
@@ -361,9 +359,7 @@
 						/>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -412,9 +408,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -460,9 +454,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -539,9 +531,7 @@
 						/>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -601,9 +591,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -669,9 +657,7 @@
 						/>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 justify-end"
-					>
+					<div class="mt-6 flex gap-2 justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -802,7 +788,7 @@ interface AccountSecurityResponse {
 
 interface SessionsDeleteResponse {
 	ok: boolean
-	revokedCount: number
+	count: number
 }
 
 interface SecurityEventDisplay {
@@ -987,6 +973,7 @@ const activeSessionCount = computed(() => activeSessions.value.length)
 const currentSession = computed(
 	() => activeSessions.value.find((session) => session.current) ?? null,
 )
+const canManageSessions = computed(() => Boolean(currentSession.value))
 const currentSessionLocation = computed(
 	() => currentSession.value?.ipLocation?.display ?? null,
 )
@@ -1405,9 +1392,12 @@ const revokeSession = async (
 	revokingSessionId.value = session.id
 
 	try {
-		await $fetch<{ ok: boolean }>(`/api/auth/sessions/${session.id}`, {
-			method: 'DELETE',
-		})
+		await $fetch<{ ok: boolean }>(
+			`/api/users/me/security/sessions/${session.id}`,
+			{
+				method: 'DELETE',
+			},
+		)
 		await refreshSecurity()
 		notifySuccess({
 			title: t('profile.security.notifications.sessionRevoked'),
@@ -1426,9 +1416,9 @@ const revokeOtherSessions = async (): Promise<void> => {
 
 	try {
 		const response = await $fetch<SessionsDeleteResponse>(
-			'/api/auth/sessions',
+			'/api/users/me/security/sessions/revoke-others',
 			{
-				method: 'DELETE',
+				method: 'POST',
 			},
 		)
 		await refreshSecurity()
@@ -1437,7 +1427,7 @@ const revokeOtherSessions = async (): Promise<void> => {
 			title: t('profile.security.notifications.otherSessionsRevoked'),
 			description: t(
 				'profile.security.notifications.otherSessionsRevokedDescription',
-				{ count: response.revokedCount },
+				{ count: response.count },
 			),
 		})
 	} catch (submitError) {

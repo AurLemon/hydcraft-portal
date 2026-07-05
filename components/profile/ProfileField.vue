@@ -6,7 +6,7 @@
 	>
 		<span
 			:class="[
-				'pt-1.5 text-[15px] text-slate-700 dark:text-slate-200',
+				'md:pt-1.5 text-[15px] text-slate-700 dark:text-slate-200',
 				labelClass,
 			]"
 		>

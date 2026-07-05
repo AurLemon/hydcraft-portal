@@ -2,20 +2,20 @@ import { createApiError } from '../../../../utils/errors'
 import { recordSecurityEvent } from '../../../../utils/security/security-events'
 import {
 	clearAuthCookies,
-	getRefreshTokenHashFromEvent,
 	requireCurrentUser,
+	requireCurrentRefreshSession,
 } from '../../../../utils/auth/session'
 import { prisma } from '../../../../utils/db/prisma'
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
+	const currentSession = await requireCurrentRefreshSession(event)
 	const sessionId = getRouterParam(event, 'id')
 
 	if (!sessionId) {
 		throw createApiError({ statusCode: 400, code: 'SESSION_ID_REQUIRED' })
 	}
 
-	const currentTokenHash = getRefreshTokenHashFromEvent(event)
 	const session = await prisma.refreshToken.findFirst({
 		where: {
 			id: sessionId,
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	if (session.tokenHash === currentTokenHash) {
+	if (session.id === currentSession.id) {
 		clearAuthCookies(event)
 	}
 
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
 		title: 'Revoked session',
 		metadata: {
 			sessionId: session.id,
-			isCurrent: session.tokenHash === currentTokenHash,
+			isCurrent: session.id === currentSession.id,
 		},
 	})
 

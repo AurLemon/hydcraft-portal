@@ -37,6 +37,7 @@
 			"PRIMARY_EMAIL_CANNOT_BE_REMOVED": "メインメールは直接削除できません。",
 			"SESSION_ID_REQUIRED": "セッション ID が不足しています。",
 			"SESSION_NOT_FOUND": "セッションが見つからないか期限切れです。",
+			"CURRENT_SESSION_CANNOT_BE_REVOKED": "現在の端末はここから取り消せません。代わりにログアウトしてください。",
 			"LAST_LOGIN_METHOD_REQUIRED": "少なくとも 1 つのログイン方法が必要です。",
 			"LAST_LOGIN_METHOD_CANNOT_BE_REMOVED": "最後のログイン方法は削除できません。",
 			"MAIL_SERVICE_NOT_CONFIGURED": "メールサービスはまだ設定されていません。",

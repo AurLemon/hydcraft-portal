@@ -164,9 +164,7 @@
 						/>
 					</label>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -215,9 +213,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -266,9 +262,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -320,9 +314,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -370,9 +362,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -422,9 +412,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"
@@ -516,9 +504,7 @@
 						</div>
 					</div>
 
-					<div
-						class="mt-6 flex gap-2 sm:justify-end"
-					>
+					<div class="mt-6 flex gap-2 sm:justify-end">
 						<UButton
 							type="button"
 							color="neutral"

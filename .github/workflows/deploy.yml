@@ -93,8 +93,8 @@ jobs:
               cp -R /app/.output/public \
                     /app/.output/server \
                     /app/deploy-artifact/
-              mkdir -p /app/deploy-artifact/server/data
-              cp -R /app/data/ip2region /app/deploy-artifact/server/data/
+              mkdir -p /app/deploy-artifact/data
+              cp -R /app/data/ip2region /app/deploy-artifact/data/
               cp /app/.output/nitro.json /app/deploy-artifact/nitro.json
 
               pnpm install --prod --frozen-lockfile --dir /app/deploy-artifact

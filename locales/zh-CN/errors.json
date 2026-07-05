@@ -37,6 +37,7 @@
 			"PRIMARY_EMAIL_CANNOT_BE_REMOVED": "主邮箱不能直接删除。",
 			"SESSION_ID_REQUIRED": "缺少会话 ID。",
 			"SESSION_NOT_FOUND": "会话不存在或已失效。",
+			"CURRENT_SESSION_CANNOT_BE_REVOKED": "当前设备不能在这里撤销，请直接退出登录。",
 			"LAST_LOGIN_METHOD_REQUIRED": "至少需要保留一种登录方式。",
 			"LAST_LOGIN_METHOD_CANNOT_BE_REMOVED": "不能移除最后一种登录方式。",
 			"MAIL_SERVICE_NOT_CONFIGURED": "邮件服务暂未配置。",
