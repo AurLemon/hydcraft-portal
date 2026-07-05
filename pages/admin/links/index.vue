@@ -106,71 +106,86 @@
 			</div>
 
 			<div v-if="activeTab === 'links'">
-				<UTable
-					:data="links"
-					:columns="linkColumns"
-					:loading="linksPending"
-					class="min-h-72"
-				>
-					<template #link-cell="{ row }">
-						<button
-							type="button"
-							class="flex min-w-0 items-center gap-3 text-left"
-							@click="openEdit(row.original)"
-						>
-							<UAvatar
-								:src="row.original.avatarUrl || undefined"
-								:alt="row.original.name"
-								class="rounded-lg"
-								:ui="avatarUi"
+				<div v-if="isFilteringLinks">
+					<UTable
+						:data="links"
+						:columns="linkColumns"
+						:loading="linksPending"
+						class="min-h-72"
+					>
+						<template #link-cell="{ row }">
+							<button
+								type="button"
+								class="flex min-w-0 items-center gap-3 text-left"
+								@click="openEdit(row.original)"
+							>
+								<UAvatar
+									:src="row.original.avatarUrl || undefined"
+									:alt="row.original.name"
+									class="rounded-lg"
+									:ui="avatarUi"
+								/>
+								<div class="min-w-0">
+									<p
+										class="truncate font-medium text-slate-900 dark:text-white"
+									>
+										{{ row.original.name }}
+									</p>
+									<p class="truncate text-xs text-slate-500">
+										{{ row.original.url }}
+									</p>
+								</div>
+							</button>
+						</template>
+						<template #category-cell="{ row }">
+							<UBadge color="neutral" variant="subtle">
+								{{ t(`content.links.categories.${row.original.category}`) }}
+							</UBadge>
+						</template>
+						<template #status-cell="{ row }">
+							<UBadge
+								:color="row.original.enabled ? 'success' : 'neutral'"
+								variant="subtle"
+							>
+								{{
+									row.original.enabled
+										? t('admin.links.states.enabled')
+										: t('admin.links.states.disabled')
+								}}
+							</UBadge>
+						</template>
+						<template #actions-cell="{ row }">
+							<UButton
+								type="button"
+								size="xs"
+								color="neutral"
+								variant="ghost"
+								icon="i-lucide-pencil"
+								@click="openEdit(row.original)"
 							/>
-							<div class="min-w-0">
-								<p class="truncate font-medium text-slate-900 dark:text-white">
-									{{ row.original.name }}
-								</p>
-								<p class="truncate text-xs text-slate-500">
-									{{ row.original.url }}
-								</p>
-							</div>
-						</button>
-					</template>
-					<template #category-cell="{ row }">
-						<UBadge color="neutral" variant="subtle">
-							{{ t(`content.links.categories.${row.original.category}`) }}
-						</UBadge>
-					</template>
-					<template #status-cell="{ row }">
-						<UBadge
-							:color="row.original.enabled ? 'success' : 'neutral'"
-							variant="subtle"
-						>
-							{{
-								row.original.enabled
-									? t('admin.links.states.enabled')
-									: t('admin.links.states.disabled')
-							}}
-						</UBadge>
-					</template>
-					<template #actions-cell="{ row }">
-						<UButton
-							type="button"
-							size="xs"
-							color="neutral"
-							variant="ghost"
-							icon="i-lucide-pencil"
-							@click="openEdit(row.original)"
-						/>
-					</template>
-				</UTable>
+						</template>
+					</UTable>
 
-				<AdminTablePagination
-					:page="linkPage"
-					:page-size="linkPageSize"
-					:total="linkMeta.total"
-					:page-count="linkMeta.pageCount"
-					@update:page="linkPage = $event"
-					@update:page-size="setLinkPageSize"
-				/>
+					<AdminTablePagination
+						:page="linkPage"
+						:page-size="linkPageSize"
+						:total="linkMeta.total"
+						:page-count="linkMeta.pageCount"
+						@update:page="linkPage = $event"
+						@update:page-size="setLinkPageSize"
+					/>
+				</div>
+
+				<div v-else class="grid gap-6 p-4">
+					<FriendLinkReorderTable
+						v-for="category in friendLinkCategoryValues"
+						:key="category"
+						:category="category"
+						:items="linksByCategory[category]"
+						@reorder="onReorder(category, $event)"
+						@edit="openEdit"
+					/>
+				</div>
 			</div>
 
 			<div v-else>
@@ -427,6 +442,7 @@ import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
 import type {
 	AdminFriendLinkApplicationsResponse,
 	AdminFriendLinksResponse,
+	AdminFriendLinksReorderResponse,
 	FriendLinkApplicationStatus,
 	FriendLinkApplicationSummary,
 	FriendLinkCategory,
@@ -455,6 +471,7 @@ const applicationOpen = ref(false)
 const editingLink = ref<FriendLinkSummary | null>(null)
 const selectedApplication = ref<FriendLinkApplicationSummary | null>(null)
 const reviewing = ref<'approve' | 'reject' | null>(null)
+const reordering = ref(false)
 const linkPage = ref(1)
 const linkPageSize = ref(20)
 const applicationPage = ref(1)
@@ -496,6 +513,8 @@ const {
 } = await useFetch<AdminFriendLinksResponse>('/api/admin/links', {
 	query: linkQuery,
 })
+const { data: reorderLinksData, refresh: refreshReorderLinks } =
+	await useFetch<AdminFriendLinksReorderResponse>('/api/admin/links/reorder')
 const {
 	data: applicationsData,
 	pending: applicationsPending,
@@ -533,10 +552,26 @@ const applicationStatusFilterItems = computed(() => [
 	})),
 ])
 const links = computed(() => linksData.value?.items ?? [])
+const reorderLinks = computed(() => reorderLinksData.value?.items ?? [])
+const linksByCategory = computed<
+	Record<FriendLinkCategory, FriendLinkSummary[]>
+>(() => ({
+	BUSINESS: reorderLinks.value.filter((link) => link.category === 'BUSINESS'),
+	PERSONAL: reorderLinks.value.filter((link) => link.category === 'PERSONAL'),
+	ORGANIZATION: reorderLinks.value.filter(
+		(link) => link.category === 'ORGANIZATION',
+	),
+}))
 const linkMeta = computed(() => ({
 	total: linksData.value?.total ?? 0,
 	pageCount: linksData.value?.pageCount ?? 1,
 }))
+const isFilteringLinks = computed(
+	() =>
+		!!linkFilters.search ||
+		linkFilters.category !== ALL_FILTER_VALUE ||
+		linkFilters.enabled !== ALL_FILTER_VALUE,
+)
 const applications = computed(() => applicationsData.value?.items ?? [])
 const applicationMeta = computed(() => ({
 	total: applicationsData.value?.total ?? 0,
@@ -642,11 +677,38 @@ const openApplication = (application: FriendLinkApplicationSummary): void => {
 }
 
 const handleLinkSaved = async (): Promise<void> => {
-	await refreshLinks()
+	await Promise.all([refreshLinks(), refreshReorderLinks()])
 }
 
 const handleLinkDeleted = async (): Promise<void> => {
-	await refreshLinks()
+	await Promise.all([refreshLinks(), refreshReorderLinks()])
+}
+
+const onReorder = async (
+	category: FriendLinkCategory,
+	orderedIds: string[],
+): Promise<void> => {
+	if (reordering.value) {
+		return
+	}
+
+	reordering.value = true
+
+	try {
+		await $fetch('/api/admin/links/reorder', {
+			method: 'POST',
+			body: { category, orderedIds },
+		})
+		notifySuccess({ title: t('admin.links.notifications.reordered') })
+		await Promise.all([refreshLinks(), refreshReorderLinks()])
+	} catch (error) {
+		notifyError(error, {
+			title: t('admin.links.notifications.reorderFailed'),
+		})
+		await Promise.all([refreshLinks(), refreshReorderLinks()])
+	} finally {
+		reordering.value = false
+	}
 }
 
 const reviewApplication = async (

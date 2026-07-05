@@ -277,6 +277,8 @@
 				"saveFailed": "リンクの保存に失敗しました",
 				"deleted": "リンクを削除しました",
 				"deleteFailed": "リンクの削除に失敗しました",
+				"reordered": "並び順を更新しました",
+				"reorderFailed": "並び順の更新に失敗しました",
 				"approved": "申請を承認しました",
 				"rejected": "申請を却下しました",
 				"reviewFailed": "申請処理に失敗しました"

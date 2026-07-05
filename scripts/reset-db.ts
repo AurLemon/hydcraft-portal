@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process'
 const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 
 const runStep = (label: string, args: string[]): void => {
-	console.log(`\n[db:dev-reset] ${label}`)
+	console.log(`\n[data:dev-reset] ${label}`)
 
 	const result = spawnSync(pnpmCommand, args, {
 		stdio: 'inherit',
@@ -19,4 +19,4 @@ runStep('Reset database', ['exec', 'prisma', 'db', 'push', '--force-reset'])
 runStep('Generate Prisma client', ['prisma:generate'])
 runStep('Run seed', ['prisma:seed'])
 
-console.log('\n[db:dev-reset] Completed')
+console.log('\n[data:dev-reset] Completed')

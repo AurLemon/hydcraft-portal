@@ -34,9 +34,10 @@
 				</p>
 			</div>
 		</div>
-		<div v-if="link.summary" class="pb-6">
+		<div class="min-h-10 pb-6">
 			<p
-				class="line-clamp-2 text-xs text-center break-all"
+				v-if="link.summary"
+				class="line-clamp-2 text-center text-xs break-all"
 				:class="
 					link.archived
 						? 'text-slate-400 dark:text-slate-500'

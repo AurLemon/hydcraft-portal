@@ -17,6 +17,7 @@ export interface FriendLinkMutationInput {
 	avatarAttachmentId?: string | null
 	enabled?: boolean
 	archived?: boolean
+	sortOrder?: number
 }
 
 export interface FriendLinkApplicationSubmitInput {
@@ -70,6 +71,18 @@ export const normalizeFriendLinkCategory = (
 	}
 
 	return value as FriendLinkCategory
+}
+
+const normalizeFriendLinkSortOrder = (value: unknown): number | undefined => {
+	if (value === undefined) {
+		return undefined
+	}
+
+	if (!Number.isInteger(value)) {
+		throw badRequest('INVALID_FRIEND_LINK_INPUT')
+	}
+
+	return value as number
 }
 
 export const normalizeFriendLinkApplicationCategory = (
@@ -149,6 +162,7 @@ export const normalizeCreateFriendLinkInput = (
 	),
 	enabled: normalizeBoolean(body.enabled, 'enabled') ?? true,
 	archived: normalizeBoolean(body.archived, 'archived') ?? false,
+	sortOrder: normalizeFriendLinkSortOrder(body.sortOrder),
 })
 
 export const normalizeUpdateFriendLinkInput = (
@@ -179,7 +193,38 @@ export const normalizeUpdateFriendLinkInput = (
 	...(body.archived !== undefined
 		? { archived: normalizeBoolean(body.archived, 'archived') }
 		: {}),
+	...(body.sortOrder !== undefined
+		? { sortOrder: normalizeFriendLinkSortOrder(body.sortOrder) }
+		: {}),
 })
+
+export const normalizeFriendLinkReorderInput = (
+	body: Record<string, unknown>,
+): { category: FriendLinkCategory; orderedIds: string[] } => {
+	const category = normalizeFriendLinkCategory(body.category)
+
+	if (!category) {
+		throw badRequest('INVALID_FRIEND_LINK_REORDER')
+	}
+
+	if (!Array.isArray(body.orderedIds) || body.orderedIds.length === 0) {
+		throw badRequest('INVALID_FRIEND_LINK_REORDER')
+	}
+
+	const orderedIds = body.orderedIds.map((value) => {
+		if (typeof value !== 'string' || !value.trim()) {
+			throw badRequest('INVALID_FRIEND_LINK_REORDER')
+		}
+
+		return value
+	})
+
+	if (new Set(orderedIds).size !== orderedIds.length) {
+		throw badRequest('INVALID_FRIEND_LINK_REORDER')
+	}
+
+	return { category, orderedIds }
+}
 
 export const normalizeSubmitFriendLinkApplicationInput = (
 	body: Record<string, unknown>,

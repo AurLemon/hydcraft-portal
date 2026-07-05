@@ -8,13 +8,14 @@ model FriendLink {
   avatarUrl          String?
   enabled            Boolean            @default(true)
   archived           Boolean            @default(false)
+  sortOrder          Int                @default(0)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
   approvedApplications FriendLinkApplication[] @relation("ApprovedFriendLink")
 
-  @@index([category, enabled, archived, createdAt])
-  @@index([enabled, archived, createdAt])
+  @@index([category, enabled, archived, sortOrder, createdAt])
+  @@index([enabled, archived, sortOrder, createdAt])
 }
 
 model FriendLinkApplication {

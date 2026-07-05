@@ -140,6 +140,7 @@
 			"HYDROLINE_ID_CREATE_FAILED": "Failed to create a Hydroline ID.",
 			"HYDROLINE_ID_GENERATION_FAILED": "Failed to generate a Hydroline ID."
 		},
-		"INVALID_PARTNER_REORDER": "The partner reorder input is invalid."
+		"INVALID_PARTNER_REORDER": "The partner reorder input is invalid.",
+		"INVALID_FRIEND_LINK_REORDER": "The friend link reorder input is invalid."
 	}
 }

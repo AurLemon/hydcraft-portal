@@ -213,9 +213,11 @@ export default defineNuxtConfig({
 	},
 	sitemap: {
 		autoLastmod: true,
+		exclude: ['/me/**', '/admin/**'],
 	},
 	robots: {
 		sitemap: '/sitemap.xml',
+		disallow: ['/me', '/me/**', '/admin', '/admin/**'],
 	},
 	linkChecker: {
 		failOnError: true,

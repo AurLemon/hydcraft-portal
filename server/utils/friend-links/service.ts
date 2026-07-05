@@ -12,6 +12,7 @@ import {
 	getPublicAttachmentUrl,
 } from '../attachment/runtime'
 import type {
+	AdminFriendLinksReorderResponse,
 	AdminFriendLinkApplicationsResponse,
 	AdminFriendLinksResponse,
 	FriendLinkApplicationSummary,
@@ -22,6 +23,7 @@ import {
 	normalizeCreateFriendLinkInput,
 	normalizeFriendLinkApplicationStatus,
 	normalizeFriendLinkCategory,
+	normalizeFriendLinkReorderInput,
 	normalizeSubmitFriendLinkApplicationInput,
 	normalizeUpdateFriendLinkInput,
 	type FriendLinkMutationInput,
@@ -29,7 +31,12 @@ import {
 
 const FRIEND_LINK_AVATAR_PURPOSE = 'friend-link-avatar'
 const FRIEND_LINK_APPLICATION_TTL_MS = 30 * 24 * 60 * 60 * 1000
-const FRIEND_LINK_SORT_FIELDS = new Set(['createdAt', 'updatedAt', 'name'])
+const FRIEND_LINK_SORT_FIELDS = new Set([
+	'createdAt',
+	'updatedAt',
+	'name',
+	'sortOrder',
+])
 const FRIEND_LINK_APPLICATION_SORT_FIELDS = new Set([
 	'createdAt',
 	'updatedAt',
@@ -89,9 +96,59 @@ const summarizeFriendLink = (
 	avatarUrl: link.avatarUrl,
 	enabled: link.enabled,
 	archived: link.archived,
+	sortOrder: link.sortOrder,
 	createdAt: link.createdAt,
 	updatedAt: link.updatedAt,
 })
+
+const getFriendLinkCategoryOrderBy =
+	(): Prisma.FriendLinkOrderByWithRelationInput[] => [
+		{ category: 'asc' },
+		{ sortOrder: 'asc' },
+		{ createdAt: 'asc' },
+	]
+
+const getFriendLinkSortOrderBy =
+	(): Prisma.FriendLinkOrderByWithRelationInput[] => [
+		{ sortOrder: 'asc' },
+		{ createdAt: 'asc' },
+	]
+
+const getNextFriendLinkSortOrder = async (
+	category: FriendLink['category'],
+	db: Prisma.TransactionClient | typeof prisma = prisma,
+): Promise<number> => {
+	const last = await db.friendLink.findFirst({
+		where: { category },
+		orderBy: [{ sortOrder: 'desc' }, { createdAt: 'desc' }],
+		select: { sortOrder: true },
+	})
+
+	return (last?.sortOrder ?? -1) + 1
+}
+
+const compactFriendLinkSortOrder = async (
+	category: FriendLink['category'],
+	db: Prisma.TransactionClient | typeof prisma = prisma,
+): Promise<void> => {
+	const links = await db.friendLink.findMany({
+		where: { category },
+		orderBy: getFriendLinkSortOrderBy(),
+		select: { id: true, sortOrder: true },
+	})
+
+	for (const [index, link] of links.entries()) {
+		if (link.sortOrder === index) {
+			continue
+		}
+
+		await db.friendLink.update({
+			where: { id: link.id },
+			data: { sortOrder: index },
+			select: { id: true },
+		})
+	}
+}
 
 const summarizeFriendLinkApplication = (
 	application: FriendLinkApplicationWithRelations,
@@ -215,6 +272,7 @@ const buildFriendLinkUpdateData = async (
 			: {}),
 		...(input.enabled !== undefined ? { enabled: input.enabled } : {}),
 		...(input.archived !== undefined ? { archived: input.archived } : {}),
+		...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),
 	}
 }
 
@@ -272,7 +330,7 @@ export const listPublicFriendLinks =
 			where: {
 				enabled: true,
 			},
-			orderBy: [{ category: 'asc' }, { createdAt: 'asc' }],
+			orderBy: getFriendLinkCategoryOrderBy(),
 			include: friendLinkInclude,
 		})
 
@@ -310,12 +368,22 @@ export const listAdminFriendLinks = async (input: {
 				}
 			: {}),
 	}
-	const sortField = input.sortField ?? 'createdAt'
+	const sortField = input.sortField
 	const sortDirection = input.sortDirection ?? 'desc'
-	const orderBy: Prisma.FriendLinkOrderByWithRelationInput =
-		FRIEND_LINK_SORT_FIELDS.has(sortField)
-			? { [sortField]: sortDirection }
-			: { createdAt: 'desc' }
+	const orderBy: Prisma.FriendLinkOrderByWithRelationInput[] =
+		sortField && FRIEND_LINK_SORT_FIELDS.has(sortField)
+			? sortField === 'sortOrder'
+				? [
+						{ category: 'asc' },
+						{ sortOrder: sortDirection },
+						{ createdAt: 'asc' },
+					]
+				: [
+						{
+							[sortField]: sortDirection,
+						} as Prisma.FriendLinkOrderByWithRelationInput,
+					]
+			: getFriendLinkCategoryOrderBy()
 
 	const [total, items] = await Promise.all([
 		prisma.friendLink.count({ where }),
@@ -336,20 +404,38 @@ export const listAdminFriendLinks = async (input: {
 	}
 }
 
+export const listAdminFriendLinksForReorder =
+	async (): Promise<AdminFriendLinksReorderResponse> => {
+		const items = await prisma.friendLink.findMany({
+			orderBy: getFriendLinkCategoryOrderBy(),
+			include: friendLinkInclude,
+		})
+
+		return {
+			items: items.map((link) => summarizeFriendLink(link)),
+		}
+	}
+
 export const createFriendLink = async (
 	actor: User,
 	body: Record<string, unknown>,
 ): Promise<FriendLinkSummary> => {
 	const input = normalizeCreateFriendLinkInput(body)
-	const link = await prisma.friendLink.create({
-		data: {
-			category: input.category,
-			url: input.url,
-			name: input.name,
-			summary: input.summary,
-			enabled: input.enabled,
-			archived: input.archived,
-		},
+	const link = await prisma.$transaction(async (tx) => {
+		const sortOrder =
+			input.sortOrder ?? (await getNextFriendLinkSortOrder(input.category, tx))
+
+		return await tx.friendLink.create({
+			data: {
+				category: input.category,
+				url: input.url,
+				name: input.name,
+				summary: input.summary,
+				enabled: input.enabled,
+				archived: input.archived,
+				sortOrder,
+			},
+		})
 	})
 
 	await emitEvent('friend-link.created', {
@@ -377,16 +463,41 @@ export const updateFriendLink = async (
 ): Promise<FriendLinkSummary> => {
 	const previous = await assertFriendLinkExists(linkId)
 	const input = normalizeUpdateFriendLinkInput(body)
-	const changedFields = getFriendLinkChangedFields(input, previous)
+	const categoryChanged =
+		input.category !== undefined && input.category !== previous.category
+	const effectiveInput: FriendLinkMutationInput = { ...input }
+
+	if (
+		categoryChanged &&
+		effectiveInput.sortOrder === undefined &&
+		input.category
+	) {
+		effectiveInput.sortOrder = await getNextFriendLinkSortOrder(input.category)
+	}
+
+	const changedFields = getFriendLinkChangedFields(effectiveInput, previous)
 
 	if (!changedFields.length) {
 		return summarizeFriendLink(previous)
 	}
 
-	const data = await buildFriendLinkUpdateData(linkId, input)
-	const link = await prisma.friendLink.update({
-		where: { id: linkId },
-		data,
+	const targetCategory = effectiveInput.category ?? previous.category
+	const link = await prisma.$transaction(async (tx) => {
+		const data = await buildFriendLinkUpdateData(linkId, effectiveInput)
+		const updated = await tx.friendLink.update({
+			where: { id: linkId },
+			data,
+		})
+
+		if (categoryChanged || effectiveInput.sortOrder !== undefined) {
+			await compactFriendLinkSortOrder(targetCategory, tx)
+
+			if (previous.category !== targetCategory) {
+				await compactFriendLinkSortOrder(previous.category, tx)
+			}
+		}
+
+		return updated
 	})
 
 	await emitEvent('friend-link.updated', {
@@ -621,6 +732,7 @@ export const approveFriendLinkApplication = async (
 				avatarUrl,
 				enabled: true,
 				archived: false,
+				sortOrder: await getNextFriendLinkSortOrder(category, tx),
 			},
 		})
 		const application = await tx.friendLinkApplication.update({
@@ -662,6 +774,54 @@ export const approveFriendLinkApplication = async (
 	})
 
 	return summarizeFriendLinkApplication(result.application)
+}
+
+export const reorderFriendLinks = async (
+	actor: User,
+	body: Record<string, unknown>,
+) => {
+	const { category, orderedIds } = normalizeFriendLinkReorderInput(body)
+	const existing = await prisma.friendLink.findMany({
+		where: { category },
+		select: { id: true },
+	})
+
+	const existingIds = new Set(existing.map((row) => row.id))
+
+	if (existing.length !== orderedIds.length) {
+		throw createApiError({
+			statusCode: 400,
+			code: 'INVALID_FRIEND_LINK_REORDER',
+		})
+	}
+
+	for (const id of orderedIds) {
+		if (!existingIds.has(id)) {
+			throw createApiError({
+				statusCode: 400,
+				code: 'INVALID_FRIEND_LINK_REORDER',
+			})
+		}
+	}
+
+	await prisma.$transaction(
+		orderedIds.map((id, index) =>
+			prisma.friendLink.update({
+				where: { id },
+				data: { sortOrder: index },
+				select: { id: true },
+			}),
+		),
+	)
+
+	await emitEvent('friend-link.reordered', {
+		category,
+		actorUserId: actor.id,
+		orderedIds,
+		occurredAt: new Date(),
+	})
+
+	return { category, orderedIds }
 }
 
 export const rejectFriendLinkApplication = async (

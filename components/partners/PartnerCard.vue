@@ -75,11 +75,10 @@
 							</div>
 						</div>
 					</div>
-					<div
-						v-if="partner.summary"
-						class="line-clamp-2 h-12 text-sm text-center leading-6 text-white/88"
-					>
-						{{ partner.summary }}
+					<div class="h-12 text-center text-sm leading-6">
+						<div v-if="partner.summary" class="line-clamp-2 text-white/88">
+							{{ partner.summary }}
+						</div>
 					</div>
 				</div>
 			</div>

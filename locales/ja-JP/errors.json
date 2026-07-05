@@ -140,6 +140,7 @@
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID の作成に失敗しました。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID の生成に失敗しました。"
 		},
-		"INVALID_PARTNER_REORDER": "並び順の入力が無効です。"
+		"INVALID_PARTNER_REORDER": "並び順の入力が無効です。",
+		"INVALID_FRIEND_LINK_REORDER": "リンク並び順の入力が無効です。"
 	}
 }

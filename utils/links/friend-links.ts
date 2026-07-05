@@ -16,6 +16,7 @@ export interface FriendLinkSummary {
 	avatarUrl: string | null
 	enabled: boolean
 	archived: boolean
+	sortOrder: number
 	createdAt: string
 	updatedAt: string
 }
@@ -62,6 +63,10 @@ export interface AdminFriendLinksResponse {
 	pageSize: number
 	total: number
 	pageCount: number
+}
+
+export interface AdminFriendLinksReorderResponse {
+	items: FriendLinkSummary[]
 }
 
 export interface AdminFriendLinkApplicationsResponse {

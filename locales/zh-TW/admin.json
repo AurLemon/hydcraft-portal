@@ -277,6 +277,8 @@
 				"saveFailed": "保存友情連結失敗",
 				"deleted": "友情連結已刪除",
 				"deleteFailed": "刪除友情連結失敗",
+				"reordered": "排序已更新",
+				"reorderFailed": "更新排序失敗",
 				"approved": "友情連結申請已通過",
 				"rejected": "友情連結申請已拒絕",
 				"reviewFailed": "處理友情連結申請失敗"

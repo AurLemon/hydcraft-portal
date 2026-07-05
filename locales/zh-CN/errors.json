@@ -140,6 +140,7 @@
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID 创建失败。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID 生成失败。"
 		},
-		"INVALID_PARTNER_REORDER": "排序数据无效。"
+		"INVALID_PARTNER_REORDER": "排序数据无效。",
+		"INVALID_FRIEND_LINK_REORDER": "友链排序数据无效。"
 	}
 }

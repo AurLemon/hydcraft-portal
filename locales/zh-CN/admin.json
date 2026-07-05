@@ -277,6 +277,8 @@
 				"saveFailed": "保存友链失败",
 				"deleted": "友链已删除",
 				"deleteFailed": "删除友链失败",
+				"reordered": "排序已更新",
+				"reorderFailed": "更新排序失败",
 				"approved": "友链申请已通过",
 				"rejected": "友链申请已拒绝",
 				"reviewFailed": "处理友链申请失败"

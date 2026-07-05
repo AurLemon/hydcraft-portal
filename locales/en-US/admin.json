@@ -277,6 +277,8 @@
 				"saveFailed": "Failed to save link",
 				"deleted": "Link deleted",
 				"deleteFailed": "Failed to delete link",
+				"reordered": "Order updated",
+				"reorderFailed": "Failed to update order",
 				"approved": "Application approved",
 				"rejected": "Application rejected",
 				"reviewFailed": "Failed to review application"

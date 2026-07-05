@@ -201,6 +201,12 @@ interface EventMap {
 		actorUserId: string
 		deletedAt: Date
 	}
+	'friend-link.reordered': {
+		category: 'BUSINESS' | 'PERSONAL' | 'ORGANIZATION'
+		actorUserId: string
+		orderedIds: string[]
+		occurredAt: Date
+	}
 	'friend-link.application.draft-created': {
 		applicationId: string
 		applicantUserId: string
