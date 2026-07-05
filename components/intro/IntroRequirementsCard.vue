@@ -18,19 +18,27 @@
 					<p
 						class="font-arkpixel text-2xl leading-8 text-slate-900 dark:text-slate-100"
 					>
-						{{ summaryPrefix }}
-						<span class="mx-1 text-3xl leading-none sm:text-4xl">
+						<span>
+							{{ summaryPrefix }}
+						</span>
+						<span class="leading-none lg:mx-3 lg:text-4xl">
 							{{ summaryMemory }}
 						</span>
-						{{ summaryMiddle }}
-						<span class="mx-1 text-3xl leading-none sm:text-4xl">
+						<span>
+							{{ summaryMiddle }}
+						</span>
+						<span class="leading-none lg:mx-3 lg:text-4xl">
 							{{ summaryYear }}
 						</span>
-						{{ summaryConnector }}
-						<span class="mx-1 text-3xl leading-none sm:text-4xl">
+						<span>
+							{{ summaryConnector }}
+						</span>
+						<span class="leading-none lg:mx-3 lg:text-4xl">
 							{{ summaryTier }}
 						</span>
-						{{ summarySuffix }}
+						<span>
+							{{ summarySuffix }}
+						</span>
 					</p>
 					<p
 						class="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300"

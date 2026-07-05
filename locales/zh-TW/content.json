@@ -193,12 +193,12 @@
 				"title": "我們的成果",
 				"imageAlt": "HydCraft 成果展示圖 {index}",
 				"requirements": {
-					"summaryPrefix": "伺服器建議電腦記憶體不要低於",
+					"summaryPrefix": "伺服器建議記憶體不要低於",
 					"summaryMemory": "16G",
-					"summaryMiddle": "，設備最好是",
+					"summaryMiddle": "，最好是",
 					"summaryYear": "2020 年以後",
 					"summaryConnector": "且定位",
-					"summaryTier": "中階以上",
+					"summaryTier": "中階以上的設備",
 					"summarySuffix": "。",
 					"detail": "記憶體至少也要 8G，因為客戶端至少會分走 4G，系統至少從 Windows 10 起步。MacBook M 系列勉強能跑，Windows 筆電主要看 CPU，像 7840HS 這類就非常夠用。CPU 性能才是核心，Core i5 第 8 代或 Ryzen 5 3000 系以上會好很多。老平台不是完全打不開，也有人用 G4560 + 8G + 核顯都能進服，只是得多忍一點。"
 				}
