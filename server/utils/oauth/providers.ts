@@ -141,7 +141,7 @@ const oauthProviderDefinitions = [
 		userUrl: 'https://graph.qq.com/user/get_user_info',
 		scopes: ['get_user_info'],
 		mapProfile: (raw) => ({
-			id: String(raw.openid),
+			id: readString(raw.openid) ?? '',
 			username: readString(raw.nickname),
 			email: null,
 			avatarUrl:

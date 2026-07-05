@@ -35,7 +35,9 @@
 		<div class="grid gap-12">
 			<section class="flex flex-col gap-2">
 				<div class="flex gap-4 items-center justify-between">
-					<h2 class="mx-1 text-2xl text-slate-950 dark:text-white leading-[normal]">
+					<h2
+						class="mx-1 text-2xl text-slate-950 dark:text-white leading-[normal]"
+					>
 						{{ t('content.partners.sections.community') }}
 					</h2>
 					<div

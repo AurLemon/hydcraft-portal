@@ -35,6 +35,18 @@ const normalizeOAuthEmail = (email: string | null): string | null => {
 		: null
 }
 
+const isValidProviderAccountId = (
+	value: string | null | undefined,
+): boolean => {
+	if (!value) {
+		return false
+	}
+
+	const normalized = value.trim().toLowerCase()
+
+	return normalized !== 'undefined' && normalized !== 'null'
+}
+
 const getLocalizedRegisterPath = (locale: string): string => {
 	switch (locale) {
 		case 'ZH_TW':
@@ -233,15 +245,23 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
+	const qqOpenId =
+		provider === 'QQ'
+			? (token.openid ?? (await fetchQQOpenId(accessToken)))
+			: null
+
 	const rawProfile =
 		provider === 'QQ'
-			? await $fetch<Prisma.InputJsonObject>(config.userUrl, {
-					query: {
-						access_token: accessToken,
-						oauth_consumer_key: config.clientId,
-						openid: token.openid ?? (await fetchQQOpenId(accessToken)),
-					},
-				})
+			? {
+					...(await $fetch<Prisma.InputJsonObject>(config.userUrl, {
+						query: {
+							access_token: accessToken,
+							oauth_consumer_key: config.clientId,
+							openid: qqOpenId!,
+						},
+					})),
+					openid: qqOpenId,
+				}
 			: ((await parseOAuthFetchResponse(
 					await oauthProxyFetch(
 						config.userUrl,
@@ -256,6 +276,18 @@ export default defineEventHandler(async (event) => {
 				)) as Prisma.InputJsonObject)
 
 	const profile = config.mapProfile(rawProfile)
+
+	if (!isValidProviderAccountId(profile.id)) {
+		throw createApiError({
+			statusCode: 502,
+			code: 'OAUTH_PROFILE_INVALID',
+			data: {
+				provider,
+				providerAccountId: profile.id,
+			},
+		})
+	}
+
 	const existing = await prisma.externalAccount.findUnique({
 		where: {
 			provider_providerAccountId: {
