@@ -42,10 +42,12 @@
 				</div>
 
 				<div
-					class="absolute inset-0 z-[1] flex flex-col items-center justify-end gap-4 px-6 py-8 pb-4"
+					class="absolute inset-0 z-[1] flex flex-col items-center px-6 py-8 pb-4"
+					:class="partner.summary ? 'justify-end' : 'justify-center'"
 				>
 					<div
 						class="flex w-full items-center justify-center gap-4 rounded-2xl text-white"
+						:class="partner.summary ? 'mb-4' : ''"
 					>
 						<UAvatar
 							:src="partner.avatarUrl || undefined"
@@ -75,8 +77,11 @@
 							</div>
 						</div>
 					</div>
-					<div class="h-12 text-center text-sm leading-6">
-						<div v-if="partner.summary" class="line-clamp-2 text-white/88">
+					<div
+						v-if="partner.summary"
+						class="text-center text-sm leading-6 text-white/88"
+					>
+						<div class="line-clamp-2">
 							{{ partner.summary }}
 						</div>
 					</div>

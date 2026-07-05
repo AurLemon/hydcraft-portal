@@ -59,7 +59,7 @@
 							>
 								<div class="flex w-full items-end gap-4">
 									<div
-										class="shrink-0 transform-[translateY(0px)_rotate(-8deg)] lg:transform-[translateY(20px)_rotate(-8deg)] origin-center"
+										class="shrink-0 transform-[translateY(0px)_rotate(-8deg)] lg:transform-[translateY(20px)_rotate(-8deg)] origin-center pointer-events-none"
 									>
 										<IntroMinecraftSkinViewer
 											v-if="

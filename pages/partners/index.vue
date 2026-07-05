@@ -34,10 +34,8 @@
 
 		<div class="grid gap-12">
 			<section class="flex flex-col gap-2">
-				<div
-					class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-				>
-					<h2 class="mx-1 text-2xl text-slate-950 dark:text-white">
+				<div class="flex gap-4 items-center justify-between">
+					<h2 class="mx-1 text-2xl text-slate-950 dark:text-white leading-[normal]">
 						{{ t('content.partners.sections.community') }}
 					</h2>
 					<div
@@ -47,7 +45,7 @@
 							v-for="item in communityTabs"
 							:key="item.value"
 							type="button"
-							class="rounded-md px-3 py-1.5 text-sm transition-colors"
+							class="rounded-md px-2 py-1 text-sm transition-colors"
 							:class="
 								activeCommunityKind === item.value
 									? activeCommunityTabClass
