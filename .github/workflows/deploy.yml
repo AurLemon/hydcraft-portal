@@ -145,19 +145,18 @@ jobs:
 
       - name: Deploy app on remote host
         run: |
-          ssh deploy-host <<EOF
+          ssh deploy-host \
+            "export AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID' \
+            AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' \
+            ARTIFACT_BUCKET='$ARTIFACT_BUCKET' \
+            ARTIFACT_DOWNLOAD_ENDPOINT='$ARTIFACT_DOWNLOAD_ENDPOINT' \
+            ARTIFACT_REGION='$ARTIFACT_REGION' \
+            REMOTE_DEPLOY_PATH='$REMOTE_DEPLOY_PATH' \
+            REMOTE_TEMP_DIR='$REMOTE_TEMP_DIR' \
+            PM2_APP_NAME='$PM2_APP_NAME' \
+            DEPLOY_RUNTIME_ENV='$DEPLOY_RUNTIME_ENV' \
+            BASELINE_EXISTING_DB='${{ github.event.inputs.baseline_existing_db || 'false' }}'; bash -s" <<'EOF'
           set -euo pipefail
-
-          export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
-          export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
-          export ARTIFACT_BUCKET="$ARTIFACT_BUCKET"
-          export ARTIFACT_DOWNLOAD_ENDPOINT="$ARTIFACT_DOWNLOAD_ENDPOINT"
-          export ARTIFACT_REGION="$ARTIFACT_REGION"
-          export REMOTE_DEPLOY_PATH="$REMOTE_DEPLOY_PATH"
-          export REMOTE_TEMP_DIR="$REMOTE_TEMP_DIR"
-          export PM2_APP_NAME="$PM2_APP_NAME"
-          export DEPLOY_RUNTIME_ENV="$DEPLOY_RUNTIME_ENV"
-          export BASELINE_EXISTING_DB="${{ github.event.inputs.baseline_existing_db || 'false' }}"
           export PATH="$HOME/.local/bin:$PATH"
           export DEPLOY_TOOL_ROOT="$HOME/.local/share/hydcraft-deploy"
           export COSCMD_VENV="$DEPLOY_TOOL_ROOT/coscmd-venv"
