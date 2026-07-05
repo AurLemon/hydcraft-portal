@@ -221,7 +221,6 @@
 							class="flex shrink-0 flex-wrap items-center gap-2"
 						>
 							<UButton
-								v-if="email.kind !== 'PRIMARY'"
 								type="button"
 								color="primary"
 								variant="soft"
@@ -233,7 +232,6 @@
 								{{ t('admin.users.security.actions.setPrimaryEmail') }}
 							</UButton>
 							<UButton
-								v-if="email.kind !== 'PRIMARY'"
 								type="button"
 								color="error"
 								variant="soft"
