@@ -87,7 +87,7 @@ jobs:
               rm -rf /app/deploy-artifact
               mkdir -p /app/deploy-artifact
 
-              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/start-server.mjs /app/deploy-artifact/
+              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
               cp -R /app/dist-cli /app/deploy-artifact/dist-cli
               cp -R /app/prisma /app/deploy-artifact/prisma
               cp -R /app/.output/public \
@@ -248,7 +248,7 @@ jobs:
           if pm2 describe "$PM2_APP_NAME" >/dev/null 2>&1; then
             pm2 restart "$PM2_APP_NAME" --update-env
           else
-            pm2 start "$REMOTE_DEPLOY_PATH/start-server.mjs" --name "$PM2_APP_NAME" --cwd "$REMOTE_DEPLOY_PATH"
+            pm2 start "$REMOTE_DEPLOY_PATH/.output/server/index.mjs" --name "$PM2_APP_NAME" --cwd "$REMOTE_DEPLOY_PATH"
           fi
 
           pm2 save
