@@ -181,7 +181,7 @@
 					</div>
 
 					<div
-						class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+						class="mt-6 flex gap-3 justify-end"
 					>
 						<UButton
 							type="button"

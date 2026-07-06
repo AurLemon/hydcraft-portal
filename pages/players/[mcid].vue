@@ -13,7 +13,7 @@
 				<div class="flex flex-col gap-3">
 					<div
 						v-if="boundPortalUser"
-						class="flex items-center gap-0.5 px-1 text-sm text-slate-600 dark:text-slate-300"
+						class="inline-flex flex-wrap items-center gap-0.5 px-1 text-sm text-slate-600 dark:text-slate-300"
 					>
 						<UIcon
 							name="i-lucide-arrow-right"

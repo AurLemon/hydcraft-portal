@@ -82,7 +82,7 @@
 				</div>
 
 				<div
-					class="pointer-events-none flex w-full max-w-full flex-col gap-3 self-end sm:flex-row lg:w-fit"
+					class="pointer-events-none flex w-full max-w-full gap-3 self-end lg:w-fit"
 				>
 					<div
 						v-for="card in heroToastCards"

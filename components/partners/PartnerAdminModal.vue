@@ -141,7 +141,7 @@
 							</div>
 						</UFormField>
 
-						<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+						<div class="flex gap-3 justify-end">
 							<UButton
 								v-if="mode === 'edit'"
 								type="button"

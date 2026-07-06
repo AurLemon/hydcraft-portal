@@ -110,7 +110,7 @@
 
 		<template #footer>
 			<div
-				class="flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+				class="flex w-full gap-3 flex-row justify-end"
 			>
 				<UButton
 					type="button"

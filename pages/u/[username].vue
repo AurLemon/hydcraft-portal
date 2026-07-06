@@ -170,7 +170,7 @@
 						</div>
 					</section>
 
-					<section :class="sideCardClass">
+					<section v-if="hasAboutItems" :class="sideCardClass">
 						<h3 :class="sideTitleClass">
 							{{ t('profile.public.sections.about') }}
 						</h3>
@@ -593,6 +593,9 @@ const aboutItems = computed<ProfileInfoItem[]>(() => {
 
 	return items
 })
+
+const hasAboutItems = computed(() => aboutItems.value.length > 0)
+
 const socialActions = computed<SocialAction[]>(() => {
 	const social = profile.value?.social
 

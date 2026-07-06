@@ -39,8 +39,33 @@ export type UserForSummary = User & {
 	} | null
 }
 
-export const AUTH_COOKIE_NAME = 'hydcraft_auth'
-export const REFRESH_COOKIE_NAME = 'hydcraft_refresh'
+// Authentication cookie names were upgraded to the Hydroline namespace
+// to establish a shared identity boundary across *.hydcraft.cn subdomains.
+export const AUTH_COOKIE_NAME = 'hydroline_auth'
+export const REFRESH_COOKIE_NAME = 'hydroline_refresh'
+const LEGACY_AUTH_COOKIE_NAME = 'hydcraft_auth'
+const LEGACY_REFRESH_COOKIE_NAME = 'hydcraft_refresh'
+
+const normalizeCookieDomain = (value: string | undefined): string | undefined => {
+	const normalizedValue = value?.trim()
+
+	return normalizedValue ? normalizedValue : undefined
+}
+
+const AUTH_COOKIE_DOMAIN = normalizeCookieDomain(process.env.AUTH_COOKIE_DOMAIN)
+
+const clearCookieByName = (event: H3Event, cookieName: string): void => {
+	deleteCookie(event, cookieName, {
+		path: '/',
+	})
+
+	if (AUTH_COOKIE_DOMAIN) {
+		deleteCookie(event, cookieName, {
+			path: '/',
+			domain: AUTH_COOKIE_DOMAIN,
+		})
+	}
+}
 
 const ACCESS_TOKEN_MAX_AGE_SECONDS = Number(
 	process.env.JWT_EXPIRES_IN_SECONDS ??
@@ -87,6 +112,7 @@ export const setAuthCookie = (event: H3Event, token: string): void => {
 		secure: process.env.NODE_ENV === 'production',
 		path: '/',
 		maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+		domain: AUTH_COOKIE_DOMAIN,
 	})
 }
 
@@ -97,19 +123,18 @@ export const setRefreshCookie = (event: H3Event, token: string): void => {
 		secure: process.env.NODE_ENV === 'production',
 		path: '/',
 		maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+		domain: AUTH_COOKIE_DOMAIN,
 	})
 }
 
 export const clearAuthCookie = (event: H3Event): void => {
-	deleteCookie(event, AUTH_COOKIE_NAME, {
-		path: '/',
-	})
+	clearCookieByName(event, AUTH_COOKIE_NAME)
+	clearCookieByName(event, LEGACY_AUTH_COOKIE_NAME)
 }
 
 export const clearRefreshCookie = (event: H3Event): void => {
-	deleteCookie(event, REFRESH_COOKIE_NAME, {
-		path: '/',
-	})
+	clearCookieByName(event, REFRESH_COOKIE_NAME)
+	clearCookieByName(event, LEGACY_REFRESH_COOKIE_NAME)
 }
 
 export const clearAuthCookies = (event: H3Event): void => {
