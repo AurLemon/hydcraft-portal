@@ -8,6 +8,7 @@
 			"handle": "ユーザー名",
 			"username": "ユーザー名",
 			"avatar": "アバター",
+			"cover": "カバー",
 			"displayName": "表示名",
 			"avatarUrl": "アバター URL",
 			"bio": "自己紹介",
@@ -46,7 +47,8 @@
 				"updateUsername": "ユーザー名を更新",
 				"updateProfile": "プロフィールを更新",
 				"copyHydrolineId": "Hydroline ID をコピー",
-				"resetAvatar": "アバターをリセット"
+				"resetAvatar": "アバターをリセット",
+				"resetCover": "カバーをリセット"
 			},
 			"birthday": {
 				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
@@ -228,6 +230,7 @@
 			"avatarUpdated": "アバターを更新しました",
 			"avatarReset": "アバターをリセットしました",
 			"coverUpdated": "カバーを更新しました",
+			"coverReset": "カバーをリセットしました",
 			"preferencesSaved": "設定を保存しました",
 			"preferencesSaveFailed": "設定の保存に失敗しました",
 			"privacySaved": "公開情報を保存しました",

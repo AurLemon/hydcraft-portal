@@ -8,6 +8,7 @@
 			"handle": "Handle",
 			"username": "Username",
 			"avatar": "Avatar",
+			"cover": "Cover",
 			"displayName": "Display name",
 			"avatarUrl": "Avatar URL",
 			"bio": "Bio",
@@ -46,7 +47,8 @@
 				"updateUsername": "Update username",
 				"updateProfile": "Update profile",
 				"copyHydrolineId": "Copy Hydroline ID",
-				"resetAvatar": "Reset avatar"
+				"resetAvatar": "Reset avatar",
+				"resetCover": "Reset cover"
 			},
 			"birthday": {
 				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
@@ -229,6 +231,7 @@
 			"avatarUpdated": "Avatar updated",
 			"avatarReset": "Avatar reset",
 			"coverUpdated": "Cover updated",
+			"coverReset": "Cover reset",
 			"preferencesSaved": "Preferences saved",
 			"preferencesSaveFailed": "Failed to save preferences",
 			"privacySaved": "Visibility saved",

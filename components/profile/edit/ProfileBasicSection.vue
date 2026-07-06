@@ -33,6 +33,55 @@
 					@reset="$emit('resetAvatar')"
 				/>
 			</ProfileField>
+			<ProfileField
+				:label="t('profile.fields.cover')"
+				field-class="grid gap-2 md:grid-cols-[180px_1fr] md:items-center"
+			>
+				<div class="flex min-w-0 items-center gap-3">
+					<AttachmentUploadButton
+						purpose="user-cover"
+						owner-type="user"
+						:owner-id="profileId"
+						preview-shape="cover"
+						color="neutral"
+						variant="ghost"
+						size="sm"
+						icon=""
+						:show-loading="false"
+						button-class="group relative h-26 min-w-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-0 hover:!bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:!bg-slate-900/60"
+						@uploaded="$emit('coverUploaded', $event)"
+					>
+						<SkeletonImage
+							:src="effectiveCoverImage"
+							:alt="
+								t('profile.media.coverAlt', {
+									name: form.displayName || form.username,
+								})
+							"
+							class="block h-full w-full"
+							image-class="block h-full w-full object-cover"
+							skeleton-class="rounded-none"
+							loading="lazy"
+						/>
+						<span
+							class="absolute inset-0 flex items-center justify-center bg-slate-950/32 opacity-0 transition-opacity group-hover:opacity-100"
+						>
+							<UIcon name="i-lucide-image-plus" class="h-5 w-5 text-white" />
+						</span>
+					</AttachmentUploadButton>
+
+					<UButton
+						type="button"
+						color="neutral"
+						variant="link"
+						size="sm"
+						class="shrink-0 px-0"
+						@click="$emit('resetCover')"
+					>
+						{{ t('profile.edit.actions.resetCover') }}
+					</UButton>
+				</div>
+			</ProfileField>
 			<ProfileField :label="t('profile.fields.displayName')" required>
 				<UInput
 					v-model="form.displayName"
@@ -132,6 +181,7 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import ProfileBirthdayField from '~/components/profile/edit/ProfileBirthdayField.vue'
 import ProfileBirthdayInfo from '~/components/profile/edit/ProfileBirthdayInfo.vue'
@@ -146,21 +196,26 @@ import {
 
 interface ProfileBasicSectionProps {
 	profileId: string
+	coverImage: string
 	hydrolineId: string
 	createdAt: string
 	joinedAt: string
 	submitting: boolean
 }
 
-defineProps<ProfileBasicSectionProps>()
 defineEmits<{
 	copyHydrolineId: []
 	avatarUploaded: [result: AttachmentUploadResult]
+	coverUploaded: [result: AttachmentUploadResult]
 	resetAvatar: []
+	resetCover: []
 	submit: []
 }>()
 const form = defineModel<ProfileForm>('form', { required: true })
 const { t } = useI18n()
+const props = defineProps<ProfileBasicSectionProps>()
+
+const effectiveCoverImage = computed(() => props.coverImage || defaultCover)
 
 const localizedCountryItems = computed(() =>
 	countryItems.map((item) => ({

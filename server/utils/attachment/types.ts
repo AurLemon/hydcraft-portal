@@ -22,12 +22,22 @@ export type AttachmentOwnerType =
 export type StorageProfileName = 'publicAssets' | 'privateUploads'
 export type AttachmentOutputFormat = 'webp' | 'original'
 
-export interface AttachmentVariantPolicy {
+export interface AttachmentResizeVariantPolicy {
 	name: string
+	mode?: 'resize'
 	width: number
 	height?: number
 	fit: 'cover' | 'inside'
 }
+
+export interface AttachmentSourceVariantPolicy {
+	name: string
+	mode: 'source'
+}
+
+export type AttachmentVariantPolicy =
+	| AttachmentResizeVariantPolicy
+	| AttachmentSourceVariantPolicy
 
 export interface AttachmentPolicy {
 	purpose: AttachmentPurpose

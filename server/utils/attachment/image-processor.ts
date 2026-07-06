@@ -1,7 +1,11 @@
 import { createHash } from 'node:crypto'
 import sharp from 'sharp'
 import { createBadRequestError } from '../errors'
-import type { AttachmentPolicy } from './types'
+import type {
+	AttachmentPolicy,
+	AttachmentResizeVariantPolicy,
+	AttachmentSourceVariantPolicy,
+} from './types'
 
 interface ProcessedImageVariant {
 	name: string
@@ -46,6 +50,57 @@ const validateCropAspectRatio = (
 	}
 }
 
+const buildSourceVariant = async (
+	source: sharp.Sharp,
+	variant: AttachmentSourceVariantPolicy,
+): Promise<ProcessedImageVariant> => {
+	const { data, info } = await source
+		.clone()
+		.webp({
+			quality: 86,
+			effort: 4,
+		})
+		.toBuffer({ resolveWithObject: true })
+
+	return {
+		name: variant.name,
+		buffer: data,
+		width: info.width,
+		height: info.height,
+		contentType: 'image/webp',
+		ext: 'webp',
+	}
+}
+
+const buildResizeVariant = async (
+	source: sharp.Sharp,
+	variant: AttachmentResizeVariantPolicy,
+): Promise<ProcessedImageVariant> => {
+	const pipeline = source
+		.clone()
+		.resize({
+			width: variant.width,
+			height: variant.height,
+			fit: variant.fit,
+			withoutEnlargement: variant.fit === 'inside',
+		})
+		.webp({
+			quality: 86,
+			effort: 4,
+		})
+
+	const { data, info } = await pipeline.toBuffer({ resolveWithObject: true })
+
+	return {
+		name: variant.name,
+		buffer: data,
+		width: info.width,
+		height: info.height,
+		contentType: 'image/webp',
+		ext: 'webp',
+	}
+}
+
 export const processImageAttachment = async (
 	input: ProcessImageAttachmentInput,
 ): Promise<ProcessImageAttachmentResult> => {
@@ -83,28 +138,11 @@ export const processImageAttachment = async (
 	const variants: ProcessedImageVariant[] = []
 
 	for (const variant of input.policy.variants) {
-		let pipeline = source.clone().resize({
-			width: variant.width,
-			height: variant.height,
-			fit: variant.fit,
-			withoutEnlargement: variant.fit === 'inside',
-		})
-
-		pipeline = pipeline.webp({
-			quality: 86,
-			effort: 4,
-		})
-
-		const { data, info } = await pipeline.toBuffer({ resolveWithObject: true })
-
-		variants.push({
-			name: variant.name,
-			buffer: data,
-			width: info.width,
-			height: info.height,
-			contentType: 'image/webp',
-			ext: 'webp',
-		})
+		variants.push(
+			variant.mode === 'source'
+				? await buildSourceVariant(source, variant)
+				: await buildResizeVariant(source, variant),
+		)
 	}
 
 	return {

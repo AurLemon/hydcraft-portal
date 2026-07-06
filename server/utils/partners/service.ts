@@ -13,6 +13,7 @@ import {
 	getAttachmentService,
 	getPublicAttachmentUrl,
 } from '../attachment/runtime'
+import { findPrimaryVariant } from '../attachment/variants'
 import type { PartnerSummary, PartnersPublicResponse } from './types'
 import {
 	normalizeCreatePartnerInput,
@@ -255,10 +256,7 @@ const resolveReadyPartnerAttachmentUrl = async (
 		})
 	}
 
-	const primaryName = purpose === 'partner-avatar' ? 'avatar_256' : 'cover_1440'
-	const primaryVariant =
-		attachment.variants.find((variant) => variant.name === primaryName) ??
-		attachment.variants[0]
+	const primaryVariant = findPrimaryVariant(purpose, attachment.variants)
 
 	if (!primaryVariant) {
 		throw createApiError({

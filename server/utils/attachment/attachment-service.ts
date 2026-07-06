@@ -21,6 +21,7 @@ import type {
 	StorageProfiles,
 } from './types'
 import { processImageAttachment } from './image-processor'
+import { findPrimaryVariant } from './variants'
 
 const ADMIN_ATTACHMENT_SORT_FIELDS = new Set([
 	'id',
@@ -402,10 +403,7 @@ export class AttachmentService {
 				})
 			}
 
-			const primaryVariant =
-				variantCreates.find((variant) =>
-					['avatar_256', 'cover_1440', 'image_1440'].includes(variant.name),
-				) ?? variantCreates[0]
+			const primaryVariant = findPrimaryVariant(purpose, variantCreates)
 
 			const readyAttachment = await prisma.$transaction(async (tx) => {
 				await tx.attachmentVariant.deleteMany({

@@ -10,7 +10,6 @@
 				v-for="user in users"
 				:key="user.username"
 				:user="user"
-				:empty-description="t('content.serverOverview.states.noDescription')"
 			/>
 		</div>
 

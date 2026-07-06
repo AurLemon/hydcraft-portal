@@ -8,6 +8,7 @@
 			"handle": "用户名",
 			"username": "用户名",
 			"avatar": "头像",
+			"cover": "封面",
 			"displayName": "显示名称",
 			"avatarUrl": "头像 URL",
 			"bio": "个人简介",
@@ -46,7 +47,8 @@
 				"updateUsername": "更新用户名",
 				"updateProfile": "更新档案",
 				"copyHydrolineId": "复制 Hydroline ID",
-				"resetAvatar": "重置头像"
+				"resetAvatar": "重置头像",
+				"resetCover": "重置封面"
 			},
 			"birthday": {
 				"summary": "{age}/ {lunar} / {constellation} / {zodiac}",
@@ -228,6 +230,7 @@
 			"avatarUpdated": "头像已更新",
 			"avatarReset": "头像已重置",
 			"coverUpdated": "封面已更新",
+			"coverReset": "封面已重置",
 			"preferencesSaved": "偏好已保存",
 			"preferencesSaveFailed": "偏好保存失败",
 			"privacySaved": "公开信息已保存",

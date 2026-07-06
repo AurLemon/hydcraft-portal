@@ -34,14 +34,17 @@
 				/>
 				<ProfileBasicSection
 					:profile-id="profile.id"
+					:cover-image="coverImage"
 					:created-at="profile.createdAt"
 					:joined-at="profile.joinedAt"
 					:hydroline-id="profile.hydrolineId"
 					:submitting="submittingSection === 'basic'"
 					v-model:form="form"
 					@avatar-uploaded="handleAvatarUploaded"
+					@cover-uploaded="handleCoverUploaded"
 					@copy-hydroline-id="copyHydrolineId"
 					@reset-avatar="handleAvatarReset"
+					@reset-cover="handleCoverReset"
 					@submit="submitBasicProfile"
 				/>
 				<ProfilePreferenceSection v-model:form="form" />
@@ -98,7 +101,7 @@ const preferencesSnapshot = ref('')
 const privacySnapshot = ref('')
 const skipProfileWatchSync = ref(false)
 const form = reactive(createEmptyProfileForm())
-const { data, pending, error, refresh } = await useFetch<ProfileResponse>(
+const { data, pending, error } = await useFetch<ProfileResponse>(
 	'/api/users/me/profile',
 )
 
@@ -393,6 +396,15 @@ const handleAvatarReset = async (): Promise<void> => {
 			avatarAttachmentId: null,
 		},
 		t('profile.notifications.avatarReset'),
+	)
+}
+
+const handleCoverReset = async (): Promise<void> => {
+	await patchProfileAttachment(
+		{
+			coverAttachmentId: null,
+		},
+		t('profile.notifications.coverReset'),
 	)
 }
 

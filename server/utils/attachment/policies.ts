@@ -1,5 +1,6 @@
 import { createBadRequestError } from '../errors'
 import type { AttachmentPolicy, AttachmentPurpose } from './types'
+import { ATTACHMENT_VARIANT_NAMES, buildSourceVariantPolicy } from './variants'
 
 const IMAGE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 // GIF is intentionally rejected in v1 instead of being silently converted to a
@@ -30,11 +31,7 @@ export const attachmentPolicies = {
 		maxSizeBytes: 12 * 1024 * 1024,
 		requiresCrop: true,
 		outputFormat: 'webp',
-		variants: [
-			{ name: 'cover_480', width: 480, height: 120, fit: 'cover' },
-			{ name: 'cover_960', width: 960, height: 240, fit: 'cover' },
-			{ name: 'cover_1440', width: 1440, height: 360, fit: 'cover' },
-		],
+		variants: [buildSourceVariantPolicy(ATTACHMENT_VARIANT_NAMES.coverPrimary)],
 	},
 	'external-account-avatar': {
 		purpose: 'external-account-avatar',
@@ -75,11 +72,7 @@ export const attachmentPolicies = {
 		maxSizeBytes: 12 * 1024 * 1024,
 		requiresCrop: true,
 		outputFormat: 'webp',
-		variants: [
-			{ name: 'cover_480', width: 480, height: 120, fit: 'cover' },
-			{ name: 'cover_960', width: 960, height: 240, fit: 'cover' },
-			{ name: 'cover_1440', width: 1440, height: 360, fit: 'cover' },
-		],
+		variants: [buildSourceVariantPolicy(ATTACHMENT_VARIANT_NAMES.coverPrimary)],
 	},
 	'friend-link-avatar': {
 		purpose: 'friend-link-avatar',

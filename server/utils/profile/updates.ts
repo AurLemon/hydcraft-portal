@@ -2,6 +2,7 @@ import { setResponseHeader, type H3Event } from 'h3'
 import type { User } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { getPublicAttachmentUrl } from '../attachment/runtime'
+import { findPrimaryVariant } from '../attachment/variants'
 import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
 import { ensureUserProfileDefaults } from './defaults'
@@ -176,10 +177,7 @@ const resolveReadyAttachmentUrl = async (
 		})
 	}
 
-	const primaryName = purpose === 'user-avatar' ? 'avatar_256' : 'cover_1440'
-	const primaryVariant =
-		attachment.variants.find((variant) => variant.name === primaryName) ??
-		attachment.variants[0]
+	const primaryVariant = findPrimaryVariant(purpose, attachment.variants)
 
 	if (!primaryVariant) {
 		throw createApiError({

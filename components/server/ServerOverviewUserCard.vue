@@ -37,8 +37,11 @@
 					<div class="truncate text-sm text-slate-200">
 						@{{ user.username }}
 					</div>
-					<p class="mt-2 line-clamp-3 text-base leading-6 text-slate-100/92">
-						{{ user.bio || emptyDescription }}
+					<p
+						v-if="user.bio"
+						class="mt-2 line-clamp-3 text-base leading-6 text-slate-100/92"
+					>
+						{{ user.bio }}
 					</p>
 				</div>
 			</div>
@@ -52,7 +55,6 @@ import type { ServerOverviewRecommendedUser } from '~/utils/server/overview'
 
 interface Props {
 	user: ServerOverviewRecommendedUser
-	emptyDescription: string
 }
 
 const props = defineProps<Props>()
