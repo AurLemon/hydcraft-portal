@@ -159,7 +159,10 @@ export const listPublicOverviewServers = async (): Promise<
 			const runtime = server.portalBridge
 				? portalBridgeManager.getStatus(server.portalBridge.id)
 				: null
-			const observedPlayers = readObservedPlayers(latestPlayerSnapshot?.payload)
+			const connected = runtime?.connected ?? false
+			const observedPlayers = connected
+				? readObservedPlayers(latestPlayerSnapshot?.payload)
+				: []
 			const onlineCount =
 				observedPlayers.length > 0
 					? observedPlayers.length
@@ -175,7 +178,7 @@ export const listPublicOverviewServers = async (): Promise<
 				name: server.name,
 				bridgeStatus: {
 					enabled: server.portalBridge?.enabled ?? false,
-					connected: runtime?.connected ?? false,
+					connected,
 					running: runtime?.running ?? false,
 					manualRequired: runtime?.manualRequired ?? false,
 					lastHeartbeatAt: runtime?.lastHeartbeatAt?.toISOString() ?? null,
