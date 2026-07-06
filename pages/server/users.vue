@@ -164,7 +164,7 @@
 				{{ formatDate(row.original.registeredAt) }}
 			</template>
 			<template #joinedAt-cell="{ row }">
-				{{ formatDate(row.original.joinedAt) }}
+				{{ formatDateOnly(row.original.joinedAt) }}
 			</template>
 		</UTable>
 
@@ -294,6 +294,18 @@ const formatDate = (value: string | null): string => {
 	return new Intl.DateTimeFormat(locale.value, {
 		dateStyle: 'short',
 		timeStyle: 'short',
+	}).format(new Date(value))
+}
+
+const formatDateOnly = (value: string | null): string => {
+	if (!value) {
+		return t('content.serverOverview.states.notAvailable')
+	}
+
+	return new Intl.DateTimeFormat(locale.value, {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
 	}).format(new Date(value))
 }
 
