@@ -10,12 +10,11 @@ export default defineNitroPlugin(() => {
 
 	const timer = setInterval(() => {
 		void (async () => {
+			const now = new Date()
 			const expiredTickets = await prisma.authRegistrationTicket.findMany({
 				where: {
-					kind: 'OAUTH',
-					consumedAt: null,
 					expiresAt: {
-						lte: new Date(),
+						lte: now,
 					},
 				},
 				select: {
@@ -28,6 +27,16 @@ export default defineNitroPlugin(() => {
 					ownerType: 'registration-ticket',
 					ownerId: ticket.id,
 					purpose: 'external-account-avatar',
+				})
+			}
+
+			if (expiredTickets.length > 0) {
+				await prisma.authRegistrationTicket.deleteMany({
+					where: {
+						id: {
+							in: expiredTickets.map((ticket) => ticket.id),
+						},
+					},
 				})
 			}
 		})().catch((error) => {
