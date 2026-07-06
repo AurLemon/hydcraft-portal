@@ -92,7 +92,7 @@ const normalizeRegistrationUniqError = (error: unknown): never => {
 	throw error
 }
 
-const createUserShell = async (
+export const createUserShell = async (
 	tx: Prisma.TransactionClient,
 	input: {
 		handle: string
@@ -100,6 +100,9 @@ const createUserShell = async (
 		email: string
 		displayName: string | null
 		avatarUrl?: string | null
+		credential?: {
+			passwordHash: string
+		}
 	},
 ): Promise<User> => {
 	const now = new Date()
@@ -178,6 +181,15 @@ const createUserShell = async (
 					verifiedAt: now,
 				},
 			},
+			...(input.credential
+				? {
+						credential: {
+							create: {
+								passwordHash: input.credential.passwordHash,
+							},
+						},
+					}
+				: {}),
 		},
 	})
 }

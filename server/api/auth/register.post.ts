@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/db/prisma'
 import { hashPassword } from '../../utils/auth/password'
+import { createUserShell } from '../../utils/auth/registration-completion'
 import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
 import { consumeAuthEmailCode } from '../../utils/auth/email-code'
 import {
@@ -8,7 +9,6 @@ import {
 	assertPassword,
 } from '../../utils/auth/validation'
 import { ensureUserProfileDefaults } from '../../utils/profile/defaults'
-import { createUniqueHydrolineId } from '../../utils/profile/hydroline-id'
 import { normalizeUsername } from '../../utils/profile/validation'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
@@ -42,34 +42,19 @@ export default defineEventHandler(async (event) => {
 		code,
 		'EMAIL_REGISTER',
 	)
-	const now = new Date()
 	const passwordHash = await hashPassword(password)
-	const hydrolineId = await createUniqueHydrolineId()
 
-	const user = await prisma.user.create({
-		data: {
+	const user = await prisma.$transaction(async (tx) =>
+		createUserShell(tx, {
 			handle,
 			username,
-			hydrolineId,
-			displayName: username,
 			email: verifiedEmail,
-			emailVerifiedAt: now,
-			role: 'USER',
-			status: 'ACTIVE',
+			displayName: username,
 			credential: {
-				create: {
-					passwordHash,
-				},
+				passwordHash,
 			},
-			emails: {
-				create: {
-					email: verifiedEmail,
-					kind: 'PRIMARY',
-					verifiedAt: now,
-				},
-			},
-		},
-	})
+		}),
+	)
 	await ensureUserProfileDefaults(user.id)
 	await emitEvent('user.registered', {
 		userId: user.id,
