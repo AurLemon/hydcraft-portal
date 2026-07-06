@@ -76,7 +76,9 @@
 						</div>
 					</div>
 
-					<div class="flex items-start justify-between gap-4">
+					<div
+						class="flex flex-col sm:flex-row items-start justify-between gap-1 sm:gap-4"
+					>
 						<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
 							<div class="truncate">
 								{{ selectedServer.name }}
