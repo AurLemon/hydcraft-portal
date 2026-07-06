@@ -84,7 +84,7 @@
 						:alt="row.original.displayName || row.original.username"
 					/>
 					<span class="min-w-0">
-						<span class="flex flex-wrap items-center gap-2">
+						<span class="flex items-center gap-2">
 							<span class="truncate font-medium text-slate-900 dark:text-white">
 								{{ row.original.displayName || row.original.username }}
 							</span>
