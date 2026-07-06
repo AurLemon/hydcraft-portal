@@ -6,14 +6,19 @@
 			aria-hidden="true"
 		>
 			<video
+				ref="videoRef"
 				autoplay
 				muted
 				loop
 				playsinline
 				preload="auto"
-				:src="backgroundVideo"
 				class="h-full w-full object-cover brightness-70"
-			/>
+			>
+				<source
+					:src="backgroundVideo"
+					type='video/webm; codecs="vp9"'
+				>
+			</video>
 		</div>
 	</Transition>
 </template>
@@ -24,8 +29,47 @@ import { getSiteMediaUrl } from '~/utils/assets/site-media-url'
 
 const route = useRoute()
 const backgroundVideo = getSiteMediaUrl('homepage/promotional_video.webm')
+const videoRef = ref<HTMLVideoElement | null>(null)
 
 const isHeroVideoPage = computed(() => hasHeroVideoBackground(route))
+
+const initializeHeroVideo = async (): Promise<void> => {
+	if (!import.meta.client || !isHeroVideoPage.value) {
+		return
+	}
+
+	await nextTick()
+
+	const video = videoRef.value
+
+	if (!video) {
+		return
+	}
+
+	video.load()
+
+	try {
+		await video.play()
+	} catch {
+		// Some browsers may defer autoplay until the document becomes ready.
+	}
+}
+
+onMounted(() => {
+	void initializeHeroVideo()
+})
+
+watch(
+	isHeroVideoPage,
+	(active) => {
+		if (!active) {
+			return
+		}
+
+		void initializeHeroVideo()
+	},
+	{ flush: 'post' },
+)
 </script>
 
 <style scoped>
