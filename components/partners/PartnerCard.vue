@@ -2,11 +2,7 @@
 	<div
 		class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
 	>
-		<component
-			:is="opensExternally ? 'a' : 'button'"
-			:href="opensExternally ? partner.websiteUrl || undefined : undefined"
-			:target="opensExternally ? '_blank' : undefined"
-			:rel="opensExternally ? 'noopener noreferrer' : undefined"
+		<button
 			type="button"
 			class="relative block w-full overflow-hidden text-left"
 			@click="onActivate"
@@ -67,11 +63,7 @@
 									{{ partner.name }}
 								</h3>
 								<UIcon
-									:name="
-										opensExternally
-											? 'i-lucide-external-link'
-											: 'i-lucide-chevron-right'
-									"
+									name="i-lucide-chevron-right"
 									class="absolute right-0 top-1/2 size-4 -translate-y-1/2 translate-x-1 text-white/72 opacity-0 transition duration-250 group-hover:translate-x-0 group-hover:opacity-100"
 								/>
 							</div>
@@ -87,7 +79,7 @@
 					</div>
 				</div>
 			</div>
-		</component>
+		</button>
 
 		<UButton
 			v-if="partner.canEdit"
@@ -116,7 +108,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const opensExternally = computed(() => Boolean(props.partner.websiteUrl))
 const displayCover = computed(() => getPartnerDisplayCover(props.partner))
 const coverImageClass = computed(() =>
 	[
@@ -128,10 +119,6 @@ const coverImageClass = computed(() =>
 )
 
 const onActivate = (): void => {
-	if (opensExternally.value) {
-		return
-	}
-
 	emit('open', props.partner)
 }
 
