@@ -73,6 +73,11 @@ const currentMobileAction = computed<MobileActionKind>(() => {
 const hasCurrentMobileAction = computed(
 	() => currentMobileAction.value !== null,
 )
+const mobileCurrentNavItemClass = computed(() =>
+	activeDisplayNavItem.value.isFallback
+		? props.fallbackNavItemClass
+		: props.activeNavItemClass,
+)
 
 const syncMobileRouteListHeight = () => {
 	const inner = mobileRouteListInner.value
@@ -300,7 +305,8 @@ onBeforeUnmount(() => {
 			type="button"
 			color="neutral"
 			variant="ghost"
-			class="group relative z-0 rounded-full p-2 text-[16px] leading-none font-semibold whitespace-nowrap text-primary opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:bg-slate-500/10 dark:text-[rgb(125,211,252)] dark:active:bg-white/10"
+			class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:bg-slate-500/10 dark:active:bg-white/10"
+			:class="mobileCurrentNavItemClass"
 			:aria-label="activeDisplayNavItem.label"
 			aria-current="page"
 			@click="openMobileMenu"
@@ -356,7 +362,8 @@ onBeforeUnmount(() => {
 							type="button"
 							color="neutral"
 							variant="ghost"
-							class="group relative z-0 rounded-full p-2 text-[16px] leading-none font-semibold whitespace-nowrap text-primary opacity-100 transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:bg-slate-500/10 dark:text-[rgb(125,211,252)] dark:active:bg-white/10"
+							class="group relative z-0 rounded-full p-2 text-[16px] leading-none whitespace-nowrap transition-all duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:bg-slate-500/10 dark:active:bg-white/10"
+							:class="mobileCurrentNavItemClass"
 							aria-current="page"
 							@click="closeMobileMenu"
 						>
