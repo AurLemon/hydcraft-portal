@@ -63,11 +63,15 @@ interface FriendLinkCardProps {
 	link: FriendLinkSummary
 }
 
-defineProps<FriendLinkCardProps>()
+const props = defineProps<FriendLinkCardProps>()
 
 const { t } = useI18n()
-const avatarUi = {
-	root: 'rounded-lg overflow-hidden',
-	fallback: 'rounded-lg',
-}
+const avatarUi = computed(() => ({
+	root: [
+		'rounded-lg overflow-hidden',
+		props.link.avatarUrl ? 'bg-transparent' : 'bg-elevated',
+	].join(' '),
+	image: 'bg-transparent',
+	fallback: 'rounded-lg text-muted',
+}))
 </script>
