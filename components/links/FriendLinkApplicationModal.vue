@@ -96,9 +96,7 @@
 		</template>
 
 		<template #footer>
-			<div
-				class="flex w-full gap-3 justify-end"
-			>
+			<div class="flex w-full gap-3 justify-end">
 				<UButton
 					type="button"
 					color="neutral"

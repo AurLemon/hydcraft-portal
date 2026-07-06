@@ -68,6 +68,10 @@
 </template>
 
 <script setup lang="ts">
+import {
+	introCommitteeMemberDefinitions,
+	introOwnerMember,
+} from '~/utils/intro/staff-members'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 
 type CommitteeBadgeKey =
@@ -90,40 +94,10 @@ interface CommitteeMember extends CommitteeMemberDefinition {
 
 const committeeMemberDefinitions: CommitteeMemberDefinition[] = [
 	{
-		id: 'Aurora_Lemon',
-		nickname: '柠檬',
+		...introOwnerMember,
 		badges: ['chair', 'owner'],
 	},
-	{
-		id: 'Xiao_awa_',
-		nickname: '肖阿瓦',
-		badges: ['member', 'councilOfEldersSecretary'],
-	},
-	{
-		id: 'Complex_Colors',
-		nickname: '杂色',
-		badges: ['member'],
-	},
-	{
-		id: 'CatPillager',
-		nickname: '仓鼠',
-		badges: ['member', 'viceOwner'],
-	},
-	{
-		id: 'qixuanjun233',
-		nickname: '七炫',
-		badges: ['member', 'viceOwner'],
-	},
-	{
-		id: 'larker_package',
-		nickname: '拉克',
-		badges: ['member', 'viceOwner'],
-	},
-	{
-		id: 'FisheyeArtist59',
-		nickname: '题散',
-		badges: ['advisor'],
-	},
+	...introCommitteeMemberDefinitions,
 ]
 
 const { t } = useI18n()

@@ -180,9 +180,7 @@
 						</label>
 					</div>
 
-					<div
-						class="mt-6 flex gap-3 justify-end"
-					>
+					<div class="mt-6 flex gap-3 justify-end">
 						<UButton
 							type="button"
 							color="neutral"

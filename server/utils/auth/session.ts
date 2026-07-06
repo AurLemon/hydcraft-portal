@@ -46,7 +46,9 @@ export const REFRESH_COOKIE_NAME = 'hydroline_refresh'
 const LEGACY_AUTH_COOKIE_NAME = 'hydcraft_auth'
 const LEGACY_REFRESH_COOKIE_NAME = 'hydcraft_refresh'
 
-const normalizeCookieDomain = (value: string | undefined): string | undefined => {
+const normalizeCookieDomain = (
+	value: string | undefined,
+): string | undefined => {
 	const normalizedValue = value?.trim()
 
 	return normalizedValue ? normalizedValue : undefined

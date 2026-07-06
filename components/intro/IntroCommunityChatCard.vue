@@ -37,7 +37,7 @@
 					/>
 
 					<div
-						class="min-w-0 flex-1 rounded-2xl border border-slate-700/70 bg-slate-900/96 px-4 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.18)] dark:border-slate-700 dark:bg-slate-900"
+						class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50/96 px-4 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.08)] dark:border-slate-700 dark:bg-slate-900 dark:shadow-[0_10px_30px_rgba(15,23,42,0.18)]"
 					>
 						<div
 							class="text-lg leading-none tracking-wide"
@@ -46,7 +46,7 @@
 							{{ message.displayName }}
 						</div>
 						<p
-							class="mt-2 whitespace-pre-line break-words text-sm leading-7 text-slate-100/92"
+							class="mt-2 whitespace-pre-line break-words text-sm leading-7 text-slate-700 dark:text-slate-100/92"
 						>
 							{{ message.text }}
 						</p>

@@ -106,7 +106,7 @@
 								class="h-8 w-8 shrink-0 select-none [image-rendering:pixelated]"
 							/>
 							<div
-								class="flex min-w-0 items-baseline gap-1 font-arkpixel leading-[normal] tracking-wide text-[#fff4cc] [text-shadow:0_1px_0_rgba(15,23,42,0.8)]"
+								class="flex flex-wrap min-w-0 items-baseline gap-1 font-arkpixel leading-[normal] tracking-wide text-[#fff4cc] [text-shadow:0_1px_0_rgba(15,23,42,0.8)]"
 							>
 								<span v-if="card.prefix" class="text-base">
 									{{ card.prefix }}
@@ -148,7 +148,7 @@ const stableClockIcon = getStableAssetUrl(clockIcon)
 const currentYear = dayjs(introNow.value).year()
 const serverEstablishedAt = dayjs('2018-09-01')
 
-const HIGHLIGHT_COUNT = 4
+const HIGHLIGHT_COUNT = 5
 
 interface HeroToastCard {
 	accent?: string
