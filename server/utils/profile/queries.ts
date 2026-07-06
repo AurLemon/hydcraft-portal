@@ -273,10 +273,17 @@ export const checkUsernameAvailability = async (
 
 	const user = await prisma.user.findFirst({
 		where: {
-			username: {
-				equals: normalizedUsername,
-				mode: 'insensitive',
-			},
+			OR: [
+				{
+					username: {
+						equals: normalizedUsername,
+						mode: 'insensitive',
+					},
+				},
+				{
+					handle: normalizedUsername,
+				},
+			],
 		},
 		select: {
 			id: true,

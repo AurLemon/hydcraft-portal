@@ -9,6 +9,7 @@ import {
 } from '../../utils/auth/validation'
 import { ensureUserProfileDefaults } from '../../utils/profile/defaults'
 import { createUniqueHydrolineId } from '../../utils/profile/hydroline-id'
+import { normalizeUsername } from '../../utils/profile/validation'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
 import { emitEvent } from '../../utils/events/event-bus'
@@ -22,7 +23,9 @@ interface RegisterBody {
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<RegisterBody>(event)
-	const handle = assertHandle(body.handle ?? '')
+	const rawHandle = body.handle ?? ''
+	const handle = assertHandle(rawHandle)
+	const username = normalizeUsername(rawHandle)
 	const password = assertPassword(body.password ?? '')
 	const email = assertEmail(body.email)
 	const code = body.code?.trim()
@@ -46,9 +49,9 @@ export default defineEventHandler(async (event) => {
 	const user = await prisma.user.create({
 		data: {
 			handle,
-			username: handle,
+			username,
 			hydrolineId,
-			displayName: handle,
+			displayName: username,
 			email: verifiedEmail,
 			emailVerifiedAt: now,
 			role: 'USER',

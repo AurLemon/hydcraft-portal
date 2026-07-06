@@ -4,6 +4,10 @@ import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { ensureUserProfileDefaults } from '../profile/defaults'
 import { createUniqueHydrolineId } from '../profile/hydroline-id'
+import {
+	normalizeUsername,
+	normalizeUsernameForComparison,
+} from '../profile/validation'
 import { consumeAuthEmailCode } from './email-code'
 import { assertEmail, assertHandle } from './validation'
 import { getRegistrationTicket } from './registration-ticket'
@@ -92,17 +96,24 @@ const createUserShell = async (
 	tx: Prisma.TransactionClient,
 	input: {
 		handle: string
+		username: string
 		email: string
 		displayName: string | null
 		avatarUrl?: string | null
 	},
 ): Promise<User> => {
 	const now = new Date()
+	const normalizedUsername = normalizeUsernameForComparison(input.username)
 	const existingUser = await tx.user.findFirst({
 		where: {
 			OR: [
 				{ handle: input.handle },
-				{ username: input.handle },
+				{
+					username: {
+						equals: normalizedUsername,
+						mode: 'insensitive',
+					},
+				},
 				{ email: input.email },
 			],
 		},
@@ -115,7 +126,8 @@ const createUserShell = async (
 
 	if (
 		existingUser?.handle === input.handle ||
-		existingUser?.username === input.handle
+		normalizeUsernameForComparison(existingUser?.username ?? '') ===
+			normalizedUsername
 	) {
 		throw createApiError({
 			statusCode: 409,
@@ -151,9 +163,9 @@ const createUserShell = async (
 	return await tx.user.create({
 		data: {
 			handle: input.handle,
-			username: input.handle,
+			username: input.username,
 			hydrolineId,
-			displayName: input.displayName ?? input.handle,
+			displayName: input.displayName ?? input.username,
 			email: input.email,
 			emailVerifiedAt: now,
 			avatarUrl: input.avatarUrl ?? null,
@@ -173,7 +185,9 @@ const createUserShell = async (
 export const completeRegistrationFromTicket = async (
 	input: CompleteRegistrationInput,
 ): Promise<User> => {
-	const handle = assertHandle(input.handle)
+	const rawHandle = input.handle ?? ''
+	const handle = assertHandle(rawHandle)
+	const username = normalizeUsername(rawHandle)
 	const email = assertEmail(input.email)
 	const code = input.code?.trim() ?? ''
 
@@ -203,8 +217,9 @@ export const completeRegistrationFromTicket = async (
 
 				const createdUser = await createUserShell(tx, {
 					handle,
+					username,
 					email: verifiedEmail,
-					displayName: handle,
+					displayName: username,
 				})
 				await bindMinecraftAccountToUserInTx(tx, {
 					minecraftAccountId: ticket.minecraftAccount.id,
@@ -242,8 +257,9 @@ export const completeRegistrationFromTicket = async (
 
 			const createdUser = await createUserShell(tx, {
 				handle,
+				username,
 				email: verifiedEmail,
-				displayName: payload.providerUsername ?? handle,
+				displayName: payload.providerUsername ?? username,
 				avatarUrl: payload.avatarUrl,
 			})
 			const externalAccount = await tx.externalAccount.create({
