@@ -35,7 +35,7 @@
 					<UInput
 						:model-value="form.hydrolineId"
 						readonly
-						class="min-w-0 flex-1 font-mono"
+						class="min-w-0 flex-1"
 					/>
 					<UButton
 						type="button"

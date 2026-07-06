@@ -58,13 +58,11 @@
 						>
 							<span
 								v-if="row.key"
-								class="shrink-0 font-mono text-slate-500 dark:text-slate-400"
+								class="shrink-0 text-slate-500 dark:text-slate-400"
 							>
 								{{ row.key }}
 							</span>
-							<span
-								class="min-w-0 break-all font-mono text-slate-900 dark:text-white"
-							>
+							<span class="min-w-0 break-all text-slate-900 dark:text-white">
 								{{ row.value }}
 							</span>
 						</li>
@@ -77,7 +75,7 @@
 					</p>
 					<pre
 						v-else
-						class="overflow-auto p-4 text-xs font-mono text-slate-900 dark:text-white"
+						class="overflow-auto p-4 text-xs text-slate-900 dark:text-white"
 						>{{ rawText }}</pre
 					>
 				</div>

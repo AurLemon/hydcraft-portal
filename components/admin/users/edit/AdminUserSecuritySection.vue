@@ -96,7 +96,7 @@
 										}}
 									</UBadge>
 								</div>
-								<p class="mt-1 break-all font-mono text-xs text-slate-500">
+								<p class="mt-1 break-all text-xs text-slate-500">
 									{{ connection.id }}
 								</p>
 							</div>
@@ -209,7 +209,7 @@
 									}}
 								</UBadge>
 							</div>
-							<p class="mt-1 font-mono text-xs text-slate-500">
+							<p class="mt-1 text-xs text-slate-500">
 								{{ email.id }}
 							</p>
 							<p class="mt-1 text-sm text-slate-500">

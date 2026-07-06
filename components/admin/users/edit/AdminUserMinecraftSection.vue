@@ -53,7 +53,7 @@
 									{{ account.status }}
 								</UBadge>
 							</div>
-							<p class="mt-1 break-all font-mono text-xs text-slate-500">
+							<p class="mt-1 break-all text-xs text-slate-500">
 								{{ account.id }}
 							</p>
 						</div>
@@ -91,7 +91,7 @@
 							<span class="text-slate-500 dark:text-slate-400">
 								{{ t('admin.users.minecraft.fields.uuid') }}
 							</span>
-							<p class="mt-1 break-all font-mono text-xs">
+							<p class="mt-1 break-all text-xs">
 								{{ describeUuid(account) }}
 							</p>
 						</div>

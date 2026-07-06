@@ -19,7 +19,7 @@
 							t('admin.users.edit.fallbackTitle')
 						}}
 					</h1>
-					<p class="mt-1 font-mono text-xs text-slate-500">
+					<p class="mt-1 text-xs text-slate-500">
 						{{ user?.id ?? id }}
 					</p>
 				</div>

@@ -115,12 +115,12 @@
 					</div>
 				</template>
 				<template #code-cell="{ row }">
-					<span class="font-mono text-xs text-slate-600 dark:text-slate-300">
+					<span class="text-xs text-slate-600 dark:text-slate-300">
 						{{ row.original.code }}
 					</span>
 				</template>
 				<template #address-cell="{ row }">
-					<span class="font-mono text-xs text-slate-600 dark:text-slate-300">
+					<span class="text-xs text-slate-600 dark:text-slate-300">
 						{{ row.original.host }}:{{ row.original.port }}
 					</span>
 				</template>

@@ -57,7 +57,7 @@
 							/>
 							{{ row.original.labelZhCn }}
 						</UBadge>
-						<span class="font-mono text-xs text-slate-500">
+						<span class="text-xs text-slate-500">
 							{{ row.original.key }}
 						</span>
 					</div>
@@ -72,7 +72,7 @@
 					</div>
 				</template>
 				<template #color-cell="{ row }">
-					<span class="font-mono text-xs">{{ row.original.color }}</span>
+					<span class="text-xs">{{ row.original.color }}</span>
 				</template>
 				<template #enabled-cell="{ row }">
 					<UBadge

@@ -12,7 +12,7 @@
 						<p class="truncate font-medium text-slate-950 dark:text-white">
 							{{ displayName }}
 						</p>
-						<p class="font-mono text-xs text-slate-500 dark:text-slate-400">
+						<p class="text-xs text-slate-500 dark:text-slate-400">
 							{{ uuidStateLabel }}
 						</p>
 					</div>

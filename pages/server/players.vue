@@ -105,10 +105,7 @@
 						<p class="truncate font-medium text-slate-900 dark:text-white">
 							{{ row.original.username }}
 						</p>
-						<p
-							v-if="row.original.uuid"
-							class="truncate font-mono text-xs text-slate-500"
-						>
+						<p v-if="row.original.uuid" class="truncate text-xs text-slate-500">
 							{{ row.original.uuid }}
 						</p>
 					</div>

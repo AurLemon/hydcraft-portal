@@ -107,23 +107,23 @@
 								v-if="row.original.player.uuidSource"
 								:text="getUuidSourceText(row.original.player.uuidSource)"
 							>
-								<span class="truncate font-mono">
+								<span class="truncate">
 									{{ row.original.player.uuid }}
 								</span>
 							</UTooltip>
-							<span v-else class="truncate font-mono">
+							<span v-else class="truncate">
 								{{ row.original.player.uuid }}
 							</span>
 						</p>
 					</div>
 				</template>
 				<template #serverId-cell="{ row }">
-					<span class="font-mono text-xs">
+					<span class="text-xs">
 						{{ row.original.player.serverId }}
 					</span>
 				</template>
 				<template #advancementKey-cell="{ row }">
-					<span class="font-mono text-xs">
+					<span class="text-xs">
 						{{ row.original.advancementKey }}
 					</span>
 				</template>

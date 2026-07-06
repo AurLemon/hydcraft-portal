@@ -68,7 +68,7 @@ export const adminFieldClass =
 	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 dark:[&>span]:text-slate-400'
 
 export const adminReadonlyFieldClass =
-	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 dark:[&>span]:text-slate-400 [&>strong]:break-all [&>strong]:font-mono [&>strong]:text-xs [&>strong]:text-slate-950 dark:[&>strong]:text-slate-100'
+	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 [&>span]:text-slate-500 dark:[&>span]:text-slate-400 [&>strong]:break-all [&>strong]:text-xs [&>strong]:text-slate-950 dark:[&>strong]:text-slate-100'
 
 export const adminMediaFrameClass =
 	'relative flex h-36 w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950'

@@ -76,7 +76,7 @@
 				<template #id-cell="{ row }">
 					<button
 						type="button"
-						class="font-mono text-xs text-primary hover:underline"
+						class="text-xs text-primary hover:underline"
 						@click="openAttachment(row.original)"
 					>
 						{{ row.original.id }}
@@ -98,7 +98,7 @@
 					</UBadge>
 				</template>
 				<template #owner-cell="{ row }">
-					<div class="font-mono text-xs text-slate-500">
+					<div class="text-xs text-slate-500">
 						{{ row.original.ownerType }} / {{ row.original.ownerId || '-' }}
 					</div>
 				</template>
@@ -153,7 +153,7 @@
 							<h2 class="text-2xl font-semibold text-slate-950 dark:text-white">
 								{{ t('admin.attachments.modal.title') }}
 							</h2>
-							<p class="mt-1 font-mono text-xs text-slate-500">
+							<p class="mt-1 text-xs text-slate-500">
 								{{ selectedAttachment.id }}
 							</p>
 						</div>
@@ -171,7 +171,7 @@
 							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
 						>
 							<span>{{ t('admin.attachments.fields.id') }}</span>
-							<strong class="break-all font-mono text-xs">{{
+							<strong class="break-all text-xs">{{
 								selectedAttachment.id
 							}}</strong>
 						</div>
@@ -233,7 +233,7 @@
 							class="grid gap-1 rounded-lg border border-slate-200 p-3 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
 						>
 							<span>{{ t('admin.attachments.fields.createdById') }}</span>
-							<strong class="break-all font-mono text-xs">{{
+							<strong class="break-all text-xs">{{
 								selectedAttachment.createdById || '-'
 							}}</strong>
 						</div>
@@ -247,7 +247,7 @@
 							class="grid gap-1 rounded-lg border border-slate-200 p-3 md:col-span-2 dark:border-slate-800 [&>span]:text-xs [&>span]:text-slate-500 [&>strong]:text-sm [&>strong]:text-slate-950 dark:[&>span]:text-slate-400 dark:[&>strong]:text-white"
 						>
 							<span>{{ t('admin.attachments.fields.objectKey') }}</span>
-							<strong class="break-all font-mono text-xs">{{
+							<strong class="break-all text-xs">{{
 								selectedAttachment.objectKey || '-'
 							}}</strong>
 						</div>
@@ -270,9 +270,7 @@
 												variant.height
 											}}
 										</div>
-										<div
-											class="mt-1 break-all font-mono text-xs text-slate-500"
-										>
+										<div class="mt-1 break-all text-xs text-slate-500">
 											{{ variant.objectKey }}
 										</div>
 									</div>
@@ -317,7 +315,7 @@
 					</p>
 					<p
 						v-if="pendingDeleteAttachment"
-						class="mt-3 break-all font-mono text-xs text-slate-500"
+						class="mt-3 break-all text-xs text-slate-500"
 					>
 						{{ pendingDeleteAttachment.id }}
 					</p>

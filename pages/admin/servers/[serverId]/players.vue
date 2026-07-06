@@ -98,14 +98,14 @@
 									v-if="row.original.uuidSource"
 									:text="getUuidSourceText(row.original.uuidSource)"
 								>
-									<span class="truncate font-mono">
+									<span class="truncate">
 										{{
 											row.original.uuid ??
 											t('admin.serverPlayers.empty.unknown')
 										}}
 									</span>
 								</UTooltip>
-								<span v-else class="truncate font-mono">
+								<span v-else class="truncate">
 									{{
 										row.original.uuid ?? t('admin.serverPlayers.empty.unknown')
 									}}

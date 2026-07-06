@@ -73,7 +73,7 @@
 							</p>
 							<p
 								v-if="getAccountUuid(row.original)"
-								class="flex min-w-0 items-center gap-1 font-mono text-xs text-slate-500"
+								class="flex min-w-0 items-center gap-1 text-xs text-slate-500"
 							>
 								<span class="truncate">{{ getAccountUuid(row.original) }}</span>
 								<UTooltip
