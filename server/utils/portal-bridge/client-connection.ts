@@ -21,9 +21,16 @@ import {
 	describeBridgeContext,
 	describeCloseEvent,
 	logBridgeInfo,
+	readEnvelopePlayers,
 	readPlayerBoolean,
+	readPlayerNumber,
 	readPlayerString,
 } from './client-helpers'
+import {
+	clearPortalBridgeConnectionGap,
+	getPortalBridgeConnectionGap,
+	markPortalBridgeConnectionGap,
+} from './connection-gap'
 import type {
 	BridgeRuntimeConfig,
 	CommandResult,
@@ -44,6 +51,31 @@ import {
 	type PortalBridgeEnvelope,
 } from './protocol'
 import { RetryController } from './retry-controller'
+import { reconcileRecoveredServerPlayerSessions } from './session-recovery'
+
+interface RecoveryOnlineSnapshotPlayer {
+	uuid: string
+	username: string | null
+	worldName: string | null
+	dimension: string | null
+	x: number | null
+	y: number | null
+	z: number | null
+}
+
+interface RecoveryOnlineSnapshotResult {
+	commandId: string
+	success: boolean
+	status: string
+	message?: string | null
+	observedAt: Date | null
+	players: RecoveryOnlineSnapshotPlayer[]
+}
+
+interface PendingRecoveryOnlineSnapshotWaiter {
+	resolve: (result: RecoveryOnlineSnapshotResult) => void
+	reject: (error: unknown) => void
+}
 
 export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 	private socket: WebSocket | null = null
@@ -79,6 +111,10 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 	private readonly pendingCommandWaiters = new Map<
 		string,
 		PendingCommandWaiter
+	>()
+	private readonly pendingRecoveryOnlineSnapshotWaiters = new Map<
+		string,
+		PendingRecoveryOnlineSnapshotWaiter
 	>()
 
 	constructor(public readonly config: BridgeRuntimeConfig) {
@@ -239,10 +275,6 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 	}
 
 	private rejectPendingCommands(reason: string): void {
-		if (this.pendingCommandWaiters.size === 0) {
-			return
-		}
-
 		for (const waiter of this.pendingCommandWaiters.values()) {
 			waiter.reject(
 				createApiError({
@@ -254,6 +286,22 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 		}
 
 		this.pendingCommandWaiters.clear()
+
+		if (this.pendingRecoveryOnlineSnapshotWaiters.size === 0) {
+			return
+		}
+
+		for (const waiter of this.pendingRecoveryOnlineSnapshotWaiters.values()) {
+			waiter.reject(
+				createApiError({
+					statusCode: 503,
+					code: 'PORTAL_BRIDGE_COMMAND_ABORTED',
+					data: { reason },
+				}),
+			)
+		}
+
+		this.pendingRecoveryOnlineSnapshotWaiters.clear()
 	}
 
 	private connect(): void {
@@ -341,6 +389,9 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 			this.stopConnectedRuntime()
 			this.rejectPendingCommands('PortalBridge connection closed')
 			this.lastRuntimeStateChangedAt = new Date()
+			if (this.closeReason !== 'manual') {
+				this.recordConnectionGap(this.lastRuntimeStateChangedAt)
+			}
 			void prisma.portalBridgeConfig.update({
 				where: { id: this.config.id },
 				data: {
@@ -386,6 +437,17 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 				this.socket = null
 				this.closingSocket = false
 				this.lastRuntimeStateChangedAt = new Date()
+				this.recordConnectionGap(this.lastRuntimeStateChangedAt)
+				void prisma.portalBridgeConfig.update({
+					where: { id: this.config.id },
+					data: {
+						lastConnectionState: 'DISCONNECTED',
+						lastDisconnectedAt: this.lastRuntimeStateChangedAt,
+					},
+				})
+				this.rejectPendingCommands(
+					'PortalBridge connection lost before close event',
+				)
 				this.scheduleReconnect()
 			}
 		})
@@ -489,6 +551,7 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 
 		this.coreSync.handleEnvelope(envelope)
 		this.resolvePendingCommandWaiter(envelope)
+		this.resolveRecoveryOnlineSnapshotWaiter(envelope)
 
 		await ingestPortalBridgeEnvelope({
 			bridgeConfigId: this.config.id,
@@ -676,15 +739,207 @@ export class PortalBridgeConnection implements PortalBridgeCoreSyncRuntime {
 	}
 
 	private startConnectedRuntime(): void {
-		this.coreSync.start()
 		this.startLivenessWatchdog()
 		this.startResumeSeqFlush()
+		void this.runRecoveryFlow()
+	}
+
+	private startCoreSyncIfConnected(): void {
+		if (!this.stopped && this.socket?.readyState === WebSocket.OPEN) {
+			this.coreSync.start()
+		}
 	}
 
 	private stopConnectedRuntime(): void {
 		this.coreSync.stop()
 		this.stopLivenessWatchdog()
 		this.stopResumeSeqFlush()
+	}
+
+	private recordConnectionGap(disconnectedAt: Date): void {
+		const startedAt =
+			this.lastMessageAt ?? this.lastHeartbeatAt ?? disconnectedAt
+
+		markPortalBridgeConnectionGap({
+			bridgeConfigId: this.config.id,
+			serverId: this.config.minecraftServer.serverId,
+			startedAt,
+		})
+	}
+
+	private async runRecoveryFlow(): Promise<void> {
+		const gap = getPortalBridgeConnectionGap(this.config.id)
+
+		if (!gap) {
+			this.startCoreSyncIfConnected()
+			return
+		}
+
+		try {
+			const snapshot = await this.sendRecoveryOnlineSnapshotAndWait()
+
+			if (!snapshot || !snapshot.success || !snapshot.observedAt) {
+				return
+			}
+
+			const recoveryObservedAt = snapshot.observedAt
+
+			await reconcileRecoveredServerPlayerSessions({
+				serverId: gap.serverId,
+				gapStartedAt: gap.startedAt,
+				currentOnlinePlayers: snapshot.players.map((player) => ({
+					...player,
+					observedAt: recoveryObservedAt,
+				})),
+			})
+			clearPortalBridgeConnectionGap(this.config.id)
+		} catch (error) {
+			logBridgeInfo(
+				`${describeBridgeContext({
+					serverId: this.config.minecraftServer.serverId,
+					bridgeId: this.config.bridgeId,
+					module: this.config.module,
+				})} recovery online snapshot reconciliation failed`,
+				'error',
+				error,
+			)
+		} finally {
+			this.startCoreSyncIfConnected()
+		}
+	}
+
+	private async sendRecoveryOnlineSnapshotAndWait(): Promise<RecoveryOnlineSnapshotResult | null> {
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			return null
+		}
+
+		const commandId = await this.sendCommand('sync.onlinePlayers.now')
+
+		return await new Promise<RecoveryOnlineSnapshotResult>(
+			(resolve, reject) => {
+				const timer = setTimeout(() => {
+					this.pendingRecoveryOnlineSnapshotWaiters.delete(commandId)
+					reject(
+						createApiError({
+							statusCode: 504,
+							code: 'PORTAL_BRIDGE_COMMAND_TIMEOUT',
+							data: {
+								action: 'sync.onlinePlayers.now',
+								timeoutMs: PORTAL_BRIDGE_COMMAND_RESULT_TIMEOUT_MS,
+							},
+						}),
+					)
+				}, PORTAL_BRIDGE_COMMAND_RESULT_TIMEOUT_MS)
+
+				this.pendingRecoveryOnlineSnapshotWaiters.set(commandId, {
+					resolve: (result) => {
+						clearTimeout(timer)
+						this.pendingRecoveryOnlineSnapshotWaiters.delete(commandId)
+						resolve(result)
+					},
+					reject: (error) => {
+						clearTimeout(timer)
+						this.pendingRecoveryOnlineSnapshotWaiters.delete(commandId)
+						reject(error)
+					},
+				})
+			},
+		)
+	}
+
+	private resolveRecoveryOnlineSnapshotWaiter(
+		envelope: PortalBridgeEnvelope,
+	): void {
+		const commandId = readPlayerString(envelope.payload, 'commandId')
+
+		if (!commandId) {
+			return
+		}
+
+		const waiter = this.pendingRecoveryOnlineSnapshotWaiters.get(commandId)
+
+		if (!waiter) {
+			return
+		}
+
+		if (envelope.topic === 'command.rejected') {
+			waiter.resolve({
+				commandId,
+				success: false,
+				status: 'REJECTED',
+				message:
+					readPlayerString(envelope.payload, 'message') ??
+					'PortalBridge command rejected',
+				observedAt: null,
+				players: [],
+			})
+			return
+		}
+
+		if (envelope.topic === 'command.result') {
+			const status = readPlayerString(envelope.payload, 'status')
+			const success = readPlayerBoolean(envelope.payload, 'success')
+
+			if (success === false || status !== 'OK') {
+				waiter.resolve({
+					commandId,
+					success: false,
+					status: status ?? 'UNKNOWN',
+					message: readPlayerString(envelope.payload, 'message'),
+					observedAt: null,
+					players: [],
+				})
+			}
+
+			return
+		}
+
+		if (envelope.topic !== 'mc.player.online.snapshot') {
+			return
+		}
+
+		const players = readEnvelopePlayers(envelope.payload).flatMap((player) => {
+			const uuid = readPlayerString(player, 'uuid')
+
+			if (!uuid) {
+				return []
+			}
+
+			const position =
+				player && typeof player === 'object'
+					? ((player as Record<string, unknown>)['position'] as
+							| Record<string, unknown>
+							| null
+							| undefined)
+					: null
+
+			return [
+				{
+					uuid,
+					username: readPlayerString(player, 'username'),
+					worldName: readPlayerString(player, 'worldName'),
+					dimension: readPlayerString(player, 'dimension'),
+					x: readPlayerNumber(position, 'x'),
+					y: readPlayerNumber(position, 'y'),
+					z: readPlayerNumber(position, 'z'),
+				},
+			]
+		})
+
+		const observedAtRaw = readPlayerString(envelope.payload, 'observedAt')
+		const observedAt =
+			observedAtRaw && !Number.isNaN(new Date(observedAtRaw).getTime())
+				? new Date(observedAtRaw)
+				: new Date(envelope.observedAt)
+
+		waiter.resolve({
+			commandId,
+			success: true,
+			status: 'OK',
+			message: readPlayerString(envelope.payload, 'message'),
+			observedAt,
+			players,
+		})
 	}
 
 	private startLivenessWatchdog(): void {

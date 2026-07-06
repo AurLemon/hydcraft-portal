@@ -39,6 +39,19 @@ export const readPlayerBoolean = (
 	return typeof value === 'boolean' ? value : null
 }
 
+export const readPlayerNumber = (
+	player: unknown,
+	key: string,
+): number | null => {
+	if (!player || typeof player !== 'object') {
+		return null
+	}
+
+	const value = (player as Record<string, unknown>)[key]
+
+	return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
 export const getPortalBridgeTaskKey = (
 	serverId: string,
 	source: ExternalSyncSource,
