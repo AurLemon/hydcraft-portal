@@ -6,8 +6,9 @@ import {
 	isMailRuntimeConfigured,
 	type MailRuntimeConfig,
 } from './runtime'
-import { renderPasswordResetRequestedMail } from './templates/password-reset-requested'
-import { resolveMailLocale } from './types'
+import { normalizeMailLocale } from '../auth/locale'
+import { getVerificationOperation } from '../security/account-security'
+import { renderVerificationMail } from './templates'
 import type { SendMailMessage } from './types'
 
 let transporter: Transporter | null = null
@@ -68,19 +69,23 @@ export interface SendPasswordResetRequestedMailInput {
 	displayName: string | null
 	handle: string
 	locale: string | null
+	code: string
+	ipAddress: string | null
+	ipLocation: string | null
 	requestedAt: Date
 }
 
 export const sendPasswordResetRequestedMail = async (
 	input: SendPasswordResetRequestedMailInput,
 ): Promise<boolean> => {
-	const config = getMailRuntimeConfig()
-	const template = renderPasswordResetRequestedMail({
-		locale: resolveMailLocale(input.locale),
-		displayName: input.displayName,
-		handle: input.handle,
-		siteUrl: config.siteUrl,
-		requestedAt: input.requestedAt,
+	const locale = normalizeMailLocale(input.locale)
+	const template = renderVerificationMail({
+		displayName: input.displayName || input.handle,
+		code: input.code,
+		operation: getVerificationOperation('PASSWORD_RESET', locale),
+		ipAddress: input.ipAddress,
+		ipLocation: input.ipLocation,
+		locale,
 	})
 
 	return await sendRuntimeMail({

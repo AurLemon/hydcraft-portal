@@ -360,7 +360,7 @@
 			"modals": {
 				"passwordReset": {
 					"title": "パスワードをリセット",
-					"description": "ログイン用メールにリセットリンクを送信します。完了後、古いパスワードは使えなくなります。"
+					"description": "ログイン用メールに 6 桁の確認コードを送り、この画面でそのまま再設定を完了できます。"
 				},
 				"logout": {
 					"title": "現在のセッションからログアウトしますか？",
@@ -400,9 +400,9 @@
 				"emailVerified": "メールを認証しました",
 				"emailVerifyFailed": "認証に失敗しました",
 				"emailVerifyFailedDescription": "コードが無効または期限切れです。再送信してもう一度お試しください。",
-				"resetEmailSent": "リセットメールを送信しました",
-				"resetEmailSentDescription": "現在のアカウントのメールを確認し、案内に従って続行してください。",
-				"resetEmailSendFailed": "リセットメールの送信に失敗しました",
+				"resetEmailSent": "確認コードを送信しました",
+				"resetEmailSentDescription": "現在のアカウントのメールを確認し、この画面でコードと新しいパスワードを入力してください。",
+				"resetEmailSendFailed": "確認コードの送信に失敗しました",
 				"logoutFailed": "ログアウトに失敗しました",
 				"sessionRevoked": "セッションを無効化しました",
 				"sessionRevokeFailed": "セッションの無効化に失敗しました",

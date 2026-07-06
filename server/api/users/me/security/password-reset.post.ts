@@ -1,7 +1,7 @@
 import { requireCurrentUser } from '../../../../utils/auth/session'
-import { emitEvent } from '../../../../utils/events/event-bus'
 import { createBadRequestError } from '../../../../utils/errors'
 import { validateCapToken } from '../../../../utils/security/cap'
+import { issuePasswordResetVerificationCode } from '../../../../utils/security/password-reset'
 
 interface PasswordResetRequestBody {
 	captchaToken?: string
@@ -19,16 +19,17 @@ export default defineEventHandler(async (event) => {
 		token: body.captchaToken,
 	})
 
-	await emitEvent('auth.password-reset.requested', {
-		userId: user.id,
+	return await issuePasswordResetVerificationCode({
+		event,
+		user: {
+			id: user.id,
+			handle: user.handle,
+			username: user.username,
+			displayName: user.displayName,
+			email: user.email,
+			status: user.status,
+			preferences: user.preferences ?? null,
+		},
 		email: user.email,
-		displayName: user.displayName,
-		handle: user.handle,
-		locale: user.preferences?.language ?? null,
-		requestedAt: new Date(),
 	})
-
-	return {
-		accepted: true,
-	}
 })

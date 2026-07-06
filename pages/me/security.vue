@@ -355,11 +355,58 @@
 						</div>
 					</div>
 
-					<div class="mt-6">
+					<div v-if="passwordResetStep === 'request'" class="mt-6">
 						<CapWidget
 							ref="passwordResetCaptchaWidgetRef"
 							v-model="passwordResetCaptcha.token.value"
 						/>
+					</div>
+					<div v-else class="mt-6 space-y-4">
+						<label class="grid gap-1.5 text-sm font-medium">
+							<span>{{ t('resetPassword.fields.code') }}</span>
+							<UInput
+								v-model="passwordResetForm.code"
+								type="text"
+								inputmode="numeric"
+								maxlength="6"
+								required
+								autocomplete="one-time-code"
+								:placeholder="t('resetPassword.placeholders.code')"
+								size="lg"
+								variant="outline"
+							/>
+						</label>
+						<label class="grid gap-1.5 text-sm font-medium">
+							<span>{{ t('resetPassword.fields.password') }}</span>
+							<UInput
+								v-model="passwordResetForm.password"
+								:type="passwordResetPasswordVisible ? 'text' : 'password'"
+								required
+								autocomplete="new-password"
+								:placeholder="t('resetPassword.placeholders.password')"
+								size="lg"
+								variant="outline"
+							>
+								<template #trailing>
+									<UButton
+										type="button"
+										color="neutral"
+										variant="ghost"
+										size="xs"
+										:icon="
+											passwordResetPasswordVisible
+												? 'i-lucide-eye-off'
+												: 'i-lucide-eye'
+										"
+										:aria-label="t('auth.actions.togglePassword')"
+										@click="
+											passwordResetPasswordVisible =
+												!passwordResetPasswordVisible
+										"
+									/>
+								</template>
+							</UInput>
+						</label>
 					</div>
 
 					<div class="mt-6 flex gap-2 justify-end">
@@ -373,15 +420,27 @@
 						</UButton>
 						<UButton
 							type="submit"
-							icon="i-lucide-mail"
+							:icon="
+								passwordResetStep === 'confirm'
+									? 'i-lucide-key-round'
+									: 'i-lucide-mail'
+							"
 							:loading="passwordResetSubmitting"
 							:disabled="
-								!passwordResetReceiverEmail ||
-								!passwordResetCaptcha.token.value ||
-								passwordResetSubmitting
+								passwordResetStep === 'request'
+									? !passwordResetReceiverEmail ||
+										!passwordResetCaptcha.token.value ||
+										passwordResetSubmitting
+									: !passwordResetForm.code.trim() ||
+										!passwordResetForm.password ||
+										passwordResetSubmitting
 							"
 						>
-							{{ t('profile.security.actions.sendResetEmail') }}
+							{{
+								passwordResetStep === 'confirm'
+									? t('resetPassword.actions.submit')
+									: t('profile.security.actions.sendResetEmail')
+							}}
 						</UButton>
 					</div>
 				</form>
@@ -822,6 +881,12 @@ const revokeSessionsModalOpen = ref(false)
 const addEmailModalOpen = ref(false)
 const deleteEmailModalOpen = ref(false)
 const passwordResetSubmitting = ref(false)
+const passwordResetStep = ref<'request' | 'confirm'>('request')
+const passwordResetPasswordVisible = ref(false)
+const passwordResetForm = reactive<{ code: string; password: string }>({
+	code: '',
+	password: '',
+})
 const logoutSubmitting = ref(false)
 const revokingOtherSessions = ref(false)
 const revokingSessionId = ref<string | null>(null)
@@ -1053,6 +1118,14 @@ const resetPasswordCaptcha = (): void => {
 	passwordResetCaptchaWidgetRef.value?.reset()
 }
 
+const resetPasswordResetForm = (): void => {
+	passwordResetStep.value = 'request'
+	passwordResetPasswordVisible.value = false
+	passwordResetForm.code = ''
+	passwordResetForm.password = ''
+	resetPasswordCaptcha()
+}
+
 const resetAddEmailCaptcha = (): void => {
 	addEmailCaptcha.reset(true)
 	addEmailCaptchaWidgetRef.value?.reset()
@@ -1064,14 +1137,14 @@ const resetVerifyEmailCaptcha = (): void => {
 }
 
 const openPasswordModal = (): void => {
-	resetPasswordCaptcha()
+	resetPasswordResetForm()
 	passwordModalOpen.value = true
 }
 
 const handlePasswordModalOpenChange = (open: boolean): void => {
 	passwordModalOpen.value = open
 	if (!open) {
-		resetPasswordCaptcha()
+		resetPasswordResetForm()
 	}
 }
 
@@ -1338,33 +1411,71 @@ const submitVerifyEmailCode = async (): Promise<void> => {
 }
 
 const submitPasswordReset = async (): Promise<void> => {
-	if (!passwordResetReceiverEmail.value || !passwordResetCaptcha.token.value) {
+	if (
+		passwordResetStep.value === 'request' &&
+		(!passwordResetReceiverEmail.value || !passwordResetCaptcha.token.value)
+	) {
+		return
+	}
+
+	if (
+		passwordResetStep.value === 'confirm' &&
+		(!passwordResetForm.code.trim() || !passwordResetForm.password)
+	) {
 		return
 	}
 
 	passwordResetSubmitting.value = true
 
 	try {
-		await $fetch('/api/users/me/security/password-reset', {
-			method: 'POST',
-			body: {
-				captchaToken: passwordResetCaptcha.consumeToken(),
-			},
-		})
-		passwordModalOpen.value = false
-		resetPasswordCaptcha()
-		notifySuccess({
-			title: t('profile.security.notifications.resetEmailSent'),
-			description: t(
-				'profile.security.notifications.resetEmailSentDescription',
-			),
-		})
-		await refreshSecurity()
+		if (passwordResetStep.value === 'request') {
+			await $fetch('/api/users/me/security/password-reset', {
+				method: 'POST',
+				body: {
+					captchaToken: passwordResetCaptcha.consumeToken(),
+				},
+			})
+			passwordResetStep.value = 'confirm'
+			resetPasswordCaptcha()
+			notifySuccess({
+				title: t('profile.security.notifications.resetEmailSent'),
+				description: t(
+					'profile.security.notifications.resetEmailSentDescription',
+				),
+			})
+			await refreshSecurity()
+		} else {
+			await $fetch('/api/auth/password-reset/confirm', {
+				method: 'POST',
+				body: {
+					email: passwordResetReceiverEmail.value,
+					code: passwordResetForm.code.trim(),
+					password: passwordResetForm.password,
+				},
+			})
+			passwordModalOpen.value = false
+			resetPasswordResetForm()
+			notifySuccess({
+				title: t('resetPassword.notifications.successTitle'),
+				description: t('resetPassword.notifications.successDescription'),
+			})
+			await logout()
+			await navigateTo(localePath('/login'))
+		}
 	} catch (submitError) {
-		resetPasswordCaptcha()
 		notifyError(submitError, {
-			title: t('profile.security.notifications.resetEmailSendFailed'),
+			title:
+				passwordResetStep.value === 'request'
+					? t('profile.security.notifications.resetEmailSendFailed')
+					: t('resetPassword.notifications.failedTitle'),
+			description:
+				passwordResetStep.value === 'confirm'
+					? t('resetPassword.notifications.failedDescription')
+					: undefined,
 		})
+		if (passwordResetStep.value === 'request') {
+			resetPasswordCaptcha()
+		}
 	} finally {
 		passwordResetSubmitting.value = false
 	}

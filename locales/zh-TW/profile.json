@@ -355,7 +355,7 @@
 			"modals": {
 				"passwordReset": {
 					"title": "重設密碼",
-					"description": "系統會向你的登入信箱傳送重設連結，完成後舊密碼將不再可用。"
+					"description": "系統會向你的登入信箱發送 6 位驗證碼，並在目前視窗繼續完成重設。"
 				},
 				"logout": {
 					"title": "登出目前會話？",
@@ -395,9 +395,9 @@
 				"emailVerified": "信箱已驗證",
 				"emailVerifyFailed": "驗證失敗",
 				"emailVerifyFailedDescription": "驗證碼無效或已過期，請重新傳送。",
-				"resetEmailSent": "重設郵件已傳送",
-				"resetEmailSentDescription": "請檢查目前帳號信箱，並依照郵件指引繼續操作。",
-				"resetEmailSendFailed": "重設郵件傳送失敗",
+				"resetEmailSent": "驗證碼已傳送",
+				"resetEmailSentDescription": "請檢查目前帳號信箱，並在目前視窗輸入驗證碼與新密碼。",
+				"resetEmailSendFailed": "傳送驗證碼失敗",
 				"logoutFailed": "登出失敗",
 				"sessionRevoked": "會話已撤銷",
 				"sessionRevokeFailed": "撤銷會話失敗",

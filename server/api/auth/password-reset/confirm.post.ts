@@ -1,22 +1,17 @@
-import { assertPassword } from '../../../utils/auth/validation'
-import { createApiError, createBadRequestError } from '../../../utils/errors'
+import { confirmPasswordReset } from '../../../utils/security/password-reset'
 
 interface PasswordResetConfirmBody {
-	token: string
+	email: string
+	code: string
 	password: string
 }
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<PasswordResetConfirmBody>(event)
-	const token = body.token?.trim() ?? ''
-	assertPassword(body.password ?? '')
-
-	if (!token) {
-		throw createBadRequestError('RESET_TOKEN_REQUIRED')
-	}
-
-	throw createApiError({
-		statusCode: 501,
-		code: 'PASSWORD_RESET_CONFIRM_NOT_CONFIGURED',
+	await confirmPasswordReset({
+		event,
+		email: body.email,
+		code: body.code,
+		password: body.password,
 	})
 })

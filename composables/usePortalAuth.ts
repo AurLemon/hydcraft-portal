@@ -89,7 +89,8 @@ interface PortalPasswordResetRequestBody {
 }
 
 interface PortalPasswordResetBody {
-	token: string
+	email: string
+	code: string
 	password: string
 }
 

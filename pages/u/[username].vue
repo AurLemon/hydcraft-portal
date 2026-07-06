@@ -22,7 +22,9 @@
 			<div class="flex flex-col-reverse gap-10 lg:grid lg:gap-6 lg:grid-cols-4">
 				<div class="flex flex-col gap-8 lg:gap-10 lg:col-span-3">
 					<section class="grid gap-3">
-						<div class="mx-1 flex gap-3 items-center justify-between">
+						<div
+							class="mx-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+						>
 							<div class="flex items-center gap-2">
 								<div :class="profileSectionTitleClass">
 									{{ t('profile.public.sections.minecraft') }}

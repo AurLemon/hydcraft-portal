@@ -372,7 +372,7 @@
 			"modals": {
 				"passwordReset": {
 					"title": "重置密码",
-					"description": "系统会向你的登录邮箱发送重置链接，完成后旧密码将不再可用。"
+					"description": "系统会向你的登录邮箱发送 6 位验证码，并在当前窗口继续完成重置。"
 				},
 				"logout": {
 					"title": "退出当前登录？",
@@ -412,9 +412,9 @@
 				"emailVerified": "邮箱已验证",
 				"emailVerifyFailed": "验证失败",
 				"emailVerifyFailedDescription": "验证码无效或已过期，请重新发送。",
-				"resetEmailSent": "重置邮件已发送",
-				"resetEmailSentDescription": "请检查当前账号邮箱，并按邮件指引继续操作。",
-				"resetEmailSendFailed": "重置邮件发送失败",
+				"resetEmailSent": "验证码已发送",
+				"resetEmailSentDescription": "请检查当前账号邮箱，并在当前窗口输入验证码和新密码。",
+				"resetEmailSendFailed": "发送验证码失败",
 				"logoutFailed": "退出登录失败",
 				"sessionRevoked": "会话已撤销",
 				"sessionRevokeFailed": "撤销会话失败",

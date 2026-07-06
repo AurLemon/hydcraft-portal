@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="accounts.length"
-		class="flex flex-wrap items-center justify-start gap-2"
+		class="ml-1 md:ml-0 flex flex-wrap items-center justify-start gap-2"
 	>
 		<UTooltip
 			v-for="account in accounts"

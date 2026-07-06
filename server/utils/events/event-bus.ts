@@ -96,13 +96,17 @@ interface EventMap {
 		expiresAt?: Date
 		createdAt: Date
 	}
-	'auth.password-reset.requested': {
+	'auth.password-reset.code-requested': {
 		userId: string
 		email: string
 		displayName: string | null
 		handle: string
 		locale: string | null
+		code: string
+		expiresAt: Date
 		requestedAt: Date
+		ipAddress: string | null
+		ipLocation: string | null
 	}
 	'user.oauth.linked': {
 		userId: string

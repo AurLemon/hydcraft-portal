@@ -14,10 +14,7 @@
 				preload="auto"
 				class="h-full w-full object-cover brightness-70"
 			>
-				<source
-					:src="backgroundVideo"
-					type='video/webm; codecs="vp9"'
-				>
+				<source :src="backgroundVideo" type='video/webm; codecs="vp9"' />
 			</video>
 		</div>
 	</Transition>

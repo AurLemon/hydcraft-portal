@@ -4,7 +4,7 @@ import { createServer, type ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
 
 import { renderVerificationMail } from '../server/utils/mail/templates'
-import { renderPasswordResetRequestedMail } from '../server/utils/mail/templates/password-reset-requested'
+import { getVerificationOperation } from '../server/utils/security/account-security'
 import type {
 	MailLocale,
 	MailTemplateRenderResult,
@@ -147,14 +147,18 @@ const renderPreviews = (): PreviewMail[] =>
 		},
 		{
 			filename: `password-reset-requested-${locale}.html`,
-			label: `Password reset requested (${locale})`,
+			label: `Password reset code (${locale})`,
 			locale,
-			template: renderPasswordResetRequestedMail({
-				locale,
+			template: renderVerificationMail({
 				displayName: 'AurLemon',
-				handle: 'aurlemon',
-				siteUrl: 'https://hydcraft.cn',
-				requestedAt: new Date('2026-06-14T10:00:00+08:00'),
+				code: '654321',
+				operation: getVerificationOperation(
+					'PASSWORD_RESET',
+					localeToProfileLanguage[locale],
+				),
+				ipAddress: '203.0.113.24',
+				ipLocation: '美国 加利福尼亚州 洛杉矶',
+				locale: localeToProfileLanguage[locale],
 			}),
 		},
 	])

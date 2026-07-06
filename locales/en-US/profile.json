@@ -367,7 +367,7 @@
 			"modals": {
 				"passwordReset": {
 					"title": "Reset password",
-					"description": "A reset link will be sent to your login email. Your old password will stop working after the reset."
+					"description": "We'll send a 6-digit verification code to your login email and let you finish the reset in this window."
 				},
 				"logout": {
 					"title": "Log out of this session?",
@@ -407,9 +407,9 @@
 				"emailVerified": "Email verified",
 				"emailVerifyFailed": "Verification failed",
 				"emailVerifyFailedDescription": "The code is invalid or expired. Send a new one and try again.",
-				"resetEmailSent": "Reset email sent",
-				"resetEmailSentDescription": "Check your current account email and follow the instructions to continue.",
-				"resetEmailSendFailed": "Failed to send reset email",
+				"resetEmailSent": "Verification code sent",
+				"resetEmailSentDescription": "Check your current account email, then enter the code and new password in this window.",
+				"resetEmailSendFailed": "Failed to send verification code",
 				"logoutFailed": "Failed to log out",
 				"sessionRevoked": "Session revoked",
 				"sessionRevokeFailed": "Failed to revoke session",

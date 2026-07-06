@@ -14,12 +14,30 @@
 		<label
 			class="flex flex-col gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100"
 		>
-			<span>{{ t('resetPassword.fields.token') }}</span>
+			<span>{{ t('resetPassword.fields.email') }}</span>
 			<UInput
-				v-model="form.token"
+				v-model="form.email"
+				type="email"
+				required
+				autocomplete="email"
+				:placeholder="t('resetPassword.placeholders.email')"
+				size="lg"
+				variant="outline"
+			/>
+		</label>
+
+		<label
+			class="flex flex-col gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-100"
+		>
+			<span>{{ t('resetPassword.fields.code') }}</span>
+			<UInput
+				v-model="form.code"
+				type="text"
+				inputmode="numeric"
+				maxlength="6"
 				required
 				autocomplete="one-time-code"
-				:placeholder="t('resetPassword.placeholders.token')"
+				:placeholder="t('resetPassword.placeholders.code')"
 				size="lg"
 				variant="outline"
 			/>
@@ -74,18 +92,21 @@
 
 <script setup lang="ts">
 interface ResetPasswordFormState {
-	token: string
+	email: string
+	code: string
 	password: string
 }
 
 const route = useRoute()
 const localePath = useLocalePath()
+const { t } = useI18n()
 const { resetPassword } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
 const submitting = ref(false)
 const passwordVisible = ref(false)
 const form = reactive<ResetPasswordFormState>({
-	token: typeof route.query.token === 'string' ? route.query.token : '',
+	email: typeof route.query.email === 'string' ? route.query.email : '',
+	code: typeof route.query.code === 'string' ? route.query.code : '',
 	password: '',
 })
 
@@ -94,7 +115,8 @@ const submit = async (): Promise<void> => {
 
 	try {
 		await resetPassword({
-			token: form.token,
+			email: form.email,
+			code: form.code,
 			password: form.password,
 		})
 		notifySuccess({

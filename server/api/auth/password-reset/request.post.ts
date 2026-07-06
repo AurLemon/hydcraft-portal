@@ -1,8 +1,11 @@
+import { normalizeMailLocale } from '../../../utils/auth/locale'
 import { normalizeEmail } from '../../../utils/auth/validation'
-import { prisma } from '../../../utils/db/prisma'
-import { emitEvent } from '../../../utils/events/event-bus'
 import { createBadRequestError } from '../../../utils/errors'
 import { validateCapToken } from '../../../utils/security/cap'
+import {
+	findPasswordResetUserByEmail,
+	issuePasswordResetVerificationCode,
+} from '../../../utils/security/password-reset'
 
 interface PasswordResetRequestBody {
 	email: string
@@ -22,26 +25,17 @@ export default defineEventHandler(async (event) => {
 		token: body.captchaToken,
 	})
 
-	const user = await prisma.user.findUnique({
-		where: {
-			email,
-		},
-		select: {
-			id: true,
-			handle: true,
-			displayName: true,
-			email: true,
-		},
-	})
+	const user = await findPasswordResetUserByEmail(email)
 
-	if (user?.email) {
-		await emitEvent('auth.password-reset.requested', {
-			userId: user.id,
-			email: user.email,
-			displayName: user.displayName,
-			handle: user.handle,
-			locale: body.locale ?? null,
-			requestedAt: new Date(),
+	if (user) {
+		await issuePasswordResetVerificationCode({
+			event,
+			user,
+			email,
+			locale: normalizeMailLocale(
+				body.locale,
+				user.preferences?.language ?? 'ZH_CN',
+			),
 		})
 	}
 
