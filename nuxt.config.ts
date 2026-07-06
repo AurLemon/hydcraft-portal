@@ -10,11 +10,19 @@ const INVALID_MDC_OPTIMIZE_DEPS = new Set([
 	'@nuxtjs/mdc > unified',
 	'@nuxtjs/mdc > extend',
 ])
+const analyticsPlugins =
+	process.env.NODE_ENV === 'production'
+		? [
+				{ src: '~/plugins/baidu-stat.ts', mode: 'client' as const },
+				{ src: '~/plugins/microsoft-clarity.ts', mode: 'client' as const },
+			]
+		: []
 
 export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
 	devtools: { enabled: false },
+	plugins: [...analyticsPlugins],
 	modules: [
 		'@nuxt/eslint',
 		'nuxt-svgo',
@@ -254,7 +262,7 @@ export default defineNuxtConfig({
 			'http://localhost:3000',
 		name: 'HydCraft Portal',
 		description:
-			'氢气工艺 HydCraft 是一个 Minecraft 服务器社区，连接交通、科技、建筑与开发爱好者。',
+			'氢气工艺 HydCraft 是一个以城市建设和铁路建设为核心的 Minecraft 服务器，一个可以修楼、铺轨、造城、养老的服务器。至于为什么一个 MC 服务器用氢气命名？我也不知道。',
 		defaultLocale: 'zh-CN',
 	},
 	runtimeConfig: {
@@ -276,6 +284,8 @@ export default defineNuxtConfig({
 		public: {
 			siteUrl: '',
 			capBaseUrl: '',
+			baiduStatKey: '',
+			msClarityId: '',
 			minecraftMap: {
 				dynmapTileBaseUrl: '',
 				dynmapWorldName: 'world',
@@ -340,7 +350,7 @@ export default defineNuxtConfig({
 				{
 					name: 'description',
 					content:
-						'氢气工艺 HydCraft 是一个 Minecraft 服务器社区，连接交通、科技、建筑与开发爱好者。',
+						'氢气工艺 HydCraft 是一个以城市建设和铁路建设为核心的 Minecraft 服务器，一个可以修楼、铺轨、造城、养老的地方，至于为什么一个 MC 服务器用氢气命名？我也不知道。',
 				},
 			],
 			titleTemplate: '%s',

@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@internationalized/date": "^3.12.2",
+		"@microsoft/clarity": "^1.0.2",
 		"@nuxt/content": "^3.14.0",
 		"@nuxt/ui": "^4.8.2",
 		"@nuxtjs/i18n": "^10.4.0",
