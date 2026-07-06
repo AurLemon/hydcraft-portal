@@ -187,7 +187,7 @@ export const completeRegistrationFromTicket = async (
 ): Promise<User> => {
 	const rawHandle = input.handle ?? ''
 	const handle = assertHandle(rawHandle)
-	const username = normalizeUsername(rawHandle)
+	const username = normalizeUsername(rawHandle) ?? handle
 	const email = assertEmail(input.email)
 	const code = input.code?.trim() ?? ''
 
