@@ -3,7 +3,7 @@ import {
 	cleanupManagedCache,
 	readManagedCache,
 	refreshManagedCache,
-} from '~/server/utils/memory-cache-manager'
+} from '~/server/utils/cache/memory-cache-manager'
 import { fetchAfdianSponsorStats } from './client'
 import { AFDIAN_EVENT_NAMES, afdianEventBus } from './events'
 import { isAfdianRuntimeConfigured } from './runtime'
