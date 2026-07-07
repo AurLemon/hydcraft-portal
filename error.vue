@@ -14,7 +14,7 @@ const props = defineProps<{
 	error: NuxtErrorLike
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n({ useScope: 'global' })
 const localePath = useLocalePath()
 const { getErrorMessage } = useApiError()
 
