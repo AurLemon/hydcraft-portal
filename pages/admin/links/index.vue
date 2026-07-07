@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="min-w-0">
 		<div
 			class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between"
 		>
@@ -43,7 +43,7 @@
 		</div>
 
 		<section
-			class="mt-8 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+			class="mt-8 min-w-0 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
 		>
 			<div
 				v-if="activeTab === 'links'"
@@ -106,12 +106,16 @@
 			</div>
 
 			<div v-if="activeTab === 'links'">
-				<div v-if="isFilteringLinks">
+				<div v-if="isFilteringLinks" class="min-w-0">
 					<UTable
 						:data="links"
 						:columns="linkColumns"
 						:loading="linksPending"
-						class="min-h-72"
+						class="min-h-72 min-w-0 max-w-full"
+						:ui="{
+							root: 'min-w-0 max-w-full overflow-x-auto',
+							base: 'min-w-[40rem]',
+						}"
 					>
 						<template #link-cell="{ row }">
 							<button
@@ -176,7 +180,7 @@
 					/>
 				</div>
 
-				<div v-else class="grid gap-6 p-4">
+				<div v-else class="grid min-w-0 gap-6 p-4">
 					<FriendLinkReorderTable
 						v-for="category in friendLinkCategoryValues"
 						:key="category"
@@ -188,12 +192,16 @@
 				</div>
 			</div>
 
-			<div v-else>
+			<div v-else class="min-w-0">
 				<UTable
 					:data="applications"
 					:columns="applicationColumns"
 					:loading="applicationsPending"
-					class="min-h-72"
+					class="min-h-72 min-w-0 max-w-full"
+					:ui="{
+						root: 'min-w-0 max-w-full overflow-x-auto',
+						base: 'min-w-[44rem]',
+					}"
 				>
 					<template #application-cell="{ row }">
 						<button

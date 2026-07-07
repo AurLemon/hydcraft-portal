@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="min-w-0">
 		<div
 			class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
 		>
@@ -29,7 +29,7 @@
 		</div>
 
 		<section
-			class="mt-8 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+			class="mt-8 min-w-0 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
 		>
 			<div
 				class="grid gap-3 border-b border-slate-200 p-4 dark:border-slate-800 lg:grid-cols-4"
@@ -69,8 +69,17 @@
 				</div>
 			</div>
 
-			<div v-if="isFiltering" class="p-4">
-				<UTable :data="filteredItems" :columns="columns" :loading="pending">
+			<div v-if="isFiltering" class="min-w-0 p-4">
+				<UTable
+					:data="filteredItems"
+					:columns="columns"
+					:loading="pending"
+					class="min-h-72 min-w-0 max-w-full"
+					:ui="{
+						root: 'min-w-0 max-w-full overflow-x-auto',
+						base: 'min-w-[40rem]',
+					}"
+				>
 					<template #partner-cell="{ row }">
 						<button
 							type="button"
@@ -126,7 +135,7 @@
 				</UTable>
 			</div>
 
-			<div v-else class="grid gap-6 p-4">
+			<div v-else class="grid min-w-0 gap-6 p-4">
 				<PartnerReorderTable
 					v-if="
 						filters.section === ALL_FILTER_VALUE ||
