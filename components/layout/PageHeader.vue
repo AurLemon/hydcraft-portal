@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import hydcraftLogo from '~/assets/resources/brands/logo_HydCraft.png'
 import { getPortalRedirectQuery } from '~/utils/auth/redirect'
-import { hasHeroVideoBackground } from '~/utils/layout/hero-video'
 
 interface LocaleItem {
 	label: string
@@ -24,6 +23,18 @@ const colorMode = nuxtApp.$colorMode
 const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
 const localePath = useLocalePath()
 const {
+	activeNavItemClass,
+	fallbackNavItemClass,
+	headerActionButtonClass,
+	headerLoginButtonClass,
+	headerScrimClass,
+	headerUserMenuButtonClass,
+	headerUserMenuChevronClass,
+	inactiveNavItemClass,
+	selectedThemeMode,
+	themeButtonIcon,
+} = useHeaderAppearance()
+const {
 	user,
 	pending: authPending,
 	resolved,
@@ -33,14 +44,6 @@ const {
 } = usePortalAuth()
 const { notifySuccess } = useAdminToast()
 
-const themeIconMap = {
-	light: 'i-lucide-sun',
-	dark: 'i-lucide-moon',
-} as const
-
-const getThemeModeIcon = (mode: ThemeMode): string =>
-	mode === 'system' ? 'i-lucide-monitor' : themeIconMap[mode]
-
 const localeItems: LocaleItem[] = [
 	{ label: '简体中文', value: 'zh-CN' },
 	{ label: '繁體中文', value: 'zh-TW' },
@@ -49,25 +52,14 @@ const localeItems: LocaleItem[] = [
 ]
 
 const themeModes = computed<ThemeModeItem[]>(() => [
-	{ value: 'light', label: t('header.theme.light'), icon: themeIconMap.light },
-	{ value: 'dark', label: t('header.theme.dark'), icon: themeIconMap.dark },
+	{ value: 'light', label: t('header.theme.light'), icon: 'i-lucide-sun' },
+	{ value: 'dark', label: t('header.theme.dark'), icon: 'i-lucide-moon' },
 	{
 		value: 'system',
 		label: t('header.theme.system'),
-		icon: getThemeModeIcon('system'),
+		icon: 'i-lucide-monitor',
 	},
 ])
-
-const selectedThemeMode = computed<ThemeMode>(() => {
-	const pref = colorMode.preference
-	return pref === 'light' || pref === 'dark' || pref === 'system'
-		? pref
-		: 'system'
-})
-
-const themeButtonIcon = computed(() =>
-	getThemeModeIcon(selectedThemeMode.value),
-)
 
 const selectedLocale = computed(() => locale.value as LocaleCode)
 const userMenuOpen = ref(false)
@@ -80,20 +72,13 @@ const loginRoute = computed(() => ({
 		loginPath: localePath('/login'),
 	}),
 }))
-const usesHeroVideoHeaderChrome = computed(() => hasHeroVideoBackground(route))
 const isAuthHeaderHidden = computed(
 	() => route.meta.pageContainerVariant === 'auth',
 )
-const isLightMode = computed(() => colorMode.value === 'light')
 const userAvatarLabel = computed(() =>
 	(user.value?.displayName ?? user.value?.handle ?? '')
 		.slice(0, 1)
 		.toUpperCase(),
-)
-const activeNavTextClass = computed(() =>
-	!usesHeroVideoHeaderChrome.value && isLightMode.value
-		? 'text-primary'
-		: 'text-[rgb(125,211,252)]',
 )
 const routeMiddleware = computed(() => route.meta.middleware)
 const shouldRedirectAfterLogout = computed(() => {
@@ -111,52 +96,6 @@ const shouldRedirectAfterLogout = computed(() => {
 
 	return false
 })
-
-const headerScrimClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? 'bg-[#192024]/25'
-		: 'bg-[#FAFAFA]/90 dark:bg-[#192024]/90',
-)
-
-const headerActionButtonClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? 'h-9 w-9 rounded-full text-white hover:bg-white/10 hover:text-white active:bg-white/20'
-		: 'h-9 w-9 rounded-full hover:bg-slate-500/10 active:bg-slate-500/20',
-)
-
-const headerLoginButtonClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? 'text-white! hover:text-white!'
-		: 'text-slate-700! hover:text-slate-950! dark:text-slate-100! dark:hover:text-white!',
-)
-
-const headerUserMenuButtonClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? 'text-white hover:text-white'
-		: 'text-default',
-)
-
-const headerUserMenuChevronClass = computed(() =>
-	usesHeroVideoHeaderChrome.value ? 'text-white' : 'text-default',
-)
-
-const activeNavItemClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? `font-semibold ${activeNavTextClass.value} opacity-100`
-		: `font-semibold ${activeNavTextClass.value} opacity-100`,
-)
-
-const fallbackNavItemClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? `${activeNavTextClass.value} opacity-100`
-		: `${activeNavTextClass.value} opacity-100`,
-)
-
-const inactiveNavItemClass = computed(() =>
-	usesHeroVideoHeaderChrome.value
-		? 'text-white opacity-80 hover:text-white hover:opacity-100'
-		: 'text-slate-800 opacity-85 hover:text-slate-800 hover:opacity-100 dark:text-slate-300 dark:opacity-75 dark:hover:text-slate-100 dark:hover:opacity-100',
-)
 
 const selectTheme = (mode: ThemeMode): void => {
 	colorMode.preference = mode

@@ -197,6 +197,7 @@ export default defineNuxtConfig({
 	},
 	colorMode: {
 		preference: 'system',
+		storage: 'cookie',
 	},
 	svgo: {
 		global: false,
