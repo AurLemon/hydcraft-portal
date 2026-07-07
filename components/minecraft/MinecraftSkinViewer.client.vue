@@ -1,11 +1,14 @@
 <template>
 	<div
 		ref="containerElement"
-		class="relative overflow-hidden"
+		class="relative overflow-hidden touch-pan-y"
 		:class="viewerClass"
 		aria-hidden="true"
 	>
-		<canvas ref="canvasElement" class="block h-full w-full" />
+		<canvas
+			ref="canvasElement"
+			class="pointer-events-none block h-full w-full touch-pan-y"
+		/>
 	</div>
 </template>
 
