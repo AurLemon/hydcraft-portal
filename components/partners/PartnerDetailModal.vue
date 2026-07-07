@@ -48,7 +48,7 @@
 					>
 						<p
 							v-if="relationshipEstablishedText"
-							class="text-sm font-medium text-white/88"
+							class="text-sm font-medium text-white/88 [text-shadow:0_1px_2px_rgba(15,23,42,0.72)]"
 						>
 							{{ relationshipEstablishedText }}
 						</p>
@@ -81,8 +81,20 @@
 
 				<div class="grid gap-4 p-5">
 					<div class="flex items-center gap-2">
+						<div
+							v-if="partner?.avatarUrl"
+							class="h-14 w-14 overflow-hidden rounded-lg"
+						>
+							<SkeletonImage
+								:src="partner.avatarUrl"
+								:alt="partner?.name || ''"
+								class="h-full w-full"
+								image-class="block h-full w-full object-cover"
+								skeleton-class="rounded-none"
+							/>
+						</div>
 						<UAvatar
-							:src="partner?.avatarUrl || undefined"
+							v-else
 							:alt="partner?.name || ''"
 							size="3xl"
 							class="rounded-lg"
@@ -131,14 +143,31 @@
 									class="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
 									<UAvatarGroup size="lg" :max="5">
-										<UAvatar
+										<div
 											v-for="member in partner.coreMembers"
 											:key="member.id"
-											:src="member.avatarUrl || undefined"
-											:alt="member.displayName || member.username"
-											class="rounded-lg"
-											:ui="avatarUi"
-										/>
+											class="-ms-2 first:ms-0"
+										>
+											<div
+												v-if="member.avatarUrl"
+												class="h-8 w-8 overflow-hidden rounded-full ring ring-default"
+											>
+												<SkeletonImage
+													:src="member.avatarUrl"
+													:alt="member.displayName || member.username"
+													class="h-full w-full"
+													image-class="block h-full w-full object-cover"
+													skeleton-class="rounded-none"
+												/>
+											</div>
+											<UAvatar
+												v-else
+												:alt="member.displayName || member.username"
+												size="sm"
+												class="rounded-full"
+												:ui="coreMemberAvatarUi"
+											/>
+										</div>
 									</UAvatarGroup>
 								</button>
 
@@ -150,12 +179,24 @@
 											:to="localePath(`/u/${member.username}`)"
 											class="flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800"
 										>
+											<div
+												v-if="member.avatarUrl"
+												class="h-8 w-8 shrink-0 overflow-hidden rounded-full"
+											>
+												<SkeletonImage
+													:src="member.avatarUrl"
+													:alt="member.displayName || member.username"
+													class="h-full w-full"
+													image-class="block h-full w-full object-cover"
+													skeleton-class="rounded-none"
+												/>
+											</div>
 											<UAvatar
-												:src="member.avatarUrl || undefined"
+												v-else
 												:alt="member.displayName || member.username"
 												size="sm"
-												class="rounded-lg"
-												:ui="avatarUi"
+												class="rounded-full"
+												:ui="coreMemberAvatarUi"
 											/>
 											<div class="min-w-0">
 												<p
@@ -179,12 +220,24 @@
 									:to="localePath(`/u/${member.username}`)"
 									class="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
 								>
+									<div
+										v-if="member.avatarUrl"
+										class="h-10 w-10 overflow-hidden rounded-full"
+									>
+										<SkeletonImage
+											:src="member.avatarUrl"
+											:alt="member.displayName || member.username"
+											class="h-full w-full"
+											image-class="block h-full w-full object-cover"
+											skeleton-class="rounded-none"
+										/>
+									</div>
 									<UAvatar
-										:src="member.avatarUrl || undefined"
+										v-else
 										:alt="member.displayName || member.username"
 										size="lg"
-										class="rounded-lg"
-										:ui="avatarUi"
+										class="rounded-full"
+										:ui="coreMemberAvatarUi"
 									/>
 								</NuxtLink>
 							</div>
@@ -225,6 +278,10 @@ const canVisitPartner = computed(() => Boolean(props.partner?.websiteUrl))
 const avatarUi = {
 	root: 'rounded-lg overflow-hidden',
 	fallback: 'rounded-lg',
+}
+const coreMemberAvatarUi = {
+	root: 'rounded-full overflow-hidden',
+	fallback: 'rounded-full',
 }
 const shouldUseCoreMemberPopover = computed(
 	() => (props.partner?.coreMembers.length ?? 0) >= 5,

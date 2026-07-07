@@ -45,11 +45,23 @@
 						class="flex w-full items-center justify-center gap-4 rounded-2xl text-white"
 						:class="partner.summary ? 'mb-4' : ''"
 					>
+						<div
+							v-if="partner.avatarUrl"
+							class="h-14 w-14 shrink-0 overflow-hidden rounded-lg ring-2 ring-white/24"
+						>
+							<SkeletonImage
+								:src="partner.avatarUrl"
+								:alt="partner.name"
+								class="h-full w-full"
+								image-class="block h-full w-full object-cover"
+								skeleton-class="rounded-none"
+							/>
+						</div>
 						<UAvatar
-							:src="partner.avatarUrl || undefined"
+							v-else
 							:alt="partner.name"
 							size="3xl"
-							class="shrink-0 w-14 h-14 rounded-lg ring-2 ring-white/24"
+							class="shrink-0 h-14 w-14 rounded-lg ring-2 ring-white/24"
 							:ui="{
 								root: 'rounded-lg overflow-hidden bg-white/14 text-white backdrop-blur-sm',
 								fallback: 'rounded-lg bg-transparent text-white',

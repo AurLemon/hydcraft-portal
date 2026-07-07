@@ -20,12 +20,24 @@
 				class="flex items-center justify-center gap-3"
 				:class="link.summary ? 'mb-3' : ''"
 			>
+				<div
+					v-if="link.avatarUrl"
+					class="h-12 w-12 shrink-0 overflow-hidden rounded-lg"
+					:class="link.archived ? 'grayscale saturate-0' : ''"
+				>
+					<SkeletonImage
+						:src="link.avatarUrl"
+						:alt="link.name"
+						class="h-full w-full"
+						image-class="block h-full w-full object-cover"
+						skeleton-class="rounded-none"
+					/>
+				</div>
 				<UAvatar
-					:src="link.avatarUrl || undefined"
+					v-else
 					:alt="link.name"
 					size="2xl"
 					class="h-12 w-12 shrink-0 rounded-lg"
-					:class="link.archived ? 'grayscale saturate-0' : ''"
 					:ui="avatarUi"
 				/>
 				<div class="min-w-0">
