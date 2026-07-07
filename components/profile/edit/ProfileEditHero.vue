@@ -98,9 +98,10 @@
 							name="i-lucide-check-circle-2"
 							class="mt-0.5 h-4 w-4 shrink-0 text-sky-300"
 						/>
-						<span class="text-center md:truncate md:text-left [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">{{
-							verifiedText
-						}}</span>
+						<span
+							class="text-center md:truncate md:text-left [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]"
+							>{{ verifiedText }}</span
+						>
 					</div>
 					<div
 						class="flex flex-wrap justify-center gap-2 md:flex-nowrap md:whitespace-nowrap md:flex-1 md:justify-end md:ml-auto"
