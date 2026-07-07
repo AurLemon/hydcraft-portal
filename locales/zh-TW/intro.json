@@ -37,7 +37,7 @@
 					"summaryConnector": "且定位",
 					"summaryTier": "中階以上的設備",
 					"summarySuffix": "。",
-					"detail": "記憶體至少也要 8G，因為客戶端至少會分走 4G，系統至少從 Windows 10 起步。MacBook M 系列勉強能跑，Windows 筆電主要看 CPU，像 7840HS 這類就非常夠用。CPU 性能才是核心，Core i5 第 8 代或 Ryzen 5 3000 系以上會好很多。老平台不是完全打不開，也有人用 G4560 + 8G + 核顯都能進服，只是得多忍一點。"
+					"detail": "記憶體最少也要 8G，因為客戶端會分走 4G 記憶體，系統最低 Windows 10。MacBook M 系列能跑，而 Windows 筆電主要看 CPU，像 7840HS 這類就非常夠用。能不能玩得順主要看 CPU，Core i5 第 8 代或 Ryzen 5 3000 系以上會好很多。老平台不是完全打不開，也有人用 G4560 + 8G + 核顯都能進服，只是得多忍一點。"
 				}
 			},
 			"goodAndBad": {

@@ -37,7 +37,7 @@
 					"summaryConnector": "且定位",
 					"summaryTier": "中端及以上的设备",
 					"summarySuffix": "。",
-					"detail": "内存至少也要 8G，因为客户端至少要分走 4G 内存，系统至少 Windows 10。MacBook M 系列凑合能跑，Windows 笔记本看 CPU，7840HS 这种非常够了。CPU 性能才是核心，Core i5 8 代或者 Ryzen 5 3000 系往上会好很多。老平台不是打不开，有玩家用 G4560 + 8G + 核显都能进服，就是要忍忍。"
+					"detail": "内存最少也要 8G，因为客户端会分走 4G 内存，系统最低 Windows 10。MacBook M 系列能跑，而 Windows 笔记本看 CPU，7840HS 这种非常够了。能不能玩得爽看 CPU，Core i5 8 代或者 Ryzen 5 3000 系往上会好很多。老平台不是打不开，有玩家用 G4560 + 8G + 核显都能进服，就是要忍忍。"
 				}
 			},
 			"goodAndBad": {

@@ -37,7 +37,7 @@
 					"summaryConnector": "device in the",
 					"summaryTier": "mid-range or above",
 					"summarySuffix": "tier.",
-					"detail": "Realistically, 8 GB is the bare minimum, because the client alone wants at least 4 GB, and the system should be at least Windows 10. A MacBook with Apple silicon can get by. On Windows laptops, the CPU matters far more, and something like a 7840HS is more than enough. CPU performance is the real key here. A Core i5 8th gen or Ryzen 5 3000 series and up will feel much better. Older hardware is not completely locked out, though. One player can even get into the server on a G4560 with 8 GB RAM and integrated graphics. You just have to tolerate the rough edges."
+					"detail": "8 GB is the minimum, because the client alone will take 4 GB, and Windows 10 is the lowest supported baseline. Apple silicon MacBooks can run it, while Windows laptops mostly come down to the CPU, and something like a 7840HS is more than enough. Whether the game feels smooth really depends on the CPU. A Core i5 8th gen or Ryzen 5 3000 series and up will be a lot more comfortable. Older hardware is not completely locked out, though. One player can even get into the server on a G4560 with 8 GB RAM and integrated graphics. You just have to tolerate the rough edges."
 				}
 			},
 			"goodAndBad": {
@@ -98,26 +98,26 @@
 					"gtr": {
 						"nameZh": "通运铁路",
 						"nameEn": "GT Railway",
-						"summary": "GT Railway serves multiple prefectures and counties in Season 7. It began in 2023 and is built and operated by Tongyun Transport Logistics Co., Ltd. Its civil works, rolling stock, and dispatching all rely on Create and related mods, and it remains the best-supported railway operator on the server.",
+						"summary": "GT Railways (GTR) serves multiple metropolises and counties in Season 7. As a network operated by General Transit and Logistics Co., Ltd since 2023, everything of GTR including civil works, rolling stock, and dispatching all rely on Create and related mods, remaining one of the best-supported railway operator on the server.",
 						"logoAlt": "GT Railway logo",
 						"backgroundAlt": "Background image of GT Railway",
 						"routeMapAlt": "Route map of GT Railway",
 						"operator": {
-							"nickname": "题散",
+							"nickname": "FisheyeArtist59",
 							"roleLabel": "Operations Lead"
 						},
 						"gallery": [
 							{
-								"caption": "A GT Railway train boarding passengers at Yuanhu East Station",
-								"alt": "A GT Railway train boarding passengers at Yuanhu East Station"
+								"caption": "A GTR train boarding passengers at Yuanhu East Station",
+								"alt": "A GTR train boarding passengers at Yuanhu East Station"
 							},
 							{
 								"caption": "Platform and concourse level of Beilu Station",
-								"alt": "Platform and concourse level of GT Railway's Beilu Station"
+								"alt": "Platform and concourse level of Beilu Station"
 							},
 							{
-								"caption": "Chuanqiao Station in Artemis City",
-								"alt": "Chuanqiao Station of GT Railway in Artemis City"
+								"caption": "Funabashi Station, Artemis City",
+								"alt": "Funabashi Station, Artemis City"
 							}
 						]
 					},
