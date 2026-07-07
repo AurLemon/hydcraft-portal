@@ -77,7 +77,7 @@
 					class="min-h-72 min-w-0 max-w-full"
 					:ui="{
 						root: 'min-w-0 max-w-full overflow-x-auto',
-						base: 'min-w-[40rem]',
+						base: 'w-full min-w-[40rem]',
 					}"
 				>
 					<template #partner-cell="{ row }">

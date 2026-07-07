@@ -114,7 +114,7 @@
 						class="min-h-72 min-w-0 max-w-full"
 						:ui="{
 							root: 'min-w-0 max-w-full overflow-x-auto',
-							base: 'min-w-[40rem]',
+							base: 'w-full min-w-[40rem]',
 						}"
 					>
 						<template #link-cell="{ row }">
@@ -200,7 +200,7 @@
 					class="min-h-72 min-w-0 max-w-full"
 					:ui="{
 						root: 'min-w-0 max-w-full overflow-x-auto',
-						base: 'min-w-[44rem]',
+						base: 'w-full min-w-[44rem]',
 					}"
 				>
 					<template #application-cell="{ row }">

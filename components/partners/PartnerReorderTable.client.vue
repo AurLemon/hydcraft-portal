@@ -4,7 +4,7 @@
 			{{ t(`admin.partners.partnerSections.${section}`) }}
 		</h2>
 		<div class="min-w-0 max-w-full overflow-x-auto">
-			<table class="min-w-[40rem] border-collapse">
+			<table class="w-full min-w-[40rem] border-collapse">
 				<thead>
 					<tr
 						class="border-b border-slate-200 text-left text-xs text-slate-500 dark:border-slate-800"
