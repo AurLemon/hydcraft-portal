@@ -3,6 +3,8 @@ import type {
 	AttachmentPurpose,
 } from '~/utils/attachment/catalog'
 
+export type { AttachmentOwnerType, AttachmentPurpose }
+
 export interface AttachmentUploadVariant {
 	name: string
 	url: string | null

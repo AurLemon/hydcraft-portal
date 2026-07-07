@@ -29,6 +29,7 @@ export const createRegistrationTicket = async (
 ): Promise<{ ticket: AuthRegistrationTicket; token: string }> => {
 	const token = createRegistrationTicketTokenValue()
 	const now = new Date()
+	const expiresAt = new Date(now.getTime() + REGISTRATION_TICKET_TTL_MS)
 	const ticket = await prisma.authRegistrationTicket.create({
 		data: {
 			kind: input.kind,
@@ -36,7 +37,8 @@ export const createRegistrationTicket = async (
 			oauthProvider: input.oauthProvider ?? null,
 			payload: input.payload ?? undefined,
 			tokenHash: hashRegistrationTicketToken(token),
-			expiresAt: new Date(now.getTime() + REGISTRATION_TICKET_TTL_MS),
+			expiresAt,
+			deleteAfter: expiresAt,
 		},
 	})
 
