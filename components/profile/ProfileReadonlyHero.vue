@@ -109,10 +109,12 @@
 							name="i-lucide-check-circle-2"
 							class="mt-0.5 h-4 w-4 shrink-0 text-sky-300"
 						/>
-						<span class="text-center">{{ verifiedText }}</span>
+						<span class="text-center md:truncate md:text-left">{{
+							verifiedText
+						}}</span>
 					</div>
 					<div
-						class="flex flex-wrap justify-center gap-2 md:justify-end md:ml-auto"
+						class="flex flex-wrap justify-center gap-2 md:flex-nowrap md:whitespace-nowrap md:flex-1 md:justify-end md:ml-auto"
 					>
 						<UBadge
 							v-for="badge in visibleBadges"
