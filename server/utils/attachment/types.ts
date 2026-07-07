@@ -2,23 +2,19 @@ import type {
 	AttachmentStatus,
 	AttachmentVisibility,
 } from '~/generated/prisma/client'
+import type {
+	AttachmentApp,
+	AttachmentCategory,
+	AttachmentOwnerType,
+	AttachmentPurpose,
+} from '~/utils/attachment/catalog'
 
-export type AttachmentApp = 'portal'
-export type AttachmentCategory = 'profile' | 'oauth' | 'partner' | 'link'
-export type AttachmentPurpose =
-	| 'user-avatar'
-	| 'user-cover'
-	| 'external-account-avatar'
-	| 'partner-avatar'
-	| 'partner-cover'
-	| 'friend-link-avatar'
-export type AttachmentOwnerType =
-	| 'user'
-	| 'external-account'
-	| 'registration-ticket'
-	| 'partner'
-	| 'friend-link'
-	| 'friend-link-application'
+export type {
+	AttachmentApp,
+	AttachmentCategory,
+	AttachmentOwnerType,
+	AttachmentPurpose,
+} from '~/utils/attachment/catalog'
 export type StorageProfileName = 'publicAssets' | 'privateUploads'
 export type AttachmentOutputFormat = 'webp' | 'original'
 

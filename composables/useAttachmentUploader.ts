@@ -1,14 +1,7 @@
-export type AttachmentPurpose =
-	| 'user-avatar'
-	| 'user-cover'
-	| 'partner-avatar'
-	| 'partner-cover'
-	| 'friend-link-avatar'
-export type AttachmentOwnerType =
-	| 'user'
-	| 'partner'
-	| 'friend-link'
-	| 'friend-link-application'
+import type {
+	AttachmentOwnerType,
+	AttachmentPurpose,
+} from '~/utils/attachment/catalog'
 
 export interface AttachmentUploadVariant {
 	name: string

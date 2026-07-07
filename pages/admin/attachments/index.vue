@@ -288,7 +288,7 @@
 									</span>
 								</div>
 								<img
-									v-if="variant.url"
+									v-if="variant.url && selectedAttachment.status !== 'DELETED'"
 									:src="variant.url"
 									:alt="variant.name"
 									class="mt-3 max-h-40 rounded-md border border-slate-200 object-contain dark:border-slate-800"
@@ -346,6 +346,11 @@
 
 <script setup lang="ts">
 import AdminTablePagination from '~/components/admin/AdminTablePagination.vue'
+import {
+	attachmentAppValues,
+	attachmentCategoryValues,
+	attachmentPurposeValues,
+} from '~/utils/attachment/catalog'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -443,16 +448,15 @@ const columns = [
 ]
 const appItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	{ label: 'portal', value: 'portal' },
+	...attachmentAppValues.map((value) => ({ label: value, value })),
 ]
 const categoryItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	{ label: 'profile', value: 'profile' },
+	...attachmentCategoryValues.map((value) => ({ label: value, value })),
 ]
 const purposeItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
-	{ label: 'user-avatar', value: 'user-avatar' },
-	{ label: 'user-cover', value: 'user-cover' },
+	...attachmentPurposeValues.map((value) => ({ label: value, value })),
 ]
 const statusItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
