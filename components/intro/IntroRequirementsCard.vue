@@ -21,19 +21,19 @@
 						<span>
 							{{ summaryPrefix }}
 						</span>
-						<span class="leading-none lg:mx-3 lg:text-4xl">
+						<span class="leading-none mx-3 lg:text-4xl">
 							{{ summaryMemory }}
 						</span>
 						<span>
 							{{ summaryMiddle }}
 						</span>
-						<span class="leading-none lg:mx-3 lg:text-4xl">
+						<span class="leading-none mx-3 lg:text-4xl">
 							{{ summaryYear }}
 						</span>
 						<span>
 							{{ summaryConnector }}
 						</span>
-						<span class="leading-none lg:mx-3 lg:text-4xl">
+						<span class="leading-none mx-3 lg:text-4xl">
 							{{ summaryTier }}
 						</span>
 						<span>
