@@ -18,6 +18,7 @@
 		"adminOverview": "概要",
 		"adminServers": "サーバー",
 		"adminPlayers": "プレイヤー",
+		"adminHistoricalPlayers": "履歴プレイヤー",
 		"adminUsers": "ユーザー",
 		"adminUserEdit": "ユーザー編集",
 		"adminPartners": "パートナーと謝辞",
@@ -29,6 +30,7 @@
 		"resetPassword": "パスワード再設定",
 		"meProfile": "プロフィール",
 		"meMinecraft": "ゲームプロフィール",
+		"meHistory": "履歴プロフィール",
 		"meSecurity": "セキュリティ",
 		"meConnections": "連携と認可",
 		"adminAchievements": "実績"
@@ -67,6 +69,7 @@
 			"open": "ユーザーメニューを開く",
 			"profile": "プロフィール",
 			"minecraftAccounts": "ゲームプロフィール",
+			"history": "履歴プロフィール",
 			"security": "セキュリティ",
 			"connections": "連携と認可",
 			"admin": "管理画面",

@@ -40,6 +40,7 @@
 
 		<div v-else-if="server" class="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-2">
 			<ServerDetailOnlinePlayersCard
+				v-if="!isArchiveServer"
 				:title="t('admin.serverDetail.sections.onlinePlayers')"
 				:latest-online-text="latestOnlineText"
 				:latest-status-at="latestStatusAt"
@@ -56,6 +57,7 @@
 			/>
 
 			<ServerDetailInfoCard
+				v-if="!isArchiveServer"
 				:title="t('admin.serverDetail.sections.portalBridge')"
 				:items="portalBridgeItems"
 				:error-text="server.portalBridge?.lastError"
@@ -68,8 +70,12 @@
 			/>
 
 			<ServerDetailSyncStatusCard
-				:title="t('admin.serverDetail.sections.syncStatus')"
-				:tasks="syncTaskRows"
+				:title="
+					isArchiveServer
+						? t('admin.serverDetail.sections.archiveStatus')
+						: t('admin.serverDetail.sections.syncStatus')
+				"
+				:tasks="isArchiveServer ? archiveStatusRows : syncTaskRows"
 			/>
 
 			<ServerDetailPlayerDataCard
@@ -78,6 +84,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
+				v-if="!isArchiveServer"
 				:title="t('admin.serverDetail.sections.recentSnapshots')"
 				:action-label="t('admin.serverDetail.actions.testAndInspect')"
 				action-icon="i-lucide-flask-conical"
@@ -89,6 +96,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
+				v-if="!isArchiveServer"
 				:title="t('admin.serverDetail.sections.recentBridgeMessages')"
 				:action-label="t('admin.serverDetail.actions.testAndInspect')"
 				action-icon="i-lucide-flask-conical"
@@ -100,6 +108,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
+				v-if="!isArchiveServer"
 				:title="t('admin.serverDetail.sections.recentCommands')"
 				:items="commandListItems"
 				empty-icon="i-lucide-terminal"
@@ -659,6 +668,9 @@ const overview = computed(() => data.value ?? null)
 const server = computed<MinecraftServerSummary | null>(
 	() => overview.value?.server ?? null,
 )
+const isArchiveServer = computed(
+	() => server.value?.kind === 'ARCHIVE' || server.value?.status === 'ARCHIVED',
+)
 const observedPlayerCount = computed(
 	() => overview.value?.metrics.latestPlayerSnapshot?.players.length ?? 0,
 )
@@ -675,26 +687,51 @@ const formatDate = (value: string | null | undefined): string => {
 }
 const formatJson = (value: unknown): string =>
 	JSON.stringify(value ?? null, null, 2)
-const headerActions = computed(() => [
-	{
-		label: t('admin.serverDetail.actions.basic'),
-		icon: 'i-lucide-server',
-		color: 'primary' as const,
-		onClick: () => (basicOpen.value = true),
-	},
-	{
-		label: t('admin.serverDetail.actions.bridge'),
-		icon: 'i-lucide-radio-tower',
-		color: 'primary' as const,
-		onClick: () => (portalBridgeOpen.value = true),
-	},
-	{
-		label: t('admin.serverDetail.actions.syncRate'),
-		icon: 'i-lucide-timer-reset',
-		color: 'primary' as const,
-		onClick: () => (syncRateOpen.value = true),
-	},
-])
+const formatServerKind = (value: string | null | undefined): string =>
+	t(`admin.serverConfig.values.serverKind.${value?.toLowerCase() ?? 'main'}`)
+
+const formatServerStatus = (value: string | null | undefined): string =>
+	t(`admin.serverConfig.values.serverStatus.${value?.toLowerCase() ?? 'live'}`)
+
+const formatDataSourceMode = (value: string | null | undefined): string => {
+	switch (value) {
+		case 'IMPORTED':
+			return t('admin.serverConfig.values.dataSourceMode.imported')
+		case 'MIXED':
+			return t('admin.serverConfig.values.dataSourceMode.mixed')
+		case 'PORTAL_BRIDGE':
+		default:
+			return t('admin.serverConfig.values.dataSourceMode.portalBridge')
+	}
+}
+
+const headerActions = computed(() => {
+	const actions = [
+		{
+			label: t('admin.serverDetail.actions.basic'),
+			icon: 'i-lucide-server',
+			color: 'primary' as const,
+			onClick: () => (basicOpen.value = true),
+		},
+		{
+			label: t('admin.serverDetail.actions.syncRate'),
+			icon: 'i-lucide-timer-reset',
+			color: 'primary' as const,
+			onClick: () => (syncRateOpen.value = true),
+		},
+	]
+
+	if (!isArchiveServer.value) {
+		actions.splice(1, 0, {
+			label: t('admin.serverDetail.actions.bridge'),
+			icon: 'i-lucide-radio-tower',
+			color: 'primary' as const,
+			onClick: () => (portalBridgeOpen.value = true),
+		})
+	}
+
+	return actions
+})
 
 const portalBridgeItems = computed<ServerDetailMetaItem[]>(() => [
 	{
@@ -734,6 +771,18 @@ const serverInfoItems = computed<ServerDetailMetaItem[]>(() => [
 		value: server.value?.code ?? t('admin.serverDetail.states.empty'),
 	},
 	{
+		label: t('admin.serverDetail.fields.kind'),
+		value: formatServerKind(server.value?.kind),
+	},
+	{
+		label: t('admin.serverDetail.fields.status'),
+		value: formatServerStatus(server.value?.status),
+	},
+	{
+		label: t('admin.serverDetail.fields.dataSourceMode'),
+		value: formatDataSourceMode(server.value?.dataSourceMode),
+	},
+	{
 		label: t('admin.serverDetail.fields.address'),
 		value: server.value
 			? `${server.value.host}:${server.value.port}`
@@ -765,17 +814,27 @@ const playerDataItems = computed<ServerDetailMetaItem[]>(() => [
 		value: String(overview.value?.metrics.identityCount ?? 0),
 	},
 	{
-		label: t('admin.serverDetail.fields.observedPlayers'),
-		value: String(observedPlayerCount.value),
+		label: isArchiveServer.value
+			? t('admin.serverDetail.fields.totalPlayers')
+			: t('admin.serverDetail.fields.observedPlayers'),
+		value: String(
+			isArchiveServer.value
+				? (overview.value?.metrics.identityCount ?? 0)
+				: observedPlayerCount.value,
+		),
 	},
-	{
-		label: t('admin.serverDetail.fields.openSessions'),
-		value: String(overview.value?.metrics.openSessionCount ?? 0),
-	},
-	{
-		label: t('admin.serverDetail.fields.totalSessions'),
-		value: String(overview.value?.metrics.totalSessionCount ?? 0),
-	},
+	...(isArchiveServer.value
+		? []
+		: [
+				{
+					label: t('admin.serverDetail.fields.openSessions'),
+					value: String(overview.value?.metrics.openSessionCount ?? 0),
+				},
+				{
+					label: t('admin.serverDetail.fields.totalSessions'),
+					value: String(overview.value?.metrics.totalSessionCount ?? 0),
+				},
+			]),
 ])
 
 const formatBoolean = (value: boolean): string =>
@@ -1102,6 +1161,77 @@ const syncTaskRows = computed<ServerDetailSyncTaskRow[]>(() =>
 		}
 	}),
 )
+const archiveStatusRows = computed<ServerDetailSyncTaskRow[]>(() => {
+	const latestRun = overview.value?.archiveImport.latestRun
+
+	if (!latestRun) {
+		return [
+			{
+				source: 'archive-import',
+				label: t('admin.serverDetail.archiveImport.latestImport'),
+				icon: 'i-lucide-circle-dashed',
+				iconClass: 'size-4 text-slate-400 dark:text-slate-500',
+				statusText: t('admin.serverDetail.archiveImport.notImported'),
+				lastText: t('admin.serverDetail.states.empty'),
+			},
+		]
+	}
+
+	const status = latestRun.status.toUpperCase()
+	const isRunning = status === 'RUNNING'
+	const isFailed = status === 'FAILED'
+
+	return [
+		{
+			source: 'archive-import',
+			label: t('admin.serverDetail.archiveImport.latestImport'),
+			icon: isRunning
+				? 'i-lucide-loader-circle'
+				: isFailed
+					? 'i-lucide-circle-alert'
+					: 'i-lucide-circle-check',
+			iconClass: isRunning
+				? 'size-4 animate-spin text-sky-500'
+				: isFailed
+					? 'size-4 text-rose-500'
+					: 'size-4 text-emerald-500',
+			statusText: t(
+				`admin.serverDetail.archiveImport.statuses.${status.toLowerCase()}`,
+			),
+			lastText: [
+				t('admin.serverDetail.archiveImport.playersObserved', {
+					count: latestRun.playersObserved,
+				}),
+				t('admin.serverDetail.archiveImport.importedAt', {
+					time: formatDate(latestRun.importedAt ?? latestRun.createdAt),
+				}),
+			].join(' · '),
+		},
+		{
+			source: 'archive-import-updated',
+			label: t('admin.serverDetail.archiveImport.updatedPlayersLabel'),
+			icon: 'i-lucide-database-zap',
+			iconClass: 'size-4 text-slate-500 dark:text-slate-400',
+			statusText: t('admin.serverDetail.archiveImport.updatedPlayers', {
+				count: latestRun.playersUpdated,
+			}),
+			lastText: t('admin.serverDetail.archiveImport.accountsMatched', {
+				count: latestRun.accountsMatched,
+			}),
+		},
+		{
+			source: 'archive-import-historical',
+			label: t('admin.serverDetail.archiveImport.historicalAccountsLabel'),
+			icon: 'i-lucide-archive',
+			iconClass: 'size-4 text-slate-500 dark:text-slate-400',
+			statusText: t('admin.serverDetail.archiveImport.historicalAccounts', {
+				count: latestRun.historicalAccountsCreated,
+			}),
+			lastText:
+				latestRun.errorMessage ?? t('admin.serverDetail.archiveImport.noError'),
+		},
+	]
+})
 
 const latestOnlineText = computed(() => {
 	const latestPlayers =
@@ -1382,7 +1512,9 @@ const refreshOverview = async () => {
 	overviewReadAt.value = new Date().toISOString()
 }
 const refreshObservedOverview = async () => {
-	if (!server.value?.portalBridge?.id) return await refreshOverview()
+	if (isArchiveServer.value || !server.value?.portalBridge?.id) {
+		return await refreshOverview()
+	}
 	try {
 		const result = await $fetch<PortalBridgeInspectResponse>(
 			`/api/minecraft/servers/${serverId.value}/portal-bridge/inspect`,

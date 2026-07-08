@@ -18,6 +18,7 @@
 		"adminOverview": "Overview",
 		"adminServers": "Servers",
 		"adminPlayers": "Players",
+		"adminHistoricalPlayers": "Historical Players",
 		"adminUsers": "Users",
 		"adminUserEdit": "Edit User",
 		"adminPartners": "Partners",
@@ -29,6 +30,7 @@
 		"resetPassword": "Reset Password",
 		"meProfile": "Profile",
 		"meMinecraft": "Minecraft Profiles",
+		"meHistory": "Historical Profiles",
 		"meSecurity": "Security",
 		"meConnections": "Connections",
 		"adminAchievements": "Achievements"
@@ -67,6 +69,7 @@
 			"open": "Open user menu",
 			"profile": "Profile",
 			"minecraftAccounts": "Minecraft Accounts",
+			"history": "Historical Profiles",
 			"security": "Security",
 			"connections": "Connections",
 			"admin": "Admin",

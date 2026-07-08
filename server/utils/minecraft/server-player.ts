@@ -203,23 +203,38 @@ const numbersEqual = (
 const isNearDate = (left: Date, right: Date, thresholdMs: number): boolean =>
 	Math.abs(left.getTime() - right.getTime()) <= thresholdMs
 
-const getPortalAccountPatch = async (input: { uuid?: string | null }) => {
-	if (!input.uuid) {
-		return {}
-	}
-
-	const account = await prisma.minecraftAccount.findFirst({
-		where: {
-			uuid: input.uuid,
-			unlinkedAt: null,
-		},
-		select: {
-			id: true,
-			userId: true,
-			status: true,
-			source: true,
-		},
-	})
+const getPortalAccountPatch = async (input: {
+	uuid?: string | null
+	normalizedUsername?: string | null
+}) => {
+	const account =
+		(input.uuid
+			? await prisma.minecraftAccount.findFirst({
+					where: {
+						uuid: input.uuid,
+						unlinkedAt: null,
+					},
+					select: {
+						id: true,
+						userId: true,
+						status: true,
+						source: true,
+					},
+				})
+			: null) ??
+		(input.normalizedUsername
+			? await prisma.minecraftAccount.findUnique({
+					where: {
+						normalizedUsername: input.normalizedUsername,
+					},
+					select: {
+						id: true,
+						userId: true,
+						status: true,
+						source: true,
+					},
+				})
+			: null)
 
 	if (!account) {
 		return {}
@@ -259,6 +274,7 @@ const ensurePlayerByUuid = async (input: {
 
 	const portalAccountPatch = await getPortalAccountPatch({
 		uuid: input.uuid,
+		normalizedUsername,
 	})
 
 	return await prisma.minecraftServerPlayer.upsert({
@@ -292,6 +308,7 @@ export const upsertMinecraftServerPlayerFromIdentity = async (
 		input.normalizedUsername ?? normalizeMinecraftUsername(input.username)
 	const portalAccountPatch = await getPortalAccountPatch({
 		uuid: input.uuid,
+		normalizedUsername,
 	})
 
 	return await prisma.minecraftServerPlayer.upsert({
@@ -397,6 +414,22 @@ export const syncMinecraftServerPlayerData = async (
 		!numbersEqual(existing.lastPitch, input.lastPitch)
 
 	if (!changed) {
+		if (
+			input.lastKnownName &&
+			(playerWithData.username !== input.lastKnownName ||
+				playerWithData.normalizedUsername !== normalizedUsername)
+		) {
+			await prisma.minecraftServerPlayer.update({
+				where: {
+					id: player.id,
+				},
+				data: {
+					username: input.lastKnownName,
+					normalizedUsername,
+				},
+			})
+		}
+
 		return matchedUnchangedResult
 	}
 
@@ -440,6 +473,22 @@ export const syncMinecraftServerPlayerData = async (
 			syncedAt: input.syncedAt,
 		},
 	})
+
+	if (
+		input.lastKnownName &&
+		(playerWithData.username !== input.lastKnownName ||
+			playerWithData.normalizedUsername !== normalizedUsername)
+	) {
+		await prisma.minecraftServerPlayer.update({
+			where: {
+				id: player.id,
+			},
+			data: {
+				username: input.lastKnownName,
+				normalizedUsername,
+			},
+		})
+	}
 
 	await emitEvent('server-player.playerdata-synced', {
 		serverId: input.serverId,

@@ -1,4 +1,5 @@
 import type {
+	AuthMeAccount,
 	MinecraftAccount,
 	MinecraftAccountBindingAction,
 	Prisma,
@@ -46,6 +47,67 @@ const createBindingHistory = async (
 		},
 	})
 
+const upsertAuthenticatedMinecraftAccount = async (
+	tx: DbClient,
+	input: {
+		normalizedUsername: string
+		username: string
+		authmeName: string
+		authmeId: number
+		firstJoinedAt: Date | null
+		lastSeenAt: Date | null
+	},
+): Promise<MinecraftAccount> => {
+	const existing = await tx.minecraftAccount.findUnique({
+		where: {
+			normalizedUsername: input.normalizedUsername,
+		},
+	})
+
+	if (existing) {
+		const nextStatus =
+			existing.status === 'VERIFIED' || existing.status === 'IMPORTED'
+				? existing.status
+				: 'IMPORTED'
+		const nextSource =
+			existing.source === 'PORTAL' || existing.source === 'MANUAL'
+				? existing.source
+				: 'AUTHME'
+
+		return await tx.minecraftAccount.update({
+			where: {
+				id: existing.id,
+			},
+			data: {
+				username: input.username,
+				authmeName: input.authmeName,
+				authmeId: input.authmeId,
+				firstJoinedAt: input.firstJoinedAt,
+				lastSeenAt: input.lastSeenAt,
+				status: nextStatus,
+				source: nextSource,
+				identityKind: 'AUTHENTICATED',
+				assignmentMode: 'AUTHME_VERIFIED',
+			},
+		})
+	}
+
+	return await tx.minecraftAccount.create({
+		data: {
+			username: input.username,
+			normalizedUsername: input.normalizedUsername,
+			status: 'IMPORTED',
+			source: 'AUTHME',
+			identityKind: 'AUTHENTICATED',
+			assignmentMode: 'AUTHME_VERIFIED',
+			authmeId: input.authmeId,
+			authmeName: input.authmeName,
+			firstJoinedAt: input.firstJoinedAt,
+			lastSeenAt: input.lastSeenAt,
+		},
+	})
+}
+
 export const syncMinecraftAccountFromVerifiedAuthMe = async (
 	account: VerifiedAuthMeAccount,
 	tx: DbClient = prisma,
@@ -84,53 +146,39 @@ export const syncMinecraftAccountFromVerifiedAuthMe = async (
 		},
 	})
 
-	const existing = await tx.minecraftAccount.findUnique({
-		where: {
-			normalizedUsername: account.normalizedUsername,
-		},
-	})
 	const username = account.displayName
 	const authmeName = account.displayName
-
-	if (existing) {
-		const nextStatus =
-			existing.status === 'VERIFIED' || existing.status === 'IMPORTED'
-				? existing.status
-				: 'IMPORTED'
-		const nextSource =
-			existing.source === 'PORTAL' || existing.source === 'MANUAL'
-				? existing.source
-				: 'AUTHME'
-
-		return await tx.minecraftAccount.update({
-			where: {
-				id: existing.id,
-			},
-			data: {
-				username,
-				authmeName,
-				authmeId: account.authmeId,
-				firstJoinedAt: account.registeredAt,
-				lastSeenAt: maxDate(account.lastLoginAt, new Date()),
-				status: nextStatus,
-				source: nextSource,
-			},
-		})
-	}
-
-	return await tx.minecraftAccount.create({
-		data: {
-			username,
-			normalizedUsername: account.normalizedUsername,
-			status: 'IMPORTED',
-			source: 'AUTHME',
-			authmeId: account.authmeId,
-			authmeName,
-			firstJoinedAt: account.registeredAt,
-			lastSeenAt: maxDate(account.lastLoginAt, new Date()),
-		},
+	return await upsertAuthenticatedMinecraftAccount(tx, {
+		normalizedUsername: account.normalizedUsername,
+		username,
+		authmeName,
+		authmeId: account.authmeId,
+		firstJoinedAt: account.registeredAt,
+		lastSeenAt: maxDate(account.lastLoginAt, new Date()),
 	})
 }
+
+export const syncMinecraftAccountFromAuthMeProjection = async (
+	account: Pick<
+		AuthMeAccount,
+		| 'authmeId'
+		| 'username'
+		| 'realname'
+		| 'normalizedUsername'
+		| 'registeredAt'
+		| 'lastLoginAt'
+		| 'syncedAt'
+	>,
+	tx: DbClient = prisma,
+): Promise<MinecraftAccount> =>
+	await upsertAuthenticatedMinecraftAccount(tx, {
+		normalizedUsername: account.normalizedUsername,
+		username: account.realname || account.username,
+		authmeName: account.realname || account.username,
+		authmeId: account.authmeId,
+		firstJoinedAt: account.registeredAt,
+		lastSeenAt: maxDate(account.lastLoginAt, account.syncedAt),
+	})
 
 export const recordMinecraftAccountVerification = async (
 	input: {
@@ -220,6 +268,8 @@ export const bindMinecraftAccountToUserInTx = async (
 		data: {
 			userId: input.userId,
 			status: 'VERIFIED',
+			identityKind: 'AUTHENTICATED',
+			assignmentMode: 'AUTHME_VERIFIED',
 			verifiedAt: new Date(),
 			unlinkedAt: null,
 			isPrimary: !existingPrimary,
@@ -251,6 +301,91 @@ export const bindMinecraftAccountToUserInTx = async (
 		becamePrimary: !existingPrimary,
 	}
 }
+
+export const assignHistoricalMinecraftAccountToUser = async (input: {
+	minecraftAccountId: string
+	userId: string
+	actorUserId: string
+	reason?: string | null
+}) =>
+	await prisma.$transaction(async (tx) => {
+		const account = await tx.minecraftAccount.findUnique({
+			where: {
+				id: input.minecraftAccountId,
+			},
+		})
+
+		if (!account) {
+			throw createApiError({
+				statusCode: 404,
+				code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
+			})
+		}
+
+		const updatedAccount = await tx.minecraftAccount.update({
+			where: {
+				id: account.id,
+			},
+			data: {
+				userId: input.userId,
+				identityKind: 'HISTORICAL',
+				assignmentMode: 'ADMIN_ASSIGNED_HISTORICAL',
+			},
+		})
+
+		await createBindingHistory(tx, {
+			minecraftAccountId: account.id,
+			action: 'ADMIN_HISTORICAL_ASSIGNED',
+			actorUserId: input.actorUserId,
+			targetUserId: input.userId,
+			previousUserId: account.userId,
+			reason: input.reason,
+		})
+
+		return updatedAccount
+	})
+
+export const unassignHistoricalMinecraftAccountFromUser = async (input: {
+	minecraftAccountId: string
+	actorUserId: string
+	reason?: string | null
+}) =>
+	await prisma.$transaction(async (tx) => {
+		const account = await tx.minecraftAccount.findUnique({
+			where: {
+				id: input.minecraftAccountId,
+			},
+		})
+
+		if (!account) {
+			throw createApiError({
+				statusCode: 404,
+				code: 'MINECRAFT_ACCOUNT_NOT_FOUND',
+			})
+		}
+
+		const updatedAccount = await tx.minecraftAccount.update({
+			where: {
+				id: account.id,
+			},
+			data: {
+				userId: null,
+				identityKind: 'HISTORICAL',
+				assignmentMode: 'IMPORTED_UNASSIGNED',
+			},
+		})
+
+		await createBindingHistory(tx, {
+			minecraftAccountId: account.id,
+			action: 'ADMIN_HISTORICAL_UNASSIGNED',
+			actorUserId: input.actorUserId,
+			targetUserId: null,
+			previousUserId: account.userId,
+			reason: input.reason,
+		})
+
+		return updatedAccount
+	})
 
 export const bindMinecraftAccountToUser = async (input: {
 	minecraftAccountId: string

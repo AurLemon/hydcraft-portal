@@ -3,6 +3,7 @@ import { listAdminMinecraftAccountOverviewCandidates } from '../../../utils/admi
 import {
 	buildMinecraftAccountSummary,
 	buildUnboundPlayerSummary,
+	minecraftAccountSummaryPlayerInclude,
 } from '../../../utils/minecraft/account-summary'
 import {
 	getMinecraftBodyRendererUrl,
@@ -24,11 +25,7 @@ import {
 	resolvePublicOverviewDefaultServerId,
 } from '../../../utils/server/public-overview'
 
-const PLAYER_INCLUDE = {
-	playerData: true,
-	statsSnapshot: true,
-	advancementsSnapshot: true,
-} as const
+const PLAYER_INCLUDE = minecraftAccountSummaryPlayerInclude
 
 const shuffle = <T>(items: T[]): T[] => {
 	const shuffled = [...items]

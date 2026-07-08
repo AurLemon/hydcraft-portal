@@ -12,6 +12,9 @@
 		"badges": {
 			"primary": "主要展示帳號"
 		},
+		"kinds": {
+			"historical": "歷史檔案"
+		},
 		"fields": {
 			"noUuid": "暫無 UUID",
 			"notAvailable": "暫無資料",
@@ -51,6 +54,20 @@
 		"toolbar": {
 			"bindTip": "新增綁定",
 			"setPrimaryTip": "設定主檔案"
+		},
+		"selector": {
+			"aggregate": "綜合資訊"
+		},
+		"history": {
+			"profileSectionTitle": "歷史檔案",
+			"tabs": {
+				"byPlayer": "按 ID 排序",
+				"byServer": "按伺服器排列"
+			},
+			"serverCount": "{count} 個檔案",
+			"emptyTitle": "還沒有歷史檔案",
+			"emptyDescription": "只有未被 AuthMe 吸收的 archive 玩家才會出現在這裡。",
+			"loadFailed": "歷史檔案載入失敗"
 		},
 		"settings": {
 			"title": "管理目前帳號",

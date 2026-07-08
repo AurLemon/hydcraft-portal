@@ -79,6 +79,8 @@
 		"servers": {
 			"title": "Servers",
 			"create": "New Server",
+			"setDefault": "Default Server",
+			"defaultBadge": "Default",
 			"viewDetail": "View detail",
 			"fields": {
 				"server": "Server",
@@ -90,6 +92,11 @@
 			"empty": {
 				"title": "No server configuration yet",
 				"description": "Create a server before configuring PortalBridge."
+			},
+			"defaultModal": {
+				"title": "Set Default Server",
+				"description": "Aggregate map rendering and related default selections will prefer this server.",
+				"placeholder": "Search servers"
 			},
 			"externalSync": {
 				"authMe": "AuthMe Sync Status",
@@ -306,6 +313,7 @@
 			"sections": {
 				"onlinePlayers": "Online players",
 				"portalBridge": "PortalBridge",
+				"archiveStatus": "Archive status",
 				"serverInfo": "Server info",
 				"dataSources": "Data sources",
 				"syncStatus": "Sync status",
@@ -321,6 +329,9 @@
 				"lastConnected": "Last connected",
 				"lastMessage": "Last message",
 				"code": "Code",
+				"kind": "Kind",
+				"status": "Status",
+				"dataSourceMode": "Data source",
 				"address": "Address",
 				"sortOrder": "Sort order",
 				"createdAt": "Created at",
@@ -328,6 +339,7 @@
 				"luckPermsDatabase": "LuckPerms database",
 				"identityCount": "Identities",
 				"observedPlayers": "Observed online players",
+				"totalPlayers": "Total players",
 				"openSessions": "Open sessions",
 				"totalSessions": "Total sessions",
 				"playerName": "Player name",
@@ -430,6 +442,23 @@
 				"loadFailed": "Failed to load status",
 				"controlFailed": "Failed to control connection",
 				"manualSyncFailed": "Manual sync failed"
+			},
+			"archiveImport": {
+				"latestImport": "Latest import",
+				"notImported": "Not imported yet",
+				"playersObserved": "{count} players scanned",
+				"importedAt": "Imported at: {time}",
+				"updatedPlayersLabel": "Player updates",
+				"updatedPlayers": "{count} players updated",
+				"accountsMatched": "{count} merged into authenticated profiles",
+				"historicalAccountsLabel": "Historical profiles",
+				"historicalAccounts": "{count} historical profiles created",
+				"noError": "No errors",
+				"statuses": {
+					"running": "Import running",
+					"success": "Import succeeded",
+					"failed": "Import failed"
+				}
 			}
 		},
 		"serverPlayers": {
@@ -554,6 +583,7 @@
 				"luckPermsPrimaryGroup": "LuckPerms group",
 				"worldFirstJoinedAt": "World first joined",
 				"worldLastJoinedAt": "World latest joined",
+				"servers": "Observed servers",
 				"uuid": "UUID",
 				"dataEntries": "Data entries",
 				"createdAt": "Created at",
@@ -582,6 +612,41 @@
 				"allSessions": "All session history"
 			}
 		},
+		"historicalPlayers": {
+			"title": "Historical Players",
+			"filters": {
+				"search": "Search historical IDs, linked users, or servers",
+				"assigned": "Assigned",
+				"unassigned": "Unassigned"
+			},
+			"fields": {
+				"player": "Historical ID",
+				"user": "Linked user",
+				"servers": "Source servers",
+				"firstJoinedAt": "First joined",
+				"lastSeenAt": "Last seen",
+				"actions": "Actions",
+				"assignedState": "Assignment"
+			},
+			"actions": {
+				"assign": "Assign",
+				"unassign": "Unassign"
+			},
+			"empty": {
+				"unassigned": "Unassigned"
+			},
+			"assignModal": {
+				"title": "Assign historical archive",
+				"description": "Enter the Hydroline username to bind.",
+				"username": "Hydroline username"
+			},
+			"notifications": {
+				"assigned": "Historical archive assigned",
+				"assignFailed": "Failed to assign historical archive",
+				"unassigned": "Historical archive unassigned",
+				"unassignFailed": "Failed to unassign historical archive"
+			}
+		},
 		"users": {
 			"title": "Users",
 			"filters": {
@@ -591,7 +656,8 @@
 				"identity": "Identity & Status",
 				"profile": "Profile",
 				"attachments": "Avatar & Cover",
-				"minecraftAccounts": "Minecraft binding",
+				"minecraftAccounts": "Minecraft account management",
+				"historicalMinecraftAccounts": "Historical archive management",
 				"security": "Account security",
 				"preferences": "Preferences",
 				"social": "Social Links",
@@ -675,6 +741,22 @@
 					"primarySetFailed": "Failed to update primary account",
 					"unbindSuccess": "Minecraft account unbound",
 					"unbindFailed": "Failed to unbind Minecraft account"
+				}
+			},
+			"historicalMinecraft": {
+				"placeholders": {
+					"bindAccount": "Search and select a historical archive"
+				},
+				"empty": {
+					"title": "No historical archive is bound yet",
+					"description": "Select an unassigned historical archive and bind it to this user.",
+					"noServerData": "No source server information"
+				},
+				"notifications": {
+					"bindSuccess": "Historical archive bound",
+					"bindFailed": "Failed to bind historical archive",
+					"unbindSuccess": "Historical archive unbound",
+					"unbindFailed": "Failed to unbind historical archive"
 				}
 			},
 			"edit": {
@@ -855,6 +937,10 @@
 			"title": "Server Access Configuration",
 			"sections": {
 				"basic": "Server Basic Info",
+				"mapConfig": "Map configuration",
+				"mapConfigDescription": "Configure tile capability and default map viewport for this server instance.",
+				"periods": "Lifecycle periods",
+				"periodsDescription": "Manually maintain the live, archive, or event periods for this server.",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -864,11 +950,32 @@
 				"serverId": "Server ID",
 				"code": "Code",
 				"name": "Name",
+				"nameZhCn": "Simplified Chinese Name",
+				"nameZhTw": "Traditional Chinese Name",
+				"nameEnUs": "English Name",
+				"nameJaJp": "Japanese Name",
 				"sortOrder": "Sort order",
+				"kind": "Server kind",
+				"status": "Server status",
+				"dataSourceMode": "Data source mode",
 				"mcHost": "MC Host",
 				"mcPort": "MC Port",
 				"description": "Description",
 				"enabled": "Enable this server",
+				"mapEnabled": "Enable map config",
+				"hasTiles": "Tiles available",
+				"tileBaseUrl": "Tiles base URL",
+				"worldName": "World name",
+				"mapName": "Map name",
+				"tileExtension": "Tile extension",
+				"defaultZoom": "Default zoom",
+				"defaultCenterX": "Default center X",
+				"defaultCenterZ": "Default center Z",
+				"periodKind": "Period kind",
+				"periodSortOrder": "Period order",
+				"startedAt": "Started at",
+				"endedAt": "Ended at",
+				"periodNote": "Note",
 				"bridgeId": "Bridge ID",
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
@@ -880,9 +987,38 @@
 				"keepSecret": "Leave blank to keep unchanged"
 			},
 			"actions": {
+				"addPeriod": "Add period",
 				"cancel": "Cancel",
 				"save": "Save Configuration",
 				"close": "Close"
+			},
+			"periodLabel": "Period {index}",
+			"values": {
+				"serverKind": {
+					"main": "Main server",
+					"archive": "Archive server",
+					"event": "Event server",
+					"test": "Test server"
+				},
+				"serverStatus": {
+					"planned": "Planned",
+					"live": "Live",
+					"frozen": "Frozen",
+					"archived": "Archived",
+					"hidden": "Hidden"
+				},
+				"dataSourceMode": {
+					"portalBridge": "PortalBridge only",
+					"imported": "Imported only",
+					"mixed": "Mixed"
+				},
+				"periodKind": {
+					"live": "Live period",
+					"archive": "Archive period",
+					"event": "Event period",
+					"maintenance": "Maintenance period",
+					"other": "Other"
+				}
 			}
 		},
 		"mysqlFields": {
@@ -898,8 +1034,10 @@
 			"serversLoadFailed": "Failed to load server configuration",
 			"serverSaved": "Server configuration saved",
 			"serverSavedDescription": "The server list has been refreshed.",
+			"serverDefaultSetFailed": "Failed to set default server",
 			"serverSaveFailed": "Failed to save configuration",
 			"serverSaveFailedDescription": "Check your login status and fields.",
+			"serverReorderFailed": "Failed to update server order",
 			"copied": "Copied"
 		},
 		"achievements": {

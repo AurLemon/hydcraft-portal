@@ -8,13 +8,24 @@
 					{{ t('admin.servers.title') }}
 				</h1>
 			</div>
-			<UButton
-				:to="localePath('/admin/servers/create')"
-				icon="i-lucide-plus"
-				size="lg"
-			>
-				{{ t('admin.servers.create') }}
-			</UButton>
+			<div class="flex flex-wrap items-center gap-2">
+				<UButton
+					icon="i-lucide-star"
+					color="neutral"
+					variant="soft"
+					size="lg"
+					@click="openDefaultServerModal"
+				>
+					{{ t('admin.servers.setDefault') }}
+				</UButton>
+				<UButton
+					:to="localePath('/admin/servers/create')"
+					icon="i-lucide-plus"
+					size="lg"
+				>
+					{{ t('admin.servers.create') }}
+				</UButton>
+			</div>
 		</div>
 
 		<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -103,61 +114,158 @@
 			v-else
 			class="mt-8 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
 		>
-			<UTable :data="servers" :columns="columns">
-				<template #server-cell="{ row }">
-					<div class="min-w-0">
-						<p class="truncate font-medium text-slate-900 dark:text-white">
-							{{ row.original.name }}
-						</p>
-						<p class="truncate text-xs text-slate-500 dark:text-slate-400">
-							{{ row.original.serverId }}
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[56rem] border-collapse">
+					<thead>
+						<tr
+							class="border-b border-slate-200 text-left text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400"
+						>
+							<th class="w-10 p-3" />
+							<th class="p-3">{{ t('admin.servers.fields.server') }}</th>
+							<th class="p-3">{{ t('admin.serverDetail.fields.code') }}</th>
+							<th class="p-3">{{ t('admin.serverDetail.fields.address') }}</th>
+							<th class="p-3">{{ t('admin.servers.fields.portalBridge') }}</th>
+							<th class="p-3">{{ t('admin.servers.fields.status') }}</th>
+							<th class="p-3">{{ t('admin.servers.fields.actions') }}</th>
+						</tr>
+					</thead>
+					<draggable
+						:list="localServers"
+						item-key="id"
+						tag="tbody"
+						handle=".server-grip"
+						:animation="160"
+						@end="reorderServers"
+					>
+						<template #item="{ element }">
+							<tr
+								class="border-b border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-800/60 dark:hover:bg-slate-800/30"
+							>
+								<td class="p-3 align-top">
+									<UIcon
+										name="i-lucide-grip-vertical"
+										class="server-grip size-4 cursor-grab text-slate-400 active:cursor-grabbing"
+									/>
+								</td>
+								<td class="p-3 align-top">
+									<div class="min-w-0">
+										<div class="flex items-center gap-2">
+											<p
+												class="truncate font-medium text-slate-900 dark:text-white"
+											>
+												{{ element.name }}
+											</p>
+											<UBadge
+												v-if="element.isDefault"
+												color="warning"
+												variant="soft"
+												size="xs"
+											>
+												{{ t('admin.servers.defaultBadge') }}
+											</UBadge>
+										</div>
+										<p
+											class="truncate text-xs text-slate-500 dark:text-slate-400"
+										>
+											{{ element.serverId }}
+										</p>
+									</div>
+								</td>
+								<td
+									class="p-3 align-top text-xs text-slate-600 dark:text-slate-300"
+								>
+									{{ element.code }}
+								</td>
+								<td
+									class="p-3 align-top text-xs text-slate-600 dark:text-slate-300"
+								>
+									{{ element.host }}:{{ element.port }}
+								</td>
+								<td class="p-3 align-top">
+									<UBadge color="neutral" variant="subtle">
+										{{
+											element.portalBridge?.lastConnectionState ??
+											t('admin.serverDetail.states.notConfigured')
+										}}
+									</UBadge>
+								</td>
+								<td class="p-3 align-top">
+									<UBadge
+										:color="element.enabled ? 'success' : 'neutral'"
+										variant="subtle"
+									>
+										{{
+											element.enabled
+												? t('admin.serverDetail.states.enabled')
+												: t('admin.serverDetail.states.disabled')
+										}}
+									</UBadge>
+								</td>
+								<td class="p-3 align-top">
+									<UButton
+										type="button"
+										size="xs"
+										color="neutral"
+										variant="ghost"
+										icon="i-lucide-arrow-right"
+										@click="openServer(element)"
+									>
+										{{ t('admin.servers.viewDetail') }}
+									</UButton>
+								</td>
+							</tr>
+						</template>
+					</draggable>
+				</table>
+			</div>
+		</div>
+
+		<UModal v-model:open="defaultServerModalOpen" :ui="{ content: 'max-w-md' }">
+			<template #content>
+				<div class="grid gap-4 p-5">
+					<div>
+						<h2 class="text-lg font-semibold text-slate-950 dark:text-white">
+							{{ t('admin.servers.defaultModal.title') }}
+						</h2>
+						<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+							{{ t('admin.servers.defaultModal.description') }}
 						</p>
 					</div>
-				</template>
-				<template #code-cell="{ row }">
-					<span class="text-xs text-slate-600 dark:text-slate-300">
-						{{ row.original.code }}
-					</span>
-				</template>
-				<template #address-cell="{ row }">
-					<span class="text-xs text-slate-600 dark:text-slate-300">
-						{{ row.original.host }}:{{ row.original.port }}
-					</span>
-				</template>
-				<template #portalBridge-cell="{ row }">
-					<UBadge color="neutral" variant="subtle">
-						{{
-							row.original.portalBridge?.lastConnectionState ??
-							t('admin.serverDetail.states.notConfigured')
-						}}
-					</UBadge>
-				</template>
-				<template #status-cell="{ row }">
-					<UBadge
-						:color="row.original.enabled ? 'success' : 'neutral'"
-						variant="subtle"
+					<USelectMenu
+						v-model="selectedDefaultServerId"
+						:items="defaultServerItems"
+						value-key="value"
+						label-key="label"
+						searchable
+						:placeholder="t('admin.servers.defaultModal.placeholder')"
 					>
-						{{
-							row.original.enabled
-								? t('admin.serverDetail.states.enabled')
-								: t('admin.serverDetail.states.disabled')
-						}}
-					</UBadge>
-				</template>
-				<template #actions-cell="{ row }">
-					<UButton
-						type="button"
-						size="xs"
-						color="neutral"
-						variant="ghost"
-						icon="i-lucide-arrow-right"
-						@click="openServer(row.original)"
-					>
-						{{ t('admin.servers.viewDetail') }}
-					</UButton>
-				</template>
-			</UTable>
-		</div>
+						<template #item-label="{ item }">
+							<div class="min-w-0">
+								<p class="truncate">{{ item.label }}</p>
+								<p class="truncate text-xs text-slate-500 dark:text-slate-400">
+									{{ item.description }}
+								</p>
+							</div>
+						</template>
+					</USelectMenu>
+					<div class="flex justify-end gap-2">
+						<UButton
+							color="neutral"
+							variant="ghost"
+							@click="defaultServerModalOpen = false"
+						>
+							{{ t('admin.actions.cancel') }}
+						</UButton>
+						<UButton
+							:loading="defaultServerSaving"
+							@click="submitDefaultServer"
+						>
+							{{ t('admin.actions.save') }}
+						</UButton>
+					</div>
+				</div>
+			</template>
+		</UModal>
 
 		<UModal
 			v-model:open="externalSyncStatusOpen"
@@ -236,6 +344,7 @@
 </template>
 
 <script setup lang="ts">
+import draggable from 'vuedraggable'
 import type {
 	AdminExternalSyncSourceDetailResponse,
 	AdminExternalSyncSourceName,
@@ -251,9 +360,8 @@ definePageMeta({
 })
 
 const { notifyError } = useAdminToast()
-const { data, pending, error } = await useFetch<MinecraftServersResponse>(
-	'/api/minecraft/servers',
-)
+const { data, pending, error, refresh } =
+	await useFetch<MinecraftServersResponse>('/api/minecraft/servers')
 const {
 	data: externalSyncData,
 	error: externalSyncError,
@@ -265,9 +373,14 @@ const {
 const localePath = useLocalePath()
 const { locale, t } = useI18n()
 const servers = computed(() => data.value?.servers ?? [])
+const localServers = ref<MinecraftServerSummary[]>([])
 const externalSyncSources = computed(
 	() => externalSyncData.value?.sources ?? [],
 )
+const defaultServerModalOpen = ref(false)
+const selectedDefaultServerId = ref('')
+const defaultServerSaving = ref(false)
+const reordering = ref(false)
 const externalSyncStatusOpen = ref(false)
 const externalSyncStatusLoading = ref(false)
 const externalSyncActionLoading = ref<'connect' | 'reconnect' | 'sync' | null>(
@@ -277,17 +390,13 @@ const activeExternalSyncSource = ref<AdminExternalSyncSourceName>('authme')
 const externalSyncStatus = ref<AdminExternalSyncSourceDetailResponse | null>(
 	null,
 )
-const columns = [
-	{ accessorKey: 'server', header: t('admin.servers.fields.server') },
-	{ accessorKey: 'code', header: t('admin.serverDetail.fields.code') },
-	{ accessorKey: 'address', header: t('admin.serverDetail.fields.address') },
-	{
-		accessorKey: 'portalBridge',
-		header: t('admin.servers.fields.portalBridge'),
-	},
-	{ accessorKey: 'status', header: t('admin.servers.fields.status') },
-	{ id: 'actions', header: t('admin.servers.fields.actions') },
-]
+const defaultServerItems = computed(() =>
+	servers.value.map((server) => ({
+		label: `${server.name} (${server.serverId})`,
+		value: server.serverId,
+		description: server.code,
+	})),
+)
 
 const sourceNameFromStatus = (
 	source: AdminExternalSyncSourceStatus['source'],
@@ -568,6 +677,16 @@ const syncExternalSyncSource = async (): Promise<void> => {
 }
 
 watch(
+	servers,
+	(value) => {
+		localServers.value = [...value]
+		selectedDefaultServerId.value =
+			value.find((server) => server.isDefault)?.serverId ?? ''
+	},
+	{ immediate: true },
+)
+
+watch(
 	error,
 	(value) => {
 		if (value) {
@@ -617,5 +736,61 @@ onBeforeUnmount(() => {
 
 const openServer = async (server: MinecraftServerSummary): Promise<void> => {
 	await navigateTo(localePath(`/admin/servers/${server.serverId}`))
+}
+
+const openDefaultServerModal = (): void => {
+	selectedDefaultServerId.value =
+		servers.value.find((server) => server.isDefault)?.serverId ?? ''
+	defaultServerModalOpen.value = true
+}
+
+const submitDefaultServer = async (): Promise<void> => {
+	if (!selectedDefaultServerId.value || defaultServerSaving.value) {
+		return
+	}
+
+	defaultServerSaving.value = true
+
+	try {
+		await $fetch('/api/admin/servers/default', {
+			method: 'POST',
+			body: {
+				serverId: selectedDefaultServerId.value,
+			},
+		})
+		defaultServerModalOpen.value = false
+		await refresh()
+	} catch (value) {
+		notifyError(value, {
+			title: t('admin.notifications.serverDefaultSetFailed'),
+		})
+	} finally {
+		defaultServerSaving.value = false
+	}
+}
+
+const reorderServers = async (): Promise<void> => {
+	if (reordering.value) {
+		return
+	}
+
+	reordering.value = true
+
+	try {
+		await $fetch('/api/admin/servers/reorder', {
+			method: 'POST',
+			body: {
+				orderedIds: localServers.value.map((server) => server.id),
+			},
+		})
+		await refresh()
+	} catch (value) {
+		notifyError(value, {
+			title: t('admin.notifications.serverReorderFailed'),
+		})
+		localServers.value = [...servers.value]
+	} finally {
+		reordering.value = false
+	}
 }
 </script>

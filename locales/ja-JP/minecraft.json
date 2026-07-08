@@ -12,6 +12,9 @@
 		"badges": {
 			"primary": "メイン表示アカウント"
 		},
+		"kinds": {
+			"historical": "履歴アーカイブ"
+		},
 		"fields": {
 			"noUuid": "UUID なし",
 			"notAvailable": "データなし",
@@ -51,6 +54,20 @@
 		"toolbar": {
 			"bindTip": "バインドを追加",
 			"setPrimaryTip": "メイン設定"
+		},
+		"selector": {
+			"aggregate": "総合情報"
+		},
+		"history": {
+			"profileSectionTitle": "履歴アーカイブ",
+			"tabs": {
+				"byPlayer": "ID順",
+				"byServer": "サーバー別"
+			},
+			"serverCount": "{count} 件のアーカイブ",
+			"emptyTitle": "履歴アーカイブはまだありません",
+			"emptyDescription": "AuthMe に吸収されなかった archive プレイヤーだけがここに表示されます。",
+			"loadFailed": "履歴アーカイブの読み込みに失敗しました"
 		},
 		"settings": {
 			"title": "現在のアカウントを管理",

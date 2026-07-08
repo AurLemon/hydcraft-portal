@@ -99,6 +99,13 @@ onMounted(() => {
 	syncViewerSize()
 })
 
+onDeactivated(() => {
+	resizeObserver?.disconnect()
+	resizeObserver = null
+	viewer?.dispose()
+	viewer = null
+})
+
 onBeforeUnmount(() => {
 	resizeObserver?.disconnect()
 	resizeObserver = null

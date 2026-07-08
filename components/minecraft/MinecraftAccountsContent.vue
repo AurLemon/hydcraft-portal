@@ -2,279 +2,185 @@
 	<div>
 		<section
 			v-if="selectedAccount"
-			class="relative isolate min-h-160 w-full overflow-hidden rounded-3xl shadow-sm bg-slate-900"
+			class="relative isolate min-h-160 w-full overflow-hidden rounded-3xl bg-slate-900 shadow-sm"
 		>
 			<div class="absolute inset-0">
 				<MinecraftPresenceMap
 					:account="selectedAccount"
-					:selected-uuid="selectedUuid"
-					@pointermove="handleMapPointerMove"
-					@pointerleave="handleMapPointerLeave"
+					:selected-view-id="selectedViewId"
 				/>
 			</div>
 
 			<div
-				class="absolute left-3 top-3 z-999 flex flex-col items-end gap-2 sm:flex-row"
-			>
-				<div class="flex flex-col items-start gap-2">
-					<UBadge
-						class="gap-1.5 text-white"
-						:class="
-							isOnline
-								? '!bg-emerald-500 !text-white'
-								: '!bg-slate-500 !text-white'
-						"
-						variant="solid"
-					>
-						<span
-							class="block size-2 rounded-full"
-							:class="isOnline ? 'bg-emerald-400' : 'bg-slate-400'"
-						/>
+				class="absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-slate-950/88 via-slate-950/56 to-transparent"
+			/>
 
-						{{
-							isOnline
-								? t('minecraftAccounts.identity.online')
-								: t('minecraftAccounts.identity.offline')
-						}}
-					</UBadge>
-					<UBadge
-						v-if="selectedAccount.isPrimary"
-						class="!bg-sky-500 !text-white"
-						variant="solid"
-					>
-						{{ t('minecraftAccounts.badges.primary') }}
-					</UBadge>
-				</div>
-			</div>
-
-			<div class="absolute right-3 top-3 z-999 flex flex-col items-end gap-2">
-				<USelect
-					v-if="uuidItems.length > 1"
-					v-model="selectedUuidModel"
-					:items="uuidItems"
-					value-key="value"
-					label-key="label"
-					size="sm"
-					class="w-56"
-				/>
+			<div class="absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
+				<UBadge
+					class="gap-1.5 text-white"
+					:class="
+						isOnline
+							? '!bg-emerald-500 !text-white'
+							: '!bg-slate-500 !text-white'
+					"
+					variant="solid"
+				>
+					<span
+						class="block size-2 rounded-full"
+						:class="isOnline ? 'bg-emerald-400' : 'bg-slate-300'"
+					/>
+					{{
+						isOnline
+							? t('minecraftAccounts.identity.online')
+							: t('minecraftAccounts.identity.offline')
+					}}
+				</UBadge>
+				<UBadge
+					v-if="selectedAccount.isPrimary"
+					class="!bg-sky-500 !text-white"
+					variant="solid"
+				>
+					{{ t('minecraftAccounts.badges.primary') }}
+				</UBadge>
+				<UBadge
+					v-if="selectedAccount.identityKind === 'HISTORICAL'"
+					class="!bg-amber-500 !text-white"
+					variant="solid"
+				>
+					{{ t('minecraftAccounts.kinds.historical') }}
+				</UBadge>
 			</div>
 
 			<div
-				class="pointer-events-none absolute inset-x-0 top-16 z-999 flex justify-center px-18 sm:top-3 sm:px-24"
-			>
-				<Transition name="hover-coords" mode="out-in">
-					<div
-						v-if="hoverCoordsVisible && hoveredBlockPoint"
-						key="hover-coords"
-						class="pointer-events-none inline-flex max-w-full items-center gap-1.5 text-sm text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
-						aria-live="polite"
-					>
-						<div class="flex items-center gap-1 whitespace-nowrap">
-							<span
-								class="text-[11px] font-medium tracking-[0.24em] text-white/55 translate-y-0.5"
-							>
-								X
-							</span>
-							<span class="hover-coords-text" :aria-label="hoverXText">
-								<span class="hover-coords-text__inner">
-									<template
-										v-for="(character, index) in hoverXCharacters"
-										:key="`hover-x-${hoverXCharacters.length}-${index}`"
-									>
-										<span
-											v-if="isDigitCharacter(character)"
-											class="digit-flip"
-											aria-hidden="true"
-										>
-											<span
-												class="digit-flip__reel transition-transform duration-150 ease-out"
-												:style="{
-													transform: `translate3d(0, -${Number(character) * digitStepEm}em, 0)`,
-												}"
-											>
-												<span
-													v-for="digitCharacter in digitCharacters"
-													:key="`hover-x-${index}-${digitCharacter}`"
-													class="digit-flip__digit"
-												>
-													{{ digitCharacter }}
-												</span>
-											</span>
-										</span>
-										<span
-											v-else
-											class="hover-coords-text__char"
-											aria-hidden="true"
-										>
-											{{ character }}
-										</span>
-									</template>
-								</span>
-							</span>
-						</div>
-
-						<div class="flex items-center gap-1 whitespace-nowrap">
-							<span
-								class="text-[11px] font-medium tracking-[0.24em] text-white/55 translate-y-0.5"
-							>
-								Z
-							</span>
-							<span class="hover-coords-text" :aria-label="hoverZText">
-								<span class="hover-coords-text__inner">
-									<template
-										v-for="(character, index) in hoverZCharacters"
-										:key="`hover-z-${hoverZCharacters.length}-${index}`"
-									>
-										<span
-											v-if="isDigitCharacter(character)"
-											class="digit-flip"
-											aria-hidden="true"
-										>
-											<span
-												class="digit-flip__reel transition-transform duration-150 ease-out"
-												:style="{
-													transform: `translate3d(0, -${Number(character) * digitStepEm}em, 0)`,
-												}"
-											>
-												<span
-													v-for="digitCharacter in digitCharacters"
-													:key="`hover-z-${index}-${digitCharacter}`"
-													class="digit-flip__digit"
-												>
-													{{ digitCharacter }}
-												</span>
-											</span>
-										</span>
-										<span
-											v-else
-											class="hover-coords-text__char"
-											aria-hidden="true"
-										>
-											{{ character }}
-										</span>
-									</template>
-								</span>
-							</span>
-						</div>
-					</div>
-					<div
-						v-else-if="hoverDisplayVisible"
-						key="hover-dimension"
-						class="pointer-events-none inline-flex max-w-full items-center text-sm text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
-						aria-live="polite"
-					>
-						<span class="truncate font-semibold uppercase">
-							{{ displayDimensionLabel }}
-						</span>
-					</div>
-				</Transition>
-			</div>
-
-			<div
-				class="pointer-events-none absolute inset-x-0 bottom-0 z-998 flex items-end p-4"
+				class="relative z-10 flex min-h-160 flex-col justify-end gap-4 p-4 text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px] sm:p-5"
 			>
 				<div
-					class="absolute inset-x-0 bottom-0 z-0 h-54 bg-linear-to-t from-slate-950/62 via-slate-950/24 to-transparent backdrop-blur-[32px] mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.96)_18%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0.38)_56%,transparent_100%)]"
-				/>
-
-				<div
-					class="relative z-20 flex w-full min-w-0 flex-col gap-3 text-white sm:flex-row sm:items-end sm:justify-between [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
+					class="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between"
 				>
 					<div class="min-w-0 flex-1">
-						<div
-							v-if="bodyRendererUrl"
-							class="relative z-10 mb-3 w-22 shrink-0 sm:absolute sm:bottom-0 sm:left-4 sm:mb-0 sm:w-26"
-							aria-hidden="true"
-						>
-							<img
-								ref="bodyImageElement"
-								:src="bodyRendererUrl"
-								:alt="displayName"
-								class="block w-full transition-opacity duration-500 ease-out drop-shadow-sm translate-y-0 sm:translate-y-20"
-								:class="bodyImageLoaded ? 'opacity-100' : 'opacity-0'"
-								@load="bodyImageLoaded = true"
-								@error="bodyImageLoaded = true"
-							/>
-						</div>
-
-						<div class="min-w-0 sm:pl-34">
+						<div class="mb-3 flex items-end gap-3">
 							<div
-								class="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:translate-y-1"
+								v-if="bodyRendererUrl"
+								class="hidden w-24 shrink-0 sm:block"
+								aria-hidden="true"
 							>
-								<span
-									class="block max-w-full truncate text-3xl sm:text-[42px] leading-[normal] font-arkpixel"
-								>
-									{{ displayName }}
-								</span>
-								<UBadge
-									v-if="displayPrimaryGroup"
-									class="sm:-translate-y-1 text-shadow-none"
-									color="neutral"
-									variant="solid"
-									size="xs"
-								>
-									{{ displayPrimaryGroup }}
-								</UBadge>
+								<img
+									:src="bodyRendererUrl"
+									:alt="displayName"
+									class="block w-full drop-shadow-sm"
+								/>
 							</div>
-							<div class="flex flex-wrap items-baseline gap-x-2">
-								<div class="flex items-baseline gap-1">
-									<span class="text-xs text-white/80">
-										{{ t('minecraftAccounts.overlay.lastLogin') }}
+							<div class="min-w-0">
+								<div class="flex min-w-0 flex-wrap items-center gap-2">
+									<UPopover
+										v-if="showServerSelector"
+										v-model:open="serverMenuOpen"
+										:popper="{ placement: 'bottom-start' }"
+									>
+										<button
+											type="button"
+											class="group inline-flex min-w-0 max-w-full items-center gap-1 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+											:class="showServerSelector ? 'hover:opacity-70' : ''"
+											:aria-label="displayName"
+										>
+											<span
+												class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel sm:text-[42px]"
+											>
+												{{ displayName }}
+											</span>
+											<UIcon
+												name="i-lucide-chevron-down"
+												class="size-4 shrink-0 text-white/70 transition-transform duration-200"
+												:class="serverMenuOpen ? 'rotate-180' : ''"
+											/>
+										</button>
+
+										<template #content>
+											<div
+												class="grid w-80 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+											>
+												<button
+													v-for="item in serverViewItems"
+													:key="item.value"
+													type="button"
+													class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
+													:class="{
+														'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
+															item.value === selectedViewIdModel,
+														'text-slate-600 dark:text-slate-300':
+															item.value !== selectedViewIdModel,
+													}"
+													@click="selectServerView(item.value)"
+												>
+													<span class="min-w-0 flex-1 truncate">
+														{{ item.label }}
+													</span>
+													<UIcon
+														v-if="item.value === selectedViewIdModel"
+														name="i-lucide-check"
+														class="size-3.5 shrink-0"
+													/>
+												</button>
+											</div>
+										</template>
+									</UPopover>
+									<span
+										v-else
+										class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel sm:text-[42px]"
+									>
+										{{ displayName }}
 									</span>
-									<span class="text-[17px] font-medium">{{ coordsText }}</span>
+									<UBadge
+										v-if="displayPrimaryGroup"
+										class="text-shadow-none"
+										color="neutral"
+										variant="solid"
+										size="xs"
+									>
+										{{ displayPrimaryGroup }}
+									</UBadge>
 								</div>
-								<div class="flex items-baseline gap-1">
-									<UTooltip
+								<div class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+									<div class="flex items-baseline gap-1">
+										<span class="text-xs text-white/68">
+											{{ t('minecraftAccounts.overlay.lastLogin') }}
+										</span>
+										<span class="text-[17px] font-medium">
+											{{ coordsText }}
+										</span>
+									</div>
+									<div
 										v-if="playTimeHoursLabel !== notAvailableLabel"
-										:text="playTimeTooltip"
 										class="flex items-baseline gap-1"
 									>
-										<span class="text-xs text-white/80">
+										<span class="text-xs text-white/68">
 											{{ t('minecraftAccounts.summary.playTime') }}
 										</span>
-										<span class="text-[17px] font-medium">{{
-											playTimeHoursLabel
-										}}</span>
-									</UTooltip>
-								</div>
-							</div>
-
-							<div v-if="isMobileViewport" class="sm:hidden">
-								<Transition name="stats-fade" mode="out-in">
-									<div
-										:key="statsCarouselIndex"
-										class="inline-flex items-baseline gap-1.5 text-xs text-white/90"
-									>
-										<span
-											class="inline-flex items-baseline gap-1 text-white/70"
-										>
-											<UIcon
-												:name="currentStat.icon"
-												class="size-3 translate-y-0.5"
-											/>
-											{{ currentStat.label }}
-										</span>
-										<span class="text-[17px] font-medium">{{
-											currentStat.value
-										}}</span>
+										<UTooltip :text="playTimeTooltip">
+											<span class="text-[17px] font-medium">
+												{{ playTimeHoursLabel }}
+											</span>
+										</UTooltip>
 									</div>
-								</Transition>
+								</div>
 							</div>
 						</div>
 					</div>
 
-					<div class="hidden shrink-0 sm:block">
-						<div class="space-y-0.5 text-right text-[11px] text-white/90">
+					<div class="flex shrink-0 flex-col sm:self-stretch">
+						<div
+							class="mt-auto grid gap-1 text-[11px] text-white/90 sm:text-right"
+						>
 							<div
 								v-for="item in summaryItems"
 								:key="item.key"
-								class="flex items-baseline justify-end gap-2"
+								class="flex items-baseline gap-2 sm:justify-end"
 							>
-								<span class="inline-flex items-baseline gap-1 text-white/70">
+								<span class="inline-flex items-baseline gap-1 text-white/68">
 									<UIcon :name="item.icon" class="size-3 translate-y-0.5" />
 									{{ item.label }}
 								</span>
-								<span class="text-base font-medium">
+								<span class="text-base font-medium text-white">
 									{{ item.value }}
 								</span>
 							</div>
@@ -295,6 +201,7 @@
 					{{ t('minecraftAccounts.empty.description') }}
 				</p>
 				<UButton
+					v-if="props.showBindAction"
 					type="button"
 					size="xl"
 					variant="link"
@@ -309,13 +216,16 @@
 </template>
 
 <script setup lang="ts">
-import type { MinecraftMapPointerMoveEventPayload } from '~/utils/map'
 import { getMinecraftBodyRendererUrl } from '~/utils/minecraft/body-renderer'
 import {
+	AGGREGATE_SERVER_VIEW_ID,
 	formatMinecraftDateTime,
-	getDefaultObservedPlayerUuid,
-	resolveObservedPlayerSummary,
+	getDefaultServerViewId,
+	listServerViewItems,
+	resolveObservedPlayerForServerView,
+	resolveServerViewSummary,
 	type MinecraftAccountForm,
+	type MinecraftAccountServerView,
 	type MinecraftLocationSummary,
 } from '~/utils/minecraft/accounts'
 
@@ -323,6 +233,8 @@ interface MinecraftAccountsContentProps {
 	accounts: MinecraftAccountForm[]
 	selectedAccount: MinecraftAccountForm | null
 	savingId: string | null
+	requireMapForSelector?: boolean
+	showBindAction?: boolean
 }
 
 interface SummaryItem {
@@ -332,7 +244,10 @@ interface SummaryItem {
 	icon: string
 }
 
-const props = defineProps<MinecraftAccountsContentProps>()
+const props = withDefaults(defineProps<MinecraftAccountsContentProps>(), {
+	requireMapForSelector: false,
+	showBindAction: true,
+})
 
 const emit = defineEmits<{
 	save: [account: MinecraftAccountForm]
@@ -340,18 +255,8 @@ const emit = defineEmits<{
 }>()
 
 const { locale, t } = useI18n()
-const selectedUuid = ref<string | null>(null)
-const bodyImageLoaded = ref(false)
-const bodyImageElement = useTemplateRef<HTMLImageElement>('bodyImageElement')
-const hoveredBlockPoint = ref<{ x: number; z: number } | null>(null)
-const hoverCoordsVisible = ref(false)
-const isMobileViewport = ref(false)
-let bodyImageAnimationFrameId: number | null = null
-let hoverCoordsHideTimer: ReturnType<typeof setTimeout> | null = null
-let mobileViewportMediaQuery: MediaQueryList | null = null
-const HOVER_COORDS_HIDE_DELAY = 5000
-const digitCharacters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-const digitStepEm = 1.2
+const selectedViewId = ref<string | null>(null)
+const serverMenuOpen = ref(false)
 
 const formatDateTime = (value: string | null): string =>
 	formatMinecraftDateTime(
@@ -360,17 +265,27 @@ const formatDateTime = (value: string | null): string =>
 		t('minecraftAccounts.fields.notAvailable'),
 	)
 
+const currentAccount = computed(() => props.selectedAccount)
+const selectedServerView = computed<MinecraftAccountServerView | null>(() =>
+	currentAccount.value
+		? resolveServerViewSummary(currentAccount.value, selectedViewId.value)
+		: null,
+)
+
 const selectedObservedPlayer = computed(() =>
-	props.selectedAccount
-		? resolveObservedPlayerSummary(props.selectedAccount, selectedUuid.value)
+	currentAccount.value
+		? resolveObservedPlayerForServerView(
+				currentAccount.value,
+				selectedViewId.value,
+			)
 		: null,
 )
 
 const displayName = computed(
 	() =>
-		props.selectedAccount?.playerIdentity.playerId ??
-		props.selectedAccount?.authmeRealname ??
-		props.selectedAccount?.username ??
+		currentAccount.value?.playerIdentity.playerId ??
+		currentAccount.value?.authmeRealname ??
+		currentAccount.value?.username ??
 		'',
 )
 
@@ -378,93 +293,17 @@ const bodyRendererUrl = computed(() =>
 	displayName.value ? getMinecraftBodyRendererUrl(displayName.value) : '',
 )
 
-const queueBodyImageReveal = () => {
-	if (import.meta.client && bodyImageAnimationFrameId != null) {
-		cancelAnimationFrame(bodyImageAnimationFrameId)
-	}
-
-	if (!import.meta.client) {
-		bodyImageLoaded.value = true
-		return
-	}
-
-	bodyImageAnimationFrameId = window.requestAnimationFrame(() => {
-		bodyImageLoaded.value = true
-		bodyImageAnimationFrameId = null
-	})
-}
-
-const syncBodyImageLoadedState = () => {
-	const isReady = Boolean(
-		bodyImageElement.value?.complete && bodyImageElement.value.naturalWidth > 0,
-	)
-
-	if (isReady) {
-		queueBodyImageReveal()
-	}
-}
-
-const clearHoverCoordsHideTimer = () => {
-	if (hoverCoordsHideTimer) {
-		clearTimeout(hoverCoordsHideTimer)
-		hoverCoordsHideTimer = null
-	}
-}
-
-const scheduleHoverCoordsHide = () => {
-	clearHoverCoordsHideTimer()
-	hoverCoordsHideTimer = setTimeout(() => {
-		hoverCoordsVisible.value = false
-	}, HOVER_COORDS_HIDE_DELAY)
-}
-
-const handleMapPointerMove = (payload: MinecraftMapPointerMoveEventPayload) => {
-	hoveredBlockPoint.value = {
-		x: Math.round(payload.blockPoint.x),
-		z: Math.round(payload.blockPoint.z),
-	}
-	hoverCoordsVisible.value = true
-	scheduleHoverCoordsHide()
-}
-
-const handleMapPointerLeave = () => {
-	scheduleHoverCoordsHide()
-}
-
-const hoverXText = computed(() =>
-	hoveredBlockPoint.value ? String(hoveredBlockPoint.value.x) : '--',
-)
-const hoverZText = computed(() =>
-	hoveredBlockPoint.value ? String(hoveredBlockPoint.value.z) : '--',
-)
-const hoverXCharacters = computed(() => hoverXText.value.split(''))
-const hoverZCharacters = computed(() => hoverZText.value.split(''))
-const isDigitCharacter = (character: string) => /\d/.test(character)
-const hoverDisplayVisible = computed(
-	() => Boolean(displayDimensionLabel.value) || hoverCoordsVisible.value,
-)
-
-const isOnline = computed(
-	() =>
-		selectedObservedPlayer.value?.online ??
-		props.selectedAccount?.presence?.online ??
-		false,
-)
-
 const displayLocation = computed<MinecraftLocationSummary | null>(
 	() =>
+		selectedServerView.value?.presence?.lastSavedLocation ??
 		selectedObservedPlayer.value?.lastSavedLocation ??
-		props.selectedAccount?.presence?.lastSavedLocation ??
+		currentAccount.value?.presence?.lastSavedLocation ??
 		null,
 )
-const displayDimensionLabel = computed(() => {
-	const dimension = displayLocation.value?.dimension?.trim()
-	if (!dimension) {
-		return ''
-	}
 
-	return dimension.toUpperCase()
-})
+const isAggregateViewSelected = computed(
+	() => selectedServerView.value?.id === AGGREGATE_SERVER_VIEW_ID,
+)
 
 const coordsText = computed(() => {
 	const location = displayLocation.value
@@ -481,25 +320,10 @@ const coordsText = computed(() => {
 	return `${Math.round(location.x)}, ${Math.round(location.z)}`
 })
 
-const displayFirstJoinedAt = computed(
-	() =>
-		selectedObservedPlayer.value?.playerProfile.firstPlayedAt ??
-		props.selectedAccount?.firstJoinedAt ??
-		null,
-)
-
-const displayLastSeenAt = computed(
-	() =>
-		selectedObservedPlayer.value?.playerProfile.lastPlayedAt ??
-		selectedObservedPlayer.value?.lastSeenAt ??
-		props.selectedAccount?.lastSeenAt ??
-		null,
-)
-
 const displayPlayerProfile = computed(
 	() =>
-		selectedObservedPlayer.value?.playerProfile ??
-		props.selectedAccount?.playerProfile ?? {
+		selectedServerView.value?.playerProfile ??
+		currentAccount.value?.playerProfile ?? {
 			firstPlayedAt: null,
 			lastPlayedAt: null,
 			hasStats: false,
@@ -514,15 +338,40 @@ const displayPlayerProfile = computed(
 		},
 )
 
-const notAvailableLabel = computed(() =>
-	t('minecraftAccounts.fields.notAvailable'),
+const displayFirstJoinedAt = computed(() =>
+	isAggregateViewSelected.value
+		? (selectedServerView.value?.firstJoinedAt ??
+			currentAccount.value?.firstJoinedAt ??
+			null)
+		: (selectedServerView.value?.firstJoinedAt ?? null),
+)
+
+const displayLastSeenAt = computed(() =>
+	isAggregateViewSelected.value
+		? (selectedServerView.value?.lastSeenAt ??
+			currentAccount.value?.lastSeenAt ??
+			null)
+		: (selectedServerView.value?.lastSeenAt ?? null),
 )
 
 const displayPrimaryGroup = computed(
 	() =>
+		selectedServerView.value?.luckPermsPrimaryGroup ??
 		selectedObservedPlayer.value?.luckPermsPrimaryGroup ??
-		props.selectedAccount?.luckPermsPrimaryGroup ??
+		currentAccount.value?.luckPermsPrimaryGroup ??
 		null,
+)
+
+const isOnline = computed(
+	() =>
+		selectedServerView.value?.online ??
+		selectedObservedPlayer.value?.online ??
+		currentAccount.value?.presence?.online ??
+		false,
+)
+
+const notAvailableLabel = computed(() =>
+	t('minecraftAccounts.fields.notAvailable'),
 )
 
 const advancementsDisplayValue = computed(() =>
@@ -536,6 +385,7 @@ const distanceLabel = computed(() => {
 	if (!displayPlayerProfile.value.hasStats) {
 		return notAvailableLabel.value
 	}
+
 	return `${(displayPlayerProfile.value.distanceTraveledCm / 100000).toFixed(1)}km`
 })
 
@@ -557,6 +407,7 @@ const playTimeHoursLabel = computed(() => {
 	if (!displayPlayerProfile.value.hasStats || !ticks) {
 		return notAvailableLabel.value
 	}
+
 	const hours = ticks / TICKS_PER_SECOND / 3600
 	return `${Math.round(hours * 10) / 10}h`
 })
@@ -566,11 +417,13 @@ const playTimeTooltip = computed(() => {
 	if (!displayPlayerProfile.value.hasStats || !ticks) {
 		return notAvailableLabel.value
 	}
+
 	const totalSeconds = Math.floor(ticks / TICKS_PER_SECOND)
 	const days = Math.floor(totalSeconds / 86400)
 	const hours = Math.floor((totalSeconds % 86400) / 3600)
 	const minutes = Math.floor((totalSeconds % 3600) / 60)
 	const seconds = totalSeconds % 60
+
 	return [
 		`${days}${t('minecraftAccounts.summary.durationDay')}`,
 		`${hours}${t('minecraftAccounts.summary.durationHour')}`,
@@ -618,226 +471,51 @@ const summaryItems = computed<SummaryItem[]>(() => [
 	},
 ])
 
-const statsCarouselIndex = ref(0)
-let statsCarouselTimer: ReturnType<typeof setInterval> | null = null
-const STATS_CAROUSEL_INTERVAL = 3000
-
-const stopStatsCarousel = () => {
-	if (statsCarouselTimer) {
-		clearInterval(statsCarouselTimer)
-		statsCarouselTimer = null
-	}
-}
-
-const startStatsCarousel = () => {
-	stopStatsCarousel()
-
-	if (
-		!import.meta.client ||
-		!isMobileViewport.value ||
-		summaryItems.value.length <= 1
-	) {
-		return
-	}
-
-	statsCarouselTimer = setInterval(() => {
-		statsCarouselIndex.value =
-			(statsCarouselIndex.value + 1) % summaryItems.value.length
-	}, STATS_CAROUSEL_INTERVAL)
-}
-
-const currentStat = computed(
-	() =>
-		summaryItems.value[statsCarouselIndex.value] ??
-		summaryItems.value[0] ?? { key: '', label: '', value: '', icon: '' },
+const serverViewItems = computed(() =>
+	currentAccount.value
+		? listServerViewItems(currentAccount.value, {
+				aggregateLabel: t('minecraftAccounts.selector.aggregate'),
+				noUuidLabel: t('minecraftAccounts.fields.noUuid'),
+				requireMap: props.requireMapForSelector,
+			})
+		: [],
 )
+const showServerSelector = computed(() => serverViewItems.value.length > 1)
 
-const syncMobileViewportState = () => {
-	isMobileViewport.value = mobileViewportMediaQuery?.matches ?? false
-}
-
-watch(summaryItems, (items) => {
-	if (statsCarouselIndex.value >= items.length) {
-		statsCarouselIndex.value = 0
-	}
-
-	startStatsCarousel()
-})
-
-const uuidItems = computed(() =>
-	(props.selectedAccount?.playerIdentity.observedPlayers ?? []).map(
-		(player) => ({
-			label: `${player.uuid}${player.online ? ` · ${t('minecraftAccounts.identity.online')}` : ''}`,
-			value: player.uuid,
-		}),
-	),
-)
-
-const selectedUuidModel = computed<string>({
-	get: () => selectedUuid.value ?? '',
+const selectedViewIdModel = computed<string>({
+	get: () => selectedViewId.value ?? '',
 	set: (value) => {
-		selectedUuid.value = value || null
+		selectedViewId.value = value || null
 	},
 })
 
+const selectServerView = (value: string) => {
+	selectedViewIdModel.value = value
+	serverMenuOpen.value = false
+}
+
 watch(
-	() => props.selectedAccount?.id,
+	() => currentAccount.value?.id ?? null,
 	() => {
-		selectedUuid.value = props.selectedAccount
-			? getDefaultObservedPlayerUuid(props.selectedAccount)
+		selectedViewId.value = currentAccount.value
+			? getDefaultServerViewId(currentAccount.value)
 			: null
-		hoveredBlockPoint.value = null
-		hoverCoordsVisible.value = false
-		clearHoverCoordsHideTimer()
 	},
 	{ immediate: true },
 )
 
 watch(
-	bodyRendererUrl,
-	async () => {
-		if (import.meta.client && bodyImageAnimationFrameId != null) {
-			cancelAnimationFrame(bodyImageAnimationFrameId)
-			bodyImageAnimationFrameId = null
+	serverViewItems,
+	(items) => {
+		if (!items.length) {
+			selectedViewId.value = null
+			return
 		}
 
-		bodyImageLoaded.value = false
-		await nextTick()
-		syncBodyImageLoadedState()
+		if (!items.some((item) => item.value === selectedViewId.value)) {
+			selectedViewId.value = items[0]?.value ?? null
+		}
 	},
 	{ immediate: true },
 )
-
-onMounted(() => {
-	syncBodyImageLoadedState()
-
-	if (import.meta.client) {
-		mobileViewportMediaQuery = window.matchMedia('(max-width: 639px)')
-		syncMobileViewportState()
-		mobileViewportMediaQuery.addEventListener('change', syncMobileViewportState)
-	}
-
-	startStatsCarousel()
-})
-
-watch(isMobileViewport, () => {
-	startStatsCarousel()
-})
-
-onBeforeUnmount(() => {
-	if (import.meta.client && bodyImageAnimationFrameId != null) {
-		cancelAnimationFrame(bodyImageAnimationFrameId)
-	}
-
-	clearHoverCoordsHideTimer()
-	stopStatsCarousel()
-	mobileViewportMediaQuery?.removeEventListener(
-		'change',
-		syncMobileViewportState,
-	)
-	mobileViewportMediaQuery = null
-})
 </script>
-
-<style scoped>
-.hover-coords-enter-active,
-.hover-coords-leave-active {
-	transition:
-		opacity 220ms ease-out,
-		transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
-		filter 220ms ease-out;
-}
-
-.hover-coords-enter-from,
-.hover-coords-leave-to {
-	opacity: 0;
-	filter: blur(1px);
-	transform: translateY(8px) scale(0.96);
-}
-
-.hover-coords-enter-to,
-.hover-coords-leave-from {
-	opacity: 1;
-	filter: blur(0);
-	transform: translateY(0) scale(1);
-}
-
-.stats-fade-enter-active,
-.stats-fade-leave-active {
-	transition:
-		opacity 280ms ease-out,
-		transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
-		filter 280ms ease-out;
-}
-
-.stats-fade-enter-from,
-.stats-fade-leave-to {
-	opacity: 0;
-	filter: blur(2px);
-	transform: translateY(6px);
-}
-
-.stats-fade-enter-to,
-.stats-fade-leave-from {
-	opacity: 1;
-	filter: blur(0);
-	transform: translateY(0);
-}
-
-.digit-flip {
-	display: inline-block;
-	width: 0.62em;
-	height: 1.2em;
-	overflow: hidden;
-	overflow: clip;
-	clip-path: inset(0);
-	contain: paint;
-	line-height: 1.2em;
-	text-align: center;
-	font-variant-numeric: tabular-nums;
-	vertical-align: -0.16em;
-}
-
-.digit-flip__reel {
-	display: flex;
-	flex-direction: column;
-	line-height: 1.2em;
-	will-change: transform;
-}
-
-.digit-flip__digit {
-	display: block;
-	width: 100%;
-	height: 1.2em;
-	line-height: 1.2em;
-	text-align: center;
-}
-
-.hover-coords-text {
-	display: inline-block;
-	min-width: 2ch;
-	max-width: 8ch;
-	line-height: 1;
-	font-size: 1rem;
-	font-weight: 600;
-	font-variant-numeric: tabular-nums;
-	font-feature-settings: 'tnum';
-	overflow: hidden;
-}
-
-.hover-coords-text__inner {
-	display: inline-block;
-	width: max-content;
-	height: 1.2em;
-	line-height: 1.2em;
-	transform: translateY(-0.12em);
-	white-space: nowrap;
-}
-
-.hover-coords-text__char {
-	display: inline-block;
-	height: 1.2em;
-	line-height: 1.2em;
-	vertical-align: -0.16em;
-}
-</style>

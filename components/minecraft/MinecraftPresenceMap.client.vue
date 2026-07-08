@@ -4,13 +4,17 @@
 
 		<div
 			v-if="!hasMapLocation"
-			class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
-		/>
+			class="absolute inset-0 flex items-center justify-center bg-slate-950/60 px-6 text-center text-sm text-white backdrop-blur-sm"
+		>
+			{{ t('minecraftAccounts.map.locationUnavailable') }}
+		</div>
 
 		<div
 			v-else-if="!providerConfigured"
 			class="absolute inset-0 flex items-center justify-center bg-slate-950/60 px-6 text-center text-sm text-white backdrop-blur-sm"
-		/>
+		>
+			{{ t('minecraftAccounts.map.providerUnavailable') }}
+		</div>
 	</div>
 </template>
 
@@ -18,27 +22,22 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
-import type {
-	MinecraftMapController,
-	MinecraftMapPointerMoveEventPayload,
-	MinecraftMapProvider,
-} from '~/utils/map'
+import { createDynmapProvider, hydcraftDynmapDefaults } from '~/utils/map'
+import type { MinecraftMapController, MinecraftMapProvider } from '~/utils/map'
 import {
-	resolveObservedPlayerSummary,
+	AGGREGATE_SERVER_VIEW_ID,
+	resolveServerViewSummary,
+	type MinecraftAccountServerView,
 	type MinecraftAccountSummary,
 	type MinecraftLocationSummary,
 } from '~/utils/minecraft/accounts'
 
 interface MinecraftPresenceMapProps {
 	account: MinecraftAccountSummary
-	selectedUuid?: string | null
+	selectedViewId?: string | null
 }
 
 const props = defineProps<MinecraftPresenceMapProps>()
-const emit = defineEmits<{
-	pointermove: [payload: MinecraftMapPointerMoveEventPayload]
-	pointerleave: []
-}>()
 
 const { t } = useI18n()
 const mapContainerRef = ref<HTMLElement | null>(null)
@@ -46,38 +45,88 @@ const controllerRef = ref<MinecraftMapController | null>(null)
 const providerRef = ref<MinecraftMapProvider | null>(null)
 const leafletRef = ref<Awaited<typeof import('leaflet')> | null>(null)
 const markerRef = ref<LeafletMarker | null>(null)
-const providerReady = ref(false)
-let unbindPointerMove: (() => void) | null = null
 let removeMouseLeaveListener: (() => void) | null = null
 
-const selectedObservedPlayer = computed(() =>
-	resolveObservedPlayerSummary(props.account, props.selectedUuid),
-)
+const selectedServerView = computed<MinecraftAccountServerView | null>(() => {
+	const selected = resolveServerViewSummary(props.account, props.selectedViewId)
+
+	if (selected?.id !== AGGREGATE_SERVER_VIEW_ID) {
+		return selected
+	}
+
+	const mapViews = props.account.serverViews.filter(
+		(view) =>
+			view.id !== AGGREGATE_SERVER_VIEW_ID && view.hasMap && view.mapConfig,
+	)
+
+	return (
+		mapViews.find((view) => view.id === props.account.defaultViewId) ??
+		mapViews[0] ??
+		selected
+	)
+})
+
 const displayLocation = computed<MinecraftLocationSummary | null>(
 	() =>
-		selectedObservedPlayer.value?.lastSavedLocation ??
+		selectedServerView.value?.presence?.lastSavedLocation ??
 		props.account.presence?.lastSavedLocation ??
 		null,
 )
+
 const hasMapLocation = computed(
 	() =>
 		Number.isFinite(displayLocation.value?.x) &&
 		Number.isFinite(displayLocation.value?.z),
 )
-const providerConfigured = computed(
-	() => providerRef.value?.isConfigured ?? false,
+
+const providerConfigured = computed(() =>
+	Boolean(selectedServerView.value?.mapConfig?.tileBaseUrl),
 )
 
-// 用坐标键（维度+x+z）而非 displayLocation 对象本身做 watch 依据：
-// 上游每分钟 refresh 会产生新的 displayLocation 对象引用，但坐标往往未变，
-// 直接 watch 对象会误触发 updateMarker → centerOnBlock 导致地图跳动。
+const providerKey = computed(() => {
+	const config = selectedServerView.value?.mapConfig
+	if (!config) {
+		return '__no_map__'
+	}
+
+	return [
+		config.tileBaseUrl ?? '',
+		config.worldName,
+		config.mapName,
+		config.tileExtension,
+		config.defaultCenterX,
+		config.defaultCenterZ,
+		config.defaultZoom,
+	].join('|')
+})
+
 const displayLocationKey = computed(() => {
 	const location = displayLocation.value
 	if (!location) {
 		return ''
 	}
+
 	return `${location.dimension ?? ''}|${location.x ?? ''}|${location.z ?? ''}`
 })
+
+const buildProvider = (): MinecraftMapProvider => {
+	const config = selectedServerView.value?.mapConfig
+	return createDynmapProvider({
+		...hydcraftDynmapDefaults,
+		tileBaseUrl: config?.tileBaseUrl ?? null,
+		worldName: config?.worldName ?? hydcraftDynmapDefaults.worldName,
+		mapName: config?.mapName ?? hydcraftDynmapDefaults.mapName,
+		tileExtension:
+			config?.tileExtension === 'png'
+				? 'png'
+				: hydcraftDynmapDefaults.tileExtension,
+		defaultCenter: {
+			x: config?.defaultCenterX ?? hydcraftDynmapDefaults.defaultCenter.x,
+			z: config?.defaultCenterZ ?? hydcraftDynmapDefaults.defaultCenter.z,
+		},
+		defaultZoom: config?.defaultZoom ?? hydcraftDynmapDefaults.defaultZoom,
+	})
+}
 
 const updateMarker = () => {
 	const controller = controllerRef.value
@@ -85,6 +134,7 @@ const updateMarker = () => {
 	const leaflet = leafletRef.value
 	const map = (controller?.getLeafletInstance() as LeafletMap | null) ?? null
 	const location = displayLocation.value
+
 	if (
 		!controller ||
 		!provider ||
@@ -129,28 +179,9 @@ const updateMarker = () => {
 	controller.centerOnBlock(point, Math.max(provider.defaultView.zoom, 2))
 }
 
-const recenterToDefault = () => {
-	const controller = controllerRef.value
-	const provider = providerRef.value
-	if (!controller || !provider) {
-		return
-	}
-
-	if (markerRef.value) {
-		markerRef.value.remove()
-		markerRef.value = null
-	}
-	controller.centerOnBlock(
-		provider.defaultView.center,
-		provider.defaultView.zoom,
-	)
-}
-
 const teardown = () => {
-	providerReady.value = false
+	markerRef.value?.remove()
 	markerRef.value = null
-	unbindPointerMove?.()
-	unbindPointerMove = null
 	removeMouseLeaveListener?.()
 	removeMouseLeaveListener = null
 	controllerRef.value?.destroy()
@@ -159,77 +190,62 @@ const teardown = () => {
 	leafletRef.value = null
 }
 
+const mountMap = async () => {
+	await nextTick()
+	const container = mapContainerRef.value
+	if (!container) {
+		return
+	}
+
+	teardown()
+
+	const [leaflet, mapModule] = await Promise.all([
+		import('leaflet'),
+		import('~/utils/map'),
+	])
+	const provider = buildProvider()
+	const controller = mapModule.createLeafletMapController(provider)
+
+	leafletRef.value = leaflet
+	providerRef.value = provider
+	controllerRef.value = controller
+
+	controller.on('ready', () => {
+		;(controller.getLeafletInstance() as LeafletMap | null)?.invalidateSize()
+		updateMarker()
+	})
+
+	const handleMouseLeave = () => undefined
+	container.addEventListener('mouseleave', handleMouseLeave)
+	removeMouseLeaveListener = () => {
+		container.removeEventListener('mouseleave', handleMouseLeave)
+	}
+
+	controller.mount({
+		container,
+		center: hasMapLocation.value
+			? {
+					x: displayLocation.value?.x ?? provider.defaultView.center.x,
+					z: displayLocation.value?.z ?? provider.defaultView.center.z,
+				}
+			: provider.defaultView.center,
+		zoom: hasMapLocation.value ? 2 : provider.defaultView.zoom,
+		showZoomControl: false,
+	})
+
+	requestAnimationFrame(() => {
+		;(controller.getLeafletInstance() as LeafletMap | null)?.invalidateSize()
+		updateMarker()
+	})
+}
+
 onMounted(() => {
-	void (async () => {
-		await nextTick()
-		const container = mapContainerRef.value
-		if (!container) {
-			return
-		}
-
-		const [leaflet, mapModule] = await Promise.all([
-			import('leaflet'),
-			import('~/utils/map'),
-		])
-		const provider = mapModule.createPortalDynmapProvider()
-		const controller = mapModule.createLeafletMapController(provider)
-
-		leafletRef.value = leaflet
-		providerRef.value = provider
-		controllerRef.value = controller
-
-		controller.on('ready', () => {
-			providerReady.value = true
-			;(controller.getLeafletInstance() as LeafletMap | null)?.invalidateSize()
-			updateMarker()
-		})
-
-		unbindPointerMove = controller.on('pointermove', (payload) => {
-			emit('pointermove', payload)
-		})
-
-		const handleMouseLeave = () => {
-			emit('pointerleave')
-		}
-		container.addEventListener('mouseleave', handleMouseLeave)
-		removeMouseLeaveListener = () => {
-			container.removeEventListener('mouseleave', handleMouseLeave)
-		}
-
-		controller.mount({
-			container,
-			center: hasMapLocation.value
-				? {
-						x: displayLocation.value?.x ?? provider.defaultView.center.x,
-						z: displayLocation.value?.z ?? provider.defaultView.center.z,
-					}
-				: provider.defaultView.center,
-			zoom: hasMapLocation.value ? 2 : provider.defaultView.zoom,
-			showZoomControl: false,
-		})
-
-		requestAnimationFrame(() => {
-			;(controller.getLeafletInstance() as LeafletMap | null)?.invalidateSize()
-			updateMarker()
-		})
-	})()
+	void mountMap()
 })
 
-watch(
-	() => props.account.id,
-	() => {
-		const map =
-			(controllerRef.value?.getLeafletInstance() as LeafletMap | null) ?? null
-		if (map) {
-			map.invalidateSize()
-		}
-		if (hasMapLocation.value) {
-			updateMarker()
-		} else {
-			recenterToDefault()
-		}
-	},
-)
+watch(providerKey, () => {
+	void mountMap()
+})
 
 watch(displayLocationKey, () => {
 	updateMarker()

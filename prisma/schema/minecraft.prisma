@@ -7,6 +7,8 @@ model MinecraftAccount {
   uuid               String?                @unique
   status             MinecraftAccountStatus @default(PENDING)
   source             MinecraftAccountSource @default(PORTAL)
+  identityKind       MinecraftAccountIdentityKind @default(AUTHENTICATED)
+  assignmentMode     MinecraftAccountAssignmentMode @default(IMPORTED_UNASSIGNED)
   authmeName         String?
   authmeId           Int?                   @unique
   firstJoinedAt      DateTime?
@@ -26,6 +28,8 @@ model MinecraftAccount {
   @@index([authmeName])
   @@index([status])
   @@index([source])
+  @@index([identityKind])
+  @@index([assignmentMode])
 }
 
 model MinecraftAccountBindingHistory {
@@ -46,16 +50,24 @@ model MinecraftAccountBindingHistory {
 }
 
 model MinecraftServer {
-  id        String   @id @default(cuid())
-  serverId  String   @unique
-  code      String   @unique
-  name      String
-  host      String
-  port      Int      @default(25565)
-  enabled   Boolean  @default(true)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String                        @id @default(cuid())
+  serverId       String                        @unique
+  code           String                        @unique
+  name           String
+  nameZhCn       String?
+  nameZhTw       String?
+  nameEnUs       String?
+  nameJaJp       String?
+  host           String
+  port           Int                           @default(25565)
+  enabled        Boolean                       @default(true)
+  kind           MinecraftServerKind           @default(MAIN)
+  status         MinecraftServerStatus         @default(LIVE)
+  dataSourceMode MinecraftServerDataSourceMode @default(PORTAL_BRIDGE)
+  isDefault      Boolean                       @default(false)
+  sortOrder      Int                           @default(0)
+  createdAt      DateTime                      @default(now())
+  updatedAt      DateTime                      @updatedAt
 
   portalBridge PortalBridgeConfig?
   snapshots    MinecraftServerSnapshot[]
@@ -64,6 +76,67 @@ model MinecraftServer {
   players      MinecraftServerPlayer[]
   partnerEntries PartnerEntry[]
   externalSyncTaskStates ExternalSyncTaskState[]
+  periods      MinecraftServerPeriod[]
+  mapConfig    MinecraftServerMapConfig?
+  archiveImportRuns ArchiveImportRun[]
+}
+
+model MinecraftServerPeriod {
+  id                String                    @id @default(cuid())
+  minecraftServerId String
+  minecraftServer   MinecraftServer           @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  kind              MinecraftServerPeriodKind @default(LIVE)
+  startedAt         DateTime
+  endedAt           DateTime?
+  note              String?
+  sortOrder         Int                       @default(0)
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  @@index([minecraftServerId, sortOrder])
+  @@index([startedAt])
+  @@index([endedAt])
+}
+
+model MinecraftServerMapConfig {
+  id                String          @id @default(cuid())
+  minecraftServerId String          @unique
+  minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  enabled           Boolean         @default(false)
+  hasTiles          Boolean         @default(false)
+  tileBaseUrl       String?
+  worldName         String          @default("world")
+  mapName           String          @default("flat")
+  tileExtension     String          @default("jpg")
+  defaultCenterX    Float           @default(811)
+  defaultCenterZ    Float           @default(2933)
+  defaultZoom       Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model ArchiveImportRun {
+  id                     String                @id @default(cuid())
+  minecraftServerId      String
+  minecraftServer        MinecraftServer       @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
+  status                 ArchiveImportRunStatus @default(RUNNING)
+  artifactPath           String
+  artifactHash           String?
+  artifactServerId       String?
+  artifactServerName     String?
+  artifactVersion        String?
+  scannedAt              DateTime?
+  importedAt             DateTime?
+  playersObserved        Int                   @default(0)
+  playersUpdated         Int                   @default(0)
+  accountsMatched        Int                   @default(0)
+  historicalAccountsCreated Int                @default(0)
+  errorMessage           String?
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@index([minecraftServerId, createdAt])
+  @@index([status, createdAt])
 }
 
 model PortalBridgeConfig {

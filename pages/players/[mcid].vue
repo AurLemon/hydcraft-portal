@@ -41,6 +41,8 @@
 						:accounts="[account]"
 						:selected-account="account"
 						:saving-id="null"
+						:require-map-for-selector="true"
+						:show-bind-action="false"
 					/>
 				</div>
 			</template>

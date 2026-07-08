@@ -79,6 +79,8 @@
 		"servers": {
 			"title": "サーバー",
 			"create": "サーバーを追加",
+			"setDefault": "既定サーバー",
+			"defaultBadge": "既定",
 			"viewDetail": "詳細を見る",
 			"fields": {
 				"server": "サーバー",
@@ -90,6 +92,11 @@
 			"empty": {
 				"title": "サーバー設定はまだありません",
 				"description": "サーバーを追加してから PortalBridge を設定します。"
+			},
+			"defaultModal": {
+				"title": "既定サーバーを設定",
+				"description": "総合情報のマップ表示と関連する既定選択はこのサーバーを優先します。",
+				"placeholder": "サーバーを検索"
 			},
 			"externalSync": {
 				"authMe": "AuthMe 同期状態",
@@ -306,6 +313,7 @@
 			"sections": {
 				"onlinePlayers": "オンライン人数",
 				"portalBridge": "PortalBridge",
+				"archiveStatus": "アーカイブ状態",
 				"serverInfo": "サーバー情報",
 				"dataSources": "データソース",
 				"syncStatus": "同期状態",
@@ -321,6 +329,9 @@
 				"lastConnected": "最終接続",
 				"lastMessage": "最終メッセージ",
 				"code": "コード",
+				"kind": "種別",
+				"status": "状態",
+				"dataSourceMode": "データソース",
 				"address": "アドレス",
 				"sortOrder": "並び順",
 				"createdAt": "作成日時",
@@ -328,6 +339,7 @@
 				"luckPermsDatabase": "LuckPerms データベース",
 				"identityCount": "ID 記録",
 				"observedPlayers": "観測されたオンラインプレイヤー",
+				"totalPlayers": "総プレイヤー数",
 				"openSessions": "オンラインセッション",
 				"totalSessions": "総セッション",
 				"playerName": "プレイヤー名",
@@ -430,6 +442,23 @@
 				"loadFailed": "状態の読み込みに失敗しました",
 				"controlFailed": "接続制御に失敗しました",
 				"manualSyncFailed": "手動同期に失敗しました"
+			},
+			"archiveImport": {
+				"latestImport": "最新インポート",
+				"notImported": "まだインポートされていません",
+				"playersObserved": "{count} 人のプレイヤーをスキャン",
+				"importedAt": "インポート時刻: {time}",
+				"updatedPlayersLabel": "プレイヤー更新",
+				"updatedPlayers": "{count} 人のプレイヤーを更新",
+				"accountsMatched": "{count} 件を正式プロフィールへ吸収",
+				"historicalAccountsLabel": "履歴プロフィール",
+				"historicalAccounts": "{count} 件の履歴プロフィールを作成",
+				"noError": "エラーなし",
+				"statuses": {
+					"running": "インポート中",
+					"success": "インポート成功",
+					"failed": "インポート失敗"
+				}
 			}
 		},
 		"serverPlayers": {
@@ -564,6 +593,7 @@
 				"luckPermsPrimaryGroup": "LuckPerms グループ",
 				"worldFirstJoinedAt": "ワールド初回参加",
 				"worldLastJoinedAt": "ワールド最終参加",
+				"servers": "出現サーバー",
 				"uuid": "UUID",
 				"dataEntries": "データ入口",
 				"createdAt": "作成日時",
@@ -592,6 +622,41 @@
 				"allSessions": "すべてのログイン記録"
 			}
 		},
+		"historicalPlayers": {
+			"title": "履歴プレイヤー",
+			"filters": {
+				"search": "履歴 ID、紐付けユーザー、サーバーを検索",
+				"assigned": "割り当て済み",
+				"unassigned": "未割り当て"
+			},
+			"fields": {
+				"player": "履歴 ID",
+				"user": "紐付けユーザー",
+				"servers": "元サーバー",
+				"firstJoinedAt": "初回参加",
+				"lastSeenAt": "最終参加",
+				"actions": "操作",
+				"assignedState": "割り当て状態"
+			},
+			"actions": {
+				"assign": "割り当て",
+				"unassign": "割り当て解除"
+			},
+			"empty": {
+				"unassigned": "未割り当て"
+			},
+			"assignModal": {
+				"title": "履歴アーカイブを割り当て",
+				"description": "紐付ける Hydroline ユーザー名を入力してください。",
+				"username": "Hydroline ユーザー名"
+			},
+			"notifications": {
+				"assigned": "履歴アーカイブを割り当てました",
+				"assignFailed": "履歴アーカイブの割り当てに失敗しました",
+				"unassigned": "履歴アーカイブの割り当てを解除しました",
+				"unassignFailed": "履歴アーカイブの割り当て解除に失敗しました"
+			}
+		},
 		"users": {
 			"title": "ユーザー",
 			"filters": {
@@ -601,7 +666,8 @@
 				"identity": "識別情報と状態",
 				"profile": "プロフィール",
 				"attachments": "アバターとカバー",
-				"minecraftAccounts": "Minecraft 連携管理",
+				"minecraftAccounts": "Minecraft アーカイブ管理",
+				"historicalMinecraftAccounts": "履歴アーカイブ管理",
 				"security": "アカウントセキュリティ",
 				"preferences": "設定",
 				"social": "ソーシャルリンク",
@@ -685,6 +751,22 @@
 					"primarySetFailed": "主アカウントの設定に失敗しました",
 					"unbindSuccess": "Minecraft アカウントの紐付けを解除しました",
 					"unbindFailed": "Minecraft アカウントの紐付け解除に失敗しました"
+				}
+			},
+			"historicalMinecraft": {
+				"placeholders": {
+					"bindAccount": "履歴アーカイブを検索して選択"
+				},
+				"empty": {
+					"title": "履歴アーカイブはまだ紐付けられていません",
+					"description": "未割り当ての履歴アーカイブを選択して、このユーザーに紐付けできます。",
+					"noServerData": "元サーバー情報なし"
+				},
+				"notifications": {
+					"bindSuccess": "履歴アーカイブを紐付けました",
+					"bindFailed": "履歴アーカイブの紐付けに失敗しました",
+					"unbindSuccess": "履歴アーカイブの紐付けを解除しました",
+					"unbindFailed": "履歴アーカイブの解除に失敗しました"
 				}
 			},
 			"edit": {
@@ -865,6 +947,10 @@
 			"title": "サーバー接続設定",
 			"sections": {
 				"basic": "サーバー基本情報",
+				"mapConfig": "マップ設定",
+				"mapConfigDescription": "この server instance 専用の tiles 能力と既定表示位置を設定します。",
+				"periods": "ライフサイクル期間",
+				"periodsDescription": "このサーバーの稼働、保管、イベント期間を手動で管理します。",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -874,11 +960,32 @@
 				"serverId": "サーバー ID",
 				"code": "コード",
 				"name": "名前",
+				"nameZhCn": "簡体字中国語名",
+				"nameZhTw": "繁体字中国語名",
+				"nameEnUs": "英語名",
+				"nameJaJp": "日本語名",
 				"sortOrder": "並び順",
+				"kind": "サーバー種別",
+				"status": "サーバー状態",
+				"dataSourceMode": "データソースモード",
 				"mcHost": "MC Host",
 				"mcPort": "MC Port",
 				"description": "説明",
 				"enabled": "このサーバーを有効化",
+				"mapEnabled": "マップ設定を有効化",
+				"hasTiles": "Tiles 利用可能",
+				"tileBaseUrl": "Tiles Base URL",
+				"worldName": "ワールド名",
+				"mapName": "マップ名",
+				"tileExtension": "タイル拡張子",
+				"defaultZoom": "既定ズーム",
+				"defaultCenterX": "既定中心 X",
+				"defaultCenterZ": "既定中心 Z",
+				"periodKind": "期間種別",
+				"periodSortOrder": "期間並び順",
+				"startedAt": "開始日時",
+				"endedAt": "終了日時",
+				"periodNote": "備考",
 				"bridgeId": "Bridge ID",
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
@@ -890,9 +997,38 @@
 				"keepSecret": "空欄なら変更しません"
 			},
 			"actions": {
+				"addPeriod": "期間を追加",
 				"cancel": "キャンセル",
 				"save": "設定を保存",
 				"close": "閉じる"
+			},
+			"periodLabel": "期間 {index}",
+			"values": {
+				"serverKind": {
+					"main": "メインサーバー",
+					"archive": "アーカイブサーバー",
+					"event": "イベントサーバー",
+					"test": "テストサーバー"
+				},
+				"serverStatus": {
+					"planned": "計画中",
+					"live": "稼働中",
+					"frozen": "凍結",
+					"archived": "保管済み",
+					"hidden": "非表示"
+				},
+				"dataSourceMode": {
+					"portalBridge": "PortalBridge のみ",
+					"imported": "導入データのみ",
+					"mixed": "混合"
+				},
+				"periodKind": {
+					"live": "稼働期間",
+					"archive": "保管期間",
+					"event": "イベント期間",
+					"maintenance": "メンテナンス期間",
+					"other": "その他"
+				}
 			}
 		},
 		"mysqlFields": {
@@ -908,8 +1044,10 @@
 			"serversLoadFailed": "サーバー設定の読み込みに失敗しました",
 			"serverSaved": "サーバー設定を保存しました",
 			"serverSavedDescription": "サーバー一覧を更新しました。",
+			"serverDefaultSetFailed": "既定サーバーの設定に失敗しました",
 			"serverSaveFailed": "設定の保存に失敗しました",
 			"serverSaveFailedDescription": "ログイン状態と入力欄を確認してください。",
+			"serverReorderFailed": "サーバーの並び順更新に失敗しました",
 			"copied": "コピーしました"
 		},
 		"achievements": {

@@ -4,7 +4,19 @@
 			class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
 		>
 			<div class="flex min-w-0 items-center gap-4">
+				<NuxtLink
+					v-if="user?.username"
+					:to="localePath(`/u/${user.username}`)"
+					class="shrink-0 rounded-full transition-opacity hover:opacity-90"
+				>
+					<UAvatar
+						:src="user.avatarUrl || undefined"
+						:alt="user.displayName || user.username"
+						size="3xl"
+					/>
+				</NuxtLink>
 				<UAvatar
+					v-else
 					:src="user?.avatarUrl || undefined"
 					:alt="user?.displayName || user?.username"
 					size="3xl"
@@ -56,7 +68,7 @@
 
 		<form
 			v-else
-			class="mt-8 w-full gap-5 lg:columns-2 [&>section]:mb-5"
+			class="mt-8 w-full gap-10 lg:columns-2 [&>section]:mb-12"
 			@submit.prevent
 		>
 			<AdminUserIdentitySection
@@ -84,13 +96,19 @@
 				@reset-cover="resetCover"
 			/>
 			<AdminUserMinecraftSection
+				:user-id="user.id"
 				:accounts="user.minecraftAccounts"
+				:historical-accounts="user.historicalMinecraftAccounts"
 				:binding="savingSection === 'minecraft-bind'"
+				:historical-binding="savingSection === 'historical-minecraft-bind'"
 				:unbinding-account-id="unbindingMinecraftAccountId"
+				:historical-unbinding-account-id="unbindingHistoricalMinecraftAccountId"
 				:primary-account-id="primaryMinecraftAccountId"
 				@bind="bindMinecraftAccount"
+				@bind-historical="bindHistoricalMinecraftAccount"
 				@set-primary="setPrimaryMinecraftAccount"
 				@unbind="unbindMinecraftAccount"
+				@unbind-historical="unbindHistoricalMinecraftAccount"
 			/>
 			<AdminUserPreferencesSection
 				v-model:form="form"
@@ -587,6 +605,7 @@ const availableBadges = computed(() =>
 const form = reactive<AdminUserForm>(createEmptyAdminUserForm())
 const savingSection = ref<AdminUserSaveSection | null>(null)
 const unbindingMinecraftAccountId = ref<string | null>(null)
+const unbindingHistoricalMinecraftAccountId = ref<string | null>(null)
 const primaryMinecraftAccountId = ref<string | null>(null)
 const privacySnapshot = ref('')
 const skipUserWatchSync = ref(false)
@@ -687,6 +706,7 @@ const syncAdminFormSection = (
 		case 'cover':
 			return
 		case 'minecraft-bind':
+		case 'historical-minecraft-bind':
 			return
 		case 'preferences':
 			form.preferences = nextForm.preferences
@@ -867,6 +887,21 @@ const resetCover = async (): Promise<void> => {
 	})
 }
 
+const syncLoadedUser = (nextUser: AdminUser): void => {
+	skipUserWatchSync.value = true
+	user.value = nextUser
+}
+
+const reloadUserDetail = async (): Promise<AdminUser | null> => {
+	if (!user.value) {
+		return null
+	}
+
+	const updated = await $fetch<AdminUser>(`/api/admin/users/${user.value.id}`)
+	syncLoadedUser(updated)
+	return updated
+}
+
 const bindMinecraftAccount = async (username: string): Promise<void> => {
 	if (!user.value || !username.trim()) {
 		return
@@ -884,14 +919,43 @@ const bindMinecraftAccount = async (username: string): Promise<void> => {
 				},
 			},
 		)
-		skipUserWatchSync.value = true
-		user.value = updated
+		syncLoadedUser(updated)
 		notifySuccess({
 			title: t('admin.users.minecraft.notifications.bindSuccess'),
 		})
 	} catch (bindError) {
 		notifyError(bindError, {
 			title: t('admin.users.minecraft.notifications.bindFailed'),
+		})
+	} finally {
+		savingSection.value = null
+	}
+}
+
+const bindHistoricalMinecraftAccount = async (
+	accountId: string,
+): Promise<void> => {
+	if (!user.value || !accountId) {
+		return
+	}
+
+	savingSection.value = 'historical-minecraft-bind'
+
+	try {
+		await $fetch(`/api/admin/historical-players/${accountId}/assign`, {
+			method: 'POST',
+			body: {
+				username: user.value.username,
+			},
+		})
+		await reloadUserDetail()
+
+		notifySuccess({
+			title: t('admin.users.historicalMinecraft.notifications.bindSuccess'),
+		})
+	} catch (bindError) {
+		notifyError(bindError, {
+			title: t('admin.users.historicalMinecraft.notifications.bindFailed'),
 		})
 	} finally {
 		savingSection.value = null
@@ -912,8 +976,7 @@ const unbindMinecraftAccount = async (accountId: string): Promise<void> => {
 				method: 'DELETE',
 			},
 		)
-		skipUserWatchSync.value = true
-		user.value = updated
+		syncLoadedUser(updated)
 		notifySuccess({
 			title: t('admin.users.minecraft.notifications.unbindSuccess'),
 		})
@@ -923,6 +986,37 @@ const unbindMinecraftAccount = async (accountId: string): Promise<void> => {
 		})
 	} finally {
 		unbindingMinecraftAccountId.value = null
+	}
+}
+
+const unbindHistoricalMinecraftAccount = async (
+	accountId: string,
+): Promise<void> => {
+	if (
+		!user.value ||
+		!accountId ||
+		unbindingHistoricalMinecraftAccountId.value
+	) {
+		return
+	}
+
+	unbindingHistoricalMinecraftAccountId.value = accountId
+
+	try {
+		await $fetch(`/api/admin/historical-players/${accountId}/unassign`, {
+			method: 'POST',
+		})
+		await reloadUserDetail()
+
+		notifySuccess({
+			title: t('admin.users.historicalMinecraft.notifications.unbindSuccess'),
+		})
+	} catch (unbindError) {
+		notifyError(unbindError, {
+			title: t('admin.users.historicalMinecraft.notifications.unbindFailed'),
+		})
+	} finally {
+		unbindingHistoricalMinecraftAccountId.value = null
 	}
 }
 
@@ -943,8 +1037,7 @@ const setPrimaryMinecraftAccount = async (accountId: string): Promise<void> => {
 				},
 			},
 		)
-		skipUserWatchSync.value = true
-		user.value = updated
+		syncLoadedUser(updated)
 		notifySuccess({
 			title: t('admin.users.minecraft.notifications.primarySetSuccess'),
 		})

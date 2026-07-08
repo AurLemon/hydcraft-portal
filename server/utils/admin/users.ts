@@ -23,7 +23,12 @@ import {
 	syncMinecraftAccountFromVerifiedAuthMe,
 	unbindMinecraftAccountFromUser,
 } from '../minecraft/account-binding'
-import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
+import {
+	buildMinecraftAccountSummary,
+	minecraftAccountSummaryPlayerInclude,
+} from '../minecraft/account-summary'
+import { getHistoricalMinecraftAccountsForUser } from '../minecraft/historical-accounts'
+import { normalizeMinecraftUsername } from '../minecraft/normalize'
 import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
 import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
 import {
@@ -347,6 +352,7 @@ export const serializeAdminUser = (user: AdminUserEntity) => ({
 	privacy: user.privacy,
 	badges: user.badges,
 	minecraftAccounts: [],
+	historicalMinecraftAccounts: [],
 	attachments: user.createdAttachments.map((attachment) => ({
 		id: attachment.id,
 		category: attachment.category,
@@ -363,6 +369,7 @@ const readAdminMinecraftAccountSummaries = async (userId: string) => {
 		where: {
 			userId,
 			unlinkedAt: null,
+			identityKind: 'AUTHENTICATED',
 		},
 		include: {
 			authMeAccount: true,
@@ -398,11 +405,7 @@ const readAdminMinecraftAccountSummaries = async (userId: string) => {
 				},
 			],
 		},
-		include: {
-			playerData: true,
-			statsSnapshot: true,
-			advancementsSnapshot: true,
-		},
+		include: minecraftAccountSummaryPlayerInclude,
 		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
 	})
 	const histories = await prisma.minecraftAccountBindingHistory.findMany({
@@ -514,6 +517,79 @@ export const getAdminUser = async (userId: string) => {
 	return {
 		...serializeAdminUser(user),
 		minecraftAccounts: await readAdminMinecraftAccountSummaries(userId),
+		historicalMinecraftAccounts:
+			await getHistoricalMinecraftAccountsForUser(userId),
+	}
+}
+
+export const listAdminBindableMinecraftAccounts = async (input: {
+	search?: string
+	pageSize?: number
+}) => {
+	const search = input.search?.trim() ?? ''
+	const normalizedUsername = normalizeMinecraftUsername(search)
+	const uuidLookup = normalizeMinecraftUuidLookup(search)
+	const pageSize = Math.min(Math.max(input.pageSize ?? 8, 1), 20)
+	const accounts = await prisma.minecraftAccount.findMany({
+		where: {
+			unlinkedAt: null,
+			identityKind: 'AUTHENTICATED',
+			userId: null,
+			...(search
+				? {
+						OR: [
+							{
+								username: {
+									contains: search,
+									mode: 'insensitive',
+								},
+							},
+							{
+								authmeName: {
+									contains: search,
+									mode: 'insensitive',
+								},
+							},
+							...(normalizedUsername
+								? [
+										{
+											normalizedUsername: {
+												contains: normalizedUsername,
+											},
+										},
+									]
+								: []),
+							...(uuidLookup
+								? [
+										{
+											uuid: uuidLookup,
+										},
+									]
+								: []),
+						],
+					}
+				: {}),
+		},
+		orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
+		take: pageSize,
+	})
+
+	return {
+		items: accounts.map((account) => {
+			const descriptionParts = [
+				account.authmeName ? `AuthMe: ${account.authmeName}` : null,
+				account.uuid,
+			].filter((part): part is string => Boolean(part))
+
+			return {
+				id: account.id,
+				value: account.uuid ?? account.username,
+				label: account.username,
+				description: descriptionParts.join(' · ') || account.source,
+				username: account.username,
+				uuid: account.uuid,
+			}
+		}),
 	}
 }
 

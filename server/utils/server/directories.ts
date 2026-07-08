@@ -3,7 +3,10 @@ import type {
 	ServerDirectoryPlayerItem,
 	ServerDirectoryUserItem,
 } from '../../../utils/server/directories'
-import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
+import {
+	buildMinecraftAccountSummary,
+	minecraftAccountSummaryPlayerInclude,
+} from '../minecraft/account-summary'
 import { prisma } from '../db/prisma'
 import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
 import {
@@ -51,11 +54,8 @@ type PublicPlayerEntity = Prisma.MinecraftAccountGetPayload<{
 	include: typeof publicPlayerInclude
 }>
 
-const PUBLIC_PLAYERDATA_INCLUDE = {
-	playerData: true,
-	statsSnapshot: true,
-	advancementsSnapshot: true,
-} satisfies Prisma.MinecraftServerPlayerInclude
+const PUBLIC_PLAYERDATA_INCLUDE =
+	minecraftAccountSummaryPlayerInclude satisfies Prisma.MinecraftServerPlayerInclude
 
 type PublicServerPlayerEntity = Prisma.MinecraftServerPlayerGetPayload<{
 	include: typeof PUBLIC_PLAYERDATA_INCLUDE

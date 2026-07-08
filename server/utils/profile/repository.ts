@@ -16,6 +16,7 @@ export const PROFILE_INCLUDE = {
 	minecraftAccounts: {
 		where: {
 			unlinkedAt: null,
+			identityKind: 'AUTHENTICATED',
 		},
 		orderBy: [
 			{

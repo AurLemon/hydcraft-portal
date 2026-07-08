@@ -76,7 +76,10 @@
 				class="min-h-72"
 			>
 				<template #player-cell="{ row }">
-					<div class="flex min-w-0 items-center gap-3">
+					<NuxtLink
+						:to="getPlayerProfileRoute(row.original)"
+						class="flex min-w-0 items-center gap-3 rounded-lg transition-colors hover:text-primary-600 dark:hover:text-primary-400"
+					>
 						<SkeletonImage
 							v-if="row.original.username"
 							:src="getMinecraftHeadRendererUrl(row.original.username)"
@@ -85,9 +88,16 @@
 							image-class="size-10 object-cover"
 							skeleton-class="rounded-md"
 						/>
-						<USkeleton v-else class="size-10 shrink-0 rounded-md" />
+						<div
+							v-else
+							class="flex size-10 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
+						>
+							<UIcon name="i-lucide-user" class="size-5" />
+						</div>
 						<div class="min-w-0">
-							<p class="truncate font-medium text-slate-900 dark:text-white">
+							<p
+								class="truncate font-medium text-slate-900 transition-colors dark:text-white"
+							>
 								{{
 									row.original.username ??
 									t('admin.serverPlayers.empty.unknown')
@@ -121,7 +131,7 @@
 								</UTooltip>
 							</p>
 						</div>
-					</div>
+					</NuxtLink>
 				</template>
 				<template #firstSeenAt-cell="{ row }">
 					{{ formatDate(row.original.firstSeenAt) }}
@@ -454,6 +464,16 @@ const getUuidSourceText = (source: string): string =>
 
 const getConflictMessage = (state: string): string =>
 	t('admin.serverPlayers.conflictTooltip', { state })
+
+const getPlayerProfileRoute = (
+	player: Pick<
+		MinecraftServerPlayerInfo,
+		'normalizedUsername' | 'username' | 'uuid'
+	>,
+) =>
+	localePath(
+		`/players/${player.normalizedUsername || player.username || player.uuid || ''}`,
+	)
 
 const getDataEntryRoute = (
 	player: Pick<MinecraftServerPlayerInfo, 'normalizedUsername' | 'username'>,

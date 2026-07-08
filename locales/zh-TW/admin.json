@@ -79,6 +79,8 @@
 		"servers": {
 			"title": "伺服器",
 			"create": "新增伺服器",
+			"setDefault": "預設伺服器",
+			"defaultBadge": "預設",
 			"viewDetail": "查看詳情",
 			"fields": {
 				"server": "伺服器",
@@ -90,6 +92,11 @@
 			"empty": {
 				"title": "還沒有伺服器設定",
 				"description": "新增一個伺服器後，再設定 PortalBridge。"
+			},
+			"defaultModal": {
+				"title": "設定預設伺服器",
+				"description": "綜合資訊地圖與相關預設選擇會優先使用這個伺服器。",
+				"placeholder": "搜尋伺服器"
 			},
 			"externalSync": {
 				"authMe": "AuthMe 同步狀態",
@@ -306,6 +313,7 @@
 			"sections": {
 				"onlinePlayers": "線上人數",
 				"portalBridge": "PortalBridge",
+				"archiveStatus": "存檔狀態",
 				"serverInfo": "伺服器資訊",
 				"dataSources": "資料來源",
 				"syncStatus": "同步狀態",
@@ -321,6 +329,9 @@
 				"lastConnected": "最後連線",
 				"lastMessage": "最後訊息",
 				"code": "代碼",
+				"kind": "類型",
+				"status": "狀態",
+				"dataSourceMode": "資料來源",
 				"address": "地址",
 				"sortOrder": "排序",
 				"createdAt": "建立時間",
@@ -328,6 +339,7 @@
 				"luckPermsDatabase": "LuckPerms 資料庫",
 				"identityCount": "身份記錄",
 				"observedPlayers": "觀測到的在線玩家",
+				"totalPlayers": "總玩家數",
 				"openSessions": "線上會話",
 				"totalSessions": "總會話",
 				"playerName": "玩家名稱",
@@ -430,6 +442,23 @@
 				"loadFailed": "讀取狀態失敗",
 				"controlFailed": "控制連線失敗",
 				"manualSyncFailed": "手動同步失敗"
+			},
+			"archiveImport": {
+				"latestImport": "最近導入",
+				"notImported": "尚未導入",
+				"playersObserved": "掃描到 {count} 名玩家",
+				"importedAt": "導入時間：{time}",
+				"updatedPlayersLabel": "玩家更新",
+				"updatedPlayers": "更新 {count} 名玩家",
+				"accountsMatched": "吸收到正式檔案 {count} 個",
+				"historicalAccountsLabel": "歷史檔案",
+				"historicalAccounts": "新增 {count} 個歷史檔案",
+				"noError": "無錯誤",
+				"statuses": {
+					"running": "導入中",
+					"success": "導入成功",
+					"failed": "導入失敗"
+				}
 			}
 		},
 		"serverPlayers": {
@@ -564,6 +593,7 @@
 				"luckPermsPrimaryGroup": "LuckPerms 組",
 				"worldFirstJoinedAt": "世界首次加入",
 				"worldLastJoinedAt": "世界最近加入",
+				"servers": "出現的伺服器",
 				"uuid": "UUID",
 				"dataEntries": "資料入口",
 				"createdAt": "建立時間",
@@ -592,6 +622,41 @@
 				"allSessions": "全部登入記錄"
 			}
 		},
+		"historicalPlayers": {
+			"title": "歷史玩家",
+			"filters": {
+				"search": "搜尋歷史 ID、綁定使用者或伺服器",
+				"assigned": "已指派",
+				"unassigned": "未指派"
+			},
+			"fields": {
+				"player": "歷史 ID",
+				"user": "綁定使用者",
+				"servers": "來源伺服器",
+				"firstJoinedAt": "首次進入",
+				"lastSeenAt": "最近進入",
+				"actions": "操作",
+				"assignedState": "指派狀態"
+			},
+			"actions": {
+				"assign": "指派",
+				"unassign": "取消指派"
+			},
+			"empty": {
+				"unassigned": "未指派"
+			},
+			"assignModal": {
+				"title": "指派歷史檔案",
+				"description": "輸入要綁定的 Hydroline 使用者名稱。",
+				"username": "Hydroline 使用者名稱"
+			},
+			"notifications": {
+				"assigned": "歷史檔案已指派",
+				"assignFailed": "歷史檔案指派失敗",
+				"unassigned": "歷史檔案已取消指派",
+				"unassignFailed": "取消歷史檔案指派失敗"
+			}
+		},
 		"users": {
 			"title": "使用者",
 			"filters": {
@@ -601,7 +666,8 @@
 				"identity": "身份與狀態",
 				"profile": "個人資料",
 				"attachments": "頭像與封面",
-				"minecraftAccounts": "Minecraft 綁定管理",
+				"minecraftAccounts": "Minecraft 檔案管理",
+				"historicalMinecraftAccounts": "歷史檔案管理",
 				"security": "帳號安全",
 				"preferences": "偏好",
 				"social": "社交連結",
@@ -685,6 +751,22 @@
 					"primarySetFailed": "設定主帳號失敗",
 					"unbindSuccess": "Minecraft 帳號已解除綁定",
 					"unbindFailed": "解除綁定 Minecraft 帳號失敗"
+				}
+			},
+			"historicalMinecraft": {
+				"placeholders": {
+					"bindAccount": "搜尋並選擇歷史檔案"
+				},
+				"empty": {
+					"title": "還沒有綁定歷史檔案",
+					"description": "可以從未指派的歷史檔案中選擇並綁定到該使用者。",
+					"noServerData": "暫無來源伺服器資訊"
+				},
+				"notifications": {
+					"bindSuccess": "歷史檔案已綁定",
+					"bindFailed": "綁定歷史檔案失敗",
+					"unbindSuccess": "歷史檔案已解除綁定",
+					"unbindFailed": "解除綁定歷史檔案失敗"
 				}
 			},
 			"edit": {
@@ -865,6 +947,10 @@
 			"title": "伺服器接入設定",
 			"sections": {
 				"basic": "伺服器基礎資訊",
+				"mapConfig": "地圖設定",
+				"mapConfigDescription": "為目前 server instance 單獨設定地圖 tiles 能力與預設視角。",
+				"periods": "生命週期",
+				"periodsDescription": "手動維護該伺服器的開啟、關閉、存檔或活動時間段。",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -874,11 +960,32 @@
 				"serverId": "伺服器 ID",
 				"code": "代號",
 				"name": "名稱",
+				"nameZhCn": "簡體中文名",
+				"nameZhTw": "繁體中文名",
+				"nameEnUs": "英文名",
+				"nameJaJp": "日文名",
 				"sortOrder": "排序",
+				"kind": "伺服器類型",
+				"status": "伺服器狀態",
+				"dataSourceMode": "資料來源模式",
 				"mcHost": "MC Host",
 				"mcPort": "MC Port",
 				"description": "描述",
 				"enabled": "啟用該伺服器",
+				"mapEnabled": "啟用地圖設定",
+				"hasTiles": "已接入地圖 Tiles",
+				"tileBaseUrl": "Tiles Base URL",
+				"worldName": "世界名",
+				"mapName": "地圖名",
+				"tileExtension": "瓦片副檔名",
+				"defaultZoom": "預設縮放",
+				"defaultCenterX": "預設中心 X",
+				"defaultCenterZ": "預設中心 Z",
+				"periodKind": "時間段類型",
+				"periodSortOrder": "時間段排序",
+				"startedAt": "開始時間",
+				"endedAt": "結束時間",
+				"periodNote": "備註",
 				"bridgeId": "Bridge ID",
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
@@ -890,9 +997,38 @@
 				"keepSecret": "留空則保持不變"
 			},
 			"actions": {
+				"addPeriod": "新增時間段",
 				"cancel": "取消",
 				"save": "儲存設定",
 				"close": "關閉"
+			},
+			"periodLabel": "時間段 {index}",
+			"values": {
+				"serverKind": {
+					"main": "主線伺服器",
+					"archive": "存檔伺服器",
+					"event": "活動伺服器",
+					"test": "測試伺服器"
+				},
+				"serverStatus": {
+					"planned": "規劃中",
+					"live": "運行中",
+					"frozen": "凍結",
+					"archived": "已存檔",
+					"hidden": "隱藏"
+				},
+				"dataSourceMode": {
+					"portalBridge": "僅 PortalBridge",
+					"imported": "僅導入",
+					"mixed": "混合"
+				},
+				"periodKind": {
+					"live": "運行期",
+					"archive": "存檔期",
+					"event": "活動期",
+					"maintenance": "維護期",
+					"other": "其他"
+				}
 			}
 		},
 		"mysqlFields": {
@@ -908,8 +1044,10 @@
 			"serversLoadFailed": "讀取伺服器設定失敗",
 			"serverSaved": "伺服器設定已儲存",
 			"serverSavedDescription": "伺服器列表已重新整理。",
+			"serverDefaultSetFailed": "設定預設伺服器失敗",
 			"serverSaveFailed": "儲存設定失敗",
 			"serverSaveFailedDescription": "請檢查登入狀態與欄位。",
+			"serverReorderFailed": "更新伺服器排序失敗",
 			"copied": "已複製"
 		},
 		"achievements": {

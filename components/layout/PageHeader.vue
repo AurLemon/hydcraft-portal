@@ -381,6 +381,22 @@ onMounted(() => {
 									</UButton>
 
 									<UButton
+										:to="localePath('/me/history')"
+										color="neutral"
+										variant="ghost"
+										class="w-full justify-start gap-1.5 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+										@click="userMenuOpen = false"
+									>
+										<UIcon
+											name="i-lucide-archive"
+											class="h-4.5 w-4.5 shrink-0"
+										/>
+										<span class="leading-[normal] min-w-0 truncate">{{
+											t('header.userMenu.history')
+										}}</span>
+									</UButton>
+
+									<UButton
 										:to="localePath('/me/security')"
 										color="neutral"
 										variant="ghost"

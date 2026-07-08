@@ -18,6 +18,7 @@
 		"adminOverview": "概覽",
 		"adminServers": "伺服器",
 		"adminPlayers": "玩家",
+		"adminHistoricalPlayers": "歷史玩家",
 		"adminUsers": "使用者",
 		"adminUserEdit": "編輯使用者",
 		"adminPartners": "夥伴與鳴謝",
@@ -29,6 +30,7 @@
 		"resetPassword": "重設密碼",
 		"meProfile": "個人資料",
 		"meMinecraft": "Minecraft 档案",
+		"meHistory": "歷史檔案",
 		"meSecurity": "帳號安全",
 		"meConnections": "連接與授權",
 		"adminAchievements": "成就"
@@ -67,6 +69,7 @@
 			"open": "開啟使用者選單",
 			"profile": "個人資料",
 			"minecraftAccounts": "Minecraft 档案",
+			"history": "歷史檔案",
 			"security": "帳號安全",
 			"connections": "連接與授權",
 			"admin": "後台管理",

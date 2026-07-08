@@ -55,6 +55,7 @@ export type AdminUserSaveSection =
 	| 'avatar'
 	| 'cover'
 	| 'minecraft-bind'
+	| 'historical-minecraft-bind'
 	| 'preferences'
 	| 'social'
 	| 'achievements'

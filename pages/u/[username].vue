@@ -69,6 +69,32 @@
 						</div>
 					</section>
 
+					<section v-if="historicalAccounts.length" class="grid gap-3">
+						<div
+							class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+						>
+							<div class="flex items-center gap-2">
+								<div :class="profileSectionTitleClass">
+									{{ t('minecraftAccounts.history.profileSectionTitle') }}
+								</div>
+								<UBadge variant="soft" color="neutral">
+									{{
+										t('profile.public.minecraft.accountCount', {
+											count: historicalAccounts.length,
+										})
+									}}
+								</UBadge>
+							</div>
+						</div>
+						<div class="flex flex-col gap-4">
+							<MinecraftPublicAccountsContent
+								v-for="account in historicalAccounts"
+								:key="`history-${account.id}`"
+								:account="account"
+							/>
+						</div>
+					</section>
+
 					<section class="grid gap-3">
 						<div class="mx-1 flex items-center justify-between gap-3">
 							<div :class="profileSectionTitleClass">
@@ -668,6 +694,16 @@ const { data: minecraftAccountsData, pending: minecraftAccountsPending } =
 	)
 const minecraftAccounts = computed<MinecraftAccountForm[]>(
 	() => minecraftAccountsData.value?.accounts ?? [],
+)
+const { data: historicalMinecraftAccountsData } =
+	await useFetch<MinecraftAccountsResponse>(
+		() => `/api/public/users/${username.value}/historical-minecraft-accounts`,
+		{
+			default: () => ({ accounts: [] }),
+		},
+	)
+const historicalAccounts = computed<MinecraftAccountForm[]>(
+	() => historicalMinecraftAccountsData.value?.accounts ?? [],
 )
 
 // 最近活动事件流。

@@ -79,6 +79,8 @@
 		"servers": {
 			"title": "服务器",
 			"create": "新增服务器",
+			"setDefault": "默认服务器",
+			"defaultBadge": "默认",
 			"viewDetail": "查看详情",
 			"fields": {
 				"server": "服务器",
@@ -90,6 +92,11 @@
 			"empty": {
 				"title": "还没有服务器配置",
 				"description": "新增一个服务器后，再配置 PortalBridge。"
+			},
+			"defaultModal": {
+				"title": "设置默认服务器",
+				"description": "综合信息地图与相关默认选择会优先使用这个服务器。",
+				"placeholder": "搜索服务器"
 			},
 			"externalSync": {
 				"authMe": "AuthMe 同步状态",
@@ -306,6 +313,7 @@
 			"sections": {
 				"onlinePlayers": "在线人数",
 				"portalBridge": "PortalBridge",
+				"archiveStatus": "存档状态",
 				"serverInfo": "服务器信息",
 				"dataSources": "数据源",
 				"syncStatus": "同步状态",
@@ -321,6 +329,9 @@
 				"lastConnected": "最后连接",
 				"lastMessage": "最后消息",
 				"code": "代码",
+				"kind": "类型",
+				"status": "状态",
+				"dataSourceMode": "数据来源",
 				"address": "地址",
 				"sortOrder": "排序",
 				"createdAt": "创建时间",
@@ -328,6 +339,7 @@
 				"luckPermsDatabase": "LuckPerms 数据库",
 				"identityCount": "身份记录",
 				"observedPlayers": "观测到的在线玩家",
+				"totalPlayers": "总玩家数",
 				"openSessions": "在线会话",
 				"totalSessions": "总会话",
 				"playerName": "玩家名称",
@@ -430,6 +442,23 @@
 				"loadFailed": "读取状态失败",
 				"controlFailed": "控制连接失败",
 				"manualSyncFailed": "手动同步失败"
+			},
+			"archiveImport": {
+				"latestImport": "最近导入",
+				"notImported": "尚未导入",
+				"playersObserved": "扫描到 {count} 名玩家",
+				"importedAt": "导入时间：{time}",
+				"updatedPlayersLabel": "玩家更新",
+				"updatedPlayers": "更新 {count} 名玩家",
+				"accountsMatched": "吸收到正式档案 {count} 个",
+				"historicalAccountsLabel": "历史档案",
+				"historicalAccounts": "新增 {count} 个历史档案",
+				"noError": "无错误",
+				"statuses": {
+					"running": "导入中",
+					"success": "导入成功",
+					"failed": "导入失败"
+				}
 			}
 		},
 		"serverPlayers": {
@@ -554,6 +583,7 @@
 				"luckPermsPrimaryGroup": "LuckPerms 组",
 				"worldFirstJoinedAt": "世界首次加入",
 				"worldLastJoinedAt": "世界最近加入",
+				"servers": "出现的服务器",
 				"uuid": "UUID",
 				"dataEntries": "数据入口",
 				"createdAt": "创建时间",
@@ -582,6 +612,41 @@
 				"allSessions": "全部登录记录"
 			}
 		},
+		"historicalPlayers": {
+			"title": "历史玩家",
+			"filters": {
+				"search": "搜索历史 ID、绑定用户或服务器",
+				"assigned": "已指派",
+				"unassigned": "未指派"
+			},
+			"fields": {
+				"player": "历史 ID",
+				"user": "绑定用户",
+				"servers": "来源服务器",
+				"firstJoinedAt": "首次进入",
+				"lastSeenAt": "最近进入",
+				"actions": "操作",
+				"assignedState": "指派状态"
+			},
+			"actions": {
+				"assign": "指派",
+				"unassign": "取消指派"
+			},
+			"empty": {
+				"unassigned": "未指派"
+			},
+			"assignModal": {
+				"title": "指派历史档案",
+				"description": "输入要绑定的 Hydroline 用户名。",
+				"username": "Hydroline 用户名"
+			},
+			"notifications": {
+				"assigned": "历史档案已指派",
+				"assignFailed": "历史档案指派失败",
+				"unassigned": "历史档案已取消指派",
+				"unassignFailed": "取消历史档案指派失败"
+			}
+		},
 		"users": {
 			"title": "用户",
 			"filters": {
@@ -591,7 +656,8 @@
 				"identity": "身份与状态",
 				"profile": "个人资料",
 				"attachments": "头像与封面",
-				"minecraftAccounts": "Minecraft 绑定管理",
+				"minecraftAccounts": "Minecraft 档案管理",
+				"historicalMinecraftAccounts": "历史档案管理",
 				"security": "账号安全",
 				"preferences": "偏好",
 				"social": "社交链接",
@@ -675,6 +741,22 @@
 					"primarySetFailed": "设置主账号失败",
 					"unbindSuccess": "Minecraft 账号已解绑",
 					"unbindFailed": "解绑 Minecraft 账号失败"
+				}
+			},
+			"historicalMinecraft": {
+				"placeholders": {
+					"bindAccount": "搜索并选择历史档案"
+				},
+				"empty": {
+					"title": "还没有绑定历史档案",
+					"description": "可以从未指派的历史档案中选择并绑定到该用户。",
+					"noServerData": "暂无来源服务器信息"
+				},
+				"notifications": {
+					"bindSuccess": "历史档案已绑定",
+					"bindFailed": "绑定历史档案失败",
+					"unbindSuccess": "历史档案已解绑",
+					"unbindFailed": "解绑历史档案失败"
 				}
 			},
 			"edit": {
@@ -855,6 +937,10 @@
 			"title": "服务器接入配置",
 			"sections": {
 				"basic": "服务器基础信息",
+				"mapConfig": "地图配置",
+				"mapConfigDescription": "为当前 server instance 单独配置地图 tiles 能力与默认视角。",
+				"periods": "生命周期",
+				"periodsDescription": "人工维护该服务器的开启、关闭、存档或活动时间段。",
 				"portalBridge": "PortalBridge",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -864,11 +950,32 @@
 				"serverId": "服务器 ID",
 				"code": "代号",
 				"name": "名称",
+				"nameZhCn": "简体中文名",
+				"nameZhTw": "繁體中文名",
+				"nameEnUs": "英文名",
+				"nameJaJp": "日文名",
 				"sortOrder": "排序",
+				"kind": "服务器类型",
+				"status": "服务器状态",
+				"dataSourceMode": "数据来源模式",
 				"mcHost": "MC Host",
 				"mcPort": "MC Port",
 				"description": "描述",
 				"enabled": "启用该服务器",
+				"mapEnabled": "启用地图配置",
+				"hasTiles": "已接入地图 Tiles",
+				"tileBaseUrl": "Tiles Base URL",
+				"worldName": "世界名",
+				"mapName": "地图名",
+				"tileExtension": "瓦片扩展名",
+				"defaultZoom": "默认缩放",
+				"defaultCenterX": "默认中心 X",
+				"defaultCenterZ": "默认中心 Z",
+				"periodKind": "时间段类型",
+				"periodSortOrder": "时间段排序",
+				"startedAt": "开始时间",
+				"endedAt": "结束时间",
+				"periodNote": "备注",
 				"bridgeId": "Bridge ID",
 				"module": "Module",
 				"wsUrl": "WebSocket URL",
@@ -880,9 +987,38 @@
 				"keepSecret": "留空则保持不变"
 			},
 			"actions": {
+				"addPeriod": "新增时间段",
 				"cancel": "取消",
 				"save": "保存配置",
 				"close": "关闭"
+			},
+			"periodLabel": "时间段 {index}",
+			"values": {
+				"serverKind": {
+					"main": "主线服务器",
+					"archive": "存档服务器",
+					"event": "活动服务器",
+					"test": "测试服务器"
+				},
+				"serverStatus": {
+					"planned": "计划中",
+					"live": "运行中",
+					"frozen": "冻结",
+					"archived": "已存档",
+					"hidden": "隐藏"
+				},
+				"dataSourceMode": {
+					"portalBridge": "仅 PortalBridge",
+					"imported": "仅导入",
+					"mixed": "混合"
+				},
+				"periodKind": {
+					"live": "运行期",
+					"archive": "存档期",
+					"event": "活动期",
+					"maintenance": "维护期",
+					"other": "其他"
+				}
 			}
 		},
 		"mysqlFields": {
@@ -898,8 +1034,10 @@
 			"serversLoadFailed": "读取服务器配置失败",
 			"serverSaved": "服务器配置已保存",
 			"serverSavedDescription": "服务器列表已经刷新。",
+			"serverDefaultSetFailed": "设置默认服务器失败",
 			"serverSaveFailed": "保存配置失败",
 			"serverSaveFailedDescription": "请检查登录状态与字段。",
+			"serverReorderFailed": "更新服务器排序失败",
 			"copied": "已复制"
 		},
 		"achievements": {

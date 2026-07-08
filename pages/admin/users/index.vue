@@ -94,7 +94,7 @@
 					</UBadge>
 				</template>
 				<template #hydrolineId-cell="{ row }">
-					<span class="text-xs">{{ row.original.hydrolineId }}</span>
+					<span class="text-sm">{{ row.original.hydrolineId }}</span>
 				</template>
 				<template #createdAt-cell="{ row }">
 					{{ formatDate(row.original.joinedAt) }}

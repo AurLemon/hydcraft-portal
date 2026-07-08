@@ -6,6 +6,7 @@
 	"scripts": {
 		"build": "nuxt build",
 		"build:production-init-cli": "node scripts/build-production-init-cli.mjs",
+		"archive:import": "tsx scripts/archive-import.ts",
 		"dev": "nuxt dev",
 		"format": "prettier --write .",
 		"generate": "nuxt generate",
@@ -43,6 +44,7 @@
 		"cropperjs": "^1.6.2",
 		"dayjs": "^1.11.13",
 		"dotenv": "^17.4.2",
+		"h3": "^1.15.11",
 		"ip2region.js": "^3.1.8",
 		"leaflet": "^1.9.4",
 		"lunar-typescript": "^1.8.6",

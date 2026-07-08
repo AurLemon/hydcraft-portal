@@ -10,6 +10,10 @@ export default defineEventHandler(async (event) => {
 		},
 		include: {
 			portalBridge: true,
+			mapConfig: true,
+			periods: {
+				orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
+			},
 		},
 	})
 

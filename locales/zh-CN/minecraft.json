@@ -12,6 +12,9 @@
 		"badges": {
 			"primary": "主展示账号"
 		},
+		"kinds": {
+			"historical": "历史档案"
+		},
 		"fields": {
 			"noUuid": "暂无 UUID",
 			"notAvailable": "暂无数据",
@@ -51,6 +54,20 @@
 		"toolbar": {
 			"bindTip": "新建绑定",
 			"setPrimaryTip": "设置主档案"
+		},
+		"selector": {
+			"aggregate": "综合信息"
+		},
+		"history": {
+			"profileSectionTitle": "历史档案",
+			"tabs": {
+				"byPlayer": "按 ID 排序",
+				"byServer": "按服务器排列"
+			},
+			"serverCount": "{count} 个档案",
+			"emptyTitle": "还没有历史档案",
+			"emptyDescription": "只有未被 AuthMe 吸收的 archive 玩家才会出现在这里。",
+			"loadFailed": "历史档案加载失败"
 		},
 		"settings": {
 			"title": "管理当前账号",

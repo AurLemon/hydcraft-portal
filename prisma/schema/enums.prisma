@@ -91,6 +91,52 @@ enum MinecraftAccountSource {
   OTHER
 }
 
+enum MinecraftServerKind {
+  MAIN
+  ARCHIVE
+  EVENT
+  TEST
+}
+
+enum MinecraftServerStatus {
+  PLANNED
+  LIVE
+  FROZEN
+  ARCHIVED
+  HIDDEN
+}
+
+enum MinecraftServerDataSourceMode {
+  PORTAL_BRIDGE
+  IMPORTED
+  MIXED
+}
+
+enum MinecraftServerPeriodKind {
+  LIVE
+  ARCHIVE
+  EVENT
+  MAINTENANCE
+  OTHER
+}
+
+enum MinecraftAccountIdentityKind {
+  AUTHENTICATED
+  HISTORICAL
+}
+
+enum MinecraftAccountAssignmentMode {
+  IMPORTED_UNASSIGNED
+  AUTHME_VERIFIED
+  ADMIN_ASSIGNED_HISTORICAL
+}
+
+enum ArchiveImportRunStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
 enum MinecraftAccountBindingAction {
   VERIFICATION_PASSED
   BIND_CREATED
@@ -99,6 +145,8 @@ enum MinecraftAccountBindingAction {
   PRIMARY_SET
   UNBOUND
   TRANSFERRED
+  ADMIN_HISTORICAL_ASSIGNED
+  ADMIN_HISTORICAL_UNASSIGNED
 }
 
 enum AuthRegistrationTicketKind {

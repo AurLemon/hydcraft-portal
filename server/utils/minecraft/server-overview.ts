@@ -127,6 +127,10 @@ const computeMinecraftServerOverview = async (serverId: string) => {
 		},
 		include: {
 			portalBridge: true,
+			mapConfig: true,
+			periods: {
+				orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
+			},
 		},
 	})
 
@@ -150,6 +154,7 @@ const computeMinecraftServerOverview = async (serverId: string) => {
 		recentReceipts,
 		recentCommands,
 		syncTaskStates,
+		latestArchiveImportRun,
 	] = await Promise.all([
 		prisma.minecraftServerSnapshot.findMany({
 			where: {
@@ -245,6 +250,14 @@ const computeMinecraftServerOverview = async (serverId: string) => {
 				},
 			],
 		}),
+		prisma.archiveImportRun.findFirst({
+			where: {
+				minecraftServerId: server.id,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		}),
 	])
 
 	const playerHistory = statusSnapshots
@@ -327,5 +340,28 @@ const computeMinecraftServerOverview = async (serverId: string) => {
 			rowsChanged: state.rowsChanged,
 			rowsSkipped: state.rowsSkipped,
 		})),
+		archiveImport: {
+			latestRun: latestArchiveImportRun
+				? {
+						id: latestArchiveImportRun.id,
+						status: latestArchiveImportRun.status,
+						artifactPath: latestArchiveImportRun.artifactPath,
+						artifactHash: latestArchiveImportRun.artifactHash,
+						artifactServerId: latestArchiveImportRun.artifactServerId,
+						artifactServerName: latestArchiveImportRun.artifactServerName,
+						artifactVersion: latestArchiveImportRun.artifactVersion,
+						scannedAt: latestArchiveImportRun.scannedAt,
+						importedAt: latestArchiveImportRun.importedAt,
+						playersObserved: latestArchiveImportRun.playersObserved,
+						playersUpdated: latestArchiveImportRun.playersUpdated,
+						accountsMatched: latestArchiveImportRun.accountsMatched,
+						historicalAccountsCreated:
+							latestArchiveImportRun.historicalAccountsCreated,
+						errorMessage: latestArchiveImportRun.errorMessage,
+						createdAt: latestArchiveImportRun.createdAt,
+						updatedAt: latestArchiveImportRun.updatedAt,
+					}
+				: null,
+		},
 	}
 }

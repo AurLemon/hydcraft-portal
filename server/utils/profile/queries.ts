@@ -2,7 +2,10 @@ import { prisma } from '../db/prisma'
 import { createApiError, createBadRequestError } from '../errors'
 import { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
 import { readLuckPermsSnapshotBundle } from '../luckperms/snapshot'
-import { buildMinecraftAccountSummary } from '../minecraft/account-summary'
+import {
+	buildMinecraftAccountSummary,
+	minecraftAccountSummaryPlayerInclude,
+} from '../minecraft/account-summary'
 import { ensureUserProfileDefaults } from './defaults'
 import {
 	toEditableProfile,
@@ -169,6 +172,7 @@ export const getPublicMinecraftAccounts = async (
 		where: {
 			userId: user.id,
 			unlinkedAt: null,
+			identityKind: 'AUTHENTICATED',
 		},
 		include: {
 			authMeAccount: true,
@@ -204,11 +208,7 @@ export const getPublicMinecraftAccounts = async (
 				},
 			],
 		},
-		include: {
-			playerData: true,
-			statsSnapshot: true,
-			advancementsSnapshot: true,
-		},
+		include: minecraftAccountSummaryPlayerInclude,
 		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
 	})
 

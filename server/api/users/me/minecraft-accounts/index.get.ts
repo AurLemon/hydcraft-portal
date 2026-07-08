@@ -2,7 +2,10 @@ import { prisma } from '../../../../utils/db/prisma'
 import { createLuckPermsPrimaryGroupResolver } from '../../../../utils/luckperms/primary-group'
 import { readLuckPermsSnapshotBundle } from '../../../../utils/luckperms/snapshot'
 import { requireCurrentUser } from '../../../../utils/auth/session'
-import { buildMinecraftAccountSummary } from '../../../../utils/minecraft/account-summary'
+import {
+	buildMinecraftAccountSummary,
+	minecraftAccountSummaryPlayerInclude,
+} from '../../../../utils/minecraft/account-summary'
 
 export default defineEventHandler(async (event) => {
 	const currentUser = await requireCurrentUser(event)
@@ -10,6 +13,7 @@ export default defineEventHandler(async (event) => {
 		where: {
 			userId: currentUser.id,
 			unlinkedAt: null,
+			identityKind: 'AUTHENTICATED',
 		},
 		include: {
 			authMeAccount: true,
@@ -40,11 +44,7 @@ export default defineEventHandler(async (event) => {
 				},
 			],
 		},
-		include: {
-			playerData: true,
-			statsSnapshot: true,
-			advancementsSnapshot: true,
-		},
+		include: minecraftAccountSummaryPlayerInclude,
 		orderBy: [{ online: 'desc' }, { bridgeSyncedAt: 'desc' }],
 	})
 	const histories = await prisma.minecraftAccountBindingHistory.findMany({

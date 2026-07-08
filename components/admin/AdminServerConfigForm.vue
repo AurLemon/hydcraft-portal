@@ -19,11 +19,57 @@
 						<UInput v-model="form.name" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.nameZhCn') }}</span>
+						<UInput v-model="form.nameZhCn" class="w-full" required />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.nameZhTw') }}</span>
+						<UInput v-model="form.nameZhTw" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.nameEnUs') }}</span>
+						<UInput v-model="form.nameEnUs" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.nameJaJp') }}</span>
+						<UInput v-model="form.nameJaJp" class="w-full" />
+					</label>
+					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.sortOrder') }}</span>
 						<UInput
 							v-model.number="form.sortOrder"
 							class="w-full"
 							type="number"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.kind') }}</span>
+						<USelect
+							v-model="form.kind"
+							:items="serverKindItems"
+							value-key="value"
+							label-key="label"
+							class="w-full"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.status') }}</span>
+						<USelect
+							v-model="form.status"
+							:items="serverStatusItems"
+							value-key="value"
+							label-key="label"
+							class="w-full"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.dataSourceMode') }}</span>
+						<USelect
+							v-model="form.dataSourceMode"
+							:items="dataSourceModeItems"
+							value-key="value"
+							label-key="label"
+							class="w-full"
 						/>
 					</label>
 					<label :class="fieldClass">
@@ -47,6 +93,170 @@
 					</span>
 					<USwitch v-model="form.enabled" />
 				</div>
+
+				<section class="grid gap-4">
+					<div class="flex items-center justify-between gap-3">
+						<div>
+							<p class="text-sm font-semibold text-slate-900 dark:text-white">
+								{{ t('admin.serverConfig.sections.mapConfig') }}
+							</p>
+							<p class="text-xs text-slate-500 dark:text-slate-400">
+								{{ t('admin.serverConfig.sections.mapConfigDescription') }}
+							</p>
+						</div>
+						<div class="flex items-center gap-3">
+							<span class="text-xs text-slate-500 dark:text-slate-400">
+								{{ t('admin.serverConfig.fields.mapEnabled') }}
+							</span>
+							<USwitch v-model="form.mapConfig.enabled" />
+						</div>
+					</div>
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+						<div class="flex items-center justify-between gap-3 md:col-span-2">
+							<span :class="fieldClass">{{
+								t('admin.serverConfig.fields.hasTiles')
+							}}</span>
+							<USwitch v-model="form.mapConfig.hasTiles" />
+						</div>
+						<label :class="fieldClass" class="md:col-span-2">
+							<span>{{ t('admin.serverConfig.fields.tileBaseUrl') }}</span>
+							<UInput v-model="form.mapConfig.tileBaseUrl" class="w-full" />
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.worldName') }}</span>
+							<UInput v-model="form.mapConfig.worldName" class="w-full" />
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.mapName') }}</span>
+							<UInput v-model="form.mapConfig.mapName" class="w-full" />
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.tileExtension') }}</span>
+							<USelect
+								v-model="form.mapConfig.tileExtension"
+								:items="tileExtensionItems"
+								value-key="value"
+								label-key="label"
+								class="w-full"
+							/>
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.defaultZoom') }}</span>
+							<UInput
+								v-model.number="form.mapConfig.defaultZoom"
+								class="w-full"
+								type="number"
+								min="0"
+							/>
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.defaultCenterX') }}</span>
+							<UInput
+								v-model.number="form.mapConfig.defaultCenterX"
+								class="w-full"
+								type="number"
+							/>
+						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.defaultCenterZ') }}</span>
+							<UInput
+								v-model.number="form.mapConfig.defaultCenterZ"
+								class="w-full"
+								type="number"
+							/>
+						</label>
+					</div>
+				</section>
+
+				<section class="grid gap-4">
+					<div class="flex items-center justify-between gap-3">
+						<div>
+							<p class="text-sm font-semibold text-slate-900 dark:text-white">
+								{{ t('admin.serverConfig.sections.periods') }}
+							</p>
+							<p class="text-xs text-slate-500 dark:text-slate-400">
+								{{ t('admin.serverConfig.sections.periodsDescription') }}
+							</p>
+						</div>
+						<UButton
+							type="button"
+							size="xs"
+							color="neutral"
+							variant="soft"
+							icon="i-lucide-plus"
+							@click="addPeriod"
+						>
+							{{ t('admin.serverConfig.actions.addPeriod') }}
+						</UButton>
+					</div>
+					<div class="grid gap-4">
+						<div
+							v-for="(period, index) in form.periods"
+							:key="period.localId"
+							class="grid gap-4 rounded-lg border border-slate-200 p-4 dark:border-slate-800"
+						>
+							<div class="flex items-center justify-between gap-3">
+								<p class="text-sm font-medium text-slate-900 dark:text-white">
+									{{
+										t('admin.serverConfig.periodLabel', { index: index + 1 })
+									}}
+								</p>
+								<UButton
+									type="button"
+									size="xs"
+									color="error"
+									variant="ghost"
+									icon="i-lucide-trash-2"
+									@click="removePeriod(index)"
+								>
+									{{ t('common.delete') }}
+								</UButton>
+							</div>
+							<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+								<label :class="fieldClass">
+									<span>{{ t('admin.serverConfig.fields.periodKind') }}</span>
+									<USelect
+										v-model="period.kind"
+										:items="periodKindItems"
+										value-key="value"
+										label-key="label"
+										class="w-full"
+									/>
+								</label>
+								<label :class="fieldClass">
+									<span>{{
+										t('admin.serverConfig.fields.periodSortOrder')
+									}}</span>
+									<UInput
+										v-model.number="period.sortOrder"
+										class="w-full"
+										type="number"
+									/>
+								</label>
+								<label :class="fieldClass">
+									<span>{{ t('admin.serverConfig.fields.startedAt') }}</span>
+									<UInput
+										v-model="period.startedAt"
+										class="w-full"
+										type="datetime-local"
+									/>
+								</label>
+								<label :class="fieldClass">
+									<span>{{ t('admin.serverConfig.fields.endedAt') }}</span>
+									<UInput
+										v-model="period.endedAt"
+										class="w-full"
+										type="datetime-local"
+									/>
+								</label>
+								<label :class="fieldClass" class="md:col-span-2">
+									<span>{{ t('admin.serverConfig.fields.periodNote') }}</span>
+									<UTextarea v-model="period.note" :rows="2" class="w-full" />
+								</label>
+							</div>
+						</div>
+					</div>
+				</section>
 			</section>
 
 			<section v-if="visibleSections.portalBridge" class="grid gap-4">
@@ -189,14 +399,46 @@ interface PortalBridgeForm {
 	coreSyncIntervalMinutes: number
 }
 
+interface ServerMapConfigForm {
+	enabled: boolean
+	hasTiles: boolean
+	tileBaseUrl: string
+	worldName: string
+	mapName: string
+	tileExtension: 'jpg' | 'png'
+	defaultCenterX: number
+	defaultCenterZ: number
+	defaultZoom: number
+}
+
+interface ServerPeriodForm {
+	id?: string
+	localId: string
+	kind: string
+	startedAt: string
+	endedAt: string
+	note: string
+	sortOrder: number
+}
+
 interface ServerForm {
 	serverId: string
 	code: string
 	name: string
+	nameZhCn: string
+	nameZhTw: string
+	nameEnUs: string
+	nameJaJp: string
 	host: string
 	port: number
 	enabled: boolean
+	kind: string
+	status: string
+	dataSourceMode: string
+	isDefault: boolean
 	sortOrder: number
+	mapConfig: ServerMapConfigForm
+	periods: ServerPeriodForm[]
 	portalBridge: PortalBridgeForm
 	authMe: MysqlForm
 	luckPerms: MysqlForm
@@ -221,6 +463,7 @@ const { t } = useI18n()
 const { notifyError } = useAdminToast()
 const saving = ref(false)
 const originalServerId = ref('')
+let periodCounter = 0
 const submitMode = computed(() => (props.server ? 'edit' : 'create'))
 const formMode = computed(() => props.mode)
 const visibleSections = computed(() => ({
@@ -233,14 +476,119 @@ const visibleSections = computed(() => ({
 const fieldClass =
 	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200'
 
+const serverKindItems = computed(() => [
+	{ label: t('admin.serverConfig.values.serverKind.main'), value: 'MAIN' },
+	{
+		label: t('admin.serverConfig.values.serverKind.archive'),
+		value: 'ARCHIVE',
+	},
+	{ label: t('admin.serverConfig.values.serverKind.event'), value: 'EVENT' },
+	{ label: t('admin.serverConfig.values.serverKind.test'), value: 'TEST' },
+])
+const serverStatusItems = computed(() => [
+	{
+		label: t('admin.serverConfig.values.serverStatus.planned'),
+		value: 'PLANNED',
+	},
+	{ label: t('admin.serverConfig.values.serverStatus.live'), value: 'LIVE' },
+	{
+		label: t('admin.serverConfig.values.serverStatus.frozen'),
+		value: 'FROZEN',
+	},
+	{
+		label: t('admin.serverConfig.values.serverStatus.archived'),
+		value: 'ARCHIVED',
+	},
+	{
+		label: t('admin.serverConfig.values.serverStatus.hidden'),
+		value: 'HIDDEN',
+	},
+])
+const dataSourceModeItems = computed(() => [
+	{
+		label: t('admin.serverConfig.values.dataSourceMode.portalBridge'),
+		value: 'PORTAL_BRIDGE',
+	},
+	{
+		label: t('admin.serverConfig.values.dataSourceMode.imported'),
+		value: 'IMPORTED',
+	},
+	{
+		label: t('admin.serverConfig.values.dataSourceMode.mixed'),
+		value: 'MIXED',
+	},
+])
+const tileExtensionItems = computed(() => [
+	{ label: 'JPG', value: 'jpg' },
+	{ label: 'PNG', value: 'png' },
+])
+const periodKindItems = computed(() => [
+	{ label: t('admin.serverConfig.values.periodKind.live'), value: 'LIVE' },
+	{
+		label: t('admin.serverConfig.values.periodKind.archive'),
+		value: 'ARCHIVE',
+	},
+	{ label: t('admin.serverConfig.values.periodKind.event'), value: 'EVENT' },
+	{
+		label: t('admin.serverConfig.values.periodKind.maintenance'),
+		value: 'MAINTENANCE',
+	},
+	{ label: t('admin.serverConfig.values.periodKind.other'), value: 'OTHER' },
+])
+
+const toDatetimeLocal = (value: string | null | undefined): string => {
+	if (!value) {
+		return ''
+	}
+
+	const date = new Date(value)
+	return Number.isNaN(date.getTime())
+		? ''
+		: new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+				.toISOString()
+				.slice(0, 16)
+}
+
+const fromDatetimeLocal = (value: string): string | null =>
+	value ? new Date(value).toISOString() : null
+
+const createPeriodForm = (index = 0): ServerPeriodForm => ({
+	localId: `period-${periodCounter++}`,
+	kind: 'LIVE',
+	startedAt: '',
+	endedAt: '',
+	note: '',
+	sortOrder: index,
+})
+
 const createEmptyForm = (): ServerForm => ({
 	serverId: '',
 	code: '',
 	name: '',
+	nameZhCn: '',
+	nameZhTw: '',
+	nameEnUs: '',
+	nameJaJp: '',
 	host: '',
 	port: 25565,
 	enabled: true,
+	kind: 'MAIN',
+	status: 'LIVE',
+	dataSourceMode: 'PORTAL_BRIDGE',
+	isDefault: false,
 	sortOrder: 0,
+	mapConfig: {
+		enabled: false,
+		hasTiles: false,
+		tileBaseUrl: '',
+		worldName: 'world',
+		mapName: 'flat',
+		tileExtension: 'jpg',
+		defaultCenterX: 811,
+		defaultCenterZ: 2933,
+		defaultZoom: 0,
+	},
+	periods: [],
 	portalBridge: {
 		bridgeId: 'portalbridge-main',
 		module: 'portalbridge-core',
@@ -284,10 +632,39 @@ const resetForm = (): void => {
 				serverId: source.serverId,
 				code: source.code,
 				name: source.name,
+				nameZhCn: source.nameZhCn ?? source.name,
+				nameZhTw: source.nameZhTw ?? '',
+				nameEnUs: source.nameEnUs ?? '',
+				nameJaJp: source.nameJaJp ?? '',
 				host: source.host,
 				port: source.port,
 				enabled: source.enabled,
+				kind: source.kind,
+				status: source.status,
+				dataSourceMode: source.dataSourceMode,
+				isDefault: source.isDefault,
 				sortOrder: source.sortOrder,
+				mapConfig: {
+					enabled: source.mapConfig?.enabled ?? false,
+					hasTiles: source.mapConfig?.hasTiles ?? false,
+					tileBaseUrl: source.mapConfig?.tileBaseUrl ?? '',
+					worldName: source.mapConfig?.worldName ?? 'world',
+					mapName: source.mapConfig?.mapName ?? 'flat',
+					tileExtension:
+						source.mapConfig?.tileExtension === 'png' ? 'png' : 'jpg',
+					defaultCenterX: source.mapConfig?.defaultCenterX ?? 811,
+					defaultCenterZ: source.mapConfig?.defaultCenterZ ?? 2933,
+					defaultZoom: source.mapConfig?.defaultZoom ?? 0,
+				},
+				periods: source.periods.map((period, index) => ({
+					id: period.id,
+					localId: `period-${periodCounter++}`,
+					kind: period.kind,
+					startedAt: toDatetimeLocal(period.startedAt),
+					endedAt: toDatetimeLocal(period.endedAt),
+					note: period.note ?? '',
+					sortOrder: period.sortOrder ?? index,
+				})),
 				portalBridge: {
 					bridgeId: source.portalBridge?.bridgeId ?? '',
 					module: source.portalBridge?.module ?? 'portalbridge-core',
@@ -334,10 +711,39 @@ const buildPayload = () => ({
 				serverId: form.serverId,
 				code: form.code,
 				name: form.name,
+				nameZhCn: form.nameZhCn,
+				nameZhTw: form.nameZhTw || null,
+				nameEnUs: form.nameEnUs || null,
+				nameJaJp: form.nameJaJp || null,
 				host: form.host,
 				port: form.port,
 				enabled: form.enabled,
+				kind: form.kind,
+				status: form.status,
+				dataSourceMode: form.dataSourceMode,
+				isDefault: form.isDefault,
 				sortOrder: form.sortOrder,
+				mapConfig: {
+					enabled: form.mapConfig.enabled,
+					hasTiles: form.mapConfig.hasTiles,
+					tileBaseUrl: form.mapConfig.tileBaseUrl || null,
+					worldName: form.mapConfig.worldName,
+					mapName: form.mapConfig.mapName,
+					tileExtension: form.mapConfig.tileExtension,
+					defaultCenterX: form.mapConfig.defaultCenterX,
+					defaultCenterZ: form.mapConfig.defaultCenterZ,
+					defaultZoom: form.mapConfig.defaultZoom,
+				},
+				periods: form.periods
+					.map((period) => ({
+						id: period.id,
+						kind: period.kind,
+						startedAt: fromDatetimeLocal(period.startedAt),
+						endedAt: fromDatetimeLocal(period.endedAt),
+						note: period.note || null,
+						sortOrder: period.sortOrder,
+					}))
+					.filter((period) => Boolean(period.startedAt)),
 			}
 		: {}),
 	...(visibleSections.value.portalBridge
@@ -359,6 +765,14 @@ const buildPayload = () => ({
 				}
 			: {}),
 })
+
+const addPeriod = (): void => {
+	form.periods.push(createPeriodForm(form.periods.length))
+}
+
+const removePeriod = (index: number): void => {
+	form.periods.splice(index, 1)
+}
 
 const submit = async (): Promise<void> => {
 	saving.value = true

@@ -40,6 +40,7 @@
 					:accounts="accounts"
 					:selected-account="selectedAccount"
 					:saving-id="savingId"
+					:require-map-for-selector="true"
 					@bind="bindOpen = true"
 				/>
 			</template>

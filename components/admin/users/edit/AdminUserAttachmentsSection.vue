@@ -6,20 +6,17 @@
 			</div>
 		</div>
 		<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
-			<div class="grid gap-2.5 text-sm">
-				<span class="text-slate-500 dark:text-slate-400">
-					{{ t('admin.users.fields.avatarUrl') }}
-				</span>
-				<div :class="adminMediaFrameClass">
+			<div class="flex flex-col items-center gap-3 text-sm">
+				<div :class="avatarFrameClass">
 					<USkeleton
 						v-if="avatarPreviewUrl && !avatarPreviewReady"
-						class="absolute inset-0"
+						class="absolute inset-0 rounded-full"
 					/>
 					<img
 						v-if="avatarPreviewUrl && !avatarPreviewFailed"
 						:src="avatarPreviewUrl"
 						:alt="user.displayName || user.username"
-						class="h-full w-full object-cover transition-opacity duration-200"
+						class="h-full w-full rounded-full object-cover transition-opacity duration-200"
 						:class="avatarPreviewReady ? 'opacity-100' : 'opacity-0'"
 						loading="lazy"
 						decoding="async"
@@ -31,12 +28,13 @@
 						<span>{{ t('admin.users.media.avatarEmpty') }}</span>
 					</div>
 				</div>
-				<div class="flex flex-wrap gap-2">
+				<div class="flex flex-row flex-wrap items-center justify-center gap-2">
 					<AttachmentUploadButton
 						purpose="user-avatar"
 						owner-type="user"
 						:owner-id="user.id"
 						preview-shape="circle"
+						variant="link"
 						icon="i-lucide-upload"
 						@uploaded="$emit('avatar-uploaded', $event)"
 					>
@@ -46,7 +44,7 @@
 						type="button"
 						size="sm"
 						color="neutral"
-						variant="soft"
+						variant="link"
 						icon="i-lucide-rotate-ccw"
 						:loading="avatarUploading"
 						@click="$emit('reset-avatar')"
@@ -55,11 +53,8 @@
 					</UButton>
 				</div>
 			</div>
-			<div class="grid gap-2.5 text-sm">
-				<span class="text-slate-500 dark:text-slate-400">
-					{{ t('admin.users.fields.coverUrl') }}
-				</span>
-				<div :class="adminMediaFrameClass">
+			<div class="flex flex-col items-center gap-3 text-sm">
+				<div :class="coverFrameClass">
 					<USkeleton
 						v-if="coverPreviewUrl && !coverPreviewReady"
 						class="absolute inset-0"
@@ -80,12 +75,13 @@
 						<span>{{ t('admin.users.media.coverEmpty') }}</span>
 					</div>
 				</div>
-				<div class="flex flex-wrap gap-2">
+				<div class="flex flex-row flex-wrap items-center justify-center gap-2">
 					<AttachmentUploadButton
 						purpose="user-cover"
 						owner-type="user"
 						:owner-id="user.id"
 						preview-shape="cover"
+						variant="link"
 						icon="i-lucide-upload"
 						@uploaded="$emit('cover-uploaded', $event)"
 					>
@@ -95,7 +91,7 @@
 						type="button"
 						size="sm"
 						color="neutral"
-						variant="soft"
+						variant="link"
 						icon="i-lucide-rotate-ccw"
 						:loading="coverUploading"
 						@click="$emit('reset-cover')"
@@ -103,14 +99,6 @@
 						{{ t('admin.users.actions.resetCover') }}
 					</UButton>
 				</div>
-			</div>
-			<div :class="[adminReadonlyFieldClass, 'md:col-span-2']">
-				<span>{{ t('admin.users.fields.avatarAttachmentId') }}</span>
-				<strong>{{ user.avatarAttachmentId || '-' }}</strong>
-			</div>
-			<div :class="[adminReadonlyFieldClass, 'md:col-span-2']">
-				<span>{{ t('admin.users.fields.coverAttachmentId') }}</span>
-				<strong>{{ user.coverAttachmentId || '-' }}</strong>
 			</div>
 		</div>
 	</section>
@@ -126,7 +114,6 @@ import {
 import {
 	adminMediaEmptyClass,
 	adminMediaFrameClass,
-	adminReadonlyFieldClass,
 } from '~/utils/admin/users/edit'
 
 interface AdminUserAttachmentsSectionProps {
@@ -151,6 +138,23 @@ const coverPreviewFailed = ref(false)
 
 const avatarPreviewUrl = computed(() => props.user.avatarUrl || '')
 const coverPreviewUrl = computed(() => props.user.coverUrl || '')
+const hasAvatarPreview = computed(
+	() => Boolean(avatarPreviewUrl.value) && !avatarPreviewFailed.value,
+)
+const hasCoverPreview = computed(
+	() => Boolean(coverPreviewUrl.value) && !coverPreviewFailed.value,
+)
+const avatarFrameClass = computed(() => [
+	adminMediaFrameClass,
+	'!size-36 !rounded-full',
+	hasAvatarPreview.value &&
+		'border-transparent bg-transparent dark:border-transparent dark:bg-transparent',
+])
+const coverFrameClass = computed(() => [
+	adminMediaFrameClass,
+	hasCoverPreview.value &&
+		'border-transparent bg-transparent dark:border-transparent dark:bg-transparent',
+])
 
 const markAvatarPreviewFailed = (): void => {
 	avatarPreviewReady.value = true

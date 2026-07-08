@@ -5,6 +5,9 @@ export default defineEventHandler(async () => {
 	const servers = await prisma.minecraftServer.findMany({
 		orderBy: [
 			{
+				isDefault: 'desc',
+			},
+			{
 				sortOrder: 'asc',
 			},
 			{
@@ -13,6 +16,10 @@ export default defineEventHandler(async () => {
 		],
 		include: {
 			portalBridge: true,
+			mapConfig: true,
+			periods: {
+				orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
+			},
 		},
 	})
 

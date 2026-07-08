@@ -22,6 +22,32 @@ export interface PortalBridgeSummary {
 	hasSecret: boolean
 }
 
+export interface MinecraftServerPeriodSummary {
+	id: string
+	kind: string
+	startedAt: string
+	endedAt: string | null
+	note: string | null
+	sortOrder: number
+	createdAt: string
+	updatedAt: string
+}
+
+export interface MinecraftServerMapConfigSummary {
+	id: string
+	enabled: boolean
+	hasTiles: boolean
+	tileBaseUrl: string | null
+	worldName: string
+	mapName: string
+	tileExtension: string
+	defaultCenterX: number
+	defaultCenterZ: number
+	defaultZoom: number
+	createdAt: string
+	updatedAt: string
+}
+
 export interface MysqlSourceSummary {
 	id: string
 	host: string
@@ -40,13 +66,23 @@ export interface MinecraftServerSummary {
 	serverId: string
 	code: string
 	name: string
+	nameZhCn: string | null
+	nameZhTw: string | null
+	nameEnUs: string | null
+	nameJaJp: string | null
 	host: string
 	port: number
 	enabled: boolean
+	kind: string
+	status: string
+	dataSourceMode: string
+	isDefault: boolean
 	sortOrder: number
 	createdAt: string
 	updatedAt: string
 	portalBridge: PortalBridgeSummary | null
+	mapConfig: MinecraftServerMapConfigSummary | null
+	periods: MinecraftServerPeriodSummary[]
 	authMe: MysqlSourceSummary | null
 	luckPerms: MysqlSourceSummary | null
 }
@@ -172,6 +208,25 @@ export interface ExternalSyncTaskStateSummary {
 	rowsMatched: number
 	rowsChanged: number
 	rowsSkipped: number
+}
+
+export interface ArchiveImportRunSummary {
+	id: string
+	status: string
+	artifactPath: string
+	artifactHash: string | null
+	artifactServerId: string | null
+	artifactServerName: string | null
+	artifactVersion: string | null
+	scannedAt: string | null
+	importedAt: string | null
+	playersObserved: number
+	playersUpdated: number
+	accountsMatched: number
+	historicalAccountsCreated: number
+	errorMessage: string | null
+	createdAt: string
+	updatedAt: string
 }
 
 export interface MinecraftServerPlayerInfo {
@@ -353,6 +408,7 @@ export interface IpLocationSummary {
 
 export interface AdminMinecraftAccountServerLink {
 	serverId: string
+	serverName: string | null
 	uuid: string
 	username: string | null
 	hasStats: boolean
@@ -403,6 +459,9 @@ export interface MinecraftServerOverviewResponse {
 		recentCommands: PortalBridgeCommandSummary[]
 	}
 	syncTaskStates: ExternalSyncTaskStateSummary[]
+	archiveImport: {
+		latestRun: ArchiveImportRunSummary | null
+	}
 }
 
 export interface PortalBridgeInspectResponse {
@@ -468,6 +527,20 @@ export interface AdminUser {
 		sortOrder: number
 	}>
 	minecraftAccounts: MinecraftAccountSummary[]
+	historicalMinecraftAccounts: MinecraftAccountSummary[]
+}
+
+export interface AdminMinecraftAccountCandidate {
+	id: string
+	value: string
+	label: string
+	description: string
+	username: string
+	uuid: string | null
+}
+
+export interface AdminMinecraftAccountCandidatesResponse {
+	items: AdminMinecraftAccountCandidate[]
 }
 
 export interface AdminUserSecurityOverview {

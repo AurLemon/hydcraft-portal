@@ -23,37 +23,61 @@
 					/>
 				</template>
 				<template v-else>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{ t('admin.users.security.fields.accountStatus') }}</span>
-						<strong>{{ userStatusLabel }}</strong>
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
+							t('admin.users.security.fields.accountStatus')
+						}}</span>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ userStatusLabel }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{ t('admin.users.security.fields.currentRole') }}</span>
-						<strong>{{ roleLabel }}</strong>
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
+							t('admin.users.security.fields.currentRole')
+						}}</span>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ roleLabel }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{ t('admin.users.security.fields.credentialType') }}</span>
-						<strong>{{ credentialTypeLabel }}</strong>
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
+							t('admin.users.security.fields.credentialType')
+						}}</span>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ credentialTypeLabel }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{ t('admin.users.security.fields.primaryEmail') }}</span>
-						<strong>{{ primaryEmailText }}</strong>
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
+							t('admin.users.security.fields.primaryEmail')
+						}}</span>
+						<p class="break-all text-sm text-slate-700 dark:text-slate-200">
+							{{ primaryEmailText }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{ t('admin.users.security.fields.lastLogin') }}</span>
-						<strong>{{ lastLoginText }}</strong>
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
+							t('admin.users.security.fields.lastLogin')
+						}}</span>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ lastLoginText }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
 							t('admin.users.security.fields.activeSessionCount')
 						}}</span>
-						<strong>{{ String(security.overview.activeSessionCount) }}</strong>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ String(security.overview.activeSessionCount) }}
+						</p>
 					</div>
-					<div :class="adminReadonlyFieldClass">
-						<span>{{
+					<div class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300">
+						<span class="text-slate-500 dark:text-slate-400">{{
 							t('admin.users.security.fields.recentSecurityEvents')
 						}}</span>
-						<strong>{{ String(security.overview.securityEventCount) }}</strong>
+						<p class="text-sm text-slate-700 dark:text-slate-200">
+							{{ String(security.overview.securityEventCount) }}
+						</p>
 					</div>
 				</template>
 			</div>
@@ -113,41 +137,65 @@
 							</UButton>
 						</div>
 						<div class="grid gap-3 md:grid-cols-2">
-							<div :class="adminReadonlyFieldClass">
-								<span>{{
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
 									t('admin.users.security.fields.providerAccountId')
 								}}</span>
-								<strong>{{ connection.providerAccountId }}</strong>
+								<p class="break-all text-sm text-slate-700 dark:text-slate-200">
+									{{ connection.providerAccountId }}
+								</p>
 							</div>
-							<div :class="adminReadonlyFieldClass">
-								<span>{{
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
 									t('admin.users.security.fields.providerUsername')
 								}}</span>
-								<strong>{{ connection.providerUsername || emptyText }}</strong>
+								<p class="break-all text-sm text-slate-700 dark:text-slate-200">
+									{{ connection.providerUsername || emptyText }}
+								</p>
 							</div>
-							<div :class="adminReadonlyFieldClass">
-								<span>{{
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
 									t('admin.users.security.fields.providerEmail')
 								}}</span>
-								<strong>{{ connection.providerEmail || emptyText }}</strong>
+								<p class="break-all text-sm text-slate-700 dark:text-slate-200">
+									{{ connection.providerEmail || emptyText }}
+								</p>
 							</div>
-							<div :class="adminReadonlyFieldClass">
-								<span>{{ t('admin.users.security.fields.connectedAt') }}</span>
-								<strong>{{ formatDateTime(connection.connectedAt) }}</strong>
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
+									t('admin.users.security.fields.connectedAt')
+								}}</span>
+								<p class="text-sm text-slate-700 dark:text-slate-200">
+									{{ formatDateTime(connection.connectedAt) }}
+								</p>
 							</div>
-							<div :class="adminReadonlyFieldClass">
-								<span>{{ t('admin.users.security.fields.lastUsedAt') }}</span>
-								<strong>{{
-									formatNullableDateTime(connection.lastUsedAt)
-								}}</strong>
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
+									t('admin.users.security.fields.lastUsedAt')
+								}}</span>
+								<p class="text-sm text-slate-700 dark:text-slate-200">
+									{{ formatNullableDateTime(connection.lastUsedAt) }}
+								</p>
 							</div>
-							<div :class="adminReadonlyFieldClass">
-								<span>{{
+							<div
+								class="grid gap-1.5 text-sm text-slate-600 dark:text-slate-300"
+							>
+								<span class="text-slate-500 dark:text-slate-400">{{
 									t('admin.users.security.fields.disconnectedAt')
 								}}</span>
-								<strong>{{
-									formatNullableDateTime(connection.disconnectedAt)
-								}}</strong>
+								<p class="text-sm text-slate-700 dark:text-slate-200">
+									{{ formatNullableDateTime(connection.disconnectedAt) }}
+								</p>
 							</div>
 						</div>
 					</div>

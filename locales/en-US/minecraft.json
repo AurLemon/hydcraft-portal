@@ -12,6 +12,9 @@
 		"badges": {
 			"primary": "Primary display account"
 		},
+		"kinds": {
+			"historical": "Historical"
+		},
 		"fields": {
 			"noUuid": "UUID unavailable",
 			"notAvailable": "No data",
@@ -51,6 +54,20 @@
 		"toolbar": {
 			"bindTip": "Add binding",
 			"setPrimaryTip": "Set primary"
+		},
+		"selector": {
+			"aggregate": "Summary"
+		},
+		"history": {
+			"profileSectionTitle": "Historical Archives",
+			"tabs": {
+				"byPlayer": "Sort by ID",
+				"byServer": "Group by server"
+			},
+			"serverCount": "{count} archive record(s)",
+			"emptyTitle": "No historical archives yet",
+			"emptyDescription": "Only archive players that were not absorbed by AuthMe will appear here.",
+			"loadFailed": "Failed to load historical archives"
 		},
 		"settings": {
 			"title": "Manage current account",

@@ -4,6 +4,7 @@ import { createApiError } from '../../../utils/errors'
 import {
 	buildMinecraftAccountSummary,
 	buildUnboundPlayerSummary,
+	minecraftAccountSummaryPlayerInclude,
 } from '../../../utils/minecraft/account-summary'
 import { createLuckPermsPrimaryGroupResolver } from '../../../utils/luckperms/primary-group'
 import { readLuckPermsSnapshotBundle } from '../../../utils/luckperms/snapshot'
@@ -11,11 +12,7 @@ import { toPrivacySummary } from '../../../utils/profile/mapper'
 import { findUserProfileById } from '../../../utils/profile/repository'
 import { normalizeUsernameForComparison } from '../../../utils/profile/validation'
 
-const PLAYER_INCLUDE = {
-	playerData: true,
-	statsSnapshot: true,
-	advancementsSnapshot: true,
-} as const
+const PLAYER_INCLUDE = minecraftAccountSummaryPlayerInclude
 
 export default defineEventHandler(async (event) => {
 	const mcid = getRouterParam(event, 'mcid') ?? ''

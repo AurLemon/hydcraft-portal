@@ -97,6 +97,11 @@ export const headerMenuGroups: HeaderMenuGroup[] = [
 				labelKey: 'routes.meMinecraft',
 				to: '/me/minecraft',
 			},
+			{
+				key: 'history',
+				labelKey: 'routes.meHistory',
+				to: '/me/history',
+			},
 			{ key: 'security', labelKey: 'routes.meSecurity', to: '/me/security' },
 			{
 				key: 'connections',
@@ -124,6 +129,11 @@ export const headerMenuGroups: HeaderMenuGroup[] = [
 				key: 'players',
 				labelKey: 'routes.adminPlayers',
 				to: '/admin/players',
+			},
+			{
+				key: 'historical-players',
+				labelKey: 'routes.adminHistoricalPlayers',
+				to: '/admin/historical-players',
 			},
 			{ key: 'users', labelKey: 'routes.adminUsers', to: '/admin/users' },
 			{
@@ -168,6 +178,7 @@ export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/admin/overview': 'routes.adminOverview',
 	'/admin/servers': 'routes.adminServers',
 	'/admin/players': 'routes.adminPlayers',
+	'/admin/historical-players': 'routes.adminHistoricalPlayers',
 	'/admin/users': 'routes.adminUsers',
 	'/admin/partners': 'routes.adminPartners',
 	'/admin/links': 'routes.adminLinks',
@@ -175,6 +186,7 @@ export const headerMenuFallbackLabelKeys: Record<string, string> = {
 	'/admin/attachments': 'routes.adminAttachments',
 	'/me/profile': 'routes.meProfile',
 	'/me/minecraft': 'routes.meMinecraft',
+	'/me/history': 'routes.meHistory',
 	'/me/security': 'routes.meSecurity',
 	'/me/connections': 'routes.meConnections',
 	'/login': 'routes.login',

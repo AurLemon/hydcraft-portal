@@ -67,30 +67,24 @@
 							image-class="size-10 object-cover"
 							skeleton-class="rounded-md"
 						/>
-						<div class="min-w-0">
-							<p class="truncate font-medium text-slate-900 dark:text-white">
-								{{ row.original.username }}
-							</p>
-							<p
-								v-if="getAccountUuid(row.original)"
-								class="flex min-w-0 items-center gap-1 text-xs text-slate-500"
-							>
-								<span class="truncate">{{ getAccountUuid(row.original) }}</span>
-								<UTooltip
-									v-if="getAccountUuids(row.original).length > 1"
-									:text="getAccountUuidTooltip(row.original)"
-								>
-									<UIcon
-										name="i-lucide-ellipsis"
-										class="size-3.5 shrink-0 text-slate-400"
-									/>
-								</UTooltip>
-							</p>
-						</div>
+						<NuxtLink
+							:to="
+								localePath(
+									`/players/${row.original.normalizedUsername || row.original.username}`,
+								)
+							"
+							class="min-w-0 truncate font-medium text-slate-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
+						>
+							{{ row.original.username }}
+						</NuxtLink>
 					</div>
 				</template>
 				<template #user-cell="{ row }">
-					<div v-if="row.original.user" class="flex min-w-0 items-center gap-2">
+					<NuxtLink
+						v-if="row.original.user"
+						:to="localePath(`/u/${row.original.user.username}`)"
+						class="flex min-w-0 items-center gap-2"
+					>
 						<UAvatar
 							:src="row.original.user.avatarUrl || undefined"
 							:alt="row.original.user.displayName || row.original.user.username"
@@ -108,7 +102,7 @@
 								@{{ row.original.user.username }}
 							</span>
 						</span>
-					</div>
+					</NuxtLink>
 					<span v-else class="text-sm text-slate-500">{{
 						t('admin.players.empty.notLinked')
 					}}</span>
@@ -158,6 +152,27 @@
 				</template>
 				<template #worldLastJoinedAt-cell="{ row }">
 					{{ formatDate(row.original.worldJoin.lastJoinedAt) }}
+				</template>
+				<template #servers-cell="{ row }">
+					<div
+						v-if="getServerRefs(row.original).length"
+						class="flex flex-nowrap gap-1 whitespace-nowrap"
+					>
+						<UBadge
+							v-for="server in getServerRefs(row.original)"
+							:key="server.serverId"
+							color="neutral"
+							variant="soft"
+							as-child
+						>
+							<NuxtLink :to="localePath(`/admin/servers/${server.serverId}`)">
+								{{ server.name }}
+							</NuxtLink>
+						</UBadge>
+					</div>
+					<span v-else class="text-sm text-slate-500">
+						{{ t('admin.players.empty.unknown') }}
+					</span>
 				</template>
 				<template #dataEntries-cell="{ row }">
 					<div class="inline-flex flex-nowrap gap-1 whitespace-nowrap">
@@ -321,6 +336,10 @@ const columns = [
 		header: tableHeader(t('admin.players.fields.worldLastJoinedAt')),
 	},
 	{
+		accessorKey: 'servers',
+		header: tableHeader(t('admin.players.fields.servers')),
+	},
+	{
 		accessorKey: 'dataEntries',
 		header: tableHeader(t('admin.players.fields.dataEntries')),
 	},
@@ -342,6 +361,18 @@ const sortFieldItems = [
 	{
 		label: t('admin.players.fields.authMeSyncedAt'),
 		value: 'authMeSyncedAt',
+	},
+	{
+		label: t('admin.players.fields.luckPermsPrimaryGroup'),
+		value: 'luckPermsPrimaryGroup',
+	},
+	{
+		label: t('admin.players.fields.worldFirstJoinedAt'),
+		value: 'worldFirstJoinedAt',
+	},
+	{
+		label: t('admin.players.fields.worldLastJoinedAt'),
+		value: 'worldLastJoinedAt',
 	},
 	{ label: t('admin.players.fields.player'), value: 'username' },
 	{ label: t('admin.players.fields.updatedAt'), value: 'updatedAt' },
@@ -369,50 +400,24 @@ const getIpLocationDisplay = (
 const getIpAddressDisplay = (ipAddress: string | null): string =>
 	ipAddress ?? t('admin.players.empty.unknown')
 
-const getAccountUuid = (account: AdminMinecraftAccountInfo): string | null =>
-	getAccountUuids(account)[0]?.uuid ?? null
-
-const getAccountUuids = (
+const getServerRefs = (
 	account: AdminMinecraftAccountInfo,
-): { uuid: string; serverIds: string[] }[] => {
-	const uuidServers = new Map<string, Set<string>>()
-
-	const addUuid = (
-		uuid: string | null | undefined,
-		serverId?: string,
-	): void => {
-		if (!uuid) {
-			return
-		}
-
-		const servers = uuidServers.get(uuid) ?? new Set<string>()
-
-		if (serverId) {
-			servers.add(serverId)
-		}
-
-		uuidServers.set(uuid, servers)
-	}
-
-	addUuid(account.uuid)
-	addUuid(account.luckPerms?.uuid)
+): Array<{ serverId: string; name: string }> => {
+	const refs = new Map<string, { serverId: string; name: string }>()
 
 	for (const link of account.serverLinks) {
-		addUuid(link.uuid, link.serverId)
+		if (refs.has(link.serverId)) {
+			continue
+		}
+
+		refs.set(link.serverId, {
+			serverId: link.serverId,
+			name: link.serverName ?? link.serverId,
+		})
 	}
 
-	return [...uuidServers.entries()].map(([uuid, serverIds]) => ({
-		uuid,
-		serverIds: [...serverIds].sort(),
-	}))
+	return Array.from(refs.values())
 }
-
-const getAccountUuidTooltip = (account: AdminMinecraftAccountInfo): string =>
-	getAccountUuids(account)
-		.map(({ uuid, serverIds }) =>
-			serverIds.length ? `${serverIds.join(', ')}: ${uuid}` : uuid,
-		)
-		.join('\n')
 
 const hasStatsEntry = (account: AdminMinecraftAccountInfo): boolean =>
 	account.serverLinks.some((link) => link.hasStats)
