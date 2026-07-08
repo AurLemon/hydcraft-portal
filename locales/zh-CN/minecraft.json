@@ -55,6 +55,14 @@
 			"bindTip": "新建绑定",
 			"setPrimaryTip": "设置主档案"
 		},
+		"tabs": {
+			"overview": "概览",
+			"official": "正式档案",
+			"historical": "历史档案",
+			"all": "所有档案",
+			"officialEmptyTitle": "还没有正式档案",
+			"officialEmptyDescription": "先完成一次正式 Minecraft 账号绑定，正式档案才会出现在这里。"
+		},
 		"selector": {
 			"aggregate": "综合信息"
 		},
@@ -67,7 +75,11 @@
 			"serverCount": "{count} 个档案",
 			"emptyTitle": "还没有历史档案",
 			"emptyDescription": "只有未被 AuthMe 吸收的 archive 玩家才会出现在这里。",
-			"loadFailed": "历史档案加载失败"
+			"loadFailed": "历史档案加载失败",
+			"explainer": {
+				"title": "历史档案是什么？",
+				"description": "这是氢气工艺根据导入的旧存档数据整合出的玩家信息。未被服务器现有登录系统统一吸收的记录，都会作为历史档案保留。它们按玩家 ID 区分，数据已经固定，不会继续更新。由于数据来自备份存档，部分内容可能与真实情况存在偏差，或与当前时间相距较远。历史档案不能由用户手动绑定，如需绑定请联系管理员。"
+			}
 		},
 		"settings": {
 			"title": "管理当前账号",

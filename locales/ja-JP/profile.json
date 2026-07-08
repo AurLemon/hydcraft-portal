@@ -141,7 +141,8 @@
 				"publicEmail": "公開メール"
 			},
 			"minecraft": {
-				"accountCount": "{count} 個のアカウントを紐付け済み"
+				"accountCount": "{count} 件のアカウント",
+				"historicalAccountCount": "{count} 件の履歴アカウント"
 			},
 			"birthday": {
 				"ageShort": "{count}歳",

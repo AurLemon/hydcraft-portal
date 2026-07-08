@@ -142,7 +142,8 @@
 				"publicEmail": "Public email"
 			},
 			"minecraft": {
-				"accountCount": "{count} bound account(s)"
+				"accountCount": "{count} account(s)",
+				"historicalAccountCount": "{count} historical account(s)"
 			},
 			"birthday": {
 				"ageShort": "{count} y.o.",

@@ -141,7 +141,8 @@
 				"publicEmail": "公開信箱"
 			},
 			"minecraft": {
-				"accountCount": "已綁定 {count} 個帳號"
+				"accountCount": "{count} 個帳戶",
+				"historicalAccountCount": "{count} 個歷史帳號"
 			},
 			"birthday": {
 				"ageShort": "{count}歲",

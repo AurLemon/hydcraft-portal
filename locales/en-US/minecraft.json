@@ -55,6 +55,14 @@
 			"bindTip": "Add binding",
 			"setPrimaryTip": "Set primary"
 		},
+		"tabs": {
+			"overview": "Overview",
+			"official": "Official",
+			"historical": "Historical",
+			"all": "All",
+			"officialEmptyTitle": "No official profile yet",
+			"officialEmptyDescription": "Bind a regular Minecraft account first, then official profiles will appear here."
+		},
 		"selector": {
 			"aggregate": "Summary"
 		},
@@ -67,7 +75,11 @@
 			"serverCount": "{count} archive record(s)",
 			"emptyTitle": "No historical archives yet",
 			"emptyDescription": "Only archive players that were not absorbed by AuthMe will appear here.",
-			"loadFailed": "Failed to load historical archives"
+			"loadFailed": "Failed to load historical archives",
+			"explainer": {
+				"title": "What are historical archives?",
+				"description": "These are player records consolidated from imported legacy world archives. Any records that were not unified by the current server login system are kept as historical archives. They are separated by player ID, the data is fixed, and it will not continue to update. Because the source data comes from backups, some details may differ from reality or be far from the current timeline. Historical archives cannot be bound manually by users; contact an administrator if binding is needed."
+			}
 		},
 		"settings": {
 			"title": "Manage current account",

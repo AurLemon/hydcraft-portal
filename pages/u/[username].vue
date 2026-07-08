@@ -40,6 +40,17 @@
 										})
 									}}
 								</UBadge>
+								<UBadge
+									v-if="historicalAccounts.length"
+									variant="soft"
+									color="neutral"
+								>
+									{{
+										t('profile.public.minecraft.historicalAccountCount', {
+											count: historicalAccounts.length,
+										})
+									}}
+								</UBadge>
 							</div>
 							<MinecraftPublicAccountsToolbar
 								v-if="minecraftAccounts.length"
@@ -51,12 +62,16 @@
 						</div>
 
 						<div
-							v-else-if="minecraftAccounts.length"
+							v-else-if="combinedMinecraftAccounts.length"
 							class="flex flex-col gap-4"
 						>
 							<MinecraftPublicAccountsContent
-								v-for="account in minecraftAccounts"
-								:key="account.id"
+								v-for="account in combinedMinecraftAccounts"
+								:key="
+									account.identityKind === 'HISTORICAL'
+										? `history-${account.id}`
+										: account.id
+								"
 								:account="account"
 							/>
 						</div>
@@ -66,32 +81,6 @@
 							class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 text-sm"
 						>
 							{{ t('profile.public.empty.minecraft') }}
-						</div>
-					</section>
-
-					<section v-if="historicalAccounts.length" class="grid gap-3">
-						<div
-							class="mx-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-						>
-							<div class="flex items-center gap-2">
-								<div :class="profileSectionTitleClass">
-									{{ t('minecraftAccounts.history.profileSectionTitle') }}
-								</div>
-								<UBadge variant="soft" color="neutral">
-									{{
-										t('profile.public.minecraft.accountCount', {
-											count: historicalAccounts.length,
-										})
-									}}
-								</UBadge>
-							</div>
-						</div>
-						<div class="flex flex-col gap-4">
-							<MinecraftPublicAccountsContent
-								v-for="account in historicalAccounts"
-								:key="`history-${account.id}`"
-								:account="account"
-							/>
 						</div>
 					</section>
 
@@ -705,6 +694,10 @@ const { data: historicalMinecraftAccountsData } =
 const historicalAccounts = computed<MinecraftAccountForm[]>(
 	() => historicalMinecraftAccountsData.value?.accounts ?? [],
 )
+const combinedMinecraftAccounts = computed<MinecraftAccountForm[]>(() => [
+	...minecraftAccounts.value,
+	...historicalAccounts.value,
+])
 
 // 最近活动事件流。
 const { data: activityData, pending: activityPending } =

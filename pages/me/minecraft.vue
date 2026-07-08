@@ -5,12 +5,13 @@
 				<div class="flex items-center justify-between gap-3 px-6">
 					<div class="flex items-center gap-2">
 						<USkeleton
-							v-for="index in 2"
-							:key="`minecraft-toolbar-skeleton-${index}`"
-							class="size-6 rounded-md"
+							v-for="index in 3"
+							:key="`minecraft-tab-skeleton-${index}`"
+							class="h-8 w-16 rounded-md"
 						/>
 					</div>
 					<div class="flex items-center gap-2">
+						<USkeleton class="size-8 rounded-md" />
 						<USkeleton class="size-8 rounded-md" />
 						<USkeleton class="size-8 rounded-md" />
 					</div>
@@ -18,31 +19,185 @@
 				<USkeleton class="h-160 rounded-3xl" />
 			</div>
 			<UAlert
-				v-else-if="error"
+				v-else-if="accountError"
 				color="error"
 				icon="i-lucide-circle-alert"
 				:title="t('minecraftAccounts.empty.loadFailed')"
 			/>
 			<template v-else>
-				<MinecraftAccountsToolbar
-					:accounts="accounts"
-					:selected-account-id="selectedAccountId"
-					:selected-account="selectedAccount"
-					:saving-id="savingId"
-					:unbinding-id="unbindingId"
-					:unbind-success-token="unbindSuccessToken"
-					@select="selectedAccountId = $event"
-					@bind="bindOpen = true"
-					@save="saveAccount"
-					@unbind="unbindAccount"
-				/>
-				<MinecraftAccountsContent
-					:accounts="accounts"
-					:selected-account="selectedAccount"
-					:saving-id="savingId"
-					:require-map-for-selector="true"
-					@bind="bindOpen = true"
-				/>
+				<div
+					class="flex flex-col gap-3 mb-8 sm:flex-row sm:items-start sm:justify-between"
+				>
+					<div
+						class="grid w-fit grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950 sm:grid-cols-4"
+					>
+						<button
+							v-for="tab in tabItems"
+							:key="tab.key"
+							type="button"
+							class="rounded-md px-3 py-1.5 text-sm transition-all duration-250 ease-out"
+							:class="
+								activeTab === tab.key
+									? 'bg-primary-500 text-white shadow-sm translate-y-0 dark:bg-white dark:text-slate-950'
+									: 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
+							"
+							@click="activeTab = tab.key"
+						>
+							{{ tab.label }}
+						</button>
+					</div>
+
+					<div v-if="accounts.length" class="flex items-center gap-3">
+						<MinecraftAccountsActions
+							:selected-account="selectedAccount"
+							:saving-id="savingId"
+							:unbinding-id="unbindingId"
+							:unbind-success-token="unbindSuccessToken"
+							@bind="bindOpen = true"
+							@save="saveAccount"
+							@unbind="unbindAccount"
+						/>
+					</div>
+				</div>
+
+				<Transition name="history-tab-switch" mode="out-in">
+					<div v-if="activeTab === 'overview'" key="overview">
+						<div v-if="accounts.length" class="mb-4 px-6">
+							<MinecraftAccountsSelector
+								:accounts="accounts"
+								:selected-account-id="selectedAccountId"
+								@select="selectedAccountId = $event"
+							/>
+						</div>
+						<MinecraftAccountsContent
+							:accounts="accounts"
+							:selected-account="selectedAccount"
+							:saving-id="savingId"
+							:require-map-for-selector="true"
+							@bind="bindOpen = true"
+						/>
+					</div>
+
+					<div
+						v-else-if="activeTab === 'official'"
+						key="official"
+						class="grid gap-4"
+					>
+						<MinecraftPublicAccountsContent
+							v-for="account in accounts"
+							:key="account.id"
+							:account="account"
+						/>
+						<PageInlineException
+							v-if="!accounts.length"
+							icon="i-lucide-box"
+							:title="t('minecraftAccounts.tabs.officialEmptyTitle')"
+						>
+							<p
+								class="text-sm leading-6 text-slate-600 dark:text-slate-300/80"
+							>
+								{{ t('minecraftAccounts.tabs.officialEmptyDescription') }}
+							</p>
+						</PageInlineException>
+					</div>
+
+					<div
+						v-else-if="activeTab === 'historical'"
+						key="historical"
+						class="grid gap-4"
+					>
+						<UAlert
+							color="neutral"
+							variant="soft"
+							icon="i-lucide-circle-help"
+							:title="t('minecraftAccounts.history.explainer.title')"
+							:description="
+								t('minecraftAccounts.history.explainer.description')
+							"
+						/>
+						<div v-if="historyPending" class="grid gap-4">
+							<USkeleton class="h-48 rounded-lg" />
+							<USkeleton class="h-48 rounded-lg" />
+						</div>
+						<UAlert
+							v-else-if="historyError"
+							color="error"
+							icon="i-lucide-circle-alert"
+							:title="t('minecraftAccounts.history.loadFailed')"
+						/>
+						<template v-else-if="historicalAccounts.length">
+							<MinecraftPublicAccountsContent
+								v-for="account in historicalAccounts"
+								:key="account.id"
+								:account="account"
+							/>
+						</template>
+						<PageInlineException
+							v-else
+							icon="i-lucide-archive"
+							:title="t('minecraftAccounts.history.emptyTitle')"
+						>
+							<p
+								class="text-sm leading-6 text-slate-600 dark:text-slate-300/80"
+							>
+								{{ t('minecraftAccounts.history.emptyDescription') }}
+							</p>
+						</PageInlineException>
+					</div>
+
+					<div v-else key="all" class="grid gap-6">
+						<div v-if="historyPending" class="grid gap-4">
+							<USkeleton class="h-48 rounded-lg" />
+							<USkeleton class="h-48 rounded-lg" />
+						</div>
+						<UAlert
+							v-else-if="historyError"
+							color="error"
+							icon="i-lucide-circle-alert"
+							:title="t('minecraftAccounts.history.loadFailed')"
+						/>
+						<template v-else-if="allAccountsByServer.length">
+							<section
+								v-for="group in allAccountsByServer"
+								:key="group.serverId"
+								class="grid gap-3"
+							>
+								<div class="flex items-center gap-2 px-1">
+									<h2 class="mx-1 text-2xl text-slate-950 dark:text-white">
+										{{ group.serverName }}
+									</h2>
+									<UBadge color="neutral" variant="soft">
+										{{
+											t('minecraftAccounts.history.serverCount', {
+												count: group.accounts.length,
+											})
+										}}
+									</UBadge>
+								</div>
+								<div class="grid gap-4">
+									<MinecraftPublicAccountsContent
+										v-for="item in group.accounts"
+										:key="`${group.serverId}-${item.account.id}-${item.serverViewId}`"
+										:account="item.account"
+										:fixed-server-view-id="item.serverViewId"
+										:show-coordinates="true"
+									/>
+								</div>
+							</section>
+						</template>
+						<PageInlineException
+							v-else
+							icon="i-lucide-archive"
+							:title="t('minecraftAccounts.history.emptyTitle')"
+						>
+							<p
+								class="text-sm leading-6 text-slate-600 dark:text-slate-300/80"
+							>
+								{{ t('minecraftAccounts.history.emptyDescription') }}
+							</p>
+						</PageInlineException>
+					</div>
+				</Transition>
 			</template>
 		</div>
 
@@ -61,11 +216,36 @@ import type {
 	MinecraftAccountForm,
 	MinecraftAccountsResponse,
 } from '~/utils/minecraft/accounts'
+import {
+	getServerViewSelectionValueForSummary,
+	resolveServerViewSummary,
+} from '~/utils/minecraft/accounts'
 
 definePageMeta({
 	headerVariant: 'solid',
 	middleware: 'portal-auth',
 })
+
+interface HistoricalAccountsResponse {
+	accounts: MinecraftAccountForm[]
+	servers: Array<{
+		serverId: string
+		serverName: string
+		accounts: Array<{
+			account: MinecraftAccountForm
+			serverViewId: string
+		}>
+	}>
+}
+
+interface MinecraftServerOrderResponse {
+	servers: Array<{
+		serverId: string
+		name: string
+	}>
+}
+
+type MinecraftTabKey = 'overview' | 'official' | 'historical' | 'all'
 
 const { t } = useI18n()
 const { notifyError, notifySuccess } = useAdminToast()
@@ -78,27 +258,52 @@ const binding = ref(false)
 const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
 const selectedAccountId = ref<string | null>(null)
+const activeTab = ref<MinecraftTabKey>('overview')
 const minecraftAccountsEndpoint = '/api/users/me/minecraft-accounts' as string
-const { data, error, refresh } = await useFetch<MinecraftAccountsResponse>(
-	minecraftAccountsEndpoint,
+const {
+	data,
+	error: accountError,
+	refresh,
+} = await useFetch<MinecraftAccountsResponse>(minecraftAccountsEndpoint)
+const {
+	data: historyData,
+	pending: historyPending,
+	error: historyError,
+	refresh: refreshHistory,
+} = await useFetch<HistoricalAccountsResponse>('/api/users/me/history', {
+	default: () => ({
+		accounts: [],
+		servers: [],
+	}),
+})
+const { data: serverOrderData } = await useFetch<MinecraftServerOrderResponse>(
+	'/api/minecraft/servers',
+	{
+		default: () => ({
+			servers: [],
+		}),
+	},
 )
 const accountsState = ref<MinecraftAccountForm[]>([])
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
-// 区分「首次加载」与「静默刷新」：useFetch 的 refresh() 会把 pending 置 true，
-// 若用 pending 控制 skeleton，每分钟刷新都会 unmount 整个内容区，导致内部状态
-// （hover 坐标、body 图加载态、carousel）重置与动画重放。仅首次拿到 data/error
-// 前显示 skeleton，之后刷新静默 diff 更新。
 const initialLoading = ref(true)
 watch(
-	[data, error],
+	[data, accountError],
 	() => {
-		if (initialLoading.value && (data.value || error.value)) {
+		if (initialLoading.value && (data.value || accountError.value)) {
 			initialLoading.value = false
 		}
 	},
 	{ immediate: true },
 )
+
+const tabItems = computed(() => [
+	{ key: 'overview' as const, label: t('minecraftAccounts.tabs.overview') },
+	{ key: 'official' as const, label: t('minecraftAccounts.tabs.official') },
+	{ key: 'historical' as const, label: t('minecraftAccounts.tabs.historical') },
+	{ key: 'all' as const, label: t('minecraftAccounts.tabs.all') },
+])
 
 const reconcileAccountList = (
 	currentAccounts: MinecraftAccountForm[],
@@ -132,6 +337,9 @@ watch(
 )
 
 const accounts = computed<MinecraftAccountForm[]>(() => accountsState.value)
+const historicalAccounts = computed<MinecraftAccountForm[]>(
+	() => historyData.value?.accounts ?? [],
+)
 const primaryAccount = computed<MinecraftAccountForm | null>(
 	() =>
 		accounts.value.find((account) => account.isPrimary) ??
@@ -158,6 +366,115 @@ watch(
 	},
 	{ immediate: true },
 )
+
+const allAccountsByServer = computed(() => {
+	const serverOrder = new Map<string, number>()
+	const serverNames = new Map<string, string>()
+
+	for (const [index, server] of (
+		serverOrderData.value?.servers ?? []
+	).entries()) {
+		serverOrder.set(server.serverId, index)
+		serverNames.set(server.serverId, server.name)
+	}
+
+	for (const group of historyData.value?.servers ?? []) {
+		if (!serverOrder.has(group.serverId)) {
+			serverOrder.set(group.serverId, serverOrder.size)
+		}
+
+		if (!serverNames.has(group.serverId)) {
+			serverNames.set(group.serverId, group.serverName)
+		}
+	}
+
+	const grouped = new Map<
+		string,
+		{
+			serverId: string
+			serverName: string
+			accounts: Array<{
+				account: MinecraftAccountForm
+				serverViewId: string
+				firstJoinedAt: string | null
+			}>
+		}
+	>()
+
+	const appendAccountToGroup = (
+		account: MinecraftAccountForm,
+		serverViewId: string,
+		serverId: string,
+		fallbackServerName: string,
+	): void => {
+		if (!serverOrder.has(serverId)) {
+			serverOrder.set(serverId, serverOrder.size)
+		}
+
+		const serverView = resolveServerViewSummary(account, serverViewId)
+		const bucket = grouped.get(serverId) ?? {
+			serverId,
+			serverName:
+				serverNames.get(serverId) ||
+				serverView?.serverName ||
+				fallbackServerName,
+			accounts: [],
+		}
+
+		bucket.accounts.push({
+			account,
+			serverViewId,
+			firstJoinedAt: serverView?.firstJoinedAt ?? account.firstJoinedAt ?? null,
+		})
+		grouped.set(serverId, bucket)
+	}
+
+	for (const group of historyData.value?.servers ?? []) {
+		for (const item of group.accounts) {
+			appendAccountToGroup(
+				item.account,
+				item.serverViewId,
+				group.serverId,
+				group.serverName,
+			)
+		}
+	}
+
+	for (const account of accounts.value) {
+		for (const view of account.serverViews.filter(
+			(candidate) => candidate.serverId,
+		)) {
+			const serverId = view.serverId as string
+
+			appendAccountToGroup(
+				account,
+				getServerViewSelectionValueForSummary(account, view),
+				serverId,
+				view.serverName || view.label,
+			)
+		}
+	}
+
+	return Array.from(grouped.values())
+		.sort(
+			(left, right) =>
+				(serverOrder.get(left.serverId) ?? Number.MAX_SAFE_INTEGER) -
+				(serverOrder.get(right.serverId) ?? Number.MAX_SAFE_INTEGER),
+		)
+		.map((group) => ({
+			...group,
+			accounts: [...group.accounts].sort((left, right) => {
+				const leftTime = left.firstJoinedAt
+					? new Date(left.firstJoinedAt).getTime()
+					: Number.NEGATIVE_INFINITY
+				const rightTime = right.firstJoinedAt
+					? new Date(right.firstJoinedAt).getTime()
+					: Number.NEGATIVE_INFINITY
+
+				return rightTime - leftTime
+			}),
+		}))
+})
 
 const saveAccount = async (account: MinecraftAccountForm): Promise<void> => {
 	savingId.value = account.id
@@ -196,7 +513,7 @@ const bindAccount = async (body: BindMinecraftAccountBody): Promise<void> => {
 		await bindMinecraftAccount(body)
 		await fetchCurrentUser()
 		bindSuccessToken.value += 1
-		await refresh()
+		await Promise.all([refresh(), refreshHistory()])
 		notifySuccess({
 			title: t('minecraftAccounts.bind.notifications.successTitle'),
 		})
@@ -224,7 +541,7 @@ const unbindAccount = async (payload: {
 		await unbindMinecraftAccount(payload.account.id, {
 			captchaToken: payload.captchaToken,
 		})
-		await refresh()
+		await Promise.all([refresh(), refreshHistory()])
 		unbindSuccessToken.value += 1
 		notifySuccess({
 			title: t('minecraftAccounts.notifications.unbindSuccess'),
@@ -242,6 +559,7 @@ const unbindAccount = async (payload: {
 onMounted(() => {
 	refreshTimer = setInterval(() => {
 		void refresh()
+		void refreshHistory()
 	}, 60_000)
 })
 
@@ -254,3 +572,27 @@ onBeforeUnmount(() => {
 	refreshTimer = null
 })
 </script>
+
+<style scoped>
+.history-tab-switch-enter-active,
+.history-tab-switch-leave-active {
+	transition:
+		opacity 220ms ease-out,
+		transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+		filter 220ms ease-out;
+}
+
+.history-tab-switch-enter-from,
+.history-tab-switch-leave-to {
+	opacity: 0;
+	filter: blur(2px);
+	transform: translateY(8px);
+}
+
+.history-tab-switch-enter-to,
+.history-tab-switch-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	transform: translateY(0);
+}
+</style>

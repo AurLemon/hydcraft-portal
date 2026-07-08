@@ -55,6 +55,14 @@
 			"bindTip": "新增綁定",
 			"setPrimaryTip": "設定主檔案"
 		},
+		"tabs": {
+			"overview": "概覽",
+			"official": "正式檔案",
+			"historical": "歷史檔案",
+			"all": "所有檔案",
+			"officialEmptyTitle": "還沒有正式檔案",
+			"officialEmptyDescription": "先完成一次正式 Minecraft 帳號綁定，正式檔案才會出現在這裡。"
+		},
 		"selector": {
 			"aggregate": "綜合資訊"
 		},
@@ -67,7 +75,11 @@
 			"serverCount": "{count} 個檔案",
 			"emptyTitle": "還沒有歷史檔案",
 			"emptyDescription": "只有未被 AuthMe 吸收的 archive 玩家才會出現在這裡。",
-			"loadFailed": "歷史檔案載入失敗"
+			"loadFailed": "歷史檔案載入失敗",
+			"explainer": {
+				"title": "歷史檔案是什麼？",
+				"description": "這是氫氣工藝根據匯入的舊存檔資料整合出的玩家資訊。未被伺服器現有登入系統統一吸收的紀錄，都會作為歷史檔案保留。它們按玩家 ID 區分，資料已經固定，不會繼續更新。由於資料來自備份存檔，部分內容可能與真實情況不符，或與目前時間相距較遠。歷史檔案不能由使用者手動綁定，如需綁定請聯絡管理員。"
+			}
 		},
 		"settings": {
 			"title": "管理目前帳號",

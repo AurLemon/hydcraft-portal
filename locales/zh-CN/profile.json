@@ -141,7 +141,8 @@
 				"publicEmail": "公开邮箱"
 			},
 			"minecraft": {
-				"accountCount": "已绑定 {count} 个账号"
+				"accountCount": "{count} 个账户",
+				"historicalAccountCount": "{count} 个历史账户"
 			},
 			"birthday": {
 				"ageShort": "{count}岁",
