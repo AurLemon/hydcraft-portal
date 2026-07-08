@@ -342,6 +342,10 @@ import qqLogo from '~/assets/resources/brands/logo_QQ.svg?raw'
 import wechatLogo from '~/assets/resources/brands/logo_WeChat.svg?raw'
 import dayjs from 'dayjs'
 import { useToast } from '@nuxt/ui/composables'
+import {
+	getDefaultServerViewId,
+	resolveServerViewSummary,
+} from '~/utils/minecraft/accounts'
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 import {
 	countryItems,
@@ -871,9 +875,31 @@ const { data: historicalMinecraftAccountsData } =
 const historicalAccounts = computed<MinecraftAccountForm[]>(
 	() => historicalMinecraftAccountsData.value?.accounts ?? [],
 )
+const compareMinecraftAccountsByLastSeenDesc = (
+	left: MinecraftAccountForm,
+	right: MinecraftAccountForm,
+): number => {
+	const resolveAggregateLastSeenTime = (
+		account: MinecraftAccountForm,
+	): number => {
+		const defaultViewId = getDefaultServerViewId(account)
+		const defaultView = resolveServerViewSummary(account, defaultViewId)
+		const lastSeenAt = defaultView?.lastSeenAt ?? account.lastSeenAt
+
+		return lastSeenAt
+			? new Date(lastSeenAt).getTime()
+			: Number.NEGATIVE_INFINITY
+	}
+
+	const leftTime = resolveAggregateLastSeenTime(left)
+	const rightTime = resolveAggregateLastSeenTime(right)
+
+	return rightTime - leftTime
+}
+
 const combinedMinecraftAccounts = computed<MinecraftAccountForm[]>(() => [
-	...minecraftAccounts.value,
-	...historicalAccounts.value,
+	...[...minecraftAccounts.value].sort(compareMinecraftAccountsByLastSeenDesc),
+	...[...historicalAccounts.value].sort(compareMinecraftAccountsByLastSeenDesc),
 ])
 
 // 最近活动事件流。
