@@ -145,7 +145,7 @@ export const getPublicUserProfile = async (
 		seconds: totalSeconds % 60,
 	}
 	const minecraftArchiveSummary =
-		allAccounts.length > 1
+		allAccounts.length > 0
 			? {
 					totalAccounts: allAccounts.length,
 					totalPlayTimeTicks,
@@ -156,17 +156,45 @@ export const getPublicUserProfile = async (
 				}
 			: null
 	const firstPlayerIdByServerId = new Map<string, string | null>()
+	const earliestFirstJoinedAtByServerId = new Map<string, Date | null>()
 
 	for (const account of allAccounts) {
 		for (const view of account.serverViews) {
-			if (!view.serverId || firstPlayerIdByServerId.has(view.serverId)) {
+			if (!view.serverId) {
 				continue
 			}
 
-			firstPlayerIdByServerId.set(
-				view.serverId,
-				account.playerIdentity.playerId ?? account.username,
-			)
+			if (!firstPlayerIdByServerId.has(view.serverId)) {
+				firstPlayerIdByServerId.set(
+					view.serverId,
+					account.playerIdentity.playerId ?? account.username,
+				)
+			}
+
+			const candidateFirstJoinedAt = view.firstJoinedAt
+				? new Date(view.firstJoinedAt)
+				: account.firstJoinedAt
+					? new Date(account.firstJoinedAt)
+					: null
+			const currentEarliestFirstJoinedAt =
+				earliestFirstJoinedAtByServerId.get(view.serverId) ?? null
+
+			if (
+				!candidateFirstJoinedAt ||
+				Number.isNaN(candidateFirstJoinedAt.getTime())
+			) {
+				continue
+			}
+
+			if (
+				!currentEarliestFirstJoinedAt ||
+				candidateFirstJoinedAt < currentEarliestFirstJoinedAt
+			) {
+				earliestFirstJoinedAtByServerId.set(
+					view.serverId,
+					candidateFirstJoinedAt,
+				)
+			}
 		}
 	}
 
@@ -176,6 +204,8 @@ export const getPublicUserProfile = async (
 		serverCode: server.code,
 		highlighted: firstPlayerIdByServerId.has(server.serverId),
 		playerId: firstPlayerIdByServerId.get(server.serverId) ?? null,
+		earliestFirstJoinedAt:
+			earliestFirstJoinedAtByServerId.get(server.serverId) ?? null,
 	}))
 
 	return toPublicProfile(user, currentUserId, presence, {

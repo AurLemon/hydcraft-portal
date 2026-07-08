@@ -167,6 +167,7 @@ export interface PublicUserProfile {
 		serverCode: string
 		highlighted: boolean
 		playerId: string | null
+		earliestFirstJoinedAt: Date | null
 	}>
 	isOwner: boolean
 }

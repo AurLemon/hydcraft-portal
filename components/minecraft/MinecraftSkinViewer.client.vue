@@ -27,22 +27,29 @@ const containerElement = useTemplateRef<HTMLDivElement>('containerElement')
 
 let viewer: SkinViewer | null = null
 let resizeObserver: ResizeObserver | null = null
+let createViewerTaskId = 0
 
 const syncViewerSize = () => {
 	if (!viewer || !containerElement.value) {
 		return
 	}
 
-	viewer.width = Math.max(containerElement.value.clientWidth, 1)
-	viewer.height = Math.max(containerElement.value.clientHeight, 1)
+	const width = Math.max(containerElement.value.clientWidth, 1)
+	const height = Math.max(containerElement.value.clientHeight, 1)
+	viewer.setSize(width, height)
 }
 
-const createViewer = async () => {
+const disposeViewer = () => {
+	viewer?.dispose()
+	viewer = null
+}
+
+const createViewer = () => {
 	if (!canvasElement.value || !containerElement.value || !props.skinUrl) {
 		return
 	}
 
-	viewer?.dispose()
+	disposeViewer()
 	viewer = new SkinViewer({
 		canvas: canvasElement.value,
 		width: Math.max(containerElement.value.clientWidth, 1),
@@ -64,20 +71,40 @@ const createViewer = async () => {
 	viewer.playerWrapper.position.y = 16
 	viewer.playerWrapper.rotation.x = 0
 	viewer.playerWrapper.rotation.z = 0
+	syncViewerSize()
+}
+
+const ensureViewerReady = async () => {
+	if (!import.meta.client || !props.skinUrl) {
+		disposeViewer()
+		return
+	}
+
+	const taskId = ++createViewerTaskId
+	await nextTick()
+	await new Promise<void>((resolve) => {
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => resolve())
+		})
+	})
+
+	if (taskId !== createViewerTaskId) {
+		return
+	}
+
+	createViewer()
 }
 
 watch(
 	() => props.skinUrl,
 	async (skinUrl) => {
 		if (!skinUrl) {
-			viewer?.dispose()
-			viewer = null
+			disposeViewer()
 			return
 		}
 
 		if (!viewer) {
-			await nextTick()
-			await createViewer()
+			await ensureViewerReady()
 			return
 		}
 
@@ -91,7 +118,7 @@ onMounted(() => {
 		return
 	}
 
-	void createViewer()
+	void ensureViewerReady()
 	resizeObserver = new ResizeObserver(() => {
 		syncViewerSize()
 	})
@@ -99,17 +126,19 @@ onMounted(() => {
 	syncViewerSize()
 })
 
+onActivated(() => {
+	void ensureViewerReady()
+})
+
 onDeactivated(() => {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	viewer?.dispose()
-	viewer = null
+	disposeViewer()
 })
 
 onBeforeUnmount(() => {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	viewer?.dispose()
-	viewer = null
+	disposeViewer()
 })
 </script>

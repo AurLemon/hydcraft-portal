@@ -41,7 +41,7 @@
 									? 'bg-primary-500 text-white shadow-sm translate-y-0 dark:bg-white dark:text-slate-950'
 									: 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
 							"
-							@click="activeTab = tab.key"
+							@click="void setActiveTab(tab.key)"
 						>
 							{{ tab.label }}
 						</button>
@@ -248,6 +248,8 @@ interface MinecraftServerOrderResponse {
 type MinecraftTabKey = 'overview' | 'official' | 'historical' | 'all'
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 const { notifyError, notifySuccess } = useAdminToast()
 const { fetchCurrentUser, bindMinecraftAccount, unbindMinecraftAccount } =
 	usePortalAuth()
@@ -258,7 +260,13 @@ const binding = ref(false)
 const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
 const selectedAccountId = ref<string | null>(null)
-const activeTab = ref<MinecraftTabKey>('overview')
+const DEFAULT_MINECRAFT_TAB: MinecraftTabKey = 'overview'
+const MINECRAFT_TAB_KEYS = [
+	'overview',
+	'official',
+	'historical',
+	'all',
+] as const satisfies readonly MinecraftTabKey[]
 const minecraftAccountsEndpoint = '/api/users/me/minecraft-accounts' as string
 const {
 	data,
@@ -304,6 +312,69 @@ const tabItems = computed(() => [
 	{ key: 'historical' as const, label: t('minecraftAccounts.tabs.historical') },
 	{ key: 'all' as const, label: t('minecraftAccounts.tabs.all') },
 ])
+
+const isMinecraftTabKey = (value: string): value is MinecraftTabKey =>
+	MINECRAFT_TAB_KEYS.includes(value as MinecraftTabKey)
+
+const readTabQueryValue = (value: unknown): string | null => {
+	if (typeof value === 'string') {
+		return value
+	}
+
+	if (Array.isArray(value) && typeof value[0] === 'string') {
+		return value[0]
+	}
+
+	return null
+}
+
+const parseMinecraftTabQuery = (value: unknown): MinecraftTabKey => {
+	const tab = readTabQueryValue(value)
+	return tab && isMinecraftTabKey(tab) ? tab : DEFAULT_MINECRAFT_TAB
+}
+
+const replaceTabQuery = async (nextTab: MinecraftTabKey): Promise<void> => {
+	const nextQuery = {
+		...route.query,
+	} as Record<string, string | string[] | undefined>
+
+	if (nextTab === DEFAULT_MINECRAFT_TAB) {
+		delete nextQuery.tab
+	} else {
+		nextQuery.tab = nextTab
+	}
+
+	await router.replace({
+		query: nextQuery,
+	})
+}
+
+const activeTab = computed<MinecraftTabKey>(() =>
+	parseMinecraftTabQuery(route.query.tab),
+)
+
+const setActiveTab = async (nextTab: MinecraftTabKey): Promise<void> => {
+	if (activeTab.value === nextTab) {
+		return
+	}
+
+	await replaceTabQuery(nextTab)
+}
+
+watch(
+	() => route.query.tab,
+	(tab) => {
+		const rawTab = readTabQueryValue(tab)
+		if (!rawTab) {
+			return
+		}
+
+		if (!isMinecraftTabKey(rawTab)) {
+			void replaceTabQuery(DEFAULT_MINECRAFT_TAB)
+		}
+	},
+	{ immediate: true },
+)
 
 const reconcileAccountList = (
 	currentAccounts: MinecraftAccountForm[],

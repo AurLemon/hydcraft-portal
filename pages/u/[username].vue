@@ -99,7 +99,9 @@
 								</UBadge>
 							</div>
 						</div>
-						<div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 grid gap-4 grid-cols-4 lg:grid-cols-8">
+						<div
+							class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 grid gap-4 grid-cols-4 lg:grid-cols-8"
+						>
 							<div
 								v-for="item in minecraftServerTimeline"
 								:key="item.serverId"
@@ -121,6 +123,12 @@
 								<div>
 									<p class="text-sm font-medium text-slate-950 dark:text-white">
 										{{ item.serverName }}
+									</p>
+									<p
+										v-if="item.highlighted && item.earliestFirstJoinedAt"
+										class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+									>
+										{{ formatDate(item.earliestFirstJoinedAt) }}
 									</p>
 								</div>
 							</div>
@@ -451,6 +459,7 @@ interface PublicProfile {
 		serverCode: string
 		highlighted: boolean
 		playerId: string | null
+		earliestFirstJoinedAt: string | null
 	}>
 	isOwner: boolean
 }

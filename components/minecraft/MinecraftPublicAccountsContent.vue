@@ -123,7 +123,7 @@
 								class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-slate-900 dark:text-white"
 							>
 								<div
-									v-if="props.showCoordinates"
+									v-if="shouldShowCoordinates"
 									class="flex items-baseline gap-1"
 								>
 									<span class="text-xs text-slate-500 dark:text-white/80">
@@ -282,6 +282,12 @@ const selectedObservedPlayer = computed(() =>
 		effectiveSelectedViewId.value,
 	),
 )
+const defaultServerViewId = computed(() =>
+	getDefaultServerViewId(props.account),
+)
+const isHistoricalAccount = computed(
+	() => props.account.identityKind === 'HISTORICAL',
+)
 
 const displayName = computed(
 	() =>
@@ -300,16 +306,46 @@ const playerProfileHref = computed(() => {
 	return mcid ? localePath(`/players/${mcid}`) : ''
 })
 
-const displayLocation = computed<MinecraftLocationSummary | null>(
-	() =>
-		selectedServerView.value?.presence?.lastSavedLocation ??
-		selectedObservedPlayer.value?.lastSavedLocation ??
-		props.account.presence?.lastSavedLocation ??
-		null,
-)
-
 const isAggregateViewSelected = computed(
 	() => selectedServerView.value?.id === AGGREGATE_SERVER_VIEW_ID,
+)
+
+const coordinateSourceViewId = computed(() => {
+	if (!isHistoricalAccount.value && isAggregateViewSelected.value) {
+		return defaultServerViewId.value
+	}
+
+	return effectiveSelectedViewId.value
+})
+
+const coordinateSourceServerView = computed<MinecraftAccountServerView | null>(
+	() => resolveServerViewSummary(props.account, coordinateSourceViewId.value),
+)
+const coordinateSourceObservedPlayer = computed(() =>
+	resolveObservedPlayerForServerView(
+		props.account,
+		coordinateSourceViewId.value,
+	),
+)
+
+const shouldShowCoordinates = computed(() => {
+	if (props.showCoordinates) {
+		return true
+	}
+
+	if (!isHistoricalAccount.value) {
+		return true
+	}
+
+	return !isAggregateViewSelected.value
+})
+
+const displayLocation = computed<MinecraftLocationSummary | null>(
+	() =>
+		coordinateSourceServerView.value?.presence?.lastSavedLocation ??
+		coordinateSourceObservedPlayer.value?.lastSavedLocation ??
+		props.account.presence?.lastSavedLocation ??
+		null,
 )
 
 const coordsText = computed(() => {
