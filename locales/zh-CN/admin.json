@@ -937,14 +937,17 @@
 			"title": "服务器接入配置",
 			"sections": {
 				"basic": "服务器基础信息",
+				"basicDescription": "填写服务端实例的基础标识、展示名称与接入方式。",
 				"mapConfig": "地图配置",
-				"mapConfigDescription": "为当前 server instance 单独配置地图 tiles 能力与默认视角。",
+				"mapConfigDescription": "配置这个服务器是否启用地图，以及是否已经接入地图瓦片。",
 				"periods": "生命周期",
 				"periodsDescription": "人工维护该服务器的开启、关闭、存档或活动时间段。",
 				"portalBridge": "PortalBridge",
+				"portalBridgeDescription": "配置这个服务器的 Bridge 连接信息与同步入口。",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
-				"sync": "同步速率"
+				"sync": "同步速率",
+				"syncDescription": "配置各数据源的自动同步间隔。"
 			},
 			"fields": {
 				"serverId": "服务器 ID",
@@ -962,8 +965,11 @@
 				"mcPort": "MC Port",
 				"description": "描述",
 				"enabled": "启用该服务器",
-				"mapEnabled": "启用地图配置",
-				"hasTiles": "已接入地图 Tiles",
+				"enabledDescription": "关闭后，该服务器不会作为可用实例对外启用。",
+				"mapEnabled": "启用地图",
+				"mapEnabledDescription": "开启后，这个服务器会展示地图相关能力与默认视角。",
+				"hasTiles": "启用地图 Tiles",
+				"hasTilesDescription": "开启后，前端会按瓦片地址加载地图图层。",
 				"tileBaseUrl": "Tiles Base URL",
 				"worldName": "世界名",
 				"mapName": "地图名",
@@ -981,6 +987,7 @@
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "启用 Bridge 连接",
+				"bridgeEnabledDescription": "开启后，Portal 会尝试与这个服务器的 Bridge 建立连接。",
 				"syncInterval": "同步间隔（分钟）"
 			},
 			"placeholders": {
@@ -991,6 +998,9 @@
 				"cancel": "取消",
 				"save": "保存配置",
 				"close": "关闭"
+			},
+			"empty": {
+				"periods": "还没有生命周期时间段，点击右上角“新增时间段”开始添加。"
 			},
 			"periodLabel": "时间段 {index}",
 			"values": {

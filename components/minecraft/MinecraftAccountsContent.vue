@@ -11,10 +11,6 @@
 				/>
 			</div>
 
-			<div
-				class="absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-slate-950/88 via-slate-950/56 to-transparent"
-			/>
-
 			<div class="absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
 				<UBadge
 					class="gap-1.5 text-white"
@@ -52,135 +48,138 @@
 			</div>
 
 			<div
-				class="relative z-10 flex min-h-160 flex-col justify-end gap-4 p-4 text-white [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px] sm:p-5"
+				class="pointer-events-none absolute inset-x-0 bottom-0 z-[998] flex items-end p-4"
 			>
 				<div
-					class="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between"
+					class="absolute inset-x-0 bottom-0 z-0 h-54 bg-linear-to-t from-slate-950/62 via-slate-950/24 to-transparent backdrop-blur-[32px] mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.96)_18%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0.38)_56%,transparent_100%)]"
+				/>
+
+				<div
+					class="relative z-20 flex w-full min-w-0 flex-col gap-3 text-white sm:flex-row sm:items-end sm:justify-between [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
 				>
 					<div class="min-w-0 flex-1">
-						<div class="mb-3 flex items-end gap-3">
-							<div
-								v-if="bodyRendererUrl"
-								class="hidden w-24 shrink-0 sm:block"
-								aria-hidden="true"
-							>
-								<img
-									:src="bodyRendererUrl"
-									:alt="displayName"
-									class="block w-full drop-shadow-sm"
-								/>
-							</div>
-							<div class="min-w-0">
-								<div class="flex min-w-0 flex-wrap items-center gap-2">
-									<UPopover
-										v-if="showServerSelector"
-										v-model:open="serverMenuOpen"
-										:popper="{ placement: 'bottom-start' }"
-									>
-										<button
-											type="button"
-											class="group inline-flex min-w-0 max-w-full items-center gap-1 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
-											:class="showServerSelector ? 'hover:opacity-70' : ''"
-											:aria-label="displayName"
-										>
-											<span
-												class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel sm:text-[42px]"
-											>
-												{{ displayName }}
-											</span>
-											<UIcon
-												name="i-lucide-chevron-down"
-												class="size-4 shrink-0 text-white/70 transition-transform duration-200"
-												:class="serverMenuOpen ? 'rotate-180' : ''"
-											/>
-										</button>
+						<div
+							v-if="bodyRendererUrl"
+							class="relative z-10 mb-3 w-22 shrink-0 sm:absolute sm:bottom-0 sm:left-4 sm:mb-0 sm:w-26"
+							aria-hidden="true"
+						>
+							<img
+								:src="bodyRendererUrl"
+								:alt="displayName"
+								class="block w-full drop-shadow-sm translate-y-0 sm:translate-y-20"
+							/>
+						</div>
 
-										<template #content>
-											<div
-												class="grid w-80 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+						<div class="min-w-0 sm:pl-34">
+							<div
+								class="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:translate-y-1"
+							>
+								<UPopover
+									v-if="showServerSelector"
+									v-model:open="serverMenuOpen"
+									:popper="{ placement: 'bottom-start' }"
+								>
+									<button
+										type="button"
+										class="group pointer-events-auto inline-flex min-w-0 max-w-full items-center gap-1 text-left text-white transition hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+										:aria-label="displayName"
+									>
+										<span
+											class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px] sm:text-[42px]"
+										>
+											{{ displayName }}
+										</span>
+										<UIcon
+											name="i-lucide-chevron-down"
+											class="size-4 shrink-0 text-white/70 transition-transform duration-200"
+											:class="serverMenuOpen ? 'rotate-180' : ''"
+										/>
+									</button>
+
+									<template #content>
+										<div
+											class="grid w-80 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+										>
+											<button
+												v-for="item in serverViewItems"
+												:key="item.value"
+												type="button"
+												class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
+												:class="{
+													'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
+														item.value === selectedViewIdModel,
+													'text-slate-600 dark:text-slate-300':
+														item.value !== selectedViewIdModel,
+												}"
+												@click="selectServerView(item.value)"
 											>
-												<button
-													v-for="item in serverViewItems"
-													:key="item.value"
-													type="button"
-													class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
-													:class="{
-														'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
-															item.value === selectedViewIdModel,
-														'text-slate-600 dark:text-slate-300':
-															item.value !== selectedViewIdModel,
-													}"
-													@click="selectServerView(item.value)"
-												>
-													<span class="min-w-0 flex-1 truncate">
-														{{ item.label }}
-													</span>
-													<UIcon
-														v-if="item.value === selectedViewIdModel"
-														name="i-lucide-check"
-														class="size-3.5 shrink-0"
-													/>
-												</button>
-											</div>
-										</template>
-									</UPopover>
-									<span
-										v-else
-										class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel sm:text-[42px]"
-									>
-										{{ displayName }}
+												<span class="min-w-0 flex-1 truncate">
+													{{ item.label }}
+												</span>
+												<UIcon
+													v-if="item.value === selectedViewIdModel"
+													name="i-lucide-check"
+													class="size-3.5 shrink-0"
+												/>
+											</button>
+										</div>
+									</template>
+								</UPopover>
+								<span
+									v-else
+									class="block max-w-full truncate text-3xl leading-[normal] font-arkpixel [text-shadow:rgba(0,0,0,0.7)_0px_0px_5px]"
+								>
+									{{ displayName }}
+								</span>
+								<UBadge
+									v-if="displayPrimaryGroup"
+									class="text-shadow-none sm:-translate-y-1"
+									color="neutral"
+									variant="solid"
+									size="xs"
+								>
+									{{ displayPrimaryGroup }}
+								</UBadge>
+							</div>
+							<div class="flex flex-wrap items-baseline gap-x-2">
+								<div class="flex items-baseline gap-1">
+									<span class="text-xs text-white/80">
+										{{ t('minecraftAccounts.overlay.lastLogin') }}
 									</span>
-									<UBadge
-										v-if="displayPrimaryGroup"
-										class="text-shadow-none"
-										color="neutral"
-										variant="solid"
-										size="xs"
-									>
-										{{ displayPrimaryGroup }}
-									</UBadge>
+									<span class="text-[17px] font-medium">{{ coordsText }}</span>
 								</div>
-								<div class="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-									<div class="flex items-baseline gap-1">
-										<span class="text-xs text-white/68">
-											{{ t('minecraftAccounts.overlay.lastLogin') }}
-										</span>
-										<span class="text-[17px] font-medium">
-											{{ coordsText }}
-										</span>
-									</div>
-									<div
-										v-if="playTimeHoursLabel !== notAvailableLabel"
+								<div
+									v-if="playTimeHoursLabel !== notAvailableLabel"
+									class="flex items-baseline gap-1"
+								>
+									<UTooltip
+										:text="playTimeTooltip"
 										class="flex items-baseline gap-1"
 									>
-										<span class="text-xs text-white/68">
+										<span class="text-xs text-white/80">
 											{{ t('minecraftAccounts.summary.playTime') }}
 										</span>
-										<UTooltip :text="playTimeTooltip">
-											<span class="text-[17px] font-medium">
-												{{ playTimeHoursLabel }}
-											</span>
-										</UTooltip>
-									</div>
+										<span class="text-[17px] font-medium">
+											{{ playTimeHoursLabel }}
+										</span>
+									</UTooltip>
 								</div>
 							</div>
 						</div>
 					</div>
 
-					<div class="flex shrink-0 flex-col sm:self-stretch">
-						<div
-							class="mt-auto grid gap-1 text-[11px] text-white/90 sm:text-right"
-						>
+					<div class="hidden shrink-0 sm:block">
+						<div class="space-y-0.5 text-right text-[11px] text-white/90">
 							<div
 								v-for="item in summaryItems"
 								:key="item.key"
-								class="flex items-baseline gap-2 sm:justify-end"
+								class="flex items-baseline justify-end gap-2"
 							>
-								<span class="inline-flex items-baseline gap-1 text-white/68">
+								<span class="inline-flex items-baseline gap-1 text-white/70">
 									<UIcon :name="item.icon" class="size-3 translate-y-0.5" />
 									{{ item.label }}
 								</span>
-								<span class="text-base font-medium text-white">
+								<span class="text-base font-medium">
 									{{ item.value }}
 								</span>
 							</div>

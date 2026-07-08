@@ -947,14 +947,17 @@
 			"title": "サーバー接続設定",
 			"sections": {
 				"basic": "サーバー基本情報",
+				"basicDescription": "サーバーの識別情報、表示名、接続方式を設定します。",
 				"mapConfig": "マップ設定",
-				"mapConfigDescription": "この server instance 専用の tiles 能力と既定表示位置を設定します。",
+				"mapConfigDescription": "このサーバーで地図を有効にするか、タイルが利用可能かを設定します。",
 				"periods": "ライフサイクル期間",
 				"periodsDescription": "このサーバーの稼働、保管、イベント期間を手動で管理します。",
 				"portalBridge": "PortalBridge",
+				"portalBridgeDescription": "このサーバーの Bridge 接続情報と同期入口を設定します。",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
-				"sync": "同期レート"
+				"sync": "同期レート",
+				"syncDescription": "各データソースの自動同期間隔を設定します。"
 			},
 			"fields": {
 				"serverId": "サーバー ID",
@@ -972,8 +975,11 @@
 				"mcPort": "MC Port",
 				"description": "説明",
 				"enabled": "このサーバーを有効化",
-				"mapEnabled": "マップ設定を有効化",
-				"hasTiles": "Tiles 利用可能",
+				"enabledDescription": "無効化すると、このサーバーは有効なインスタンスとして公開されません。",
+				"mapEnabled": "地図を有効化",
+				"mapEnabledDescription": "有効にすると、このサーバーで地図機能と既定視点を利用できます。",
+				"hasTiles": "地図 Tiles を有効化",
+				"hasTilesDescription": "有効にすると、フロントエンドがタイル URL から地図レイヤーを読み込みます。",
 				"tileBaseUrl": "Tiles Base URL",
 				"worldName": "ワールド名",
 				"mapName": "マップ名",
@@ -991,6 +997,7 @@
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "Bridge 接続を有効化",
+				"bridgeEnabledDescription": "有効にすると、Portal がこのサーバーの Bridge へ接続を試みます。",
 				"syncInterval": "同期間隔（分）"
 			},
 			"placeholders": {
@@ -1001,6 +1008,9 @@
 				"cancel": "キャンセル",
 				"save": "設定を保存",
 				"close": "閉じる"
+			},
+			"empty": {
+				"periods": "ライフサイクル期間はまだありません。右上の「期間を追加」から作成してください。"
 			},
 			"periodLabel": "期間 {index}",
 			"values": {

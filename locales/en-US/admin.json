@@ -937,14 +937,17 @@
 			"title": "Server Access Configuration",
 			"sections": {
 				"basic": "Server Basic Info",
+				"basicDescription": "Define the server identity, display names, and access mode.",
 				"mapConfig": "Map configuration",
-				"mapConfigDescription": "Configure tile capability and default map viewport for this server instance.",
+				"mapConfigDescription": "Control whether this server exposes map support and whether map tiles are available.",
 				"periods": "Lifecycle periods",
 				"periodsDescription": "Manually maintain the live, archive, or event periods for this server.",
 				"portalBridge": "PortalBridge",
+				"portalBridgeDescription": "Configure the Bridge connection details and sync entry for this server.",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
-				"sync": "Sync Rate"
+				"sync": "Sync Rate",
+				"syncDescription": "Configure automatic sync intervals for each data source."
 			},
 			"fields": {
 				"serverId": "Server ID",
@@ -962,8 +965,11 @@
 				"mcPort": "MC Port",
 				"description": "Description",
 				"enabled": "Enable this server",
-				"mapEnabled": "Enable map config",
-				"hasTiles": "Tiles available",
+				"enabledDescription": "When disabled, this server will not be exposed as an active instance.",
+				"mapEnabled": "Enable map",
+				"mapEnabledDescription": "When enabled, this server exposes map support and a default viewport.",
+				"hasTiles": "Enable map tiles",
+				"hasTilesDescription": "When enabled, the frontend will load the map layer from the tile URL.",
 				"tileBaseUrl": "Tiles base URL",
 				"worldName": "World name",
 				"mapName": "Map name",
@@ -981,6 +987,7 @@
 				"wsUrl": "WebSocket URL",
 				"secret": "Secret",
 				"bridgeEnabled": "Enable Bridge connection",
+				"bridgeEnabledDescription": "When enabled, the Portal will try to connect to this server's Bridge.",
 				"syncInterval": "Sync interval (minutes)"
 			},
 			"placeholders": {
@@ -991,6 +998,9 @@
 				"cancel": "Cancel",
 				"save": "Save Configuration",
 				"close": "Close"
+			},
+			"empty": {
+				"periods": "No lifecycle periods yet. Use “Add period” to create the first one."
 			},
 			"periodLabel": "Period {index}",
 			"values": {

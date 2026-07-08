@@ -1,11 +1,17 @@
 <template>
-	<form class="grid gap-6" @submit.prevent="submit">
+	<form class="grid gap-8" @submit.prevent="submit">
 		<div
-			class="grid grid-cols-1 gap-4"
-			:class="formMode === 'all' ? 'lg:grid-cols-2' : 'lg:grid-cols-1'"
+			class="w-full gap-6 lg:columns-2 [&>section]:mb-6"
+			:class="formMode === 'all' ? '' : 'lg:columns-1'"
 		>
-			<section v-if="visibleSections.basic" class="grid gap-4">
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+			<section
+				v-if="visibleSections.basic"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.basic') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.serverId') }}</span>
 						<UInput v-model="form.serverId" class="w-full" required />
@@ -86,239 +92,263 @@
 							max="65535"
 						/>
 					</label>
-				</div>
-				<div class="flex items-center justify-between gap-3 px-1 py-1">
-					<span class="text-sm font-medium text-slate-700 dark:text-slate-200">
-						{{ t('admin.serverConfig.fields.enabled') }}
-					</span>
-					<USwitch v-model="form.enabled" />
-				</div>
-
-				<section class="grid gap-4">
-					<div class="flex items-center justify-between gap-3">
-						<div>
-							<p class="text-sm font-semibold text-slate-900 dark:text-white">
-								{{ t('admin.serverConfig.sections.mapConfig') }}
-							</p>
-							<p class="text-xs text-slate-500 dark:text-slate-400">
-								{{ t('admin.serverConfig.sections.mapConfigDescription') }}
-							</p>
+					<label :class="[fieldClass, 'md:col-span-2']">
+						<div class="flex items-center justify-between gap-3">
+							<span>{{ t('admin.serverConfig.fields.enabled') }}</span>
+							<USwitch v-model="form.enabled" />
 						</div>
-						<div class="flex items-center gap-3">
-							<span class="text-xs text-slate-500 dark:text-slate-400">
-								{{ t('admin.serverConfig.fields.mapEnabled') }}
-							</span>
+					</label>
+				</div>
+			</section>
+
+			<section
+				v-if="visibleSections.basic"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.mapConfig') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+					<label :class="[fieldClass, 'md:col-span-2']">
+						<div class="flex items-center justify-between gap-3">
+							<span>{{ t('admin.serverConfig.fields.mapEnabled') }}</span>
 							<USwitch v-model="form.mapConfig.enabled" />
 						</div>
-					</div>
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-						<div class="flex items-center justify-between gap-3 md:col-span-2">
-							<span :class="fieldClass">{{
-								t('admin.serverConfig.fields.hasTiles')
-							}}</span>
+					</label>
+					<label :class="[fieldClass, 'md:col-span-2']">
+						<div class="flex items-center justify-between gap-3">
+							<span>{{ t('admin.serverConfig.fields.hasTiles') }}</span>
 							<USwitch v-model="form.mapConfig.hasTiles" />
 						</div>
-						<label :class="fieldClass" class="md:col-span-2">
-							<span>{{ t('admin.serverConfig.fields.tileBaseUrl') }}</span>
-							<UInput v-model="form.mapConfig.tileBaseUrl" class="w-full" />
-						</label>
+					</label>
+					<label :class="[fieldClass, 'md:col-span-2']">
+						<span>{{ t('admin.serverConfig.fields.tileBaseUrl') }}</span>
+						<UInput v-model="form.mapConfig.tileBaseUrl" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.worldName') }}</span>
+						<UInput v-model="form.mapConfig.worldName" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.mapName') }}</span>
+						<UInput v-model="form.mapConfig.mapName" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.tileExtension') }}</span>
+						<USelect
+							v-model="form.mapConfig.tileExtension"
+							:items="tileExtensionItems"
+							value-key="value"
+							label-key="label"
+							class="w-full"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.defaultZoom') }}</span>
+						<UInput
+							v-model.number="form.mapConfig.defaultZoom"
+							class="w-full"
+							type="number"
+							min="0"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.defaultCenterX') }}</span>
+						<UInput
+							v-model.number="form.mapConfig.defaultCenterX"
+							class="w-full"
+							type="number"
+						/>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.defaultCenterZ') }}</span>
+						<UInput
+							v-model.number="form.mapConfig.defaultCenterZ"
+							class="w-full"
+							type="number"
+						/>
+					</label>
+				</div>
+			</section>
+
+			<section
+				v-if="visibleSections.basic"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div class="mx-1 flex items-center justify-between gap-3">
+					<div :class="profileSectionTitleClass">
+						{{ t('admin.serverConfig.sections.periods') }}
+					</div>
+					<UButton
+						type="button"
+						size="xs"
+						color="neutral"
+						variant="soft"
+						icon="i-lucide-plus"
+						@click="addPeriod"
+					>
+						{{ t('admin.serverConfig.actions.addPeriod') }}
+					</UButton>
+				</div>
+				<div :class="profileCardClass" class="grid gap-4">
+					<div
+						v-if="form.periods.length === 0"
+						class="mx-1 text-sm text-slate-500 dark:text-slate-400"
+					>
+						{{ t('admin.serverConfig.empty.periods') }}
+					</div>
+					<div
+						v-for="(period, index) in form.periods"
+						:key="period.localId"
+						class="grid gap-4 md:grid-cols-2"
+					>
+						<div class="md:col-span-2 flex items-center justify-between gap-3">
+							<p class="text-sm font-medium text-slate-900 dark:text-white">
+								{{ t('admin.serverConfig.periodLabel', { index: index + 1 }) }}
+							</p>
+							<UButton
+								type="button"
+								size="xs"
+								color="error"
+								variant="ghost"
+								icon="i-lucide-trash-2"
+								@click="removePeriod(index)"
+							>
+								{{ t('admin.actions.delete') }}
+							</UButton>
+						</div>
 						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.worldName') }}</span>
-							<UInput v-model="form.mapConfig.worldName" class="w-full" />
-						</label>
-						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.mapName') }}</span>
-							<UInput v-model="form.mapConfig.mapName" class="w-full" />
-						</label>
-						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.tileExtension') }}</span>
+							<span>{{ t('admin.serverConfig.fields.periodKind') }}</span>
 							<USelect
-								v-model="form.mapConfig.tileExtension"
-								:items="tileExtensionItems"
+								v-model="period.kind"
+								:items="periodKindItems"
 								value-key="value"
 								label-key="label"
 								class="w-full"
 							/>
 						</label>
 						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.defaultZoom') }}</span>
+							<span>{{ t('admin.serverConfig.fields.periodSortOrder') }}</span>
 							<UInput
-								v-model.number="form.mapConfig.defaultZoom"
-								class="w-full"
-								type="number"
-								min="0"
-							/>
-						</label>
-						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.defaultCenterX') }}</span>
-							<UInput
-								v-model.number="form.mapConfig.defaultCenterX"
+								v-model.number="period.sortOrder"
 								class="w-full"
 								type="number"
 							/>
 						</label>
 						<label :class="fieldClass">
-							<span>{{ t('admin.serverConfig.fields.defaultCenterZ') }}</span>
+							<span>{{ t('admin.serverConfig.fields.startedAt') }}</span>
 							<UInput
-								v-model.number="form.mapConfig.defaultCenterZ"
+								v-model="period.startedAt"
 								class="w-full"
-								type="number"
+								type="datetime-local"
 							/>
 						</label>
+						<label :class="fieldClass">
+							<span>{{ t('admin.serverConfig.fields.endedAt') }}</span>
+							<UInput
+								v-model="period.endedAt"
+								class="w-full"
+								type="datetime-local"
+							/>
+						</label>
+						<label :class="[fieldClass, 'md:col-span-2']">
+							<span>{{ t('admin.serverConfig.fields.periodNote') }}</span>
+							<UTextarea v-model="period.note" :rows="2" class="w-full" />
+						</label>
 					</div>
-				</section>
-
-				<section class="grid gap-4">
-					<div class="flex items-center justify-between gap-3">
-						<div>
-							<p class="text-sm font-semibold text-slate-900 dark:text-white">
-								{{ t('admin.serverConfig.sections.periods') }}
-							</p>
-							<p class="text-xs text-slate-500 dark:text-slate-400">
-								{{ t('admin.serverConfig.sections.periodsDescription') }}
-							</p>
-						</div>
-						<UButton
-							type="button"
-							size="xs"
-							color="neutral"
-							variant="soft"
-							icon="i-lucide-plus"
-							@click="addPeriod"
-						>
-							{{ t('admin.serverConfig.actions.addPeriod') }}
-						</UButton>
-					</div>
-					<div class="grid gap-4">
-						<div
-							v-for="(period, index) in form.periods"
-							:key="period.localId"
-							class="grid gap-4 rounded-lg border border-slate-200 p-4 dark:border-slate-800"
-						>
-							<div class="flex items-center justify-between gap-3">
-								<p class="text-sm font-medium text-slate-900 dark:text-white">
-									{{
-										t('admin.serverConfig.periodLabel', { index: index + 1 })
-									}}
-								</p>
-								<UButton
-									type="button"
-									size="xs"
-									color="error"
-									variant="ghost"
-									icon="i-lucide-trash-2"
-									@click="removePeriod(index)"
-								>
-									{{ t('common.delete') }}
-								</UButton>
-							</div>
-							<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<label :class="fieldClass">
-									<span>{{ t('admin.serverConfig.fields.periodKind') }}</span>
-									<USelect
-										v-model="period.kind"
-										:items="periodKindItems"
-										value-key="value"
-										label-key="label"
-										class="w-full"
-									/>
-								</label>
-								<label :class="fieldClass">
-									<span>{{
-										t('admin.serverConfig.fields.periodSortOrder')
-									}}</span>
-									<UInput
-										v-model.number="period.sortOrder"
-										class="w-full"
-										type="number"
-									/>
-								</label>
-								<label :class="fieldClass">
-									<span>{{ t('admin.serverConfig.fields.startedAt') }}</span>
-									<UInput
-										v-model="period.startedAt"
-										class="w-full"
-										type="datetime-local"
-									/>
-								</label>
-								<label :class="fieldClass">
-									<span>{{ t('admin.serverConfig.fields.endedAt') }}</span>
-									<UInput
-										v-model="period.endedAt"
-										class="w-full"
-										type="datetime-local"
-									/>
-								</label>
-								<label :class="fieldClass" class="md:col-span-2">
-									<span>{{ t('admin.serverConfig.fields.periodNote') }}</span>
-									<UTextarea v-model="period.note" :rows="2" class="w-full" />
-								</label>
-							</div>
-						</div>
-					</div>
-				</section>
-			</section>
-
-			<section v-if="visibleSections.portalBridge" class="grid gap-4">
-				<label :class="fieldClass">
-					<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
-					<UInput v-model="form.portalBridge.bridgeId" class="w-full" />
-				</label>
-				<label :class="fieldClass">
-					<span>{{ t('admin.serverConfig.fields.module') }}</span>
-					<UInput v-model="form.portalBridge.module" class="w-full" />
-				</label>
-				<label :class="fieldClass">
-					<span>{{ t('admin.serverConfig.fields.wsUrl') }}</span>
-					<UInput v-model="form.portalBridge.wsUrl" class="w-full" />
-				</label>
-				<label :class="fieldClass">
-					<span>{{ t('admin.serverConfig.fields.secret') }}</span>
-					<UInput
-						v-model="form.portalBridge.secret"
-						class="w-full"
-						type="password"
-						:placeholder="
-							server?.portalBridge?.hasSecret
-								? t('admin.serverConfig.placeholders.keepSecret')
-								: ''
-						"
-					/>
-				</label>
-				<div class="flex items-center justify-between gap-3 px-1 py-1">
-					<span class="text-sm font-medium text-slate-700 dark:text-slate-200">
-						{{ t('admin.serverConfig.fields.bridgeEnabled') }}
-					</span>
-					<USwitch v-model="form.portalBridge.enabled" />
 				</div>
 			</section>
 
-			<section v-if="visibleSections.authMe" class="grid gap-4">
-				<AdminMysqlFields
-					v-model:host="form.authMe.host"
-					v-model:port="form.authMe.port"
-					v-model:database="form.authMe.database"
-					v-model:username="form.authMe.username"
-					v-model:password="form.authMe.password"
-					v-model:enabled="form.authMe.enabled"
-					:has-password="server?.authMe?.hasPassword ?? false"
-				/>
+			<section
+				v-if="visibleSections.portalBridge"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.portalBridge') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4">
+					<label :class="fieldClass">
+						<div class="flex items-center justify-between gap-3">
+							<span>{{ t('admin.serverConfig.fields.bridgeEnabled') }}</span>
+							<USwitch v-model="form.portalBridge.enabled" />
+						</div>
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
+						<UInput v-model="form.portalBridge.bridgeId" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.module') }}</span>
+						<UInput v-model="form.portalBridge.module" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.wsUrl') }}</span>
+						<UInput v-model="form.portalBridge.wsUrl" class="w-full" />
+					</label>
+					<label :class="fieldClass">
+						<span>{{ t('admin.serverConfig.fields.secret') }}</span>
+						<UInput
+							v-model="form.portalBridge.secret"
+							class="w-full"
+							type="password"
+							:placeholder="
+								server?.portalBridge?.hasSecret
+									? t('admin.serverConfig.placeholders.keepSecret')
+									: ''
+							"
+						/>
+					</label>
+				</div>
 			</section>
 
-			<section v-if="visibleSections.luckPerms" class="grid gap-4">
-				<AdminMysqlFields
-					v-model:host="form.luckPerms.host"
-					v-model:port="form.luckPerms.port"
-					v-model:database="form.luckPerms.database"
-					v-model:username="form.luckPerms.username"
-					v-model:password="form.luckPerms.password"
-					v-model:enabled="form.luckPerms.enabled"
-					:has-password="server?.luckPerms?.hasPassword ?? false"
-				/>
+			<section
+				v-if="visibleSections.authMe"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.authMe') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+					<AdminMysqlFields
+						v-model:host="form.authMe.host"
+						v-model:port="form.authMe.port"
+						v-model:database="form.authMe.database"
+						v-model:username="form.authMe.username"
+						v-model:password="form.authMe.password"
+						v-model:enabled="form.authMe.enabled"
+						:has-password="server?.authMe?.hasPassword ?? false"
+					/>
+				</div>
 			</section>
 
-			<section v-if="visibleSections.sync" class="grid gap-4">
-				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+			<section
+				v-if="visibleSections.luckPerms"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.luckPerms') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+					<AdminMysqlFields
+						v-model:host="form.luckPerms.host"
+						v-model:port="form.luckPerms.port"
+						v-model:database="form.luckPerms.database"
+						v-model:username="form.luckPerms.username"
+						v-model:password="form.luckPerms.password"
+						v-model:enabled="form.luckPerms.enabled"
+						:has-password="server?.luckPerms?.hasPassword ?? false"
+					/>
+				</div>
+			</section>
+
+			<section
+				v-if="visibleSections.sync"
+				class="grid gap-3 break-inside-avoid"
+			>
+				<div :class="profileSectionTitleClass">
+					{{ t('admin.serverConfig.sections.sync') }}
+				</div>
+				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="fieldClass">
 						<span
 							>PortalBridge
@@ -360,7 +390,7 @@
 			</section>
 		</div>
 
-		<div class="flex gap-3 justify-end">
+		<div class="flex justify-end gap-3">
 			<UButton
 				v-if="showCancel"
 				type="button"
@@ -379,6 +409,11 @@
 
 <script setup lang="ts">
 import type { MinecraftServerResponse, MinecraftServerSummary } from './types'
+import { adminFieldClass } from '~/utils/admin/users/edit'
+import {
+	profileCardClass,
+	profileSectionTitleClass,
+} from '~/utils/profile/edit'
 
 interface MysqlForm {
 	host: string
@@ -473,8 +508,7 @@ const visibleSections = computed(() => ({
 	luckPerms: false,
 	sync: formMode.value === 'sync',
 }))
-const fieldClass =
-	'grid gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-200'
+const fieldClass = adminFieldClass
 
 const serverKindItems = computed(() => [
 	{ label: t('admin.serverConfig.values.serverKind.main'), value: 'MAIN' },

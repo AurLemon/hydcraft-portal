@@ -6,14 +6,7 @@
 	>
 		<template #content>
 			<div class="max-h-[86dvh] overflow-y-auto p-5 sm:p-6">
-				<div class="mb-6 flex items-start justify-between gap-4">
-					<div>
-						<h2
-							class="mt-1 text-2xl font-semibold text-slate-950 dark:text-white"
-						>
-							{{ modalTitle }}
-						</h2>
-					</div>
+				<div class="mb-2 flex justify-end">
 					<UButton
 						type="button"
 						color="neutral"
@@ -52,14 +45,6 @@ const emit = defineEmits<{
 	saved: [server: MinecraftServerSummary]
 }>()
 const { t } = useI18n()
-
-const modalTitle = computed(() => {
-	if (props.mode && props.mode !== 'all') {
-		return t(`admin.serverConfig.sections.${props.mode}`)
-	}
-
-	return t('admin.serverConfig.title')
-})
 
 const handleSaved = (server: MinecraftServerSummary): void => {
 	emit('saved', server)
