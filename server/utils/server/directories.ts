@@ -506,6 +506,7 @@ const buildDirectoryPlayerItems = (
 			username: summary.username,
 			uuid: summary.uuid,
 			isPrimary: summary.isPrimary,
+			identityKind: account.identityKind,
 			luckPermsPrimaryGroup: summary.luckPermsPrimaryGroup,
 			authMeRegisteredAt:
 				account.authMeAccount?.registeredAt?.toISOString() ?? null,
@@ -522,6 +523,7 @@ export const listPublicServerPlayers = async (input: {
 	pageSize: number
 	search?: string
 	linked?: string
+	identity?: string
 	group?: string
 	sortField?: string
 	sortDirection?: 'asc' | 'desc'
@@ -532,13 +534,41 @@ export const listPublicServerPlayers = async (input: {
 			: input.linked === 'unlinked'
 				? false
 				: undefined
+	const identity =
+		input.identity === 'formal'
+			? 'AUTHENTICATED'
+			: input.identity === 'historical'
+				? 'HISTORICAL'
+				: undefined
 	const groupMatchedNames = input.group
 		? await findGroupMatchedNames(input.group)
 		: undefined
 	const where: Prisma.MinecraftAccountWhereInput = {
-		authMeAccount: {
-			isNot: null,
-		},
+		unlinkedAt: null,
+		...(identity === 'HISTORICAL'
+			? {
+					identityKind: 'HISTORICAL',
+				}
+			: identity === 'AUTHENTICATED'
+				? {
+						identityKind: 'AUTHENTICATED',
+						authMeAccount: {
+							isNot: null,
+						},
+					}
+				: {
+						OR: [
+							{
+								identityKind: 'AUTHENTICATED',
+								authMeAccount: {
+									isNot: null,
+								},
+							},
+							{
+								identityKind: 'HISTORICAL',
+							},
+						],
+					}),
 		...(linked === undefined
 			? {}
 			: linked
@@ -611,9 +641,26 @@ export const listPublicServerPlayers = async (input: {
 			: {}),
 	}
 	const sortDirection = input.sortDirection ?? 'desc'
-	const total = await prisma.minecraftAccount.count({
-		where,
-	})
+	const [total, formalCount, historicalCount] = await Promise.all([
+		prisma.minecraftAccount.count({
+			where,
+		}),
+		prisma.minecraftAccount.count({
+			where: {
+				...where,
+				identityKind: 'AUTHENTICATED',
+				authMeAccount: {
+					isNot: null,
+				},
+			},
+		}),
+		prisma.minecraftAccount.count({
+			where: {
+				...where,
+				identityKind: 'HISTORICAL',
+			},
+		}),
+	])
 
 	if (input.sortField === 'playTimeTicks') {
 		const accounts = await prisma.minecraftAccount.findMany({
@@ -646,6 +693,8 @@ export const listPublicServerPlayers = async (input: {
 			pageSize: input.pageSize,
 			total,
 			pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+			formalCount,
+			historicalCount,
 		}
 	}
 
@@ -673,5 +722,7 @@ export const listPublicServerPlayers = async (input: {
 		pageSize: input.pageSize,
 		total,
 		pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+		formalCount,
+		historicalCount,
 	}
 }

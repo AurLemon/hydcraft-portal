@@ -13,6 +13,7 @@
 				>
 					{{ count }}
 				</UBadge>
+				<slot name="titleSuffix" />
 			</div>
 
 			<UButton

@@ -149,10 +149,19 @@
 					"fields": {
 						"player": "Player",
 						"linkedUser": "Linked user",
+						"identity": "Profile type",
 						"group": "Primary group",
 						"playTime": "Play time",
 						"lastLogin": "Recent login",
 						"registeredAt": "Registration time"
+					},
+					"identity": {
+						"formal": "Formal profile",
+						"historical": "Historical archive"
+					},
+					"counts": {
+						"formal": "{count} formal profile(s)",
+						"historical": "{count} historical archive(s)"
 					},
 					"filters": {
 						"search": "Search player, login name, or linked user",

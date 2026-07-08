@@ -108,6 +108,8 @@
 				"profile": "Profile",
 				"social": "Social links",
 				"minecraft": "Minecraft profile",
+				"minecraftArchive": "Game archive",
+				"minecraftTimeline": "Player timeline",
 				"activity": "Recent activity"
 			},
 			"fields": {
@@ -142,8 +144,16 @@
 				"publicEmail": "Public email"
 			},
 			"minecraft": {
-				"accountCount": "{count} account(s)",
-				"historicalAccountCount": "{count} historical account(s)"
+				"formalAccountCount": "{count} formal profile(s)",
+				"historicalAccountCount": "{count} historical archive(s)",
+				"timeline": {
+					"notJoined": "No record on this server",
+					"veteran": "{count}-era veteran"
+				},
+				"archive": {
+					"durationYear": "y",
+					"durationMonth": "mo"
+				}
 			},
 			"birthday": {
 				"ageShort": "{count} y.o.",

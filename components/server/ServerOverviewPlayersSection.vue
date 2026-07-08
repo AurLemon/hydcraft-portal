@@ -3,8 +3,34 @@
 		:title="t('content.serverOverview.cards.players.title')"
 		:action-label="t('content.serverOverview.cards.players.action')"
 		:to="localePath('/server/players')"
-		:count="totalCount ?? players.length"
 	>
+		<template #titleSuffix>
+			<UBadge
+				v-if="typeof totalCount === 'number'"
+				color="neutral"
+				variant="soft"
+				size="sm"
+			>
+				{{
+					t('content.serverOverview.directories.players.counts.formal', {
+						count: totalCount,
+					})
+				}}
+			</UBadge>
+			<UBadge
+				v-if="typeof historicalCount === 'number'"
+				color="neutral"
+				variant="soft"
+				size="sm"
+			>
+				{{
+					t('content.serverOverview.directories.players.counts.historical', {
+						count: historicalCount,
+					})
+				}}
+			</UBadge>
+		</template>
+
 		<div v-if="players.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
 			<ServerOverviewPlayerCard
 				v-for="player in players"
@@ -28,6 +54,7 @@ import type { ServerOverviewRecommendedPlayer } from '~/utils/server/overview'
 interface Props {
 	players: ServerOverviewRecommendedPlayer[]
 	totalCount?: number
+	historicalCount?: number
 }
 
 defineProps<Props>()

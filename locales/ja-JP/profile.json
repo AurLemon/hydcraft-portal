@@ -107,6 +107,8 @@
 				"profile": "プロフィール",
 				"social": "ソーシャルリンク",
 				"minecraft": "Minecraft プロフィール",
+				"minecraftArchive": "ゲームアーカイブ",
+				"minecraftTimeline": "プレイヤー年表",
 				"activity": "最近のアクティビティ"
 			},
 			"fields": {
@@ -141,8 +143,16 @@
 				"publicEmail": "公開メール"
 			},
 			"minecraft": {
-				"accountCount": "{count} 件のアカウント",
-				"historicalAccountCount": "{count} 件の履歴アカウント"
+				"formalAccountCount": "{count} 件の正式プロフィール",
+				"historicalAccountCount": "{count} 件の履歴アーカイブ",
+				"timeline": {
+					"notJoined": "このサーバーの記録なし",
+					"veteran": "{count}代古参"
+				},
+				"archive": {
+					"durationYear": "年",
+					"durationMonth": "か月"
+				}
 			},
 			"birthday": {
 				"ageShort": "{count}歳",

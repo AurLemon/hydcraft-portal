@@ -26,10 +26,10 @@
 			/>
 			<template v-else>
 				<div
-					class="flex flex-col gap-3 mb-8 sm:flex-row sm:items-start sm:justify-between"
+					class="flex flex-col gap-3 items-center mb-8 sm:flex-row sm:items-start sm:justify-between"
 				>
 					<div
-						class="grid w-fit grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950 sm:grid-cols-4"
+						class="grid w-fit grid-cols-4 gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950"
 					>
 						<button
 							v-for="tab in tabItems"

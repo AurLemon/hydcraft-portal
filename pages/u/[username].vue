@@ -25,7 +25,7 @@
 						<div
 							class="mx-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
 						>
-							<div class="flex items-center gap-2">
+							<div class="flex items-center flex-wrap gap-2">
 								<div :class="profileSectionTitleClass">
 									{{ t('profile.public.sections.minecraft') }}
 								</div>
@@ -35,7 +35,7 @@
 									color="neutral"
 								>
 									{{
-										t('profile.public.minecraft.accountCount', {
+										t('profile.public.minecraft.formalAccountCount', {
 											count: minecraftAccounts.length,
 										})
 									}}
@@ -81,6 +81,49 @@
 							class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 text-sm"
 						>
 							{{ t('profile.public.empty.minecraft') }}
+						</div>
+					</section>
+
+					<section v-if="minecraftServerTimeline.length" class="grid gap-3">
+						<div class="mx-1 flex items-center justify-between gap-3">
+							<div class="flex items-center gap-2">
+								<div :class="profileSectionTitleClass">
+									{{ t('profile.public.sections.minecraftTimeline') }}
+								</div>
+								<UBadge
+									v-if="minecraftTimelineVeteranLabel"
+									color="neutral"
+									variant="soft"
+								>
+									{{ minecraftTimelineVeteranLabel }}
+								</UBadge>
+							</div>
+						</div>
+						<div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 grid gap-4 grid-cols-4 lg:grid-cols-8">
+							<div
+								v-for="item in minecraftServerTimeline"
+								:key="item.serverId"
+								:class="[
+									'flex flex-col items-center gap-3 text-center',
+									item.highlighted ? '' : 'opacity-40',
+								]"
+							>
+								<div
+									:class="[
+										'flex size-14 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300',
+										item.highlighted
+											? 'dark:bg-slate-800/90 text-slate-900 dark:text-white'
+											: '',
+									]"
+								>
+									{{ getServerTimelineInitial(item.serverCode) }}
+								</div>
+								<div>
+									<p class="text-sm font-medium text-slate-950 dark:text-white">
+										{{ item.serverName }}
+									</p>
+								</div>
+							</div>
 						</div>
 					</section>
 
@@ -170,6 +213,50 @@
 						>
 							{{ profile.bio }}
 						</p>
+					</section>
+
+					<section v-if="minecraftArchiveSummary" :class="sideCardClass">
+						<div class="grid gap-4">
+							<div class="grid gap-1">
+								<div class="flex flex-wrap items-baseline gap-1">
+									<div class="text-2xl text-slate-950 dark:text-white">
+										{{ minecraftArchiveHours }}
+									</div>
+									<span class="text-sm text-slate-950 dark:text-white">
+										{{ t('minecraftAccounts.summary.playTime') }}
+									</span>
+								</div>
+								<p class="text-xs text-slate-500 dark:text-slate-400">
+									{{ minecraftArchiveDurationLabel }}
+								</p>
+							</div>
+							<div class="grid gap-3">
+								<div class="flex items-center justify-between gap-3 text-sm">
+									<span class="text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.summary.deaths') }}
+									</span>
+									<span class="text-slate-950 dark:text-white">
+										{{ minecraftArchiveSummary.totalDeaths }}
+									</span>
+								</div>
+								<div class="flex items-center justify-between gap-3 text-sm">
+									<span class="text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.summary.leaveCount') }}
+									</span>
+									<span class="text-slate-950 dark:text-white">
+										{{ minecraftArchiveSummary.totalLeaveCount }}
+									</span>
+								</div>
+								<div class="flex items-center justify-between gap-3 text-sm">
+									<span class="text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.summary.distance') }}
+									</span>
+									<span class="text-slate-950 dark:text-white">
+										{{ minecraftArchiveDistanceLabel }}
+									</span>
+								</div>
+							</div>
+						</div>
 					</section>
 
 					<section :class="sideCardClass">
@@ -343,6 +430,28 @@ interface PublicProfile {
 		profileUrl: string
 		status: string
 	} | null
+	minecraftArchiveSummary?: {
+		totalAccounts: number
+		totalPlayTimeTicks: number
+		totalDeaths: number
+		totalLeaveCount: number
+		totalDistanceTraveledCm: number
+		detailedDuration: {
+			years: number
+			months: number
+			days: number
+			hours: number
+			minutes: number
+			seconds: number
+		}
+	} | null
+	minecraftServerTimeline?: Array<{
+		serverId: string
+		serverName: string
+		serverCode: string
+		highlighted: boolean
+		playerId: string | null
+	}>
 	isOwner: boolean
 }
 
@@ -672,6 +781,65 @@ const socialActions = computed<SocialAction[]>(() => {
 })
 
 const hasSocialActions = computed<boolean>(() => socialActions.value.length > 0)
+const minecraftArchiveSummary = computed(
+	() => profile.value?.minecraftArchiveSummary ?? null,
+)
+const minecraftTimelineHighlightedCount = computed(
+	() =>
+		(profile.value?.minecraftServerTimeline ?? []).filter(
+			(item) => item.highlighted,
+		).length,
+)
+const minecraftServerTimeline = computed(() =>
+	[...(profile.value?.minecraftServerTimeline ?? [])].reverse(),
+)
+const minecraftArchiveHours = computed(() => {
+	const ticks = minecraftArchiveSummary.value?.totalPlayTimeTicks ?? 0
+	const hours = ticks / 20 / 3600
+	return `${Math.round(hours * 10) / 10}h`
+})
+const minecraftArchiveDurationLabel = computed(() => {
+	const duration = minecraftArchiveSummary.value?.detailedDuration
+
+	if (!duration) {
+		return ''
+	}
+
+	return [
+		duration.years
+			? `${duration.years}${t('profile.public.minecraft.archive.durationYear')}`
+			: '',
+		duration.months
+			? `${duration.months}${t('profile.public.minecraft.archive.durationMonth')}`
+			: '',
+		duration.days
+			? `${duration.days}${t('minecraftAccounts.summary.durationDay')}`
+			: '',
+		`${duration.hours}${t('minecraftAccounts.summary.durationHour')}`,
+		`${duration.minutes}${t('minecraftAccounts.summary.durationMinute')}`,
+		`${duration.seconds}${t('minecraftAccounts.summary.durationSecond')}`,
+	]
+		.filter(Boolean)
+		.join('')
+})
+const minecraftArchiveDistanceLabel = computed(() => {
+	const distance = minecraftArchiveSummary.value?.totalDistanceTraveledCm ?? 0
+	return `${(distance / 100000).toFixed(1)}km`
+})
+const minecraftTimelineVeteranLabel = computed(() => {
+	const count = minecraftTimelineHighlightedCount.value
+
+	if (count <= 1) {
+		return ''
+	}
+
+	return t('profile.public.minecraft.timeline.veteran', {
+		count:
+			locale.value === 'zh-CN' || locale.value === 'zh-TW'
+				? toChineseCount(count)
+				: String(count),
+	})
+})
 
 // Minecraft 账号数组 + 选中态（复刻 /me/minecraft 的选中逻辑，裁掉 save/bind）。
 const { data: minecraftAccountsData, pending: minecraftAccountsPending } =
@@ -749,6 +917,42 @@ const getActivityEventLabel = (event: PublicActivityEvent): string => {
 		default:
 			return t('profile.public.activity.unknown')
 	}
+}
+
+const getServerTimelineInitial = (serverCode: string): string =>
+	serverCode.trim().charAt(0).toUpperCase()
+
+const CHINESE_DIGITS = [
+	'零',
+	'一',
+	'二',
+	'三',
+	'四',
+	'五',
+	'六',
+	'七',
+	'八',
+	'九',
+]
+
+const toChineseCount = (value: number): string => {
+	if (value < 10) {
+		return CHINESE_DIGITS[value] ?? String(value)
+	}
+
+	if (value < 20) {
+		return `十${value === 10 ? '' : CHINESE_DIGITS[value % 10]}`
+	}
+
+	if (value < 100) {
+		const tens = Math.floor(value / 10)
+		const units = value % 10
+		return `${CHINESE_DIGITS[tens]}十${
+			units === 0 ? '' : CHINESE_DIGITS[units]
+		}`
+	}
+
+	return String(value)
 }
 
 function formatDate(value: string): string {

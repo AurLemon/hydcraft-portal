@@ -17,15 +17,17 @@
 		@update:page-size="setPageSize"
 	>
 		<template #headerPrefix>
-			<UButton
-				:to="localePath('/server')"
-				color="primary"
-				variant="ghost"
-				icon="i-lucide-arrow-left"
-				class="-ml-2 mb-3"
-			>
-				{{ t('routes.server') }}
-			</UButton>
+			<div class="mb-3 flex flex-wrap items-center gap-2">
+				<UButton
+					:to="localePath('/server')"
+					color="primary"
+					variant="ghost"
+					icon="i-lucide-arrow-left"
+					class="-ml-2"
+				>
+					{{ t('routes.server') }}
+				</UButton>
+			</div>
 		</template>
 
 		<template #filters>
@@ -41,6 +43,13 @@
 				v-model="filters.linked"
 				:items="linkedItems"
 				:placeholder="t('admin.players.fields.linkedUser')"
+			/>
+			<USelect
+				v-model="filters.identity"
+				:items="identityItems"
+				:placeholder="
+					t('content.serverOverview.directories.players.fields.identity')
+				"
 			/>
 			<UInput
 				v-model="filters.group"
@@ -102,9 +111,30 @@
 						skeleton-class="rounded-md"
 					/>
 					<div class="min-w-0">
-						<p class="truncate font-medium text-slate-900 dark:text-white">
-							{{ row.original.username }}
-						</p>
+						<div class="flex items-center gap-2">
+							<p class="truncate font-medium text-slate-900 dark:text-white">
+								{{ row.original.username }}
+							</p>
+							<UBadge
+								:color="
+									row.original.identityKind === 'HISTORICAL'
+										? 'warning'
+										: 'primary'
+								"
+								variant="soft"
+								size="xs"
+							>
+								{{
+									row.original.identityKind === 'HISTORICAL'
+										? t(
+												'content.serverOverview.directories.players.identity.historical',
+											)
+										: t(
+												'content.serverOverview.directories.players.identity.formal',
+											)
+								}}
+							</UBadge>
+						</div>
 						<p v-if="row.original.uuid" class="truncate text-xs text-slate-500">
 							{{ row.original.uuid }}
 						</p>
@@ -192,6 +222,7 @@ const pageSize = ref(20)
 const filters = reactive({
 	search: '',
 	linked: ALL_FILTER_VALUE,
+	identity: ALL_FILTER_VALUE,
 	group: '',
 	sortField: 'authMeLastLoginAt',
 	sortDirection: 'desc',
@@ -203,6 +234,7 @@ const query = computed(() => ({
 	pageSize: pageSize.value,
 	search: filters.search || undefined,
 	linked: getFilterQueryValue(filters.linked),
+	identity: getFilterQueryValue(filters.identity),
 	group: filters.group || undefined,
 	sortField: filters.sortField,
 	sortDirection: filters.sortDirection,
@@ -226,6 +258,10 @@ const columns = [
 		header: t('content.serverOverview.directories.players.fields.linkedUser'),
 	},
 	{
+		accessorKey: 'identityKind',
+		header: t('content.serverOverview.directories.players.fields.identity'),
+	},
+	{
 		accessorKey: 'luckPermsPrimaryGroup',
 		header: t('content.serverOverview.directories.players.fields.group'),
 	},
@@ -246,6 +282,17 @@ const linkedItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	{ label: t('admin.players.filters.linked'), value: 'linked' },
 	{ label: t('admin.players.filters.unlinked'), value: 'unlinked' },
+]
+const identityItems = [
+	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
+	{
+		label: t('content.serverOverview.directories.players.identity.formal'),
+		value: 'formal',
+	},
+	{
+		label: t('content.serverOverview.directories.players.identity.historical'),
+		value: 'historical',
+	},
 ]
 const sortFieldItems = [
 	{
@@ -315,6 +362,7 @@ const formatPlayTime = (ticks: number, hasStats: boolean): string => {
 const resetFilters = (): void => {
 	filters.search = ''
 	filters.linked = ALL_FILTER_VALUE
+	filters.identity = ALL_FILTER_VALUE
 	filters.group = ''
 	filters.sortField = 'authMeLastLoginAt'
 	filters.sortDirection = 'desc'

@@ -107,6 +107,8 @@
 				"profile": "个人档案",
 				"social": "社交链接",
 				"minecraft": "Minecraft 档案",
+				"minecraftArchive": "游戏档案",
+				"minecraftTimeline": "玩家年表",
 				"activity": "最近活动"
 			},
 			"fields": {
@@ -141,8 +143,16 @@
 				"publicEmail": "公开邮箱"
 			},
 			"minecraft": {
-				"accountCount": "{count} 个账户",
-				"historicalAccountCount": "{count} 个历史账户"
+				"formalAccountCount": "{count} 个正式档案",
+				"historicalAccountCount": "{count} 个历史档案",
+				"timeline": {
+					"notJoined": "未进入该服务器",
+					"veteran": "{count}朝元老"
+				},
+				"archive": {
+					"durationYear": "年",
+					"durationMonth": "个月"
+				}
 			},
 			"birthday": {
 				"ageShort": "{count}岁",

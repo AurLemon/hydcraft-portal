@@ -146,5 +146,27 @@ export interface PublicUserProfile {
 		source: UserAuthActivitySource | 'LEGACY_LOGIN' | null
 	}
 	minecraftSummary?: MinecraftProfileSummary | null
+	minecraftArchiveSummary?: {
+		totalAccounts: number
+		totalPlayTimeTicks: number
+		totalDeaths: number
+		totalLeaveCount: number
+		totalDistanceTraveledCm: number
+		detailedDuration: {
+			years: number
+			months: number
+			days: number
+			hours: number
+			minutes: number
+			seconds: number
+		}
+	} | null
+	minecraftServerTimeline?: Array<{
+		serverId: string
+		serverName: string
+		serverCode: string
+		highlighted: boolean
+		playerId: string | null
+	}>
 	isOwner: boolean
 }

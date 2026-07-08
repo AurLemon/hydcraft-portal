@@ -6,6 +6,7 @@ import {
 	buildMinecraftAccountSummary,
 	minecraftAccountSummaryPlayerInclude,
 } from '../minecraft/account-summary'
+import { getHistoricalMinecraftAccountsForUser } from '../minecraft/historical-accounts'
 import { ensureUserProfileDefaults } from './defaults'
 import {
 	toEditableProfile,
@@ -100,7 +101,87 @@ export const getPublicUserProfile = async (
 	}
 
 	const presence = await readMinecraftPresence(user.minecraftAccounts[0]?.uuid)
-	return toPublicProfile(user, currentUserId, presence)
+	const [publicAccounts, historicalAccounts, servers] = await Promise.all([
+		getPublicMinecraftAccounts(username),
+		getHistoricalMinecraftAccountsForUser(user.id),
+		prisma.minecraftServer.findMany({
+			where: {
+				enabled: true,
+			},
+			orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+			select: {
+				serverId: true,
+				code: true,
+				name: true,
+			},
+		}),
+	])
+
+	const allAccounts = [...publicAccounts.accounts, ...historicalAccounts]
+	const totalPlayTimeTicks = allAccounts.reduce(
+		(total, account) => total + account.playerProfile.playTimeTicks,
+		0,
+	)
+	const totalDeaths = allAccounts.reduce(
+		(total, account) => total + account.playerProfile.deaths,
+		0,
+	)
+	const totalLeaveCount = allAccounts.reduce(
+		(total, account) => total + account.playerProfile.leaveCount,
+		0,
+	)
+	const totalDistanceTraveledCm = allAccounts.reduce(
+		(total, account) => total + account.playerProfile.distanceTraveledCm,
+		0,
+	)
+	const totalSeconds = Math.floor(totalPlayTimeTicks / 20)
+	const totalDays = Math.floor(totalSeconds / 86400)
+	const detailedDuration = {
+		years: Math.floor(totalDays / 365),
+		months: Math.floor((totalDays % 365) / 30),
+		days: (totalDays % 365) % 30,
+		hours: Math.floor((totalSeconds % 86400) / 3600),
+		minutes: Math.floor((totalSeconds % 3600) / 60),
+		seconds: totalSeconds % 60,
+	}
+	const minecraftArchiveSummary =
+		allAccounts.length > 1
+			? {
+					totalAccounts: allAccounts.length,
+					totalPlayTimeTicks,
+					totalDeaths,
+					totalLeaveCount,
+					totalDistanceTraveledCm,
+					detailedDuration,
+				}
+			: null
+	const firstPlayerIdByServerId = new Map<string, string | null>()
+
+	for (const account of allAccounts) {
+		for (const view of account.serverViews) {
+			if (!view.serverId || firstPlayerIdByServerId.has(view.serverId)) {
+				continue
+			}
+
+			firstPlayerIdByServerId.set(
+				view.serverId,
+				account.playerIdentity.playerId ?? account.username,
+			)
+		}
+	}
+
+	const minecraftServerTimeline = servers.map((server) => ({
+		serverId: server.serverId,
+		serverName: server.name,
+		serverCode: server.code,
+		highlighted: firstPlayerIdByServerId.has(server.serverId),
+		playerId: firstPlayerIdByServerId.get(server.serverId) ?? null,
+	}))
+
+	return toPublicProfile(user, currentUserId, presence, {
+		minecraftArchiveSummary,
+		minecraftServerTimeline,
+	})
 }
 
 export const getPublicMinecraftSummary = async (

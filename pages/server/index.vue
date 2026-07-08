@@ -97,6 +97,7 @@
 			<ServerOverviewPlayersSection
 				:players="overview.recommendedPlayers"
 				:total-count="overview.totalPlayers"
+				:historical-count="overview.historicalPlayersCount"
 			/>
 			<ServerOverviewMunicipalitySection />
 			<ServerOverviewRailwayDataSection />

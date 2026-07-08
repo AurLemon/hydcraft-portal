@@ -149,10 +149,19 @@
 					"fields": {
 						"player": "玩家",
 						"linkedUser": "绑定用户",
+						"identity": "档案类型",
 						"group": "权限组",
 						"playTime": "游戏时间",
 						"lastLogin": "最近登录时间",
 						"registeredAt": "注册时间"
+					},
+					"identity": {
+						"formal": "正式档案",
+						"historical": "历史档案"
+					},
+					"counts": {
+						"formal": "{count} 个正式档案",
+						"historical": "{count} 个历史档案"
 					},
 					"filters": {
 						"search": "搜索玩家名、登录名或绑定用户",

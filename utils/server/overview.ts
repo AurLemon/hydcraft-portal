@@ -66,6 +66,7 @@ export interface ServerOverviewResponse {
 	defaultServerId: string | null
 	totalUsers: number
 	totalPlayers: number
+	historicalPlayersCount: number
 	recommendedUsers: ServerOverviewRecommendedUser[]
 	recommendedPlayers: ServerOverviewRecommendedPlayer[]
 }

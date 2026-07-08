@@ -311,6 +311,10 @@ export const toPublicProfile = (
 	user: ProfileUser,
 	currentUserId?: string | null,
 	presence?: MinecraftPresenceProjection | null,
+	extra?: Pick<
+		PublicUserProfile,
+		'minecraftArchiveSummary' | 'minecraftServerTimeline'
+	>,
 ): PublicUserProfile => {
 	const privacy = toPrivacySummary(user)
 	const minecraftSummary = toMinecraftSummary(user, presence)
@@ -359,6 +363,8 @@ export const toPublicProfile = (
 	if (privacy.showMinecraftProfileLink) {
 		profile.minecraftSummary = minecraftSummary
 	}
+	profile.minecraftArchiveSummary = extra?.minecraftArchiveSummary ?? null
+	profile.minecraftServerTimeline = extra?.minecraftServerTimeline ?? []
 
 	return profile
 }

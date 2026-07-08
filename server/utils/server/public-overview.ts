@@ -218,3 +218,11 @@ export const countPublicOverviewPlayers = async (): Promise<number> => {
 	return adminPlayers.filter((player) => Boolean(player.normalizedUsername))
 		.length
 }
+
+export const countPublicHistoricalOverviewPlayers = async (): Promise<number> =>
+	prisma.minecraftAccount.count({
+		where: {
+			identityKind: 'HISTORICAL',
+			unlinkedAt: null,
+		},
+	})

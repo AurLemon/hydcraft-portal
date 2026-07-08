@@ -18,6 +18,7 @@ import {
 	type ServerOverviewResponse,
 } from '../../../../utils/server/overview'
 import {
+	countPublicHistoricalOverviewPlayers,
 	countPublicOverviewPlayers,
 	countPublicOverviewUsers,
 	isPublicProfileCandidate,
@@ -179,19 +180,26 @@ const listRecommendedPlayers = async (): Promise<
 
 export default defineEventHandler(async (): Promise<ServerOverviewResponse> => {
 	const serverItems = await listPublicOverviewServers()
-	const [recommendedUsers, recommendedPlayers, totalUsers, totalPlayers] =
-		await Promise.all([
-			listRecommendedUsers(),
-			listRecommendedPlayers(),
-			countPublicOverviewUsers(),
-			countPublicOverviewPlayers(),
-		])
+	const [
+		recommendedUsers,
+		recommendedPlayers,
+		totalUsers,
+		totalPlayers,
+		historicalPlayersCount,
+	] = await Promise.all([
+		listRecommendedUsers(),
+		listRecommendedPlayers(),
+		countPublicOverviewUsers(),
+		countPublicOverviewPlayers(),
+		countPublicHistoricalOverviewPlayers(),
+	])
 
 	return {
 		servers: serverItems,
 		defaultServerId: resolvePublicOverviewDefaultServerId(serverItems),
 		totalUsers,
 		totalPlayers,
+		historicalPlayersCount,
 		recommendedUsers,
 		recommendedPlayers,
 	}

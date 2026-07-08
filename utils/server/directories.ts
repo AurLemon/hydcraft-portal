@@ -58,6 +58,7 @@ export interface ServerDirectoryPlayerItem {
 	username: string
 	uuid: string | null
 	isPrimary: boolean
+	identityKind: 'AUTHENTICATED' | 'HISTORICAL'
 	luckPermsPrimaryGroup: string | null
 	authMeRegisteredAt: string | null
 	authMeLastLoginAt: string | null
@@ -72,4 +73,6 @@ export interface ServerDirectoryPlayersResponse {
 	pageSize: number
 	total: number
 	pageCount: number
+	formalCount: number
+	historicalCount: number
 }
