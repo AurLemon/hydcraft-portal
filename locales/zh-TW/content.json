@@ -136,6 +136,7 @@
 					"fields": {
 						"user": "用戶",
 						"hydrolineId": "Hydroline ID",
+						"playTime": "遊玩時間",
 						"minecraftAccounts": "Minecraft 帳戶",
 						"registeredAt": "註冊時間",
 						"joinedAt": "加入時間"

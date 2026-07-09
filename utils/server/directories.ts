@@ -38,6 +38,8 @@ export interface ServerDirectoryUserItem {
 	bio: string | null
 	registeredAt: string | null
 	joinedAt: string | null
+	playTimeTicks: number
+	hasPlayTime: boolean
 	minecraftAccounts: ServerDirectoryUserMinecraftSummary[]
 	badges: ServerDirectoryUserBadgeSummary[]
 	roleBadge: ServerDirectoryUserBadgeSummary | null

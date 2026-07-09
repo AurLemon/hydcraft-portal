@@ -160,6 +160,11 @@
 					{{ t('content.serverOverview.states.notAvailable') }}
 				</span>
 			</template>
+			<template #playTime-cell="{ row }">
+				{{
+					formatPlayTime(row.original.playTimeTicks, row.original.hasPlayTime)
+				}}
+			</template>
 			<template #registeredAt-cell="{ row }">
 				{{ formatDate(row.original.registeredAt) }}
 			</template>
@@ -229,6 +234,10 @@ const columns = [
 		header: t('content.serverOverview.directories.users.fields.hydrolineId'),
 	},
 	{
+		accessorKey: 'playTime',
+		header: t('content.serverOverview.directories.users.fields.playTime'),
+	},
+	{
 		accessorKey: 'minecraftAccounts',
 		header: t(
 			'content.serverOverview.directories.users.fields.minecraftAccounts',
@@ -247,6 +256,10 @@ const sortFieldItems = [
 	{
 		label: t('content.serverOverview.directories.users.fields.registeredAt'),
 		value: 'createdAt',
+	},
+	{
+		label: t('content.serverOverview.directories.users.fields.playTime'),
+		value: 'playTimeTicks',
 	},
 	{
 		label: t('content.serverOverview.directories.users.fields.joinedAt'),
@@ -307,6 +320,15 @@ const formatDateOnly = (value: string | null): string => {
 		month: '2-digit',
 		day: '2-digit',
 	}).format(new Date(value))
+}
+
+const formatPlayTime = (ticks: number, hasPlayTime: boolean): string => {
+	if (!hasPlayTime) {
+		return t('content.serverOverview.states.notAvailable')
+	}
+
+	const hours = ticks / 20 / 3600
+	return `${Math.round(hours * 10) / 10}h`
 }
 
 const visibleBadges = (

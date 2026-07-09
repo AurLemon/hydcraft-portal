@@ -206,6 +206,189 @@ const buildUserOrderBy = (
 	return { joinedAt: 'desc' }
 }
 
+const publicDirectoryUserSelect = {
+	id: true,
+	hydrolineId: true,
+	username: true,
+	displayName: true,
+	avatarUrl: true,
+	bio: true,
+	role: true,
+	verified: true,
+	verifiedTextZhCn: true,
+	verifiedTextZhTw: true,
+	verifiedTextEnUs: true,
+	verifiedTextJaJp: true,
+	createdAt: true,
+	joinedAt: true,
+	badges: {
+		orderBy: {
+			sortOrder: 'asc',
+		},
+		include: {
+			badge: true,
+		},
+	},
+	privacy: {
+		select: {
+			publicProfile: true,
+			showBio: true,
+			showHydrolineId: true,
+			showJoinedAt: true,
+			showBadges: true,
+			showMinecraftProfileLink: true,
+			searchableInUserDirectory: true,
+		},
+	},
+	minecraftAccounts: {
+		where: {
+			unlinkedAt: null,
+		},
+		orderBy: [
+			{
+				isPrimary: 'desc',
+			},
+			{
+				updatedAt: 'desc',
+			},
+		],
+		select: {
+			id: true,
+			username: true,
+		},
+	},
+} satisfies Prisma.UserSelect
+
+type PublicDirectoryUserEntity = Prisma.UserGetPayload<{
+	select: typeof publicDirectoryUserSelect
+}>
+
+const compareDirectoryUserPlayTime = (
+	left: ServerDirectoryUserItem,
+	right: ServerDirectoryUserItem,
+	direction: 'asc' | 'desc',
+): number => {
+	const leftPlayTime = left.hasPlayTime ? left.playTimeTicks : null
+	const rightPlayTime = right.hasPlayTime ? right.playTimeTicks : null
+
+	if (leftPlayTime === null && rightPlayTime === null) {
+		return left.username.localeCompare(right.username)
+	}
+
+	if (leftPlayTime === null) {
+		return 1
+	}
+
+	if (rightPlayTime === null) {
+		return -1
+	}
+
+	if (leftPlayTime !== rightPlayTime) {
+		return direction === 'asc'
+			? leftPlayTime - rightPlayTime
+			: rightPlayTime - leftPlayTime
+	}
+
+	return left.username.localeCompare(right.username)
+}
+
+const summarizePublicDirectoryUserPlayTime = async (
+	userIds: string[],
+): Promise<Map<string, number>> => {
+	if (!userIds.length) {
+		return new Map()
+	}
+
+	const accounts = await prisma.minecraftAccount.findMany({
+		where: {
+			userId: {
+				in: userIds,
+			},
+			unlinkedAt: null,
+		},
+		include: publicPlayerInclude,
+	})
+
+	if (!accounts.length) {
+		return new Map()
+	}
+
+	const players = await readDirectoryServerPlayers(accounts)
+	const histories = await prisma.minecraftAccountBindingHistory.findMany({
+		where: {
+			minecraftAccountId: {
+				in: accounts.map((account) => account.id),
+			},
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+	})
+	const historyByAccountId = new Map<string, typeof histories>()
+
+	for (const history of histories) {
+		const bucket = historyByAccountId.get(history.minecraftAccountId) ?? []
+		bucket.push(history)
+		historyByAccountId.set(history.minecraftAccountId, bucket)
+	}
+
+	const luckPermsResolver = createLuckPermsPrimaryGroupResolver(
+		await readLuckPermsSnapshotBundle({
+			uuids: players.map((player) => player.uuid),
+			normalizedUsernames: accounts.map(
+				(account) => account.normalizedUsername,
+			),
+		}),
+	)
+	const playTimeByUserId = new Map<string, number>()
+
+	for (const account of accounts) {
+		const summary = buildMinecraftAccountSummary(
+			account,
+			players,
+			historyByAccountId.get(account.id) ?? [],
+			luckPermsResolver,
+		)
+		const currentTotal = playTimeByUserId.get(account.userId ?? '') ?? 0
+		playTimeByUserId.set(
+			account.userId ?? '',
+			currentTotal + summary.playerProfile.playTimeTicks,
+		)
+	}
+
+	return playTimeByUserId
+}
+
+const toPublicDirectoryUserItem = (
+	user: PublicDirectoryUserEntity,
+	playTimeByUserId: Map<string, number>,
+): ServerDirectoryUserItem => ({
+	hydrolineId:
+		(user.privacy?.showHydrolineId ?? true) ? user.hydrolineId : null,
+	username: user.username,
+	displayName: user.displayName,
+	avatarUrl: user.avatarUrl,
+	bio: (user.privacy?.showBio ?? true) ? user.bio : null,
+	registeredAt:
+		(user.privacy?.showJoinedAt ?? true) ? user.createdAt.toISOString() : null,
+	joinedAt:
+		(user.privacy?.showJoinedAt ?? true) ? user.joinedAt.toISOString() : null,
+	playTimeTicks: playTimeByUserId.get(user.id) ?? 0,
+	hasPlayTime: user.minecraftAccounts.length > 0,
+	minecraftAccounts:
+		(user.privacy?.showMinecraftProfileLink ?? true)
+			? user.minecraftAccounts.map((account) => ({
+					mcid: account.username,
+					username: account.username,
+				}))
+			: [],
+	badges:
+		(user.privacy?.showBadges ?? true) ? user.badges.map(toBadgeSummary) : [],
+	roleBadge:
+		(user.privacy?.showBadges ?? true) ? toRoleBadgeSummary(user) : null,
+	verified: toVerifiedSummary(user),
+})
+
 export const listPublicServerUsers = async (input: {
 	page: number
 	pageSize: number
@@ -263,97 +446,44 @@ export const listPublicServerUsers = async (input: {
 		}),
 		prisma.user.findMany({
 			where,
-			orderBy: buildUserOrderBy(input.sortField, input.sortDirection),
-			skip: (input.page - 1) * input.pageSize,
-			take: input.pageSize,
-			select: {
-				hydrolineId: true,
-				username: true,
-				displayName: true,
-				avatarUrl: true,
-				bio: true,
-				role: true,
-				verified: true,
-				verifiedTextZhCn: true,
-				verifiedTextZhTw: true,
-				verifiedTextEnUs: true,
-				verifiedTextJaJp: true,
-				createdAt: true,
-				joinedAt: true,
-				badges: {
-					orderBy: {
-						sortOrder: 'asc',
-					},
-					include: {
-						badge: true,
-					},
-				},
-				privacy: {
-					select: {
-						publicProfile: true,
-						showBio: true,
-						showHydrolineId: true,
-						showJoinedAt: true,
-						showBadges: true,
-						showMinecraftProfileLink: true,
-						searchableInUserDirectory: true,
-					},
-				},
-				minecraftAccounts: {
-					where: {
-						unlinkedAt: null,
-					},
-					orderBy: [
-						{
-							isPrimary: 'desc',
-						},
-						{
-							updatedAt: 'desc',
-						},
-					],
-					select: {
-						username: true,
-					},
-				},
-			},
+			orderBy:
+				input.sortField === 'playTimeTicks'
+					? buildUserOrderBy('username', 'asc')
+					: buildUserOrderBy(input.sortField, input.sortDirection),
+			...(input.sortField === 'playTimeTicks'
+				? {}
+				: {
+						skip: (input.page - 1) * input.pageSize,
+						take: input.pageSize,
+					}),
+			select: publicDirectoryUserSelect,
 		}),
 	])
 
-	const items: ServerDirectoryUserItem[] = users
-		.filter((user) => isPublicDirectoryUser(user.privacy))
-		.map((user) => ({
-			hydrolineId:
-				(user.privacy?.showHydrolineId ?? true) ? user.hydrolineId : null,
-			username: user.username,
-			displayName: user.displayName,
-			avatarUrl: user.avatarUrl,
-			bio: (user.privacy?.showBio ?? true) ? user.bio : null,
-			registeredAt:
-				(user.privacy?.showJoinedAt ?? true)
-					? user.createdAt.toISOString()
-					: null,
-			joinedAt:
-				(user.privacy?.showJoinedAt ?? true)
-					? user.joinedAt.toISOString()
-					: null,
-			minecraftAccounts:
-				(user.privacy?.showMinecraftProfileLink ?? true)
-					? user.minecraftAccounts.map((account) => ({
-							mcid: account.username,
-							username: account.username,
-						}))
-					: [],
-			badges:
-				(user.privacy?.showBadges ?? true)
-					? user.badges.map(toBadgeSummary)
-					: [],
-			roleBadge:
-				(user.privacy?.showBadges ?? true) ? toRoleBadgeSummary(user) : null,
-			verified: toVerifiedSummary(user),
-		}))
+	const visibleUsers = users.filter((user) =>
+		isPublicDirectoryUser(user.privacy),
+	)
+	const playTimeByUserId = await summarizePublicDirectoryUserPlayTime(
+		visibleUsers.map((user) => user.id),
+	)
+	const items = visibleUsers.map((user) =>
+		toPublicDirectoryUserItem(user, playTimeByUserId),
+	)
+
+	if (input.sortField === 'playTimeTicks') {
+		items.sort((left, right) =>
+			compareDirectoryUserPlayTime(left, right, input.sortDirection ?? 'desc'),
+		)
+	}
 
 	return {
-		items,
+		items:
+			input.sortField === 'playTimeTicks'
+				? items.slice(
+						(input.page - 1) * input.pageSize,
+						input.page * input.pageSize,
+					)
+				: items,
 		page: input.page,
 		pageSize: input.pageSize,
 		total,

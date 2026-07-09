@@ -40,13 +40,8 @@
 				class="lg:col-span-2"
 			/>
 			<USelect
-				v-model="filters.linked"
-				:items="linkedItems"
-				:placeholder="t('admin.players.fields.linkedUser')"
-			/>
-			<USelect
-				v-model="filters.identity"
-				:items="identityItems"
+				v-model="filters.status"
+				:items="statusItems"
 				:placeholder="
 					t('content.serverOverview.directories.players.fields.identity')
 				"
@@ -221,20 +216,30 @@ const page = ref(1)
 const pageSize = ref(20)
 const filters = reactive({
 	search: '',
-	linked: ALL_FILTER_VALUE,
-	identity: ALL_FILTER_VALUE,
+	status: ALL_FILTER_VALUE,
 	group: '',
 	sortField: 'authMeLastLoginAt',
 	sortDirection: 'desc',
 })
 const getFilterQueryValue = (value: string): string | undefined =>
 	value === ALL_FILTER_VALUE ? undefined : value
+const playerStatusQueryMap: Record<
+	string,
+	{ linked?: string; identity?: string }
+> = {
+	[ALL_FILTER_VALUE]: {},
+	linked: { linked: 'linked' },
+	unlinked: { linked: 'unlinked' },
+	formal: { identity: 'formal' },
+	historical: { identity: 'historical' },
+}
 const query = computed(() => ({
 	page: page.value,
 	pageSize: pageSize.value,
 	search: filters.search || undefined,
-	linked: getFilterQueryValue(filters.linked),
-	identity: getFilterQueryValue(filters.identity),
+	...playerStatusQueryMap[
+		getFilterQueryValue(filters.status) ?? ALL_FILTER_VALUE
+	],
 	group: filters.group || undefined,
 	sortField: filters.sortField,
 	sortDirection: filters.sortDirection,
@@ -258,10 +263,6 @@ const columns = [
 		header: t('content.serverOverview.directories.players.fields.linkedUser'),
 	},
 	{
-		accessorKey: 'identityKind',
-		header: t('content.serverOverview.directories.players.fields.identity'),
-	},
-	{
 		accessorKey: 'luckPermsPrimaryGroup',
 		header: t('content.serverOverview.directories.players.fields.group'),
 	},
@@ -278,13 +279,10 @@ const columns = [
 		header: t('content.serverOverview.directories.players.fields.lastLogin'),
 	},
 ]
-const linkedItems = [
+const statusItems = [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	{ label: t('admin.players.filters.linked'), value: 'linked' },
 	{ label: t('admin.players.filters.unlinked'), value: 'unlinked' },
-]
-const identityItems = [
-	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	{
 		label: t('content.serverOverview.directories.players.identity.formal'),
 		value: 'formal',
@@ -361,8 +359,7 @@ const formatPlayTime = (ticks: number, hasStats: boolean): string => {
 
 const resetFilters = (): void => {
 	filters.search = ''
-	filters.linked = ALL_FILTER_VALUE
-	filters.identity = ALL_FILTER_VALUE
+	filters.status = ALL_FILTER_VALUE
 	filters.group = ''
 	filters.sortField = 'authMeLastLoginAt'
 	filters.sortDirection = 'desc'

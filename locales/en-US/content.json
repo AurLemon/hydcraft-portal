@@ -136,6 +136,7 @@
 					"fields": {
 						"user": "User",
 						"hydrolineId": "Hydroline ID",
+						"playTime": "Play time",
 						"minecraftAccounts": "Minecraft Accounts",
 						"registeredAt": "Registration time",
 						"joinedAt": "Join time"
