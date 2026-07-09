@@ -1,17 +1,14 @@
 <template>
 	<form class="grid gap-8" @submit.prevent="submit">
-		<div
-			class="w-full gap-6 lg:columns-2 [&>section]:mb-6"
-			:class="formMode === 'all' ? '' : 'lg:columns-1'"
-		>
+		<div :class="sectionsContainerClass">
 			<section
-				v-if="visibleSections.basic"
-				class="grid gap-3 break-inside-avoid"
+				v-if="visibleSections.core"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.basic') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.serverId') }}</span>
 						<UInput v-model="form.serverId" class="w-full" required />
@@ -21,8 +18,8 @@
 						<UInput v-model="form.code" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.name') }}</span>
-						<UInput v-model="form.name" class="w-full" required />
+						<span>{{ t('admin.serverConfig.fields.shortCode') }}</span>
+						<UInput v-model="form.shortCode" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.nameZhCn') }}</span>
@@ -30,15 +27,15 @@
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.nameZhTw') }}</span>
-						<UInput v-model="form.nameZhTw" class="w-full" />
+						<UInput v-model="form.nameZhTw" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.nameEnUs') }}</span>
-						<UInput v-model="form.nameEnUs" class="w-full" />
+						<UInput v-model="form.nameEnUs" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.nameJaJp') }}</span>
-						<UInput v-model="form.nameJaJp" class="w-full" />
+						<UInput v-model="form.nameJaJp" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.sortOrder') }}</span>
@@ -46,6 +43,8 @@
 							v-model.number="form.sortOrder"
 							class="w-full"
 							type="number"
+							min="0"
+							required
 						/>
 					</label>
 					<label :class="fieldClass">
@@ -78,11 +77,11 @@
 							class="w-full"
 						/>
 					</label>
-					<label :class="fieldClass">
+					<label v-if="showAddressFields" :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.mcHost') }}</span>
-						<UInput v-model="form.host" class="w-full" required />
+						<UInput v-model="form.host" class="w-full" />
 					</label>
-					<label :class="fieldClass">
+					<label v-if="showAddressFields" :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.mcPort') }}</span>
 						<UInput
 							v-model.number="form.port"
@@ -102,13 +101,13 @@
 			</section>
 
 			<section
-				v-if="visibleSections.basic"
-				class="grid gap-3 break-inside-avoid"
+				v-if="visibleSections.map"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.mapConfig') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="[fieldClass, 'md:col-span-2']">
 						<div class="flex items-center justify-between gap-3">
 							<span>{{ t('admin.serverConfig.fields.mapEnabled') }}</span>
@@ -172,11 +171,14 @@
 			</section>
 
 			<section
-				v-if="visibleSections.basic"
-				class="grid gap-3 break-inside-avoid"
+				v-if="visibleSections.periods"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div class="mx-1 flex items-center justify-between gap-3">
-					<div :class="profileSectionTitleClass">
+				<div
+					class="mx-1 flex items-center justify-between gap-3"
+					:class="showSectionHeading ? '' : 'min-h-0'"
+				>
+					<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 						{{ t('admin.serverConfig.sections.periods') }}
 					</div>
 					<UButton
@@ -190,7 +192,7 @@
 						{{ t('admin.serverConfig.actions.addPeriod') }}
 					</UButton>
 				</div>
-				<div :class="profileCardClass" class="grid gap-4">
+				<div :class="cardClass" class="grid gap-4">
 					<div
 						v-if="form.periods.length === 0"
 						class="mx-1 text-sm text-slate-500 dark:text-slate-400"
@@ -260,13 +262,13 @@
 			</section>
 
 			<section
-				v-if="visibleSections.portalBridge"
-				class="grid gap-3 break-inside-avoid"
+				v-if="visibleSections.portalBridge && !isImportedDataSource"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.portalBridge') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4">
+				<div :class="cardClass" class="grid gap-4">
 					<label :class="fieldClass">
 						<div class="flex items-center justify-between gap-3">
 							<span>{{ t('admin.serverConfig.fields.bridgeEnabled') }}</span>
@@ -275,15 +277,23 @@
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
-						<UInput v-model="form.portalBridge.bridgeId" class="w-full" />
+						<UInput
+							v-model="form.portalBridge.bridgeId"
+							class="w-full"
+							required
+						/>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.module') }}</span>
-						<UInput v-model="form.portalBridge.module" class="w-full" />
+						<UInput
+							v-model="form.portalBridge.module"
+							class="w-full"
+							required
+						/>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.wsUrl') }}</span>
-						<UInput v-model="form.portalBridge.wsUrl" class="w-full" />
+						<UInput v-model="form.portalBridge.wsUrl" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.secret') }}</span>
@@ -303,12 +313,12 @@
 
 			<section
 				v-if="visibleSections.authMe"
-				class="grid gap-3 break-inside-avoid"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.authMe') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<AdminMysqlFields
 						v-model:host="form.authMe.host"
 						v-model:port="form.authMe.port"
@@ -323,12 +333,12 @@
 
 			<section
 				v-if="visibleSections.luckPerms"
-				class="grid gap-3 break-inside-avoid"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.luckPerms') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<AdminMysqlFields
 						v-model:host="form.luckPerms.host"
 						v-model:port="form.luckPerms.port"
@@ -343,12 +353,12 @@
 
 			<section
 				v-if="visibleSections.sync"
-				class="grid gap-3 break-inside-avoid"
+				class="grid w-full gap-3 break-inside-avoid"
 			>
-				<div :class="profileSectionTitleClass">
+				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
 					{{ t('admin.serverConfig.sections.sync') }}
 				</div>
-				<div :class="profileCardClass" class="grid gap-4 md:grid-cols-2">
+				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="fieldClass">
 						<span
 							>PortalBridge
@@ -459,7 +469,7 @@ interface ServerPeriodForm {
 interface ServerForm {
 	serverId: string
 	code: string
-	name: string
+	shortCode: string
 	nameZhCn: string
 	nameZhTw: string
 	nameEnUs: string
@@ -481,13 +491,24 @@ interface ServerForm {
 
 interface AdminServerConfigFormProps {
 	server: MinecraftServerSummary | null
-	mode?: 'all' | 'basic' | 'portalBridge' | 'authMe' | 'luckPerms' | 'sync'
+	mode?:
+		| 'all'
+		| 'create'
+		| 'basic'
+		| 'map'
+		| 'periods'
+		| 'portalBridge'
+		| 'authMe'
+		| 'luckPerms'
+		| 'sync'
 	showCancel?: boolean
+	surface?: 'card' | 'plain'
 }
 
 const props = withDefaults(defineProps<AdminServerConfigFormProps>(), {
 	mode: 'all',
 	showCancel: true,
+	surface: 'card',
 })
 const emit = defineEmits<{
 	cancel: []
@@ -502,13 +523,28 @@ let periodCounter = 0
 const submitMode = computed(() => (props.server ? 'edit' : 'create'))
 const formMode = computed(() => props.mode)
 const visibleSections = computed(() => ({
-	basic: formMode.value === 'all' || formMode.value === 'basic',
+	core:
+		formMode.value === 'all' ||
+		formMode.value === 'create' ||
+		formMode.value === 'basic',
+	map: formMode.value === 'all' || formMode.value === 'map',
+	periods: formMode.value === 'all' || formMode.value === 'periods',
 	portalBridge: formMode.value === 'all' || formMode.value === 'portalBridge',
 	authMe: false,
 	luckPerms: false,
 	sync: formMode.value === 'sync',
 }))
 const fieldClass = adminFieldClass
+const isCreateMode = computed(() => formMode.value === 'create')
+const showSectionHeading = computed(() => props.surface !== 'plain')
+const cardClass = computed(() =>
+	props.surface === 'plain' ? 'grid w-full gap-4' : profileCardClass,
+)
+const sectionsContainerClass = computed(() =>
+	formMode.value === 'all'
+		? 'w-full gap-6 lg:columns-2 [&>section]:mb-6'
+		: 'grid w-full gap-6',
+)
 
 const serverKindItems = computed(() => [
 	{ label: t('admin.serverConfig.values.serverKind.main'), value: 'MAIN' },
@@ -598,7 +634,7 @@ const createPeriodForm = (index = 0): ServerPeriodForm => ({
 const createEmptyForm = (): ServerForm => ({
 	serverId: '',
 	code: '',
-	name: '',
+	shortCode: '',
 	nameZhCn: '',
 	nameZhTw: '',
 	nameEnUs: '',
@@ -624,9 +660,9 @@ const createEmptyForm = (): ServerForm => ({
 	},
 	periods: [],
 	portalBridge: {
-		bridgeId: 'portalbridge-main',
-		module: 'portalbridge-core',
-		wsUrl: 'ws://127.0.0.1:28546',
+		bridgeId: '',
+		module: '',
+		wsUrl: '',
 		secret: '',
 		enabled: false,
 		coreSyncIntervalMinutes: 30,
@@ -654,10 +690,14 @@ const createEmptyForm = (): ServerForm => ({
 const secondsToMinutes = (value: number | undefined): number =>
 	Math.max(1, Math.floor((value ?? 1800) / 60))
 
-const minutesToSeconds = (value: number): number =>
-	Math.max(60, Math.floor(value || 30) * 60)
-
 const form = reactive<ServerForm>(createEmptyForm())
+const isImportedDataSource = computed(() => form.dataSourceMode === 'IMPORTED')
+const showAddressFields = computed(
+	() =>
+		visibleSections.value.core &&
+		!isCreateMode.value &&
+		!isImportedDataSource.value,
+)
 
 const resetForm = (): void => {
 	const source = props.server
@@ -665,11 +705,11 @@ const resetForm = (): void => {
 		? {
 				serverId: source.serverId,
 				code: source.code,
-				name: source.name,
-				nameZhCn: source.nameZhCn ?? source.name,
-				nameZhTw: source.nameZhTw ?? '',
-				nameEnUs: source.nameEnUs ?? '',
-				nameJaJp: source.nameJaJp ?? '',
+				shortCode: source.shortCode,
+				nameZhCn: source.nameZhCn,
+				nameZhTw: source.nameZhTw ?? source.nameZhCn,
+				nameEnUs: source.nameEnUs ?? source.nameZhCn,
+				nameJaJp: source.nameJaJp ?? source.nameZhCn,
 				host: source.host,
 				port: source.port,
 				enabled: source.enabled,
@@ -740,23 +780,31 @@ const resetForm = (): void => {
 watch(() => props.server, resetForm, { immediate: true })
 
 const buildPayload = () => ({
-	...(visibleSections.value.basic
+	...(visibleSections.value.core
 		? {
 				serverId: form.serverId,
 				code: form.code,
-				name: form.name,
+				shortCode: form.shortCode,
 				nameZhCn: form.nameZhCn,
-				nameZhTw: form.nameZhTw || null,
-				nameEnUs: form.nameEnUs || null,
-				nameJaJp: form.nameJaJp || null,
-				host: form.host,
-				port: form.port,
+				nameZhTw: form.nameZhTw,
+				nameEnUs: form.nameEnUs,
+				nameJaJp: form.nameJaJp,
+				...(showAddressFields.value
+					? {
+							host: form.host,
+							port: form.port,
+						}
+					: {}),
 				enabled: form.enabled,
 				kind: form.kind,
 				status: form.status,
 				dataSourceMode: form.dataSourceMode,
 				isDefault: form.isDefault,
 				sortOrder: form.sortOrder,
+			}
+		: {}),
+	...(visibleSections.value.map
+		? {
 				mapConfig: {
 					enabled: form.mapConfig.enabled,
 					hasTiles: form.mapConfig.hasTiles,
@@ -768,6 +816,10 @@ const buildPayload = () => ({
 					defaultCenterZ: form.mapConfig.defaultCenterZ,
 					defaultZoom: form.mapConfig.defaultZoom,
 				},
+			}
+		: {}),
+	...(visibleSections.value.periods
+		? {
 				periods: form.periods
 					.map((period) => ({
 						id: period.id,
@@ -780,7 +832,7 @@ const buildPayload = () => ({
 					.filter((period) => Boolean(period.startedAt)),
 			}
 		: {}),
-	...(visibleSections.value.portalBridge
+	...(visibleSections.value.portalBridge && !isImportedDataSource.value
 		? {
 				portalBridge: {
 					bridgeId: form.portalBridge.bridgeId,
@@ -816,10 +868,7 @@ const submit = async (): Promise<void> => {
 			submitMode.value === 'create'
 				? await $fetch<MinecraftServerResponse>('/api/minecraft/servers', {
 						method: 'POST',
-						body: {
-							serverId: form.serverId,
-							...buildPayload(),
-						},
+						body: buildPayload(),
 					})
 				: await $fetch<MinecraftServerResponse>(
 						`/api/minecraft/servers/${originalServerId.value}`,

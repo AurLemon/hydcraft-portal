@@ -1,8 +1,9 @@
-import type {
-	MinecraftServerDataSourceMode,
-	MinecraftServerKind,
-	MinecraftServerPeriodKind,
-	MinecraftServerStatus,
+import {
+	Prisma,
+	type MinecraftServerDataSourceMode,
+	type MinecraftServerKind,
+	type MinecraftServerPeriodKind,
+	type MinecraftServerStatus,
 } from '~/generated/prisma/client'
 import { prisma } from '../../../utils/db/prisma'
 import { requireAdminUser } from '../../../utils/auth/session'
@@ -57,7 +58,7 @@ interface MinecraftServerMapConfigBody {
 interface UpdateMinecraftServerBody {
 	serverId?: string
 	code?: string
-	name?: string
+	shortCode?: string
 	nameZhCn?: string | null
 	nameZhTw?: string | null
 	nameEnUs?: string | null
@@ -85,6 +86,22 @@ const normalizeOptionalText = (
 	}
 
 	return value?.trim() || null
+}
+
+const normalizeRequiredText = (
+	value: string | null | undefined,
+): string | undefined => {
+	if (value === undefined) {
+		return undefined
+	}
+
+	const normalized = value?.trim() || ''
+
+	if (!normalized) {
+		throw createBadRequestError('MINECRAFT_SERVER_REQUIRED_FIELDS_MISSING')
+	}
+
+	return normalized
 }
 
 const normalizeStringList = (
@@ -142,16 +159,24 @@ const normalizeDateValue = (value: string | null | undefined): Date | null => {
 	return Number.isNaN(parsed.getTime()) ? null : parsed
 }
 
-const hasPortalBridgeConnectionFields = (
+const hasAnyPortalBridgeInput = (config: PortalBridgeConfigBody): boolean =>
+	[
+		config.bridgeId,
+		config.module,
+		config.wsUrl,
+		config.secret,
+		config.enabled,
+		config.requestedTopics?.length,
+		config.allowedTopics?.length,
+		config.coreSyncIntervalMinutes,
+	].some((value) => value !== undefined && value !== null && value !== '')
+
+const hasRequiredPortalBridgeConnectionFields = (
 	config: PortalBridgeConfigBody,
 ): boolean =>
-	config.bridgeId !== undefined ||
-	config.module !== undefined ||
-	config.wsUrl !== undefined ||
-	config.secret !== undefined ||
-	config.enabled !== undefined ||
-	config.requestedTopics !== undefined ||
-	config.allowedTopics !== undefined
+	Boolean(
+		config.bridgeId?.trim() && config.module?.trim() && config.wsUrl?.trim(),
+	)
 
 export default defineEventHandler(async (event) => {
 	await requireAdminUser(event)
@@ -166,6 +191,8 @@ export default defineEventHandler(async (event) => {
 			portalBridge: {
 				select: {
 					id: true,
+					bridgeId: true,
+					module: true,
 				},
 			},
 		},
@@ -206,52 +233,154 @@ export default defineEventHandler(async (event) => {
 		}
 	}
 
-	if (
-		body.portalBridge &&
-		(existing.portalBridge ||
-			hasPortalBridgeConnectionFields(body.portalBridge))
-	) {
-		const portalBridgeConfig = await prisma.portalBridgeConfig.upsert({
+	const nextCode = normalizeRequiredText(body.code)
+
+	if (nextCode) {
+		const conflict = await prisma.minecraftServer.findUnique({
 			where: {
-				minecraftServerId: existing.id,
+				code: nextCode,
 			},
-			create: {
-				minecraftServerId: existing.id,
-				bridgeId: body.portalBridge.bridgeId?.trim() || `${serverId}-bridge`,
-				module: body.portalBridge.module?.trim() || 'portalbridge-core',
-				wsUrl: body.portalBridge.wsUrl?.trim() || 'ws://127.0.0.1:28546',
-				encryptedSecret: encryptConfigValue(body.portalBridge.secret),
-				enabled: body.portalBridge.enabled ?? false,
-				requestedTopics:
-					normalizeStringList(body.portalBridge.requestedTopics) ?? [],
-				allowedTopics:
-					normalizeStringList(body.portalBridge.allowedTopics) ?? [],
-				coreSyncIntervalMinutes:
-					normalizePortalBridgeSyncIntervalMinutes(
-						body.portalBridge.coreSyncIntervalMinutes,
-					) ?? 30,
-			},
-			update: {
-				bridgeId:
-					normalizeOptionalText(body.portalBridge.bridgeId) ?? undefined,
-				module: normalizeOptionalText(body.portalBridge.module) ?? undefined,
-				wsUrl: normalizeOptionalText(body.portalBridge.wsUrl) ?? undefined,
-				encryptedSecret:
-					body.portalBridge.secret === undefined
-						? undefined
-						: encryptConfigValue(body.portalBridge.secret),
-				enabled: body.portalBridge.enabled,
-				requestedTopics: normalizeStringList(body.portalBridge.requestedTopics),
-				allowedTopics: normalizeStringList(body.portalBridge.allowedTopics),
-				coreSyncIntervalMinutes: normalizePortalBridgeSyncIntervalMinutes(
-					body.portalBridge.coreSyncIntervalMinutes,
-				),
+			select: {
+				id: true,
 			},
 		})
 
-		await emitEvent('minecraft-server.portal-bridge-config.saved', {
-			configId: portalBridgeConfig.id,
-		})
+		if (conflict && conflict.id !== existing.id) {
+			throw createApiError({
+				statusCode: 409,
+				code: 'MINECRAFT_SERVER_CODE_CONFLICT',
+			})
+		}
+	}
+
+	if (body.portalBridge) {
+		const wantsPortalBridgeCreate =
+			!existing.portalBridge && hasAnyPortalBridgeInput(body.portalBridge)
+
+		if (wantsPortalBridgeCreate) {
+			if (!hasRequiredPortalBridgeConnectionFields(body.portalBridge)) {
+				throw createBadRequestError(
+					'MINECRAFT_SERVER_PORTAL_BRIDGE_CONFIG_INCOMPLETE',
+				)
+			}
+
+			const conflict = await prisma.portalBridgeConfig.findFirst({
+				where: {
+					bridgeId: body.portalBridge.bridgeId?.trim(),
+					module: body.portalBridge.module?.trim(),
+				},
+				select: {
+					id: true,
+				},
+			})
+
+			if (conflict) {
+				throw createApiError({
+					statusCode: 409,
+					code: 'MINECRAFT_SERVER_PORTAL_BRIDGE_CONFLICT',
+				})
+			}
+		}
+
+		if (existing.portalBridge || wantsPortalBridgeCreate) {
+			const nextBridgeId =
+				normalizeOptionalText(body.portalBridge.bridgeId) ??
+				existing.portalBridge?.bridgeId
+			const nextModule =
+				normalizeOptionalText(body.portalBridge.module) ??
+				existing.portalBridge?.module
+			const createBridgeId =
+				body.portalBridge.bridgeId?.trim() ||
+				existing.portalBridge?.bridgeId ||
+				'portalbridge-config'
+			const createModule =
+				body.portalBridge.module?.trim() ||
+				existing.portalBridge?.module ||
+				'portalbridge-core'
+			const createWsUrl =
+				body.portalBridge.wsUrl?.trim() || 'ws://127.0.0.1:28546'
+
+			if (nextBridgeId && nextModule) {
+				const conflict = await prisma.portalBridgeConfig.findFirst({
+					where: {
+						bridgeId: nextBridgeId,
+						module: nextModule,
+						NOT: {
+							minecraftServerId: existing.id,
+						},
+					},
+					select: {
+						id: true,
+					},
+				})
+
+				if (conflict) {
+					throw createApiError({
+						statusCode: 409,
+						code: 'MINECRAFT_SERVER_PORTAL_BRIDGE_CONFLICT',
+					})
+				}
+			}
+
+			try {
+				const portalBridgeConfig = await prisma.portalBridgeConfig.upsert({
+					where: {
+						minecraftServerId: existing.id,
+					},
+					create: {
+						minecraftServerId: existing.id,
+						bridgeId: createBridgeId,
+						module: createModule,
+						wsUrl: createWsUrl,
+						encryptedSecret: encryptConfigValue(body.portalBridge.secret),
+						enabled: body.portalBridge.enabled ?? false,
+						requestedTopics:
+							normalizeStringList(body.portalBridge.requestedTopics) ?? [],
+						allowedTopics:
+							normalizeStringList(body.portalBridge.allowedTopics) ?? [],
+						coreSyncIntervalMinutes:
+							normalizePortalBridgeSyncIntervalMinutes(
+								body.portalBridge.coreSyncIntervalMinutes,
+							) ?? 30,
+					},
+					update: {
+						bridgeId:
+							normalizeOptionalText(body.portalBridge.bridgeId) ?? undefined,
+						module:
+							normalizeOptionalText(body.portalBridge.module) ?? undefined,
+						wsUrl: normalizeOptionalText(body.portalBridge.wsUrl) ?? undefined,
+						encryptedSecret:
+							body.portalBridge.secret === undefined
+								? undefined
+								: encryptConfigValue(body.portalBridge.secret),
+						enabled: body.portalBridge.enabled,
+						requestedTopics: normalizeStringList(
+							body.portalBridge.requestedTopics,
+						),
+						allowedTopics: normalizeStringList(body.portalBridge.allowedTopics),
+						coreSyncIntervalMinutes: normalizePortalBridgeSyncIntervalMinutes(
+							body.portalBridge.coreSyncIntervalMinutes,
+						),
+					},
+				})
+
+				await emitEvent('minecraft-server.portal-bridge-config.saved', {
+					configId: portalBridgeConfig.id,
+				})
+			} catch (error) {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code === 'P2002'
+				) {
+					throw createApiError({
+						statusCode: 409,
+						code: 'MINECRAFT_SERVER_PORTAL_BRIDGE_CONFLICT',
+					})
+				}
+
+				throw error
+			}
+		}
 	}
 
 	if (body.mapConfig) {
@@ -329,66 +458,70 @@ export default defineEventHandler(async (event) => {
 		}
 	}
 
-	const server = await prisma.$transaction(async (tx) => {
-		if (body.isDefault === true) {
-			await tx.minecraftServer.updateMany({
-				where: {
-					isDefault: true,
-					NOT: {
-						id: existing.id,
+	let server
+
+	try {
+		server = await prisma.$transaction(async (tx) => {
+			if (body.isDefault === true) {
+				await tx.minecraftServer.updateMany({
+					where: {
+						isDefault: true,
+						NOT: {
+							id: existing.id,
+						},
 					},
+					data: {
+						isDefault: false,
+					},
+				})
+			}
+
+			return await tx.minecraftServer.update({
+				where: {
+					serverId,
 				},
 				data: {
-					isDefault: false,
+					serverId: nextServerId,
+					code: nextCode,
+					shortCode: normalizeRequiredText(body.shortCode),
+					nameZhCn: normalizeRequiredText(body.nameZhCn),
+					nameZhTw: normalizeRequiredText(body.nameZhTw),
+					nameEnUs: normalizeRequiredText(body.nameEnUs),
+					nameJaJp: normalizeRequiredText(body.nameJaJp),
+					host: normalizeOptionalText(body.host) ?? undefined,
+					port: body.port,
+					enabled: body.enabled,
+					kind: normalizeEnum(body.kind, serverKindValues),
+					status: normalizeEnum(body.status, serverStatusValues),
+					dataSourceMode: normalizeEnum(
+						body.dataSourceMode,
+						dataSourceModeValues,
+					),
+					isDefault: body.isDefault,
+					sortOrder: body.sortOrder,
 				},
+				include: {
+					portalBridge: true,
+					mapConfig: true,
+					periods: {
+						orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
+					},
+				},
+			})
+		})
+	} catch (error) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === 'P2002'
+		) {
+			throw createApiError({
+				statusCode: 409,
+				code: 'MINECRAFT_SERVER_CODE_CONFLICT',
 			})
 		}
 
-		return await tx.minecraftServer.update({
-			where: {
-				serverId,
-			},
-			data: {
-				serverId: nextServerId,
-				code: normalizeOptionalText(body.code) ?? undefined,
-				name: normalizeOptionalText(body.name) ?? undefined,
-				nameZhCn:
-					body.nameZhCn === undefined
-						? undefined
-						: normalizeOptionalText(body.nameZhCn),
-				nameZhTw:
-					body.nameZhTw === undefined
-						? undefined
-						: normalizeOptionalText(body.nameZhTw),
-				nameEnUs:
-					body.nameEnUs === undefined
-						? undefined
-						: normalizeOptionalText(body.nameEnUs),
-				nameJaJp:
-					body.nameJaJp === undefined
-						? undefined
-						: normalizeOptionalText(body.nameJaJp),
-				host: normalizeOptionalText(body.host) ?? undefined,
-				port: body.port,
-				enabled: body.enabled,
-				kind: normalizeEnum(body.kind, serverKindValues),
-				status: normalizeEnum(body.status, serverStatusValues),
-				dataSourceMode: normalizeEnum(
-					body.dataSourceMode,
-					dataSourceModeValues,
-				),
-				isDefault: body.isDefault,
-				sortOrder: body.sortOrder,
-			},
-			include: {
-				portalBridge: true,
-				mapConfig: true,
-				periods: {
-					orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
-				},
-			},
-		})
-	})
+		throw error
+	}
 
 	return {
 		server: toMinecraftServerSummary(server),

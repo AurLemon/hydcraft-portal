@@ -53,11 +53,11 @@ model MinecraftServer {
   id             String                        @id @default(cuid())
   serverId       String                        @unique
   code           String                        @unique
-  name           String
-  nameZhCn       String?
-  nameZhTw       String?
-  nameEnUs       String?
-  nameJaJp       String?
+  shortCode      String
+  nameZhCn       String
+  nameZhTw       String
+  nameEnUs       String
+  nameJaJp       String
   host           String
   port           Int                           @default(25565)
   enabled        Boolean                       @default(true)

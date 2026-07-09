@@ -952,7 +952,7 @@
 			"fields": {
 				"serverId": "Server ID",
 				"code": "Code",
-				"name": "Name",
+				"shortCode": "Short Code",
 				"nameZhCn": "Simplified Chinese Name",
 				"nameZhTw": "Traditional Chinese Name",
 				"nameEnUs": "English Name",

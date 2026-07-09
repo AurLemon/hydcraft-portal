@@ -14,7 +14,7 @@
 					{{ t('admin.serverDetail.back') }}
 				</UButton>
 				<h1 class="text-3xl font-semibold text-slate-950 dark:text-white">
-					{{ server?.name ?? t('admin.serverDetail.fallbackTitle') }}
+					{{ serverDisplayName }}
 				</h1>
 				<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
 					{{ server?.serverId ?? serverId }}
@@ -40,7 +40,7 @@
 
 		<div v-else-if="server" class="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-2">
 			<ServerDetailOnlinePlayersCard
-				v-if="!isArchiveServer"
+				v-if="supportsPortalBridgeRuntime"
 				:title="t('admin.serverDetail.sections.onlinePlayers')"
 				:latest-online-text="latestOnlineText"
 				:latest-status-at="latestStatusAt"
@@ -57,7 +57,7 @@
 			/>
 
 			<ServerDetailInfoCard
-				v-if="!isArchiveServer"
+				v-if="supportsPortalBridgeRuntime"
 				:title="t('admin.serverDetail.sections.portalBridge')"
 				:items="portalBridgeItems"
 				:error-text="server.portalBridge?.lastError"
@@ -70,6 +70,7 @@
 			/>
 
 			<ServerDetailSyncStatusCard
+				v-if="isArchiveServer || !isImportedOnlyServer"
 				:title="
 					isArchiveServer
 						? t('admin.serverDetail.sections.archiveStatus')
@@ -84,7 +85,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
-				v-if="!isArchiveServer"
+				v-if="supportsPortalBridgeRuntime"
 				:title="t('admin.serverDetail.sections.recentSnapshots')"
 				:action-label="t('admin.serverDetail.actions.testAndInspect')"
 				action-icon="i-lucide-flask-conical"
@@ -96,7 +97,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
-				v-if="!isArchiveServer"
+				v-if="supportsPortalBridgeRuntime"
 				:title="t('admin.serverDetail.sections.recentBridgeMessages')"
 				:action-label="t('admin.serverDetail.actions.testAndInspect')"
 				action-icon="i-lucide-flask-conical"
@@ -108,7 +109,7 @@
 			/>
 
 			<ServerDetailSimpleListCard
-				v-if="!isArchiveServer"
+				v-if="supportsPortalBridgeRuntime"
 				:title="t('admin.serverDetail.sections.recentCommands')"
 				:items="commandListItems"
 				empty-icon="i-lucide-terminal"
@@ -133,6 +134,19 @@
 			@saved="handleSaved"
 		/>
 		<AdminServerConfigModal
+			v-model:open="mapOpen"
+			mode="map"
+			:server="server"
+			@saved="handleSaved"
+		/>
+		<AdminServerConfigModal
+			v-model:open="periodsOpen"
+			mode="periods"
+			:server="server"
+			@saved="handleSaved"
+		/>
+		<AdminServerConfigModal
+			v-if="!isImportedOnlyServer"
 			v-model:open="portalBridgeOpen"
 			mode="portalBridge"
 			:server="server"
@@ -151,6 +165,7 @@
 			@saved="handleSaved"
 		/>
 		<AdminServerConfigModal
+			v-if="!isImportedOnlyServer"
 			v-model:open="syncRateOpen"
 			mode="sync"
 			:server="server"
@@ -552,6 +567,7 @@ import type {
 	ServerDetailSelectedItem,
 	ServerDetailSyncTaskRow,
 } from '~/components/admin/server-detail/detail-types'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 interface PortalBridgeStatusResponse {
 	config: {
@@ -631,6 +647,8 @@ const { data, pending, error, refresh } =
 	)
 
 const basicOpen = ref(false)
+const mapOpen = ref(false)
+const periodsOpen = ref(false)
 const portalBridgeOpen = ref(false)
 const authMeOpen = ref(false)
 const luckPermsOpen = ref(false)
@@ -668,8 +686,19 @@ const overview = computed(() => data.value ?? null)
 const server = computed<MinecraftServerSummary | null>(
 	() => overview.value?.server ?? null,
 )
+const isImportedOnlyServer = computed(
+	() => server.value?.dataSourceMode === 'IMPORTED',
+)
 const isArchiveServer = computed(
 	() => server.value?.kind === 'ARCHIVE' || server.value?.status === 'ARCHIVED',
+)
+const supportsPortalBridgeRuntime = computed(
+	() => !isArchiveServer.value && !isImportedOnlyServer.value,
+)
+const serverDisplayName = computed(() =>
+	server.value
+		? resolveMinecraftServerLocalizedName(server.value, locale.value)
+		: t('admin.serverDetail.fallbackTitle'),
 )
 const observedPlayerCount = computed(
 	() => overview.value?.metrics.latestPlayerSnapshot?.players.length ?? 0,
@@ -714,6 +743,18 @@ const headerActions = computed(() => {
 			onClick: () => (basicOpen.value = true),
 		},
 		{
+			label: t('admin.serverConfig.sections.mapConfig'),
+			icon: 'i-lucide-map',
+			color: 'primary' as const,
+			onClick: () => (mapOpen.value = true),
+		},
+		{
+			label: t('admin.serverConfig.sections.periods'),
+			icon: 'i-lucide-history',
+			color: 'primary' as const,
+			onClick: () => (periodsOpen.value = true),
+		},
+		{
 			label: t('admin.serverDetail.actions.syncRate'),
 			icon: 'i-lucide-timer-reset',
 			color: 'primary' as const,
@@ -721,13 +762,15 @@ const headerActions = computed(() => {
 		},
 	]
 
-	if (!isArchiveServer.value) {
+	if (supportsPortalBridgeRuntime.value) {
 		actions.splice(1, 0, {
 			label: t('admin.serverDetail.actions.bridge'),
 			icon: 'i-lucide-radio-tower',
 			color: 'primary' as const,
 			onClick: () => (portalBridgeOpen.value = true),
 		})
+	} else if (isImportedOnlyServer.value) {
+		actions.splice(3, 1)
 	}
 
 	return actions
@@ -782,12 +825,16 @@ const serverInfoItems = computed<ServerDetailMetaItem[]>(() => [
 		label: t('admin.serverDetail.fields.dataSourceMode'),
 		value: formatDataSourceMode(server.value?.dataSourceMode),
 	},
-	{
-		label: t('admin.serverDetail.fields.address'),
-		value: server.value
-			? `${server.value.host}:${server.value.port}`
-			: t('admin.serverDetail.states.empty'),
-	},
+	...(!isImportedOnlyServer.value
+		? [
+				{
+					label: t('admin.serverDetail.fields.address'),
+					value: server.value
+						? `${server.value.host}:${server.value.port}`
+						: t('admin.serverDetail.states.empty'),
+				},
+			]
+		: []),
 	{
 		label: t('admin.serverDetail.fields.sortOrder'),
 		value: String(server.value?.sortOrder ?? 0),
@@ -823,7 +870,7 @@ const playerDataItems = computed<ServerDetailMetaItem[]>(() => [
 				: observedPlayerCount.value,
 		),
 	},
-	...(isArchiveServer.value
+	...(!supportsPortalBridgeRuntime.value
 		? []
 		: [
 				{
@@ -1512,7 +1559,11 @@ const refreshOverview = async () => {
 	overviewReadAt.value = new Date().toISOString()
 }
 const refreshObservedOverview = async () => {
-	if (isArchiveServer.value || !server.value?.portalBridge?.id) {
+	if (
+		isArchiveServer.value ||
+		isImportedOnlyServer.value ||
+		!server.value?.portalBridge?.id
+	) {
 		return await refreshOverview()
 	}
 	try {

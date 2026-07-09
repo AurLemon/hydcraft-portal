@@ -14,6 +14,7 @@ import {
 	toPrivacySummary,
 	toPublicProfile,
 } from './mapper'
+import { toMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 import { findUserProfileById, findUserProfileByUsername } from './repository'
 import type {
 	EditableUserProfile,
@@ -112,7 +113,11 @@ export const getPublicUserProfile = async (
 			select: {
 				serverId: true,
 				code: true,
-				name: true,
+				shortCode: true,
+				nameZhCn: true,
+				nameZhTw: true,
+				nameEnUs: true,
+				nameJaJp: true,
 			},
 		}),
 	])
@@ -200,8 +205,8 @@ export const getPublicUserProfile = async (
 
 	const minecraftServerTimeline = servers.map((server) => ({
 		serverId: server.serverId,
-		serverName: server.name,
-		serverCode: server.code,
+		serverNames: toMinecraftServerLocalizedName(server),
+		serverShortCode: server.shortCode,
 		highlighted: firstPlayerIdByServerId.has(server.serverId),
 		playerId: firstPlayerIdByServerId.get(server.serverId) ?? null,
 		earliestFirstJoinedAt:

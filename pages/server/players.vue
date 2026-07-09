@@ -315,9 +315,7 @@ const sortDirectionItems = [
 	{ label: t('admin.sort.desc'), value: 'desc' },
 	{ label: t('admin.sort.asc'), value: 'asc' },
 ]
-const pageTitle = computed(() =>
-	t('content.serverOverview.directories.players.title'),
-)
+const pageTitle = computed(() => t('routes.serverPlayers'))
 const errorCode = computed(() =>
 	error.value ? getErrorCode(error.value) : null,
 )

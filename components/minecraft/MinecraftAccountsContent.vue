@@ -473,6 +473,7 @@ const summaryItems = computed<SummaryItem[]>(() => [
 const serverViewItems = computed(() =>
 	currentAccount.value
 		? listServerViewItems(currentAccount.value, {
+				locale: locale.value,
 				aggregateLabel: t('minecraftAccounts.selector.aggregate'),
 				noUuidLabel: t('minecraftAccounts.fields.noUuid'),
 				requireMap: props.requireMapForSelector,

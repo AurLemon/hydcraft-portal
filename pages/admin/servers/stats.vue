@@ -188,6 +188,7 @@ import type {
 	MinecraftServersResponse,
 } from '~/components/admin/types'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -278,7 +279,7 @@ const playerItems = computed(() => {
 const serverItems = computed(() => [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
 	...(serversData.value?.servers ?? []).map((server) => ({
-		label: server.name,
+		label: resolveMinecraftServerLocalizedName(server, locale.value),
 		value: server.serverId,
 	})),
 ])

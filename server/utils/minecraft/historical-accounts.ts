@@ -234,11 +234,11 @@ export const listAdminHistoricalMinecraftAccounts = async (input: {
 		if (sortField === 'servers') {
 			const leftServers = left.serverViews
 				.filter((view) => view.serverId)
-				.map((view) => view.serverName || view.label)
+				.map((view) => view.serverNames?.nameZhCn || view.label)
 				.join('\n')
 			const rightServers = right.serverViews
 				.filter((view) => view.serverId)
-				.map((view) => view.serverName || view.label)
+				.map((view) => view.serverNames?.nameZhCn || view.label)
 				.join('\n')
 			const result = compareNullableStrings(
 				leftServers,
@@ -284,7 +284,7 @@ export const listAdminHistoricalMinecraftAccounts = async (input: {
 		serverCount: summary.serverViews.filter((view) => view.serverId).length,
 		serverNames: summary.serverViews
 			.filter((view) => view.serverId)
-			.map((view) => view.serverName || view.label),
+			.map((view) => view.serverNames?.nameZhCn || view.label),
 	}))
 
 	return {

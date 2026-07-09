@@ -65,13 +65,21 @@ async function main() {
 		create: {
 			serverId: testServerId,
 			code: 'schema-smoke',
-			name: 'Schema Smoke Test',
+			shortCode: 'SMOKE',
+			nameZhCn: 'Schema Smoke Test',
+			nameZhTw: 'Schema Smoke Test',
+			nameEnUs: 'Schema Smoke Test',
+			nameJaJp: 'Schema Smoke Test',
 			host: '127.0.0.1',
 			port: 25565,
 		},
 		update: {
 			code: 'schema-smoke',
-			name: 'Schema Smoke Test',
+			shortCode: 'SMOKE',
+			nameZhCn: 'Schema Smoke Test',
+			nameZhTw: 'Schema Smoke Test',
+			nameEnUs: 'Schema Smoke Test',
+			nameJaJp: 'Schema Smoke Test',
 		},
 	})
 	printOk('minecraft server upserted')

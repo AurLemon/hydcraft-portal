@@ -10,12 +10,12 @@
 					<p
 						class="text-xs font-semibold tracking-[0.16em] text-sky-600 uppercase dark:text-sky-300"
 					>
-						{{ server.code }}
+						{{ server.shortCode }}
 					</p>
 					<h2
 						class="mt-2 truncate text-xl font-semibold text-slate-950 dark:text-white"
 					>
-						{{ server.name }}
+						{{ displayName }}
 					</h2>
 				</div>
 				<UBadge
@@ -37,7 +37,11 @@
 					<p
 						class="mt-1 truncate font-medium text-slate-900 dark:text-slate-50"
 					>
-						{{ server.host }}:{{ server.port }}
+						{{
+							server.dataSourceMode === 'IMPORTED'
+								? ''
+								: `${server.host}:${server.port}`
+						}}
 					</p>
 				</div>
 				<div class="rounded-md bg-slate-50 p-3 dark:bg-slate-900/70">
@@ -45,7 +49,11 @@
 					<p
 						class="mt-1 truncate font-medium text-slate-900 dark:text-slate-50"
 					>
-						{{ server.portalBridge?.lastConnectionState ?? '未配置' }}
+						{{
+							server.dataSourceMode === 'IMPORTED'
+								? ''
+								: (server.portalBridge?.lastConnectionState ?? '未配置')
+						}}
 					</p>
 				</div>
 			</div>
@@ -55,14 +63,18 @@
 
 <script setup lang="ts">
 import type { MinecraftServerSummary } from './types'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 interface AdminServerCardProps {
 	server: MinecraftServerSummary
 }
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 
-defineProps<AdminServerCardProps>()
+const props = defineProps<AdminServerCardProps>()
+const displayName = computed(() =>
+	resolveMinecraftServerLocalizedName(props.server, locale.value),
+)
 
 defineEmits<{
 	open: []

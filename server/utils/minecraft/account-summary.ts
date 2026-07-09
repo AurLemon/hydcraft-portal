@@ -1,4 +1,8 @@
 import type { Prisma } from '~/generated/prisma/client'
+import {
+	toMinecraftServerLocalizedName,
+	type MinecraftServerLocalizedName,
+} from '~/utils/minecraft/server-name'
 import type { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
 
 interface MinecraftLocationSummary {
@@ -26,7 +30,7 @@ interface CustomStatsSummary {
 
 interface ObservedPlayerSummary {
 	serverId: string
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	serverHasTiles: boolean
 	uuid: string
 	username: string | null
@@ -62,7 +66,7 @@ interface PlayerIdentitySummary {
 interface ServerViewSummary {
 	id: string
 	serverId: string | null
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	uuid: string | null
 	label: string
 	hasMap: boolean
@@ -439,7 +443,7 @@ const toObservedPlayerSummary = (
 
 	return {
 		serverId: matchedPlayer.server.serverId,
-		serverName: matchedPlayer.server.name,
+		serverNames: toMinecraftServerLocalizedName(matchedPlayer.server),
 		serverHasTiles: Boolean(
 			matchedPlayer.server.mapConfig?.enabled &&
 			matchedPlayer.server.mapConfig?.hasTiles,
@@ -605,7 +609,7 @@ const buildServerViews = (
 	const aggregateView: ServerViewSummary = {
 		id: '__aggregate__',
 		serverId: null,
-		serverName: null,
+		serverNames: null,
 		uuid: null,
 		label: 'Aggregate',
 		hasMap: false,
@@ -633,9 +637,9 @@ const buildServerViews = (
 	const serverViews = sortedPlayers.map((player) => ({
 		id: buildServerViewId(player.server.serverId, player.uuid),
 		serverId: player.server.serverId,
-		serverName: player.server.name,
+		serverNames: toMinecraftServerLocalizedName(player.server),
 		uuid: player.uuid,
-		label: player.server.name,
+		label: player.server.nameZhCn,
 		hasMap: Boolean(
 			player.server.mapConfig?.enabled && player.server.mapConfig?.hasTiles,
 		),

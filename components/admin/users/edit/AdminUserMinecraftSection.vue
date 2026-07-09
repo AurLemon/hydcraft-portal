@@ -327,6 +327,7 @@ import type {
 import type { MinecraftAccountForm } from '~/utils/minecraft/accounts'
 import dayjs from 'dayjs'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 import { profileSectionTitleClass } from '~/utils/profile/edit'
 
 interface HistoricalCandidateItem {
@@ -364,7 +365,7 @@ const emit = defineEmits<{
 	'set-primary': [accountId: string]
 }>()
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const minecraftLookupValue = ref<string | undefined>(undefined)
 const historicalAccountId = ref<string | undefined>(undefined)
 const minecraftSearchTerm = ref('')
@@ -435,7 +436,14 @@ const historicalCandidateItems = computed<HistoricalCandidateItem[]>(() =>
 		description:
 			account.serverViews
 				.filter((view) => view.serverId)
-				.map((view) => view.serverName || view.label)
+				.map((view) =>
+					view.serverNames
+						? resolveMinecraftServerLocalizedName(
+								view.serverNames,
+								locale.value,
+							)
+						: view.label,
+				)
 				.join(' · ') || t('admin.users.historicalMinecraft.empty.noServerData'),
 		avatarUrl: account.username
 			? getMinecraftHeadRendererUrl(account.uuid ?? account.username)

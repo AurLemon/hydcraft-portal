@@ -164,7 +164,7 @@
 							>
 								<div class="flex items-center gap-2 px-1">
 									<h2 class="mx-1 text-2xl text-slate-950 dark:text-white">
-										{{ group.serverName }}
+										{{ resolveServerDisplayName(group.serverNames) }}
 									</h2>
 									<UBadge color="neutral" variant="soft">
 										{{
@@ -220,6 +220,10 @@ import {
 	getServerViewSelectionValueForSummary,
 	resolveServerViewSummary,
 } from '~/utils/minecraft/accounts'
+import {
+	resolveMinecraftServerLocalizedName,
+	type MinecraftServerLocalizedName,
+} from '~/utils/minecraft/server-name'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -230,7 +234,7 @@ interface HistoricalAccountsResponse {
 	accounts: MinecraftAccountForm[]
 	servers: Array<{
 		serverId: string
-		serverName: string
+		serverNames: MinecraftServerLocalizedName | null
 		accounts: Array<{
 			account: MinecraftAccountForm
 			serverViewId: string
@@ -241,13 +245,17 @@ interface HistoricalAccountsResponse {
 interface MinecraftServerOrderResponse {
 	servers: Array<{
 		serverId: string
-		name: string
+		shortCode: string
+		nameZhCn: string
+		nameZhTw: string
+		nameEnUs: string
+		nameJaJp: string
 	}>
 }
 
 type MinecraftTabKey = 'overview' | 'official' | 'historical' | 'all'
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const { notifyError, notifySuccess } = useAdminToast()
@@ -408,6 +416,14 @@ watch(
 )
 
 const accounts = computed<MinecraftAccountForm[]>(() => accountsState.value)
+const resolveServerDisplayName = (
+	serverNames: MinecraftServerLocalizedName | null | undefined,
+	fallback = '',
+): string =>
+	serverNames
+		? resolveMinecraftServerLocalizedName(serverNames, locale.value)
+		: fallback
+
 const historicalAccounts = computed<MinecraftAccountForm[]>(
 	() => historyData.value?.accounts ?? [],
 )
@@ -440,13 +456,18 @@ watch(
 
 const allAccountsByServer = computed(() => {
 	const serverOrder = new Map<string, number>()
-	const serverNames = new Map<string, string>()
+	const serverNames = new Map<string, MinecraftServerLocalizedName>()
 
 	for (const [index, server] of (
 		serverOrderData.value?.servers ?? []
 	).entries()) {
 		serverOrder.set(server.serverId, index)
-		serverNames.set(server.serverId, server.name)
+		serverNames.set(server.serverId, {
+			nameZhCn: server.nameZhCn,
+			nameZhTw: server.nameZhTw,
+			nameEnUs: server.nameEnUs,
+			nameJaJp: server.nameJaJp,
+		})
 	}
 
 	for (const group of historyData.value?.servers ?? []) {
@@ -454,8 +475,8 @@ const allAccountsByServer = computed(() => {
 			serverOrder.set(group.serverId, serverOrder.size)
 		}
 
-		if (!serverNames.has(group.serverId)) {
-			serverNames.set(group.serverId, group.serverName)
+		if (!serverNames.has(group.serverId) && group.serverNames) {
+			serverNames.set(group.serverId, group.serverNames)
 		}
 	}
 
@@ -463,7 +484,7 @@ const allAccountsByServer = computed(() => {
 		string,
 		{
 			serverId: string
-			serverName: string
+			serverNames: MinecraftServerLocalizedName | null
 			accounts: Array<{
 				account: MinecraftAccountForm
 				serverViewId: string
@@ -476,7 +497,7 @@ const allAccountsByServer = computed(() => {
 		account: MinecraftAccountForm,
 		serverViewId: string,
 		serverId: string,
-		fallbackServerName: string,
+		fallbackServerNames: MinecraftServerLocalizedName | null,
 	): void => {
 		if (!serverOrder.has(serverId)) {
 			serverOrder.set(serverId, serverOrder.size)
@@ -485,10 +506,10 @@ const allAccountsByServer = computed(() => {
 		const serverView = resolveServerViewSummary(account, serverViewId)
 		const bucket = grouped.get(serverId) ?? {
 			serverId,
-			serverName:
-				serverNames.get(serverId) ||
-				serverView?.serverName ||
-				fallbackServerName,
+			serverNames:
+				serverNames.get(serverId) ??
+				serverView?.serverNames ??
+				fallbackServerNames,
 			accounts: [],
 		}
 
@@ -506,7 +527,7 @@ const allAccountsByServer = computed(() => {
 				item.account,
 				item.serverViewId,
 				group.serverId,
-				group.serverName,
+				group.serverNames,
 			)
 		}
 	}
@@ -521,7 +542,7 @@ const allAccountsByServer = computed(() => {
 				account,
 				getServerViewSelectionValueForSummary(account, view),
 				serverId,
-				view.serverName || view.label,
+				view.serverNames,
 			)
 		}
 	}

@@ -36,7 +36,7 @@
 
 						<div
 							v-if="sessions.length === 0"
-							class="rounded-xl border border-dashed border-slate-200 px-4 py-5 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400"
+							class="rounded-xl border border-slate-200 px-4 py-5 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400"
 						>
 							{{ t('minecraftAccounts.sessionHistory.emptySessions') }}
 						</div>

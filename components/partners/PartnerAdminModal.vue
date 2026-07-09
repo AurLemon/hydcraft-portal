@@ -331,7 +331,7 @@
 							<div class="grid gap-2">
 								<div
 									v-if="!current.editors?.length"
-									class="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500 dark:border-slate-700"
+									class="rounded-lg border border-slate-300 p-4 text-sm text-slate-500 dark:border-slate-700"
 								>
 									{{ t('admin.partners.empty.editors') }}
 								</div>

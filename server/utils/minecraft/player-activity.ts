@@ -6,6 +6,10 @@ import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { toPrivacySummary } from '../profile/mapper'
 import { findUserProfileByUsername } from '../profile/repository'
+import {
+	toMinecraftServerLocalizedName,
+	type MinecraftServerLocalizedName,
+} from '~/utils/minecraft/server-name'
 
 /**
  * 公开主页「最近活动」卡片的事件类型与统一结构。
@@ -28,7 +32,7 @@ export interface PublicPlayerActivityEvent {
 		| 'BINDING_CHANGED'
 	/** 子类型明细，如绑定动作枚举值、成就 key。前端据 i18n 映射展示。 */
 	detail: string | null
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	/** ISO 字符串，统一排序键。 */
 	occurredAt: string
 }
@@ -113,7 +117,10 @@ export const getPublicPlayerActivity = async (
 		include: {
 			server: {
 				select: {
-					name: true,
+					nameZhCn: true,
+					nameZhTw: true,
+					nameEnUs: true,
+					nameJaJp: true,
 				},
 			},
 		},
@@ -131,7 +138,10 @@ export const getPublicPlayerActivity = async (
 				select: {
 					server: {
 						select: {
-							name: true,
+							nameZhCn: true,
+							nameZhTw: true,
+							nameEnUs: true,
+							nameJaJp: true,
 						},
 					},
 				},
@@ -165,7 +175,9 @@ export const getPublicPlayerActivity = async (
 			id: `session:${session.id}:opened`,
 			type: 'SESSION_OPENED',
 			detail: null,
-			serverName: session.server?.name ?? null,
+			serverNames: session.server
+				? toMinecraftServerLocalizedName(session.server)
+				: null,
 			occurredAt: session.openedAt.toISOString(),
 		})
 
@@ -174,7 +186,9 @@ export const getPublicPlayerActivity = async (
 				id: `session:${session.id}:closed`,
 				type: 'SESSION_CLOSED',
 				detail: session.closeReason ?? null,
-				serverName: session.server?.name ?? null,
+				serverNames: session.server
+					? toMinecraftServerLocalizedName(session.server)
+					: null,
 				occurredAt: session.closedAt.toISOString(),
 			})
 		}
@@ -185,7 +199,9 @@ export const getPublicPlayerActivity = async (
 			id: `advancement:${unlock.id}`,
 			type: 'ADVANCEMENT_UNLOCKED',
 			detail: unlock.advancementKey,
-			serverName: unlock.player?.server?.name ?? null,
+			serverNames: unlock.player?.server
+				? toMinecraftServerLocalizedName(unlock.player.server)
+				: null,
 			occurredAt: unlock.unlockedAt.toISOString(),
 		})
 	}
@@ -195,7 +211,7 @@ export const getPublicPlayerActivity = async (
 			id: `binding:${binding.id}`,
 			type: 'BINDING_CHANGED',
 			detail: binding.action,
-			serverName: null,
+			serverNames: null,
 			occurredAt: binding.createdAt.toISOString(),
 		})
 	}
@@ -206,7 +222,7 @@ export const getPublicPlayerActivity = async (
 				id: `user-activity:${activity.id}`,
 				type: 'USER_REGISTERED',
 				detail: null,
-				serverName: null,
+				serverNames: null,
 				occurredAt: activity.occurredAt.toISOString(),
 			})
 		}

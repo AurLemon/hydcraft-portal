@@ -1,3 +1,8 @@
+import {
+	resolveMinecraftServerLocalizedName,
+	type MinecraftServerLocalizedName,
+} from './server-name'
+
 export interface MinecraftLocationSummary {
 	worldName: string | null
 	dimension: string | null
@@ -11,7 +16,7 @@ export interface MinecraftLocationSummary {
 
 export interface MinecraftObservedPlayerSummary {
 	serverId: string
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	serverHasTiles: boolean
 	uuid: string
 	username: string | null
@@ -38,7 +43,7 @@ export interface MinecraftObservedPlayerSummary {
 export interface MinecraftAccountServerView {
 	id: string
 	serverId: string | null
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	uuid: string | null
 	label: string
 	hasMap: boolean
@@ -391,6 +396,7 @@ export const resolveObservedPlayerSummary = (
 export const listServerViewItems = (
 	account: MinecraftAccountSummary,
 	options: {
+		locale: string
 		aggregateLabel: string
 		noUuidLabel: string
 		requireMap?: boolean
@@ -428,9 +434,12 @@ export const listServerViewItems = (
 				account.uuid ??
 				account.playerIdentity.resolvedUuid ??
 				options.noUuidLabel
+			const serverLabel = view.serverNames
+				? resolveMinecraftServerLocalizedName(view.serverNames, options.locale)
+				: view.label
 
 			return {
-				label: `${view.label} / ${nameLabel} / ${uuidLabel}`,
+				label: `${serverLabel} / ${nameLabel} / ${uuidLabel}`,
 				value,
 			}
 		})

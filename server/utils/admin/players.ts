@@ -303,7 +303,7 @@ const readAccountEnrichment = async (
 				serverId: true,
 				server: {
 					select: {
-						name: true,
+						nameZhCn: true,
 					},
 				},
 				uuid: true,
@@ -406,7 +406,7 @@ const readAccountEnrichment = async (
 					},
 					serverLinks: matchedPlayers.map((player) => ({
 						serverId: player.serverId,
-						serverName: player.server.name,
+						serverName: player.server.nameZhCn,
 						uuid: player.uuid,
 						username: player.username,
 						hasStats: Boolean(player.statsSnapshot),
@@ -915,7 +915,7 @@ export const getAdminMinecraftAccountSessionHistory = async (
 						closedAt: true,
 						server: {
 							select: {
-								name: true,
+								nameZhCn: true,
 							},
 						},
 					},
@@ -932,7 +932,7 @@ export const getAdminMinecraftAccountSessionHistory = async (
 		sessions: await normalizePlayerSessionHistory(
 			sessions.map((session) => ({
 				serverId: session.serverId,
-				serverName: session.server?.name ?? null,
+				serverName: session.server?.nameZhCn ?? null,
 				sessionId: session.sessionId,
 				openedAt: session.openedAt,
 				closedAt: session.closedAt,

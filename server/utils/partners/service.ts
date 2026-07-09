@@ -30,7 +30,7 @@ const partnerInclude = {
 		select: {
 			serverId: true,
 			code: true,
-			name: true,
+			nameZhCn: true,
 			enabled: true,
 		},
 	},
@@ -107,7 +107,7 @@ type PartnerWithRelations = PartnerEntry & {
 	linkedMinecraftServer: {
 		serverId: string
 		code: string
-		name: string
+		nameZhCn: string
 		enabled: boolean
 	} | null
 	editors?: (PartnerEditor & {
@@ -152,7 +152,14 @@ const summarizePartner = (
 	avatarAttachmentId: partner.avatarAttachmentId,
 	coverAttachmentId: partner.coverAttachmentId,
 	linkedMinecraftServerId: partner.linkedMinecraftServerId,
-	linkedMinecraftServer: partner.linkedMinecraftServer,
+	linkedMinecraftServer: partner.linkedMinecraftServer
+		? {
+				serverId: partner.linkedMinecraftServer.serverId,
+				code: partner.linkedMinecraftServer.code,
+				name: partner.linkedMinecraftServer.nameZhCn,
+				enabled: partner.linkedMinecraftServer.enabled,
+			}
+		: null,
 	enabled: partner.enabled,
 	archived: partner.archived,
 	relationshipEstablishedAt: partner.relationshipEstablishedAt,

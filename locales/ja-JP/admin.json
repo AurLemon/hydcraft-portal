@@ -962,7 +962,7 @@
 			"fields": {
 				"serverId": "サーバー ID",
 				"code": "コード",
-				"name": "名前",
+				"shortCode": "略称コード",
 				"nameZhCn": "簡体字中国語名",
 				"nameZhTw": "繁体字中国語名",
 				"nameEnUs": "英語名",

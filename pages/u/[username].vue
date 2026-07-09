@@ -118,11 +118,11 @@
 											: '',
 									]"
 								>
-									{{ getServerTimelineInitial(item.serverCode) }}
+									{{ getServerTimelineShortCode(item.serverShortCode) }}
 								</div>
 								<div>
 									<p class="text-sm font-medium text-slate-950 dark:text-white">
-										{{ item.serverName }}
+										{{ resolveServerDisplayName(item.serverNames) }}
 									</p>
 									<p
 										v-if="item.highlighted && item.earliestFirstJoinedAt"
@@ -170,10 +170,10 @@
 											{{ getActivityEventLabel(event) }}
 										</div>
 										<p
-											v-if="event.serverName"
+											v-if="event.serverNames"
 											class="mt-0.5 text-sm text-slate-500"
 										>
-											{{ event.serverName }}
+											{{ resolveServerDisplayName(event.serverNames) }}
 										</p>
 										<p class="text-sm text-slate-500">
 											{{ formatDateTime(event.occurredAt) }}
@@ -359,6 +359,10 @@ import {
 	resolveBirthdaySummary,
 	resolveGenderSymbol,
 } from '~/utils/profile/birthday'
+import {
+	resolveMinecraftServerLocalizedName,
+	type MinecraftServerLocalizedName,
+} from '~/utils/minecraft/server-name'
 import type {
 	MinecraftAccountForm,
 	MinecraftAccountsResponse,
@@ -459,8 +463,8 @@ interface PublicProfile {
 	} | null
 	minecraftServerTimeline?: Array<{
 		serverId: string
-		serverName: string
-		serverCode: string
+		serverNames: MinecraftServerLocalizedName
+		serverShortCode: string
 		highlighted: boolean
 		playerId: string | null
 		earliestFirstJoinedAt: string | null
@@ -506,7 +510,7 @@ interface PublicActivityEvent {
 		| 'USER_REGISTERED'
 		| 'BINDING_CHANGED'
 	detail: string | null
-	serverName: string | null
+	serverNames: MinecraftServerLocalizedName | null
 	occurredAt: string
 }
 
@@ -639,6 +643,13 @@ const displayCountryOrRegion = computed(() => {
 
 	return matched ? t(`profile.options.country.${matched.key}`) : normalizedValue
 })
+
+const resolveServerDisplayName = (
+	serverNames: MinecraftServerLocalizedName | null | undefined,
+): string =>
+	serverNames
+		? resolveMinecraftServerLocalizedName(serverNames, locale.value)
+		: ''
 
 const profileItems = computed<ProfileInfoItem[]>(() => {
 	const social = profile.value?.social
@@ -954,8 +965,8 @@ const getActivityEventLabel = (event: PublicActivityEvent): string => {
 	}
 }
 
-const getServerTimelineInitial = (serverCode: string): string =>
-	serverCode.trim().charAt(0).toUpperCase()
+const getServerTimelineShortCode = (serverCode: string): string =>
+	serverCode.trim()
 
 const CHINESE_DIGITS = [
 	'零',

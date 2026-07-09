@@ -65,11 +65,11 @@ export interface MinecraftServerSummary {
 	id: string
 	serverId: string
 	code: string
-	name: string
-	nameZhCn: string | null
-	nameZhTw: string | null
-	nameEnUs: string | null
-	nameJaJp: string | null
+	shortCode: string
+	nameZhCn: string
+	nameZhTw: string
+	nameEnUs: string
+	nameJaJp: string
 	host: string
 	port: number
 	enabled: boolean

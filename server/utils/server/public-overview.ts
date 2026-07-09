@@ -175,7 +175,7 @@ export const listPublicOverviewServers = async (): Promise<
 
 			return {
 				serverId: server.serverId,
-				name: server.name,
+				name: server.nameZhCn,
 				bridgeStatus: {
 					enabled: server.portalBridge?.enabled ?? false,
 					connected,

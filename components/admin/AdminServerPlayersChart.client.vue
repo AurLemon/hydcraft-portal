@@ -3,7 +3,7 @@
 		<Line v-if="points.length > 0" :data="chartData" :options="chartOptions" />
 		<div
 			v-else
-			class="flex h-full items-center justify-center rounded-lg border border-dashed border-slate-200 text-sm text-slate-400 dark:border-slate-800"
+			class="flex h-full items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-400 dark:border-slate-800"
 		>
 			{{ emptyText }}
 		</div>

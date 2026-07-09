@@ -5,6 +5,7 @@ import type {
 	UserAuthActivitySource,
 	UserProfileLanguage,
 } from '~/generated/prisma/client'
+import type { MinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 export type ProfileActivityOnlineStatus =
 	| 'ONLINE'
@@ -78,6 +79,8 @@ export interface MinecraftProfileSummary {
 	profileUrl: string
 	status: MinecraftAccountStatus
 }
+
+export interface ServerLocalizedNameSummary extends MinecraftServerLocalizedName {}
 
 export interface MinecraftPlayerLocationSummary {
 	worldName: string | null
@@ -163,8 +166,8 @@ export interface PublicUserProfile {
 	} | null
 	minecraftServerTimeline?: Array<{
 		serverId: string
-		serverName: string
-		serverCode: string
+		serverNames: ServerLocalizedNameSummary
+		serverShortCode: string
 		highlighted: boolean
 		playerId: string | null
 		earliestFirstJoinedAt: Date | null

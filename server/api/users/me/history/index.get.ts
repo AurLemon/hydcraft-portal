@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
 				.filter((view) => view.serverId)
 				.map((view) => ({
 					serverId: view.serverId as string,
-					serverName: view.serverName || view.label,
+					serverNames: view.serverNames,
 					account,
 					serverViewId: getServerViewSelectionValueForSummary(account, view),
 				})),
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
 		.reduce<
 			Array<{
 				serverId: string
-				serverName: string
+				serverNames: (typeof accounts)[number]['serverViews'][number]['serverNames']
 				accounts: Array<{
 					account: (typeof accounts)[number]
 					serverViewId: string
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
 
 			groups.push({
 				serverId: item.serverId,
-				serverName: item.serverName,
+				serverNames: item.serverNames,
 				accounts: [
 					{
 						account: item.account,

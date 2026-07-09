@@ -278,6 +278,7 @@ import type {
 } from '~/components/admin/types'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 import type { MinecraftAccountForm } from '~/utils/minecraft/accounts'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -407,16 +408,7 @@ const assignedItems = [
 	},
 ]
 const resolveServerDisplayName = (server: MinecraftServerSummary): string => {
-	switch (locale.value) {
-		case 'zh-TW':
-			return server.nameZhTw || server.nameZhCn || server.name
-		case 'en-US':
-			return server.nameEnUs || server.nameZhCn || server.name
-		case 'ja-JP':
-			return server.nameJaJp || server.nameZhCn || server.name
-		default:
-			return server.nameZhCn || server.name
-	}
+	return resolveMinecraftServerLocalizedName(server, locale.value)
 }
 const serverFilterItems = computed<ServerFilterItem[]>(() => [
 	{ label: t('admin.filters.all'), value: ALL_FILTER_VALUE },
@@ -619,6 +611,8 @@ const getServerRefs = (account: AdminHistoricalPlayer) =>
 		.filter((view) => view.serverId)
 		.map((view) => ({
 			serverId: view.serverId as string,
-			name: view.serverName || view.label,
+			name: view.serverNames
+				? resolveMinecraftServerLocalizedName(view.serverNames, locale.value)
+				: view.label,
 		}))
 </script>

@@ -19,9 +19,9 @@
 					{{ t('admin.servers.setDefault') }}
 				</UButton>
 				<UButton
-					:to="localePath('/admin/servers/create')"
 					icon="i-lucide-plus"
 					size="lg"
+					@click="createServerModalOpen = true"
 				>
 					{{ t('admin.servers.create') }}
 				</UButton>
@@ -100,7 +100,7 @@
 
 		<div
 			v-else-if="servers.length === 0"
-			class="mt-8 rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900"
+			class="mt-8 rounded-lg border border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900"
 		>
 			<p class="text-lg font-semibold text-slate-950 dark:text-white">
 				{{ t('admin.servers.empty.title') }}
@@ -153,7 +153,7 @@
 											<p
 												class="truncate font-medium text-slate-900 dark:text-white"
 											>
-												{{ element.name }}
+												{{ resolveServerDisplayName(element) }}
 											</p>
 											<UBadge
 												v-if="element.isDefault"
@@ -179,10 +179,18 @@
 								<td
 									class="p-3 align-top text-xs text-slate-600 dark:text-slate-300"
 								>
-									{{ element.host }}:{{ element.port }}
+									{{
+										element.dataSourceMode === 'IMPORTED'
+											? ''
+											: `${element.host}:${element.port}`
+									}}
 								</td>
 								<td class="p-3 align-top">
-									<UBadge color="neutral" variant="subtle">
+									<UBadge
+										v-if="element.dataSourceMode !== 'IMPORTED'"
+										color="neutral"
+										variant="subtle"
+									>
 										{{
 											element.portalBridge?.lastConnectionState ??
 											t('admin.serverDetail.states.notConfigured')
@@ -266,6 +274,13 @@
 				</div>
 			</template>
 		</UModal>
+
+		<AdminServerConfigModal
+			v-model:open="createServerModalOpen"
+			:server="null"
+			mode="create"
+			@saved="handleCreatedServer"
+		/>
 
 		<UModal
 			v-model:open="externalSyncStatusOpen"
@@ -353,13 +368,14 @@ import type {
 	MinecraftServerSummary,
 	MinecraftServersResponse,
 } from '~/components/admin/types'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 definePageMeta({
 	headerVariant: 'solid',
 	middleware: 'admin-auth',
 })
 
-const { notifyError } = useAdminToast()
+const { notifyError, notifySuccess } = useAdminToast()
 const { data, pending, error, refresh } =
 	await useFetch<MinecraftServersResponse>('/api/minecraft/servers')
 const {
@@ -373,11 +389,14 @@ const {
 const localePath = useLocalePath()
 const { locale, t } = useI18n()
 const servers = computed(() => data.value?.servers ?? [])
+const resolveServerDisplayName = (server: MinecraftServerSummary): string =>
+	resolveMinecraftServerLocalizedName(server, locale.value)
 const localServers = ref<MinecraftServerSummary[]>([])
 const externalSyncSources = computed(
 	() => externalSyncData.value?.sources ?? [],
 )
 const defaultServerModalOpen = ref(false)
+const createServerModalOpen = ref(false)
 const selectedDefaultServerId = ref('')
 const defaultServerSaving = ref(false)
 const reordering = ref(false)
@@ -392,7 +411,7 @@ const externalSyncStatus = ref<AdminExternalSyncSourceDetailResponse | null>(
 )
 const defaultServerItems = computed(() =>
 	servers.value.map((server) => ({
-		label: `${server.name} (${server.serverId})`,
+		label: `${resolveServerDisplayName(server)} (${server.serverId})`,
 		value: server.serverId,
 		description: server.code,
 	})),
@@ -735,6 +754,17 @@ onBeforeUnmount(() => {
 })
 
 const openServer = async (server: MinecraftServerSummary): Promise<void> => {
+	await navigateTo(localePath(`/admin/servers/${server.serverId}`))
+}
+
+const handleCreatedServer = async (
+	server: MinecraftServerSummary,
+): Promise<void> => {
+	notifySuccess({
+		title: t('admin.notifications.serverSaved'),
+		description: t('admin.notifications.serverSavedDescription'),
+	})
+	await refresh()
 	await navigateTo(localePath(`/admin/servers/${server.serverId}`))
 }
 

@@ -129,7 +129,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const pageTitle = computed(() => t('content.serverOverview.pageTitle'))
+const pageTitle = computed(() => t('routes.server'))
 useExplicitRouteTitle(pageTitle)
 
 const { data, pending, error } = await useFetch<ServerOverviewResponse>(
