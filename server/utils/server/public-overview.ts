@@ -111,7 +111,9 @@ export const listPublicOverviewServers = async (): Promise<
 		where: {
 			enabled: true,
 			portalBridge: {
-				isNot: null,
+				is: {
+					enabled: true,
+				},
 			},
 		},
 		orderBy: [

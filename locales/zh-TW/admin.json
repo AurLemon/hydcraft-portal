@@ -998,6 +998,7 @@
 				"secret": "Secret",
 				"bridgeEnabled": "啟用 Bridge 連線",
 				"bridgeEnabledDescription": "開啟後，Portal 會嘗試與這個伺服器的 Bridge 建立連線。",
+				"removePortalBridge": "移除這個伺服器的 PortalBridge 設定",
 				"syncInterval": "同步間隔（分鐘）"
 			},
 			"placeholders": {

@@ -3,10 +3,10 @@
 		<UButton
 			v-for="action in actions"
 			:key="action.label"
-			:icon="action.icon"
 			:color="action.color"
 			@click="action.onClick"
 		>
+			<UIcon :name="action.icon" class="size-4 shrink-0 text-current" />
 			{{ action.label }}
 		</UButton>
 	</div>

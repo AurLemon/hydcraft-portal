@@ -998,6 +998,7 @@
 				"secret": "Secret",
 				"bridgeEnabled": "Bridge 接続を有効化",
 				"bridgeEnabledDescription": "有効にすると、Portal がこのサーバーの Bridge へ接続を試みます。",
+				"removePortalBridge": "このサーバーの PortalBridge 設定を削除",
 				"syncInterval": "同期間隔（分）"
 			},
 			"placeholders": {

@@ -272,15 +272,26 @@
 					<label :class="fieldClass">
 						<div class="flex items-center justify-between gap-3">
 							<span>{{ t('admin.serverConfig.fields.bridgeEnabled') }}</span>
-							<USwitch v-model="form.portalBridge.enabled" />
+							<USwitch
+								v-model="form.portalBridge.enabled"
+								:disabled="form.portalBridge.remove"
+							/>
 						</div>
+					</label>
+					<label
+						v-if="server?.portalBridge"
+						class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+					>
+						<UCheckbox v-model="form.portalBridge.remove" />
+						<span>{{ t('admin.serverConfig.fields.removePortalBridge') }}</span>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
 						<UInput
 							v-model="form.portalBridge.bridgeId"
 							class="w-full"
-							required
+							:disabled="form.portalBridge.remove"
+							:required="!form.portalBridge.remove"
 						/>
 					</label>
 					<label :class="fieldClass">
@@ -288,12 +299,18 @@
 						<UInput
 							v-model="form.portalBridge.module"
 							class="w-full"
-							required
+							:disabled="form.portalBridge.remove"
+							:required="!form.portalBridge.remove"
 						/>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.wsUrl') }}</span>
-						<UInput v-model="form.portalBridge.wsUrl" class="w-full" required />
+						<UInput
+							v-model="form.portalBridge.wsUrl"
+							class="w-full"
+							:disabled="form.portalBridge.remove"
+							:required="!form.portalBridge.remove"
+						/>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.secret') }}</span>
@@ -301,6 +318,7 @@
 							v-model="form.portalBridge.secret"
 							class="w-full"
 							type="password"
+							:disabled="form.portalBridge.remove"
 							:placeholder="
 								server?.portalBridge?.hasSecret
 									? t('admin.serverConfig.placeholders.keepSecret')
@@ -442,6 +460,7 @@ interface PortalBridgeForm {
 	secret: string
 	enabled: boolean
 	coreSyncIntervalMinutes: number
+	remove: boolean
 }
 
 interface ServerMapConfigForm {
@@ -666,6 +685,7 @@ const createEmptyForm = (): ServerForm => ({
 		secret: '',
 		enabled: false,
 		coreSyncIntervalMinutes: 30,
+		remove: false,
 	},
 	authMe: {
 		host: '',
@@ -747,6 +767,7 @@ const resetForm = (): void => {
 					enabled: source.portalBridge?.enabled ?? false,
 					coreSyncIntervalMinutes:
 						source.portalBridge?.coreSyncIntervalMinutes ?? 30,
+					remove: false,
 				},
 				authMe: {
 					host: source.authMe?.host ?? '',
@@ -834,14 +855,17 @@ const buildPayload = () => ({
 		: {}),
 	...(visibleSections.value.portalBridge && !isImportedDataSource.value
 		? {
-				portalBridge: {
-					bridgeId: form.portalBridge.bridgeId,
-					module: form.portalBridge.module,
-					wsUrl: form.portalBridge.wsUrl,
-					secret: form.portalBridge.secret || undefined,
-					enabled: form.portalBridge.enabled,
-					coreSyncIntervalMinutes: form.portalBridge.coreSyncIntervalMinutes,
-				},
+				portalBridge: form.portalBridge.remove
+					? null
+					: {
+							bridgeId: form.portalBridge.bridgeId,
+							module: form.portalBridge.module,
+							wsUrl: form.portalBridge.wsUrl,
+							secret: form.portalBridge.secret || undefined,
+							enabled: form.portalBridge.enabled,
+							coreSyncIntervalMinutes:
+								form.portalBridge.coreSyncIntervalMinutes,
+						},
 			}
 		: visibleSections.value.sync
 			? {

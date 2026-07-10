@@ -23,7 +23,16 @@ const dynamicRouteTitleDefinitions: ReadonlyArray<RouteDisplayTitleDefinition> =
 			key: '/admin/users/[id]',
 			labelKey: 'routes.adminUserEdit',
 		},
+		{
+			key: '/admin/servers/[serverId]',
+			labelKey: 'routes.adminServerEdit',
+		},
 	]
+
+const staticAdminServerPaths = new Set([
+	'/admin/servers/stats',
+	'/admin/servers/advancements',
+])
 
 export const resolveRouteTitleDefinition = (
 	path: string,
@@ -69,6 +78,16 @@ export const resolveRouteTitleDefinition = (
 		return {
 			key: '/admin/users/[id]',
 			labelKey: 'routes.adminUserEdit',
+		}
+	}
+
+	if (
+		/^\/admin\/servers\/[^/]+$/.test(normalizedPath) &&
+		!staticAdminServerPaths.has(normalizedPath)
+	) {
+		return {
+			key: '/admin/servers/[serverId]',
+			labelKey: 'routes.adminServerEdit',
 		}
 	}
 

@@ -988,6 +988,7 @@
 				"secret": "Secret",
 				"bridgeEnabled": "启用 Bridge 连接",
 				"bridgeEnabledDescription": "开启后，Portal 会尝试与这个服务器的 Bridge 建立连接。",
+				"removePortalBridge": "移除这个服务器的 PortalBridge 配置",
 				"syncInterval": "同步间隔（分钟）"
 			},
 			"placeholders": {

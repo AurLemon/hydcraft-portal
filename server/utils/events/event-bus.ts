@@ -67,6 +67,9 @@ interface EventMap {
 	'minecraft-server.portal-bridge-config.saved': {
 		configId: string
 	}
+	'minecraft-server.portal-bridge-config.deleted': {
+		configId: string
+	}
 	'user.profile.updated': {
 		userId: string
 		changedFields: string[]

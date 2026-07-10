@@ -988,6 +988,7 @@
 				"secret": "Secret",
 				"bridgeEnabled": "Enable Bridge connection",
 				"bridgeEnabledDescription": "When enabled, the Portal will try to connect to this server's Bridge.",
+				"removePortalBridge": "Remove this server's PortalBridge configuration",
 				"syncInterval": "Sync interval (minutes)"
 			},
 			"placeholders": {

@@ -756,7 +756,7 @@ const headerActions = computed(() => {
 		},
 		{
 			label: t('admin.serverDetail.actions.syncRate'),
-			icon: 'i-lucide-timer-reset',
+			icon: 'i-lucide-gauge',
 			color: 'primary' as const,
 			onClick: () => (syncRateOpen.value = true),
 		},

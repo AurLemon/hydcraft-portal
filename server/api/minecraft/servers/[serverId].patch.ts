@@ -253,7 +253,18 @@ export default defineEventHandler(async (event) => {
 		}
 	}
 
-	if (body.portalBridge) {
+	if (body.portalBridge === null) {
+		if (existing.portalBridge) {
+			await prisma.portalBridgeConfig.delete({
+				where: {
+					id: existing.portalBridge.id,
+				},
+			})
+			await emitEvent('minecraft-server.portal-bridge-config.deleted', {
+				configId: existing.portalBridge.id,
+			})
+		}
+	} else if (body.portalBridge) {
 		const wantsPortalBridgeCreate =
 			!existing.portalBridge && hasAnyPortalBridgeInput(body.portalBridge)
 
