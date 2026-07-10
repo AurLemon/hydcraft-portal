@@ -17,8 +17,18 @@
 							/>
 						</div>
 
-						<div class="flex items-baseline gap-2 text-right">
-							<div class="flex items-end gap-1 text-slate-950 dark:text-white">
+						<UPopover
+							v-if="servers.length > 1"
+							v-model:open="serverMenuOpen"
+							:popper="{ placement: 'bottom-end' }"
+						>
+							<button
+								type="button"
+								class="group inline-flex min-w-0 max-w-full items-end gap-1 text-left text-slate-950 transition hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-white"
+								:aria-label="
+									t('content.serverOverview.cards.bridge.selectServer')
+								"
+							>
 								<span class="text-7xl leading-none font-semibold translate-y-1">
 									{{ onlineCountText }}
 								</span>
@@ -27,52 +37,55 @@
 								>
 									/ {{ maxPlayersText }}
 								</span>
-							</div>
+								<UIcon
+									name="i-lucide-chevron-down"
+									class="mb-1 size-4 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400"
+									:class="serverMenuOpen ? 'rotate-180' : ''"
+								/>
+							</button>
 
-							<UPopover
-								v-if="servers.length > 1"
-								v-model:open="serverMenuOpen"
-								:popper="{ placement: 'bottom-end' }"
-							>
-								<button
-									type="button"
-									class="inline-flex items-center justify-center rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-									:aria-label="
-										t('content.serverOverview.cards.bridge.selectServer')
-									"
+							<template #content>
+								<div
+									class="grid w-64 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
 								>
-									<UIcon name="i-lucide-chevron-down" class="size-4" />
-								</button>
-
-								<template #content>
-									<div
-										class="grid w-64 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+									<button
+										v-for="server in servers"
+										:key="server.serverId"
+										type="button"
+										class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
+										:class="{
+											'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
+												server.serverId === selectedServerId,
+											'text-slate-600 dark:text-slate-300':
+												server.serverId !== selectedServerId,
+										}"
+										@click="selectServer(server.serverId)"
 									>
-										<button
-											v-for="server in servers"
-											:key="server.serverId"
-											type="button"
-											class="flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-slate-100 dark:hover:bg-slate-800"
-											:class="{
-												'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
-													server.serverId === selectedServerId,
-												'text-slate-600 dark:text-slate-300':
-													server.serverId !== selectedServerId,
-											}"
-											@click="selectServer(server.serverId)"
-										>
-											<span class="min-w-0 flex-1 truncate">
-												{{ server.name }}
-											</span>
-											<UIcon
-												v-if="server.serverId === selectedServerId"
-												name="i-lucide-check"
-												class="size-3.5 shrink-0"
-											/>
-										</button>
-									</div>
-								</template>
-							</UPopover>
+										<span class="min-w-0 flex-1 truncate">
+											{{ getServerDisplayName(server) }}
+										</span>
+										<UIcon
+											v-if="server.serverId === selectedServerId"
+											name="i-lucide-check"
+											class="size-3.5 shrink-0"
+										/>
+									</button>
+								</div>
+							</template>
+						</UPopover>
+
+						<div
+							v-else
+							class="flex items-end gap-1 text-slate-950 dark:text-white"
+						>
+							<span class="text-7xl leading-none font-semibold translate-y-1">
+								{{ onlineCountText }}
+							</span>
+							<span
+								class="pb-1 text-2xl leading-none text-slate-500 dark:text-slate-400"
+							>
+								/ {{ maxPlayersText }}
+							</span>
 						</div>
 					</div>
 
@@ -81,7 +94,7 @@
 					>
 						<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
 							<div class="truncate">
-								{{ selectedServer.name }}
+								{{ selectedServerName }}
 							</div>
 						</div>
 
@@ -182,6 +195,7 @@
 
 <script setup lang="ts">
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 import type {
 	ServerOverviewObservedPlayer,
 	ServerOverviewServerItem,
@@ -197,7 +211,7 @@ const emit = defineEmits<{
 	selectServer: [serverId: string]
 }>()
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const serverMenuOpen = ref(false)
 
@@ -208,6 +222,13 @@ const selectedServer = computed(
 		) ??
 		props.servers[0] ??
 		null,
+)
+
+const getServerDisplayName = (server: ServerOverviewServerItem): string =>
+	resolveMinecraftServerLocalizedName(server.names, locale.value)
+
+const selectedServerName = computed(() =>
+	selectedServer.value ? getServerDisplayName(selectedServer.value) : '',
 )
 
 const maxPlayersText = computed(() => {

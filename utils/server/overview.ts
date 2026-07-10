@@ -1,3 +1,5 @@
+import type { MinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
+
 export interface ServerOverviewRgbColor {
 	r: number
 	g: number
@@ -39,6 +41,8 @@ export interface ServerOverviewBridgeStatus {
 export interface ServerOverviewServerItem {
 	serverId: string
 	name: string
+	names: MinecraftServerLocalizedName
+	isDefault: boolean
 	bridgeStatus: ServerOverviewBridgeStatus
 }
 

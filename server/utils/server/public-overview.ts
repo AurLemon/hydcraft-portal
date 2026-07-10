@@ -5,6 +5,7 @@ import type {
 	ServerOverviewLiveResponse,
 	ServerOverviewResponse,
 } from '~/utils/server/overview'
+import { toMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 
 const readNumber = (payload: unknown, key: string): number | null => {
 	if (!payload || typeof payload !== 'object') {
@@ -109,8 +110,15 @@ export const listPublicOverviewServers = async (): Promise<
 	const servers = await prisma.minecraftServer.findMany({
 		where: {
 			enabled: true,
+			portalBridge: {
+				isNot: null,
+			},
 		},
-		orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+		orderBy: [
+			{ isDefault: 'desc' },
+			{ sortOrder: 'asc' },
+			{ createdAt: 'asc' },
+		],
 		include: {
 			portalBridge: true,
 		},
@@ -176,6 +184,13 @@ export const listPublicOverviewServers = async (): Promise<
 			return {
 				serverId: server.serverId,
 				name: server.nameZhCn,
+				names: toMinecraftServerLocalizedName({
+					nameZhCn: server.nameZhCn,
+					nameZhTw: server.nameZhTw,
+					nameEnUs: server.nameEnUs,
+					nameJaJp: server.nameJaJp,
+				}),
+				isDefault: server.isDefault,
 				bridgeStatus: {
 					enabled: server.portalBridge?.enabled ?? false,
 					connected,
@@ -195,7 +210,10 @@ export const listPublicOverviewServers = async (): Promise<
 
 export const resolvePublicOverviewDefaultServerId = (
 	servers: ServerOverviewLiveResponse['servers'],
-): string | null => servers[0]?.serverId ?? null
+): string | null =>
+	servers.find((server) => server.isDefault)?.serverId ??
+	servers[0]?.serverId ??
+	null
 
 export const countPublicOverviewUsers = async (): Promise<number> => {
 	const users = await prisma.user.findMany({
