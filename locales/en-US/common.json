@@ -33,7 +33,8 @@
 		"meHistory": "Historical Profiles",
 		"meSecurity": "Security",
 		"meConnections": "Connections",
-		"adminAchievements": "Achievements"
+		"adminAchievements": "Achievements",
+		"adminOAuthClients": "OAuth Clients"
 	},
 	"main": {
 		"contentFooter": {

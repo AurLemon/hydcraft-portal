@@ -40,6 +40,7 @@ export default defineNuxtConfig({
 						files: [
 							'zh-CN/common.json',
 							'zh-CN/auth.json',
+							'zh-CN/oauth.json',
 							'zh-CN/profile.json',
 							'zh-CN/attachments.json',
 							'zh-CN/minecraft.json',
@@ -56,6 +57,7 @@ export default defineNuxtConfig({
 						files: [
 							'zh-TW/common.json',
 							'zh-TW/auth.json',
+							'zh-TW/oauth.json',
 							'zh-TW/profile.json',
 							'zh-TW/attachments.json',
 							'zh-TW/minecraft.json',
@@ -72,6 +74,7 @@ export default defineNuxtConfig({
 						files: [
 							'ja-JP/common.json',
 							'ja-JP/auth.json',
+							'ja-JP/oauth.json',
 							'ja-JP/profile.json',
 							'ja-JP/attachments.json',
 							'ja-JP/minecraft.json',
@@ -88,6 +91,7 @@ export default defineNuxtConfig({
 						files: [
 							'en-US/common.json',
 							'en-US/auth.json',
+							'en-US/oauth.json',
 							'en-US/profile.json',
 							'en-US/attachments.json',
 							'en-US/minecraft.json',

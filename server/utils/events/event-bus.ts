@@ -1,6 +1,24 @@
 type EventHandler<TPayload> = (payload: TPayload) => Promise<void> | void
 
 interface EventMap {
+	'oauth.client.created': {
+		clientId: string
+		createdAt: Date
+	}
+	'oauth.client.updated': {
+		clientId: string
+		updatedAt: Date
+	}
+	'oauth.client.deleted': {
+		clientId: string
+		deletedAt: Date
+	}
+	'oauth.client.granted': {
+		clientId: string
+		userId: string
+		scopes: string[]
+		grantedAt: Date
+	}
 	'user.auth-activity.observed': {
 		userId: string
 		observedAt: Date

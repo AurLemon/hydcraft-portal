@@ -1102,6 +1102,30 @@
 				"assignBadges": "Badge 付与"
 			}
 		},
+		"oauthClients": {
+			"title": "OAuth クライアント",
+			"fields": {
+				"name": "名前",
+				"clientId": "Client ID",
+				"redirectUris": "リダイレクト URI",
+				"scopes": "スコープ",
+				"enabled": "有効"
+			},
+			"create": {
+				"title": "OAuth クライアントを作成",
+				"action": "クライアントを作成"
+			},
+			"edit": { "title": "OAuth クライアントを編集" },
+			"delete": {
+				"title": "OAuth クライアントを削除",
+				"description": "{name} を削除すると、承認済みユーザーと未使用の認可コードが無効になります。"
+			},
+			"notifications": {
+				"created": "OAuth クライアントを作成しました",
+				"updated": "OAuth クライアントを更新しました",
+				"deleted": "OAuth クライアントを削除しました"
+			}
+		},
 		"sort": {
 			"field": "並び替え項目",
 			"direction": "並び順",

@@ -1102,6 +1102,27 @@
 				"assignBadges": "授予 Badge"
 			}
 		},
+		"oauthClients": {
+			"title": "OAuth 用戶端",
+			"fields": {
+				"name": "名稱",
+				"clientId": "Client ID",
+				"redirectUris": "回呼網址",
+				"scopes": "權限",
+				"enabled": "啟用"
+			},
+			"create": { "title": "新增 OAuth 用戶端", "action": "建立用戶端" },
+			"edit": { "title": "編輯 OAuth 用戶端" },
+			"delete": {
+				"title": "刪除 OAuth 用戶端",
+				"description": "刪除 {name} 後，已授權使用者和未使用的授權碼都會失效。"
+			},
+			"notifications": {
+				"created": "OAuth 用戶端已建立",
+				"updated": "OAuth 用戶端已更新",
+				"deleted": "OAuth 用戶端已刪除"
+			}
+		},
 		"sort": {
 			"field": "排序欄位",
 			"direction": "排序方向",

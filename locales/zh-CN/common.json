@@ -33,7 +33,8 @@
 		"meHistory": "历史档案",
 		"meSecurity": "账号安全",
 		"meConnections": "连接与授权",
-		"adminAchievements": "成就"
+		"adminAchievements": "成就",
+		"adminOAuthClients": "OAuth 客户端"
 	},
 	"main": {
 		"contentFooter": {

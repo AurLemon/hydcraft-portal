@@ -33,7 +33,8 @@
 		"meHistory": "歷史檔案",
 		"meSecurity": "帳號安全",
 		"meConnections": "連接與授權",
-		"adminAchievements": "成就"
+		"adminAchievements": "成就",
+		"adminOAuthClients": "OAuth 用戶端"
 	},
 	"main": {
 		"contentFooter": {

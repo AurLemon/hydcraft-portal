@@ -1092,6 +1092,27 @@
 				"assignBadges": "授予 Badge"
 			}
 		},
+		"oauthClients": {
+			"title": "OAuth 客户端",
+			"fields": {
+				"name": "名称",
+				"clientId": "Client ID",
+				"redirectUris": "回调地址",
+				"scopes": "权限",
+				"enabled": "启用"
+			},
+			"create": { "title": "新建 OAuth 客户端", "action": "创建客户端" },
+			"edit": { "title": "编辑 OAuth 客户端" },
+			"delete": {
+				"title": "删除 OAuth 客户端",
+				"description": "删除 {name} 后，已授权用户和未使用的授权码都会失效。"
+			},
+			"notifications": {
+				"created": "OAuth 客户端已创建",
+				"updated": "OAuth 客户端已更新",
+				"deleted": "OAuth 客户端已删除"
+			}
+		},
 		"sort": {
 			"field": "排序字段",
 			"direction": "排序方向",

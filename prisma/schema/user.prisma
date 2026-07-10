@@ -40,6 +40,8 @@ model User {
   refreshTokens      RefreshToken[]
   emailTokens        EmailVerificationToken[]
   oauthStateTokens   OAuthStateToken[]
+  oauthClientGrants  OAuthClientGrant[]
+  oauthAuthorizationCodes OAuthAuthorizationCode[]
   securityEvents     SecurityEvent[]
   profile            UserProfile?
   preferences        UserProfilePreferences?
@@ -270,6 +272,58 @@ model OAuthStateToken {
 
   @@index([userId])
   @@index([provider])
+  @@index([expiresAt])
+}
+
+model OAuthClient {
+  id                String   @id @default(cuid())
+  clientId          String   @unique
+  clientSecretHash  String
+  name              String
+  redirectUris      String[]
+  allowedScopes     String[] @default(["openid", "profile", "email", "hydroline"])
+  enabled           Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  grants             OAuthClientGrant[]
+  authorizationCodes OAuthAuthorizationCode[]
+
+  @@index([enabled])
+}
+
+model OAuthClientGrant {
+  id            String      @id @default(cuid())
+  clientId      String
+  client        OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopes        String[]
+  grantedAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([clientId, userId])
+  @@index([userId])
+}
+
+model OAuthAuthorizationCode {
+  id                  String      @id @default(cuid())
+  codeHash            String      @unique
+  clientId            String
+  client              OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  redirectUri         String
+  scopes              String[]
+  nonce               String?
+  codeChallenge       String
+  codeChallengeMethod String
+  expiresAt           DateTime
+  consumedAt          DateTime?
+  createdAt           DateTime    @default(now())
+
+  @@index([clientId, expiresAt])
+  @@index([userId])
   @@index([expiresAt])
 }
 

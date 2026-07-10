@@ -33,7 +33,8 @@
 		"meHistory": "履歴プロフィール",
 		"meSecurity": "セキュリティ",
 		"meConnections": "連携と認可",
-		"adminAchievements": "実績"
+		"adminAchievements": "実績",
+		"adminOAuthClients": "OAuth クライアント"
 	},
 	"main": {
 		"contentFooter": {

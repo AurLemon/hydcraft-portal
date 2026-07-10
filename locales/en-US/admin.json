@@ -1092,6 +1092,27 @@
 				"assignBadges": "Grant badges"
 			}
 		},
+		"oauthClients": {
+			"title": "OAuth Clients",
+			"fields": {
+				"name": "Name",
+				"clientId": "Client ID",
+				"redirectUris": "Redirect URIs",
+				"scopes": "Scopes",
+				"enabled": "Enabled"
+			},
+			"create": { "title": "Create OAuth client", "action": "Create client" },
+			"edit": { "title": "Edit OAuth client" },
+			"delete": {
+				"title": "Delete OAuth client",
+				"description": "Deleting {name} invalidates its user grants and unused authorization codes."
+			},
+			"notifications": {
+				"created": "OAuth client created",
+				"updated": "OAuth client updated",
+				"deleted": "OAuth client deleted"
+			}
+		},
 		"sort": {
 			"field": "Sort field",
 			"direction": "Direction",

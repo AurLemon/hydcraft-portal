@@ -1,0 +1,14 @@
+{
+	"oauthConsent": {
+		"title": "Hydroline ID を認可",
+		"description": "{client} が Hydroline ID 情報へのアクセスを要求しています。",
+		"approve": "許可",
+		"deny": "拒否",
+		"scopes": {
+			"openid": "Hydroline ID の本人確認",
+			"profile": "公開プロフィール情報の読み取り",
+			"email": "メールアドレスと確認状態の読み取り",
+			"hydroline": "Hydroline ID の読み取り"
+		}
+	}
+}
