@@ -1,6 +1,7 @@
 import type { Prisma } from '~/generated/prisma/client'
 import { createServerPlayerIdentityEvidence } from '../minecraft/identity-evidence'
 import {
+	hashSyncValue,
 	syncMinecraftServerPlayerAdvancementsSnapshot,
 	syncMinecraftServerPlayerData,
 	syncMinecraftServerPlayerStatsSnapshot,
@@ -20,6 +21,14 @@ import {
 	updateSyncTaskProgress,
 } from './ingestion-sync-state'
 import type { PortalBridgeEnvelope } from './protocol'
+
+const hashPlayerDataIdentityEvidence = (player: unknown): string =>
+	hashSyncValue({
+		uuid: readString(player, 'uuid'),
+		lastKnownName: readString(player, 'lastKnownName'),
+		playerDataFile: readString(player, 'playerDataFile'),
+		firstPlayedAt: readString(player, 'firstPlayedAt'),
+	})
 
 export const handlePortalBridgeSyncEnvelope = async (
 	serverId: string,
@@ -75,6 +84,7 @@ export const handlePortalBridgeSyncEnvelope = async (
 			await createServerPlayerIdentityEvidence({
 				source: 'PLAYERDATA_SCAN',
 				sourceMessageId: `${envelope.id}:${uuid}`,
+				evidenceHash: hashPlayerDataIdentityEvidence(player),
 				serverId,
 				uuid,
 				username: readString(player, 'lastKnownName'),

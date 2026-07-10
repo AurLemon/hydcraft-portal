@@ -11,9 +11,9 @@ export interface PortalBridgeRetentionConfig {
 }
 
 const DEFAULT_RETENTION_CONFIG: PortalBridgeRetentionConfig = {
-	receiptRetentionDays: 7,
-	commandRetentionDays: 30,
-	maxSnapshotsPerKind: 500,
+	receiptRetentionDays: 3,
+	commandRetentionDays: 7,
+	maxSnapshotsPerKind: 150,
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000

@@ -9,6 +9,7 @@ import { normalizeMinecraftUsername } from './normalize'
 export interface CreateIdentityEvidenceInput {
 	source: ServerPlayerIdentityEvidenceSource
 	sourceMessageId?: string | null
+	evidenceHash?: string | null
 	serverId: string
 	uuid?: string | null
 	username?: string | null
@@ -24,6 +25,7 @@ export const createServerPlayerIdentityEvidence = async (
 	const data = {
 		source: input.source,
 		sourceMessageId: input.sourceMessageId,
+		evidenceHash: input.evidenceHash,
 		serverId: input.serverId,
 		uuid: input.uuid,
 		username: input.username,
@@ -33,29 +35,56 @@ export const createServerPlayerIdentityEvidence = async (
 		payload: input.payload,
 	}
 
-	const evidence = input.sourceMessageId
-		? await prisma.serverPlayerIdentityEvidence.upsert({
-				where: {
-					source_sourceMessageId: {
-						source: input.source,
-						sourceMessageId: input.sourceMessageId,
+	const existing =
+		input.evidenceHash && input.uuid
+			? await prisma.serverPlayerIdentityEvidence.findUnique({
+					where: {
+						source_serverId_uuid_evidenceHash: {
+							source: input.source,
+							serverId: input.serverId,
+							uuid: input.uuid,
+							evidenceHash: input.evidenceHash,
+						},
 					},
+					select: {
+						id: true,
+					},
+				})
+			: input.sourceMessageId
+				? await prisma.serverPlayerIdentityEvidence.findUnique({
+						where: {
+							source_sourceMessageId: {
+								source: input.source,
+								sourceMessageId: input.sourceMessageId,
+							},
+						},
+						select: {
+							id: true,
+						},
+					})
+				: null
+
+	const evidence = existing
+		? await prisma.serverPlayerIdentityEvidence.update({
+				where: {
+					id: existing.id,
 				},
-				create: data,
-				update: data,
+				data,
 			})
 		: await prisma.serverPlayerIdentityEvidence.create({
 				data,
 			})
 
-	await emitEvent('server-player-identity-evidence.created', {
-		serverId: evidence.serverId,
-		uuid: evidence.uuid,
-		username: evidence.username,
-		normalizedUsername: evidence.normalizedUsername,
-		uuidSource: evidence.uuidSource,
-		observedAt: evidence.observedAt,
-	})
+	if (!existing) {
+		await emitEvent('server-player-identity-evidence.created', {
+			serverId: evidence.serverId,
+			uuid: evidence.uuid,
+			username: evidence.username,
+			normalizedUsername: evidence.normalizedUsername,
+			uuidSource: evidence.uuidSource,
+			observedAt: evidence.observedAt,
+		})
+	}
 
 	return evidence
 }

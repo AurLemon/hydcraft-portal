@@ -206,6 +206,7 @@ model ServerPlayerIdentityEvidence {
   id                 String                             @id @default(cuid())
   source             ServerPlayerIdentityEvidenceSource
   sourceMessageId    String?
+  evidenceHash       String?
   serverId           String
   uuid               String?
   username           String?
@@ -216,6 +217,7 @@ model ServerPlayerIdentityEvidence {
   createdAt          DateTime                           @default(now())
 
   @@unique([source, sourceMessageId])
+  @@unique([source, serverId, uuid, evidenceHash])
   @@index([serverId, uuid])
   @@index([normalizedUsername])
   @@index([observedAt])
