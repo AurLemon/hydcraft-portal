@@ -356,6 +356,7 @@ const railwayRouteDefinitions: RailwayRouteDefinition[] = [
 	},
 	{
 		id: 'hrYiheng',
+		logoSrc: getSiteMediaUrl('routes-system/hr_yiheng_logo.webp'),
 		backgroundSrc: getSiteMediaUrl(
 			'minecraft-gallery/routes/hr_yiheng_bg.webp',
 		),
