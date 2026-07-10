@@ -45,7 +45,7 @@
 							<div class="flex items-center gap-4">
 								<div
 									v-if="route.logoSrc"
-									class="flex size-16 shrink-0 items-center justify-center"
+									class="flex h-16 shrink-0 items-center justify-center"
 								>
 									<img
 										:src="route.logoSrc"
