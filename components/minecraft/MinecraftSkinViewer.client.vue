@@ -5,9 +5,20 @@
 		:class="viewerClass"
 		aria-hidden="true"
 	>
+		<img
+			v-if="fallbackUrl"
+			:src="fallbackUrl"
+			alt=""
+			loading="lazy"
+			decoding="async"
+			class="pointer-events-none absolute inset-0 block h-full w-full object-contain transition-opacity duration-200"
+			:class="viewerReady ? 'opacity-0' : 'opacity-100'"
+		/>
 		<canvas
+			v-if="active"
 			ref="canvasElement"
-			class="pointer-events-none block h-full w-full touch-pan-y"
+			class="pointer-events-none relative block h-full w-full touch-pan-y transition-opacity duration-200"
+			:class="viewerReady ? 'opacity-100' : 'opacity-0'"
 		/>
 	</div>
 </template>
@@ -17,13 +28,19 @@ import { IdleAnimation, SkinViewer } from 'skinview3d'
 
 interface MinecraftSkinViewerProps {
 	skinUrl: string
+	fallbackUrl?: string
+	active?: boolean
 	viewerClass?: string
 }
 
-const props = defineProps<MinecraftSkinViewerProps>()
+const props = withDefaults(defineProps<MinecraftSkinViewerProps>(), {
+	fallbackUrl: '',
+	active: true,
+})
 
 const canvasElement = useTemplateRef<HTMLCanvasElement>('canvasElement')
 const containerElement = useTemplateRef<HTMLDivElement>('containerElement')
+const viewerReady = ref(false)
 
 let viewer: SkinViewer | null = null
 let resizeObserver: ResizeObserver | null = null
@@ -39,44 +56,79 @@ const syncViewerSize = () => {
 	viewer.setSize(width, height)
 }
 
-const disposeViewer = () => {
-	viewer?.dispose()
+const releaseViewer = (forceContextLoss = false) => {
+	viewerReady.value = false
+	const activeViewer = viewer
 	viewer = null
-}
 
-const createViewer = () => {
-	if (!canvasElement.value || !containerElement.value || !props.skinUrl) {
+	if (!activeViewer) {
 		return
 	}
 
-	disposeViewer()
-	viewer = new SkinViewer({
+	activeViewer.dispose()
+	if (forceContextLoss) {
+		activeViewer.renderer.forceContextLoss()
+	}
+}
+
+const disposeViewer = (forceContextLoss = false) => {
+	createViewerTaskId += 1
+	releaseViewer(forceContextLoss)
+}
+
+const createViewer = async (taskId: number) => {
+	if (
+		!canvasElement.value ||
+		!containerElement.value ||
+		!props.skinUrl ||
+		!props.active
+	) {
+		return
+	}
+
+	releaseViewer()
+	const nextViewer = new SkinViewer({
 		canvas: canvasElement.value,
 		width: Math.max(containerElement.value.clientWidth, 1),
 		height: Math.max(containerElement.value.clientHeight, 1),
-		skin: props.skinUrl,
 	})
-	viewer.controls.enabled = false
-	viewer.controls.enableRotate = false
-	viewer.controls.enableZoom = false
-	viewer.controls.enablePan = false
-	viewer.autoRotate = true
-	viewer.autoRotateSpeed = 1
-	viewer.animation = new IdleAnimation()
-	viewer.zoom = 1
-	viewer.fov = 38
-	viewer.controls.target.set(0, 17, 0)
-	viewer.camera.position.set(24, 16, 48)
-	viewer.controls.update()
-	viewer.playerWrapper.position.y = 16
-	viewer.playerWrapper.rotation.x = 0
-	viewer.playerWrapper.rotation.z = 0
+	viewer = nextViewer
+	nextViewer.controls.enabled = false
+	nextViewer.controls.enableRotate = false
+	nextViewer.controls.enableZoom = false
+	nextViewer.controls.enablePan = false
+	nextViewer.autoRotate = true
+	nextViewer.autoRotateSpeed = 1
+	nextViewer.animation = new IdleAnimation()
+	nextViewer.zoom = 1
+	nextViewer.fov = 38
+	nextViewer.controls.target.set(0, 17, 0)
+	nextViewer.camera.position.set(24, 16, 48)
+	nextViewer.controls.update()
+	nextViewer.playerWrapper.position.y = 16
+	nextViewer.playerWrapper.rotation.x = 0
+	nextViewer.playerWrapper.rotation.z = 0
 	syncViewerSize()
+
+	try {
+		await nextViewer.loadSkin(props.skinUrl)
+		if (
+			taskId === createViewerTaskId &&
+			viewer === nextViewer &&
+			props.active
+		) {
+			viewerReady.value = true
+		}
+	} catch {
+		if (viewer === nextViewer) {
+			disposeViewer(false)
+		}
+	}
 }
 
 const ensureViewerReady = async () => {
-	if (!import.meta.client || !props.skinUrl) {
-		disposeViewer()
+	if (!import.meta.client || !props.skinUrl || !props.active) {
+		disposeViewer(!props.active)
 		return
 	}
 
@@ -92,23 +144,18 @@ const ensureViewerReady = async () => {
 		return
 	}
 
-	createViewer()
+	await createViewer(taskId)
 }
 
 watch(
-	() => props.skinUrl,
-	async (skinUrl) => {
-		if (!skinUrl) {
-			disposeViewer()
+	[() => props.skinUrl, () => props.active],
+	async ([skinUrl, active]) => {
+		if (!skinUrl || !active) {
+			disposeViewer(!active)
 			return
 		}
 
-		if (!viewer) {
-			await ensureViewerReady()
-			return
-		}
-
-		void viewer.loadSkin(skinUrl)
+		await ensureViewerReady()
 	},
 	{ immediate: true },
 )
@@ -118,7 +165,6 @@ onMounted(() => {
 		return
 	}
 
-	void ensureViewerReady()
 	resizeObserver = new ResizeObserver(() => {
 		syncViewerSize()
 	})
@@ -127,18 +173,20 @@ onMounted(() => {
 })
 
 onActivated(() => {
-	void ensureViewerReady()
+	if (props.active) {
+		void ensureViewerReady()
+	}
 })
 
 onDeactivated(() => {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	disposeViewer()
+	disposeViewer(false)
 })
 
 onBeforeUnmount(() => {
 	resizeObserver?.disconnect()
 	resizeObserver = null
-	disposeViewer()
+	disposeViewer(true)
 })
 </script>

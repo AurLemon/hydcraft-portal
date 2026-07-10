@@ -1,6 +1,7 @@
 <template>
 	<section
-		class="relative overflow-hidden rounded-lg border border-slate-200 bg-white/95 px-5 py-6 dark:border-slate-800 dark:bg-slate-950/95 sm:px-6"
+		ref="cardElement"
+		class="relative overflow-hidden rounded-lg border border-slate-200 bg-white/95 px-5 py-6 dark:border-slate-800 dark:bg-slate-950/95 lg:px-6"
 	>
 		<div class="absolute inset-0" :style="cardAccentWashStyle" />
 		<div
@@ -14,10 +15,10 @@
 		<div
 			class="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
 		>
-			<div class="flex flex-col sm:flex-row relative h-full min-w-0">
+			<div class="flex flex-col lg:flex-row relative h-full min-w-0">
 				<div
 					v-if="skinRendererUrl"
-					class="mb-4 w-[104px] sm:absolute sm:left-0 sm:top-1/2 sm:mb-0 sm:w-[116px] sm:-translate-y-1/2 lg:w-[128px]"
+					class="mb-4 w-[104px] lg:absolute lg:left-0 lg:top-1/2 lg:mb-0 lg:w-[116px] lg:-translate-y-1/2 lg:w-[128px]"
 				>
 					<NuxtLink
 						v-if="playerProfileHref"
@@ -26,19 +27,23 @@
 					>
 						<MinecraftSkinViewer
 							:skin-url="skinRendererUrl"
+							:fallback-url="bodyRendererUrl"
+							:active="isSkinViewerActive"
 							viewer-class="aspect-[2/3] w-full drop-shadow-sm"
 						/>
 					</NuxtLink>
 					<MinecraftSkinViewer
 						v-else
 						:skin-url="skinRendererUrl"
+						:fallback-url="bodyRendererUrl"
+						:active="isSkinViewerActive"
 						viewer-class="aspect-[2/3] w-full drop-shadow-sm"
 					/>
 				</div>
 
 				<div
 					class="flex min-w-0 items-end mt-auto"
-					:class="skinRendererUrl ? 'pl-0 sm:pl-32' : ''"
+					:class="skinRendererUrl ? 'pl-0 lg:pl-32' : ''"
 				>
 					<div class="flex min-w-0 flex-1 flex-col gap-3">
 						<div class="min-w-0">
@@ -185,7 +190,7 @@
 			</div>
 		</div>
 
-		<div v-if="isMobileViewport" class="relative mt-3 sm:hidden">
+		<div v-if="isMobileViewport" class="relative mt-3 lg:hidden">
 			<Transition name="stats-fade" mode="out-in">
 				<div
 					:key="statsCarouselIndex"
@@ -207,7 +212,10 @@
 </template>
 
 <script setup lang="ts">
-import { getMinecraftSkinRendererUrl } from '~/utils/minecraft/body-renderer'
+import {
+	getMinecraftBodyRendererUrl,
+	getMinecraftSkinRendererUrl,
+} from '~/utils/minecraft/body-renderer'
 import {
 	AGGREGATE_SERVER_VIEW_ID,
 	formatMinecraftDateTime,
@@ -248,9 +256,11 @@ const props = withDefaults(defineProps<MinecraftPublicAccountsContentProps>(), {
 
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
+const cardElement = useTemplateRef<HTMLElement>('cardElement')
 const selectedViewId = ref<string | null>(null)
 const serverMenuOpen = ref(false)
 const isMobileViewport = ref(false)
+const isSkinViewerActive = ref(false)
 const DEFAULT_SKIN_ACCENT: Readonly<RgbColor> = {
 	r: 124,
 	g: 149,
@@ -260,6 +270,7 @@ const skinAccentColor = ref<RgbColor>({
 	...DEFAULT_SKIN_ACCENT,
 })
 let mobileViewportMediaQuery: MediaQueryList | null = null
+let skinViewerIntersectionObserver: IntersectionObserver | null = null
 let skinAccentLoadToken = 0
 let statsCarouselTimer: ReturnType<typeof setInterval> | null = null
 
@@ -299,6 +310,9 @@ const displayName = computed(
 
 const skinRendererUrl = computed(() =>
 	displayName.value ? getMinecraftSkinRendererUrl(displayName.value) : '',
+)
+const bodyRendererUrl = computed(() =>
+	displayName.value ? getMinecraftBodyRendererUrl(displayName.value) : '',
 )
 
 const playerProfileHref = computed(() => {
@@ -544,6 +558,7 @@ const startStatsCarousel = () => {
 
 	if (
 		!import.meta.client ||
+		!isSkinViewerActive.value ||
 		!isMobileViewport.value ||
 		summaryItems.value.length <= 1
 	) {
@@ -792,6 +807,32 @@ const syncMobileViewportState = () => {
 	isMobileViewport.value = mobileViewportMediaQuery?.matches ?? false
 }
 
+const stopSkinViewerVisibilityTracking = () => {
+	skinViewerIntersectionObserver?.disconnect()
+	skinViewerIntersectionObserver = null
+	isSkinViewerActive.value = false
+}
+
+const startSkinViewerVisibilityTracking = () => {
+	stopSkinViewerVisibilityTracking()
+
+	if (!cardElement.value || typeof IntersectionObserver === 'undefined') {
+		isSkinViewerActive.value = true
+		return
+	}
+
+	skinViewerIntersectionObserver = new IntersectionObserver(
+		([entry]) => {
+			isSkinViewerActive.value = entry?.isIntersecting ?? false
+		},
+		{
+			rootMargin: '200px 0px',
+			threshold: 0,
+		},
+	)
+	skinViewerIntersectionObserver.observe(cardElement.value)
+}
+
 watch(
 	() => props.account.id,
 	() => {
@@ -822,8 +863,13 @@ watch(
 )
 
 watch(
-	skinRendererUrl,
-	(skinUrl) => {
+	[skinRendererUrl, isSkinViewerActive],
+	([skinUrl, isActive]) => {
+		if (!isActive) {
+			skinAccentLoadToken += 1
+			return
+		}
+
 		void loadSkinAccentColor(skinUrl)
 	},
 	{ immediate: true },
@@ -837,7 +883,7 @@ watch(summaryItems, (items) => {
 	startStatsCarousel()
 })
 
-watch(isMobileViewport, () => {
+watch([isMobileViewport, isSkinViewerActive], () => {
 	startStatsCarousel()
 })
 
@@ -848,10 +894,21 @@ onMounted(() => {
 		mobileViewportMediaQuery.addEventListener('change', syncMobileViewportState)
 	}
 
+	startSkinViewerVisibilityTracking()
 	startStatsCarousel()
 })
 
+onActivated(() => {
+	startSkinViewerVisibilityTracking()
+})
+
+onDeactivated(() => {
+	stopSkinViewerVisibilityTracking()
+	stopStatsCarousel()
+})
+
 onBeforeUnmount(() => {
+	stopSkinViewerVisibilityTracking()
 	stopStatsCarousel()
 	mobileViewportMediaQuery?.removeEventListener(
 		'change',

@@ -143,8 +143,8 @@
 				"publicEmail": "公開信箱"
 			},
 			"minecraft": {
-				"formalAccountCount": "{count} 個正式檔案",
-				"historicalAccountCount": "{count} 個歷史檔案",
+				"formalAccountCount": "{count} 正式",
+				"historicalAccountCount": "{count} 歷史",
 				"timeline": {
 					"notJoined": "尚未進入該伺服器",
 					"veteran": "{count}朝元老"

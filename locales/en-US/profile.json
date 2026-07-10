@@ -144,8 +144,8 @@
 				"publicEmail": "Public email"
 			},
 			"minecraft": {
-				"formalAccountCount": "{count} formal profile(s)",
-				"historicalAccountCount": "{count} historical archive(s)",
+				"formalAccountCount": "{count} formal",
+				"historicalAccountCount": "{count} historical",
 				"timeline": {
 					"notJoined": "No record on this server",
 					"veteran": "{count}-era veteran"

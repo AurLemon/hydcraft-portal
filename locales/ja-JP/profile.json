@@ -143,8 +143,8 @@
 				"publicEmail": "公開メール"
 			},
 			"minecraft": {
-				"formalAccountCount": "{count} 件の正式プロフィール",
-				"historicalAccountCount": "{count} 件の履歴アーカイブ",
+				"formalAccountCount": "{count} 正式",
+				"historicalAccountCount": "{count} 履歴",
 				"timeline": {
 					"notJoined": "このサーバーの記録なし",
 					"veteran": "{count}代古参"
