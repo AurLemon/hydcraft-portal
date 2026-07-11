@@ -161,8 +161,8 @@
 						"historical": "履歴アーカイブ"
 					},
 					"counts": {
-						"formal": "{count} 件の正式プロフィール",
-						"historical": "{count} 件の履歴アーカイブ"
+						"formal": "{count} 正式",
+						"historical": "{count} 履歴"
 					},
 					"filters": {
 						"search": "プレイヤー名、ログイン名、連携ユーザーで検索",

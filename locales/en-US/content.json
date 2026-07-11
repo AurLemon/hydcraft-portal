@@ -161,8 +161,8 @@
 						"historical": "Historical archive"
 					},
 					"counts": {
-						"formal": "{count} formal profile(s)",
-						"historical": "{count} historical archive(s)"
+						"formal": "{count} formal",
+						"historical": "{count} history"
 					},
 					"filters": {
 						"search": "Search player, login name, or linked user",

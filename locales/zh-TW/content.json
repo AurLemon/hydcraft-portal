@@ -161,8 +161,8 @@
 						"historical": "歷史檔案"
 					},
 					"counts": {
-						"formal": "{count} 個正式檔案",
-						"historical": "{count} 個歷史檔案"
+						"formal": "{count} 正式",
+						"historical": "{count} 歷史"
 					},
 					"filters": {
 						"search": "搜尋玩家名、登入名或綁定用戶",
