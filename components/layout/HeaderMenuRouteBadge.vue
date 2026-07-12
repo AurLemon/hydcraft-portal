@@ -1,18 +1,20 @@
 <template>
 	<span
-		class="inline-flex h-5 shrink-0 items-center overflow-hidden transition-[width,margin-right,opacity] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+		class="inline-flex h-6 shrink-0 items-center overflow-hidden transition-[width,margin-right,opacity] duration-360 ease-[cubic-bezier(0.22,1,0.36,1)] -translate-y-0.5"
 		:class="
 			expanded && hasBadgeContent
-				? 'w-5 mr-0 opacity-100'
+				? 'w-6 mr-0 opacity-100'
 				: 'w-0 -mr-1.5 opacity-0'
 		"
 	>
 		<span
-			class="relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-full bg-slate-500/18 text-[10px] font-semibold text-current ring-1 ring-white/10"
+			class="relative flex h-6 w-6 items-center justify-center overflow-hidden text-[10px] font-semibold text-current"
+			:class="[badgeShapeClass, badgeFrameClass]"
 		>
 			<USkeleton
 				v-show="showSkeleton"
-				class="absolute inset-0 h-full w-full rounded-full"
+				class="absolute inset-0 h-full w-full"
+				:class="badgeShapeClass"
 			/>
 			<img
 				v-show="hasImageSource"
@@ -30,7 +32,7 @@
 				@error="markImageFailed"
 			/>
 			<span
-				class="absolute inset-0 flex items-center justify-center leading-none transition-opacity duration-200"
+				class="absolute inset-0 flex items-center justify-center leading-none transition-opacity duration-200 bg-slate-500/18"
 				:class="showFallback ? 'opacity-100' : 'pointer-events-none opacity-0'"
 			>
 				{{ fallbackText }}
@@ -66,6 +68,12 @@ const showImage = computed(
 )
 const showFallback = computed(
 	() => hasFallbackText.value && (!hasImageSource.value || imageFailed.value),
+)
+const badgeShapeClass = computed(() =>
+	props.badgeType === 'minecraft-player' ? '' : 'rounded-full',
+)
+const badgeFrameClass = computed(() =>
+	props.badgeType === 'user-profile' ? 'border border-white/10' : '',
 )
 const playerImageClass = computed(() =>
 	props.badgeType === 'minecraft-player' ? 'drop-shadow' : '',
