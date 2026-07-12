@@ -138,7 +138,9 @@
 					class="flex flex-wrap items-center gap-1.5"
 				>
 					<UTooltip
-						v-for="account in row.original.minecraftAccounts"
+						v-for="account in visibleMinecraftAccounts(
+							row.original.minecraftAccounts,
+						)"
 						:key="account.mcid"
 						:text="account.username"
 					>
@@ -155,6 +157,43 @@
 							/>
 						</NuxtLink>
 					</UTooltip>
+					<UPopover
+						v-if="hasOverflowMinecraftAccounts(row.original.minecraftAccounts)"
+						:popper="{ placement: 'bottom-start' }"
+					>
+						<UButton
+							type="button"
+							color="neutral"
+							variant="link"
+							icon="i-lucide-ellipsis"
+							class="h-7 rounded-md p-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+						/>
+
+						<template #content>
+							<div class="flex min-w-40 flex-col gap-1 p-2">
+								<NuxtLink
+									v-for="account in overflowMinecraftAccounts(
+										row.original.minecraftAccounts,
+									)"
+									:key="account.mcid"
+									:to="localePath(`/players/${account.mcid}`)"
+									class="inline-flex items-center gap-2 rounded-md px-1 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+								>
+									<SkeletonImage
+										:src="getMinecraftHeadRendererUrl(account.username)"
+										:alt="account.username"
+										class="size-7 shrink-0 overflow-hidden rounded-md"
+										image-class="size-7 object-cover"
+										skeleton-class="rounded-md"
+									/>
+									<span class="truncate">{{ account.username }}</span>
+								</NuxtLink>
+							</div>
+						</template>
+					</UPopover>
+					<span class="text-sm text-slate-500 dark:text-slate-400">
+						({{ row.original.minecraftAccounts.length }})
+					</span>
 				</div>
 				<span v-else class="text-sm text-slate-500">
 					{{ t('content.serverOverview.states.notAvailable') }}
@@ -187,6 +226,7 @@ import PageInlineException from '~/components/common/PageInlineException.vue'
 import type {
 	ServerDirectoryUserBadgeSummary,
 	ServerDirectoryUserItem,
+	ServerDirectoryUserMinecraftSummary,
 	ServerDirectoryUserVerifiedSummary,
 	ServerDirectoryUsersResponse,
 } from '~/utils/server/directories'
@@ -252,6 +292,7 @@ const columns = [
 		header: t('content.serverOverview.directories.users.fields.joinedAt'),
 	},
 ]
+const MAX_VISIBLE_MINECRAFT_ACCOUNTS = 3
 const sortFieldItems = [
 	{
 		label: t('content.serverOverview.directories.users.fields.registeredAt'),
@@ -328,6 +369,20 @@ const formatPlayTime = (ticks: number, hasPlayTime: boolean): string => {
 	const hours = ticks / 20 / 3600
 	return `${Math.round(hours * 10) / 10}h`
 }
+
+const visibleMinecraftAccounts = (
+	accounts: ServerDirectoryUserMinecraftSummary[],
+): ServerDirectoryUserMinecraftSummary[] =>
+	accounts.slice(0, MAX_VISIBLE_MINECRAFT_ACCOUNTS)
+
+const overflowMinecraftAccounts = (
+	accounts: ServerDirectoryUserMinecraftSummary[],
+): ServerDirectoryUserMinecraftSummary[] =>
+	accounts.slice(MAX_VISIBLE_MINECRAFT_ACCOUNTS)
+
+const hasOverflowMinecraftAccounts = (
+	accounts: ServerDirectoryUserMinecraftSummary[],
+): boolean => accounts.length > MAX_VISIBLE_MINECRAFT_ACCOUNTS
 
 const visibleBadges = (
 	user: ServerDirectoryUserItem,
