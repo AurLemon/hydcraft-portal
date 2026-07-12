@@ -203,9 +203,16 @@ enum UserActivityEventType {
 }
 
 enum UserAuthActivitySource {
-  LOGIN
-  REFRESH
-  AUTHENTICATED_REQUEST
+	LOGIN
+	REFRESH
+	AUTHENTICATED_REQUEST
+}
+
+enum PostCommitEventStatus {
+	PENDING
+	PROCESSING
+	COMPLETED
+	FAILED
 }
 
 enum ExternalSyncSource {

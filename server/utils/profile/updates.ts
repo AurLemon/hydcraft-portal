@@ -5,6 +5,7 @@ import { getPublicAttachmentUrl } from '../attachment/runtime'
 import { findPrimaryVariant } from '../attachment/variants'
 import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
+import { queuePostCommitEvent } from '../events/post-commit'
 import { ensureUserProfileDefaults } from './defaults'
 import { USERNAME_CHANGE_COOLDOWN_DAYS } from './mapper'
 import { getEditableUserProfile, checkUsernameAvailability } from './queries'
@@ -399,20 +400,18 @@ export const updateEditableUserProfile = async (
 	await emitProfileUpdateEvents(user, username, changedFields, updatedAt)
 
 	if (avatarAttachmentId !== undefined) {
-		await emitEvent('user.profile.attachment-replaced', {
+		queuePostCommitEvent('user.profile.attachment-replaced', {
 			userId: user.id,
 			purpose: 'user-avatar',
 			activeAttachmentId: avatarAttachmentId,
-			updatedAt,
 		})
 	}
 
 	if (coverAttachmentId !== undefined) {
-		await emitEvent('user.profile.attachment-replaced', {
+		queuePostCommitEvent('user.profile.attachment-replaced', {
 			userId: user.id,
 			purpose: 'user-cover',
 			activeAttachmentId: coverAttachmentId,
-			updatedAt,
 		})
 	}
 

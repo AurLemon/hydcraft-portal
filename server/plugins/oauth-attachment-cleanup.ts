@@ -1,46 +1,34 @@
 import { prisma } from '../utils/db/prisma'
-import { onEvent } from '../utils/events/event-bus'
 import { getAttachmentService } from '../utils/attachment/runtime'
+import { onPostCommitEvent } from '../utils/events/post-commit'
 
 export default defineNitroPlugin(() => {
-	onEvent('user.oauth.attachment-replaced', (payload) => {
-		void getAttachmentService()
-			.deleteExternalAccountAvatarAttachmentsExcept({
-				externalAccountId: payload.externalAccountId,
-				activeAttachmentId: payload.activeAttachmentId,
-			})
-			.catch((error) => {
-				console.error('OAUTH_ATTACHMENT_REPLACEMENT_CLEANUP_FAILED', error)
-			})
+	onPostCommitEvent('user.oauth.attachment-replaced', async ({ payload }) => {
+		await getAttachmentService().deleteExternalAccountAvatarAttachmentsExcept({
+			externalAccountId: payload.externalAccountId,
+			activeAttachmentId: payload.activeAttachmentId,
+		})
 	})
 
-	onEvent('user.oauth.unlinked', (payload) => {
-		void getAttachmentService()
-			.deleteExternalAccountAvatarAttachmentsExcept({
-				externalAccountId: payload.externalAccountId,
-				activeAttachmentId: null,
-			})
-			.catch((error) => {
-				console.error('OAUTH_ATTACHMENT_UNLINK_CLEANUP_FAILED', error)
-			})
+	onPostCommitEvent('user.oauth.unlinked', async ({ payload }) => {
+		await getAttachmentService().deleteExternalAccountAvatarAttachmentsExcept({
+			externalAccountId: payload.externalAccountId,
+			activeAttachmentId: null,
+		})
 
 		if (!payload.avatarUrl) {
 			return
 		}
 
-		void prisma.user
-			.updateMany({
-				where: {
-					id: payload.userId,
-					avatarAttachmentId: null,
-					avatarUrl: payload.avatarUrl,
-				},
-				data: {
-					avatarUrl: null,
-				},
-			})
-			.catch((error) => {
-				console.error('OAUTH_ATTACHMENT_USER_AVATAR_RESET_FAILED', error)
-			})
+		await prisma.user.updateMany({
+			where: {
+				id: payload.userId,
+				avatarAttachmentId: null,
+				avatarUrl: payload.avatarUrl,
+			},
+			data: {
+				avatarUrl: null,
+			},
+		})
 	})
 })

@@ -12,7 +12,10 @@ import { ensureUserProfileDefaults } from '../../utils/profile/defaults'
 import { normalizeUsername } from '../../utils/profile/validation'
 import { recordSecurityEvent } from '../../utils/security/security-events'
 import { createApiError } from '../../utils/errors'
-import { emitEvent } from '../../utils/events/event-bus'
+import {
+	enqueuePostCommitEvent,
+	schedulePostCommitEventDrain,
+} from '../../utils/events/post-commit'
 
 interface RegisterBody {
 	handle: string
@@ -44,8 +47,8 @@ export default defineEventHandler(async (event) => {
 	)
 	const passwordHash = await hashPassword(password)
 
-	const user = await prisma.$transaction(async (tx) =>
-		createUserShell(tx, {
+	const user = await prisma.$transaction(async (tx) => {
+		const createdUser = await createUserShell(tx, {
 			handle,
 			username,
 			email: verifiedEmail,
@@ -53,13 +56,15 @@ export default defineEventHandler(async (event) => {
 			credential: {
 				passwordHash,
 			},
-		}),
-	)
-	await ensureUserProfileDefaults(user.id)
-	await emitEvent('user.registered', {
-		userId: user.id,
-		occurredAt: user.createdAt,
+		})
+		await enqueuePostCommitEvent(tx, 'user.registered', {
+			userId: createdUser.id,
+			occurredAt: createdUser.createdAt.toISOString(),
+		})
+		return createdUser
 	})
+	await ensureUserProfileDefaults(user.id)
+	schedulePostCommitEventDrain()
 	const token = await issueAuthCookies(event, user)
 	await recordSecurityEvent({
 		event,

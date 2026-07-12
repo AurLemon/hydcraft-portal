@@ -1,5 +1,4 @@
 import type { ExternalProvider, Prisma, User } from '~/generated/prisma/client'
-import { getAttachmentService } from '../attachment/runtime'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { ensureUserProfileDefaults } from '../profile/defaults'
@@ -12,6 +11,7 @@ import { consumeAuthEmailCode } from './email-code'
 import { assertEmail, assertHandle } from './validation'
 import { getRegistrationTicket } from './registration-ticket'
 import { bindMinecraftAccountToUserInTx } from '../minecraft/account-binding'
+import { enqueuePostCommitEvent } from '../events/post-commit'
 
 interface OAuthRegistrationPayload {
 	providerAccountId: string
@@ -247,6 +247,15 @@ export const completeRegistrationFromTicket = async (
 						consumedAt: new Date(),
 					},
 				})
+				await enqueuePostCommitEvent(tx, 'user.registered', {
+					userId: createdUser.id,
+					occurredAt: createdUser.createdAt.toISOString(),
+				})
+				await enqueuePostCommitEvent(tx, 'minecraft.account.bound', {
+					userId: createdUser.id,
+					minecraftAccountId: ticket.minecraftAccount.id,
+					occurredAt: new Date().toISOString(),
+				})
 
 				return createdUser
 			}
@@ -309,6 +318,10 @@ export const completeRegistrationFromTicket = async (
 				data: {
 					consumedAt: new Date(),
 				},
+			})
+			await enqueuePostCommitEvent(tx, 'user.registered', {
+				userId: createdUser.id,
+				occurredAt: createdUser.createdAt.toISOString(),
 			})
 
 			return createdUser

@@ -9,7 +9,7 @@ import { prisma } from '../db/prisma'
 import { getPublicAttachmentUrl } from '../attachment/runtime'
 import { findPrimaryVariant } from '../attachment/variants'
 import { createApiError, createBadRequestError } from '../errors'
-import { emitEvent } from '../events/event-bus'
+import { queuePostCommitEvent } from '../events/post-commit'
 import { ensureUserProfileDefaults } from '../profile/defaults'
 import { createUniqueHydrolineId } from '../profile/hydroline-id'
 import {
@@ -1023,23 +1023,19 @@ export const updateAdminUser = async (
 		}
 	})
 
-	const updatedAt = new Date()
-
 	if (avatarAttachmentId !== undefined || resetAvatar) {
-		await emitEvent('user.profile.attachment-replaced', {
+		queuePostCommitEvent('user.profile.attachment-replaced', {
 			userId,
 			purpose: 'user-avatar',
 			activeAttachmentId: resetAvatar ? null : (avatarAttachmentId ?? null),
-			updatedAt,
 		})
 	}
 
 	if (coverAttachmentId !== undefined || resetCover) {
-		await emitEvent('user.profile.attachment-replaced', {
+		queuePostCommitEvent('user.profile.attachment-replaced', {
 			userId,
 			purpose: 'user-cover',
 			activeAttachmentId: resetCover ? null : (coverAttachmentId ?? null),
-			updatedAt,
 		})
 	}
 
@@ -1634,13 +1630,12 @@ export const adminUnlinkOAuthConnection = async (input: {
 		},
 	})
 
-	await emitEvent('user.oauth.unlinked', {
+	queuePostCommitEvent('user.oauth.unlinked', {
 		userId: input.userId,
 		provider: account.provider,
 		externalAccountId: account.id,
 		avatarAttachmentId: account.avatarAttachmentId,
 		avatarUrl: account.avatarUrl,
-		updatedAt: new Date(),
 	})
 
 	return {
@@ -1779,10 +1774,9 @@ export const adminDeleteUser = async (input: {
 		},
 	})
 
-	await emitEvent('admin.user.deleted', {
+	queuePostCommitEvent('admin.user.deleted', {
 		userId: input.userId,
 		externalAccountIds: preview.externalAccountIds,
-		deletedAt: new Date(),
 	})
 
 	return {

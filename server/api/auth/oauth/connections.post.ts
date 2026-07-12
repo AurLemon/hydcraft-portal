@@ -2,7 +2,7 @@ import type { ExternalProvider, Prisma } from '~/generated/prisma/client'
 import { requireCurrentUser } from '../../../utils/auth/session'
 import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
-import { emitEvent } from '../../../utils/events/event-bus'
+import { queuePostCommitEvent } from '../../../utils/events/post-commit'
 import { recordSecurityEvent } from '../../../utils/security/security-events'
 
 interface ConnectOAuthBody {
@@ -121,22 +121,13 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 
-	await emitEvent('user.oauth.linked', {
-		userId: user.id,
-		provider,
-		providerAccountId,
-		externalAccountId: account.id,
-		updatedAt: account.updatedAt,
-	})
-
 	for (const replacedAccount of replacedAccounts) {
-		await emitEvent('user.oauth.unlinked', {
+		queuePostCommitEvent('user.oauth.unlinked', {
 			userId: user.id,
 			provider,
 			externalAccountId: replacedAccount.id,
 			avatarAttachmentId: replacedAccount.avatarAttachmentId,
 			avatarUrl: replacedAccount.avatarUrl,
-			updatedAt: account.updatedAt,
 		})
 	}
 

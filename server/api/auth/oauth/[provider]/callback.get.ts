@@ -6,7 +6,7 @@ import { issueAuthCookies } from '../../../../utils/auth/session'
 import { normalizeEmail } from '../../../../utils/auth/validation'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
-import { emitEvent } from '../../../../utils/events/event-bus'
+import { queuePostCommitEvent } from '../../../../utils/events/post-commit'
 import {
 	getOAuthProviderConfig,
 	parseOAuthProvider,
@@ -349,11 +349,10 @@ export default defineEventHandler(async (event) => {
 					avatarUrl: syncedAvatar.avatarUrl,
 				},
 			})
-			await emitEvent('user.oauth.attachment-replaced', {
+			queuePostCommitEvent('user.oauth.attachment-replaced', {
 				userId: user.id,
 				externalAccountId: existing.id,
 				activeAttachmentId: syncedAvatar.avatarAttachmentId,
-				updatedAt: new Date(),
 			})
 		}
 		await prisma.oAuthStateToken.update({
@@ -488,13 +487,12 @@ export default defineEventHandler(async (event) => {
 		})
 
 		for (const replacedAccount of replacedAccounts) {
-			await emitEvent('user.oauth.unlinked', {
+			queuePostCommitEvent('user.oauth.unlinked', {
 				userId: stateToken.userId!,
 				provider,
 				externalAccountId: replacedAccount.id,
 				avatarAttachmentId: replacedAccount.avatarAttachmentId,
 				avatarUrl: replacedAccount.avatarUrl,
-				updatedAt: new Date(),
 			})
 		}
 	}
@@ -517,11 +515,10 @@ export default defineEventHandler(async (event) => {
 				avatarUrl: syncedAvatar.avatarUrl,
 			},
 		})
-		await emitEvent('user.oauth.attachment-replaced', {
+		queuePostCommitEvent('user.oauth.attachment-replaced', {
 			userId: stateToken.userId!,
 			externalAccountId: account.id,
 			activeAttachmentId: syncedAvatar.avatarAttachmentId,
-			updatedAt: new Date(),
 		})
 	}
 
@@ -545,14 +542,6 @@ export default defineEventHandler(async (event) => {
 			providerAccountId: profile.id,
 		},
 	})
-	await emitEvent('user.oauth.linked', {
-		userId: stateToken.userId!,
-		provider,
-		providerAccountId: account.providerAccountId,
-		externalAccountId: account.id,
-		updatedAt: new Date(),
-	})
-
 	return sendRedirect(
 		event,
 		stateToken.redirectTo || '/me/connections?oauth=linked',

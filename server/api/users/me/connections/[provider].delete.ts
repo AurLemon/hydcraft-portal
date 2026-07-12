@@ -1,7 +1,7 @@
 import { requireCurrentUser } from '~/server/utils/auth/session'
 import { prisma } from '~/server/utils/db/prisma'
 import { createApiError, createBadRequestError } from '~/server/utils/errors'
-import { emitEvent } from '~/server/utils/events/event-bus'
+import { queuePostCommitEvent } from '~/server/utils/events/post-commit'
 import { parseOAuthProvider } from '~/server/utils/oauth/providers'
 import { recordSecurityEvent } from '~/server/utils/security/security-events'
 
@@ -65,13 +65,12 @@ export default defineEventHandler(async (event) => {
 			providerAccountId: account.providerAccountId,
 		},
 	})
-	await emitEvent('user.oauth.unlinked', {
+	queuePostCommitEvent('user.oauth.unlinked', {
 		userId: user.id,
 		provider,
 		externalAccountId: account.id,
 		avatarAttachmentId: account.avatarAttachmentId,
 		avatarUrl: account.avatarUrl,
-		updatedAt: new Date(),
 	})
 
 	return {

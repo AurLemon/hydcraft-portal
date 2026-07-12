@@ -330,46 +330,6 @@
 			</section>
 
 			<section
-				v-if="visibleSections.authMe"
-				class="grid w-full gap-3 break-inside-avoid"
-			>
-				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
-					{{ t('admin.serverConfig.sections.authMe') }}
-				</div>
-				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
-					<AdminMysqlFields
-						v-model:host="form.authMe.host"
-						v-model:port="form.authMe.port"
-						v-model:database="form.authMe.database"
-						v-model:username="form.authMe.username"
-						v-model:password="form.authMe.password"
-						v-model:enabled="form.authMe.enabled"
-						:has-password="server?.authMe?.hasPassword ?? false"
-					/>
-				</div>
-			</section>
-
-			<section
-				v-if="visibleSections.luckPerms"
-				class="grid w-full gap-3 break-inside-avoid"
-			>
-				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
-					{{ t('admin.serverConfig.sections.luckPerms') }}
-				</div>
-				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
-					<AdminMysqlFields
-						v-model:host="form.luckPerms.host"
-						v-model:port="form.luckPerms.port"
-						v-model:database="form.luckPerms.database"
-						v-model:username="form.luckPerms.username"
-						v-model:password="form.luckPerms.password"
-						v-model:enabled="form.luckPerms.enabled"
-						:has-password="server?.luckPerms?.hasPassword ?? false"
-					/>
-				</div>
-			</section>
-
-			<section
 				v-if="visibleSections.sync"
 				class="grid w-full gap-3 break-inside-avoid"
 			>
@@ -384,30 +344,6 @@
 						>
 						<UInput
 							v-model.number="form.portalBridge.coreSyncIntervalMinutes"
-							class="w-full"
-							type="number"
-							min="1"
-							step="1"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span
-							>AuthMe {{ t('admin.serverConfig.fields.syncInterval') }}</span
-						>
-						<UInput
-							v-model.number="form.authMe.syncIntervalMinutes"
-							class="w-full"
-							type="number"
-							min="1"
-							step="1"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span
-							>LuckPerms {{ t('admin.serverConfig.fields.syncInterval') }}</span
-						>
-						<UInput
-							v-model.number="form.luckPerms.syncIntervalMinutes"
 							class="w-full"
 							type="number"
 							min="1"
@@ -442,16 +378,6 @@ import {
 	profileCardClass,
 	profileSectionTitleClass,
 } from '~/utils/profile/edit'
-
-interface MysqlForm {
-	host: string
-	port: number
-	database: string
-	username: string
-	password: string
-	enabled: boolean
-	syncIntervalMinutes: number
-}
 
 interface PortalBridgeForm {
 	bridgeId: string
@@ -504,8 +430,6 @@ interface ServerForm {
 	mapConfig: ServerMapConfigForm
 	periods: ServerPeriodForm[]
 	portalBridge: PortalBridgeForm
-	authMe: MysqlForm
-	luckPerms: MysqlForm
 }
 
 interface AdminServerConfigFormProps {
@@ -517,8 +441,6 @@ interface AdminServerConfigFormProps {
 		| 'map'
 		| 'periods'
 		| 'portalBridge'
-		| 'authMe'
-		| 'luckPerms'
 		| 'sync'
 	showCancel?: boolean
 	surface?: 'card' | 'plain'
@@ -549,8 +471,6 @@ const visibleSections = computed(() => ({
 	map: formMode.value === 'all' || formMode.value === 'map',
 	periods: formMode.value === 'all' || formMode.value === 'periods',
 	portalBridge: formMode.value === 'all' || formMode.value === 'portalBridge',
-	authMe: false,
-	luckPerms: false,
 	sync: formMode.value === 'sync',
 }))
 const fieldClass = adminFieldClass
@@ -687,28 +607,7 @@ const createEmptyForm = (): ServerForm => ({
 		coreSyncIntervalMinutes: 30,
 		remove: false,
 	},
-	authMe: {
-		host: '',
-		port: 3306,
-		database: '',
-		username: '',
-		password: '',
-		enabled: false,
-		syncIntervalMinutes: 30,
-	},
-	luckPerms: {
-		host: '',
-		port: 3306,
-		database: '',
-		username: '',
-		password: '',
-		enabled: false,
-		syncIntervalMinutes: 30,
-	},
 })
-
-const secondsToMinutes = (value: number | undefined): number =>
-	Math.max(1, Math.floor((value ?? 1800) / 60))
 
 const form = reactive<ServerForm>(createEmptyForm())
 const isImportedDataSource = computed(() => form.dataSourceMode === 'IMPORTED')
@@ -768,28 +667,6 @@ const resetForm = (): void => {
 					coreSyncIntervalMinutes:
 						source.portalBridge?.coreSyncIntervalMinutes ?? 30,
 					remove: false,
-				},
-				authMe: {
-					host: source.authMe?.host ?? '',
-					port: source.authMe?.port ?? 3306,
-					database: source.authMe?.database ?? '',
-					username: source.authMe?.username ?? '',
-					password: '',
-					enabled: source.authMe?.enabled ?? false,
-					syncIntervalMinutes: secondsToMinutes(
-						source.authMe?.syncIntervalSeconds,
-					),
-				},
-				luckPerms: {
-					host: source.luckPerms?.host ?? '',
-					port: source.luckPerms?.port ?? 3306,
-					database: source.luckPerms?.database ?? '',
-					username: source.luckPerms?.username ?? '',
-					password: '',
-					enabled: source.luckPerms?.enabled ?? false,
-					syncIntervalMinutes: secondsToMinutes(
-						source.luckPerms?.syncIntervalSeconds,
-					),
 				},
 			}
 		: createEmptyForm()

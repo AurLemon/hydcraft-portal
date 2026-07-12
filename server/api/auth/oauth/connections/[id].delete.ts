@@ -2,7 +2,7 @@ import { getLoginMethodState } from '../../../../utils/auth/login-methods'
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError } from '../../../../utils/errors'
-import { emitEvent } from '../../../../utils/events/event-bus'
+import { queuePostCommitEvent } from '../../../../utils/events/post-commit'
 import { recordSecurityEvent } from '../../../../utils/security/security-events'
 
 export default defineEventHandler(async (event) => {
@@ -68,13 +68,12 @@ export default defineEventHandler(async (event) => {
 		},
 	})
 
-	await emitEvent('user.oauth.unlinked', {
+	queuePostCommitEvent('user.oauth.unlinked', {
 		userId: user.id,
 		provider: account.provider,
 		externalAccountId: account.id,
 		avatarAttachmentId: account.avatarAttachmentId,
 		avatarUrl: account.avatarUrl,
-		updatedAt: new Date(),
 	})
 
 	return {

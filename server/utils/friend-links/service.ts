@@ -7,6 +7,7 @@ import type {
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
+import { queuePostCommitEvent } from '../events/post-commit'
 import {
 	getAttachmentService,
 	getPublicAttachmentUrl,
@@ -508,7 +509,7 @@ export const updateFriendLink = async (
 	})
 
 	if (input.avatarAttachmentId !== undefined) {
-		await getAttachmentService().deleteFriendLinkAttachmentsExcept({
+		queuePostCommitEvent('friend-link.attachments.cleanup', {
 			linkId: link.id,
 			activeAttachmentId: input.avatarAttachmentId,
 		})
@@ -532,10 +533,8 @@ export const deleteFriendLink = async (
 		deletedAt: new Date(),
 	})
 
-	await getAttachmentService().expireAttachments({
-		ownerType: 'friend-link',
-		ownerId: linkId,
-		purpose: FRIEND_LINK_AVATAR_PURPOSE,
+	queuePostCommitEvent('friend-link.attachments.expire', {
+		linkId,
 	})
 }
 
@@ -607,7 +606,7 @@ export const submitFriendLinkApplication = async (
 		submittedAt,
 	})
 
-	await getAttachmentService().deleteFriendLinkApplicationAttachmentsExcept({
+	queuePostCommitEvent('friend-link-application.attachments.cleanup', {
 		applicationId: application.id,
 		activeAttachmentId: input.avatarAttachmentId,
 	})
@@ -756,7 +755,7 @@ export const approveFriendLinkApplication = async (
 		ownerId: result.link.id,
 		expiresAt: null,
 	})
-	await getAttachmentService().deleteFriendLinkAttachmentsExcept({
+	queuePostCommitEvent('friend-link.attachments.cleanup', {
 		linkId: result.link.id,
 		activeAttachmentId: avatarAttachmentId,
 	})
@@ -850,10 +849,8 @@ export const rejectFriendLinkApplication = async (
 		include: friendLinkApplicationInclude,
 	})
 
-	await getAttachmentService().expireAttachments({
-		ownerType: 'friend-link-application',
-		ownerId: applicationId,
-		purpose: FRIEND_LINK_AVATAR_PURPOSE,
+	queuePostCommitEvent('friend-link-application.attachments.expire', {
+		applicationId,
 	})
 
 	await emitEvent('friend-link.application.reviewed', {
@@ -896,10 +893,8 @@ export const expireStaleFriendLinkApplications = async (): Promise<number> => {
 				avatarUrl: null,
 			},
 		})
-		await getAttachmentService().expireAttachments({
-			ownerType: 'friend-link-application',
-			ownerId: application.id,
-			purpose: FRIEND_LINK_AVATAR_PURPOSE,
+		queuePostCommitEvent('friend-link-application.attachments.expire', {
+			applicationId: application.id,
 		})
 		await emitEvent('friend-link.application.expired', {
 			applicationId: application.id,

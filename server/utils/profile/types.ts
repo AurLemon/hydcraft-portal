@@ -80,7 +80,7 @@ export interface MinecraftProfileSummary {
 	status: MinecraftAccountStatus
 }
 
-export interface ServerLocalizedNameSummary extends MinecraftServerLocalizedName {}
+export type ServerLocalizedNameSummary = MinecraftServerLocalizedName
 
 export interface MinecraftPlayerLocationSummary {
 	worldName: string | null

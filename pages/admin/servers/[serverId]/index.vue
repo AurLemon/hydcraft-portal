@@ -153,18 +153,6 @@
 			@saved="handleSaved"
 		/>
 		<AdminServerConfigModal
-			v-model:open="authMeOpen"
-			mode="authMe"
-			:server="server"
-			@saved="handleSaved"
-		/>
-		<AdminServerConfigModal
-			v-model:open="luckPermsOpen"
-			mode="luckPerms"
-			:server="server"
-			@saved="handleSaved"
-		/>
-		<AdminServerConfigModal
 			v-if="!isImportedOnlyServer"
 			v-model:open="syncRateOpen"
 			mode="sync"
@@ -556,7 +544,6 @@ import type {
 	MinecraftServerOverviewResponse,
 	MinecraftServerSummary,
 	MinecraftServerSnapshotSummary,
-	MysqlSourceSummary,
 	ExternalSyncTaskStateSummary,
 	PortalBridgeCommandSummary,
 	PortalBridgeInspectResponse,
@@ -650,8 +637,6 @@ const basicOpen = ref(false)
 const mapOpen = ref(false)
 const periodsOpen = ref(false)
 const portalBridgeOpen = ref(false)
-const authMeOpen = ref(false)
-const luckPermsOpen = ref(false)
 const syncRateOpen = ref(false)
 const detailOpen = ref(false)
 const inspectorOpen = ref(false)
@@ -1532,13 +1517,6 @@ const triggerManualSync = async (target: ManualSyncTarget) => {
 	} finally {
 		manualSyncLoading.value = false
 	}
-}
-
-const openMysqlStatus = (source: 'authme' | 'luckperms') => {
-	mysqlStatusSource.value = source
-	mysqlStatusOpen.value = true
-	void loadMysqlStatus()
-	void loadManualSyncStatus(source)
 }
 
 const loadMysqlStatus = async () => {

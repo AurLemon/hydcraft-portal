@@ -1,8 +1,8 @@
 import { prisma } from '../utils/db/prisma'
-import { onEvent } from '../utils/events/event-bus'
+import { onPostCommitEvent } from '../utils/events/post-commit'
 
 export default defineNitroPlugin(() => {
-	onEvent('minecraft.account.bound', async (payload) => {
+	onPostCommitEvent('minecraft.account.bound', async ({ payload }) => {
 		await prisma.user.updateMany({
 			where: {
 				id: payload.userId,

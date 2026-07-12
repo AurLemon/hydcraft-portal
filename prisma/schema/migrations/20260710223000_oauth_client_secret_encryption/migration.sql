@@ -1,0 +1,3 @@
+-- The encryptedSecret column already existed in the baseline schema.
+-- This migration records the rollout of application-level encryption for
+-- PortalBridgeConfig secrets and intentionally has no database DDL.

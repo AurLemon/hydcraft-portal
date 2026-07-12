@@ -6,6 +6,7 @@ import type {
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { emitEvent } from '../events/event-bus'
+import { queuePostCommitEvent } from '../events/post-commit'
 import { createApiError } from '../errors'
 import type { VerifiedAuthMeAccount } from '../authme/verification'
 
@@ -398,10 +399,10 @@ export const bindMinecraftAccountToUser = async (input: {
 			return await bindMinecraftAccountToUserInTx(tx, input)
 		})
 		.then(async (result) => {
-			await emitEvent('minecraft.account.bound', {
+			queuePostCommitEvent('minecraft.account.bound', {
 				userId: input.userId,
 				minecraftAccountId: result.account.id,
-				occurredAt: new Date(),
+				occurredAt: new Date().toISOString(),
 			})
 
 			if (result.becamePrimary) {

@@ -3,7 +3,7 @@ import { completeRegistrationFromTicket } from '../../../utils/auth/registration
 import { getRegistrationTicket } from '../../../utils/auth/registration-ticket'
 import { prisma } from '../../../utils/db/prisma'
 import { createBadRequestError } from '../../../utils/errors'
-import { emitEvent } from '../../../utils/events/event-bus'
+import { schedulePostCommitEventDrain } from '../../../utils/events/post-commit'
 import { recordSecurityEvent } from '../../../utils/security/security-events'
 
 interface RegistrationCompleteBody {
@@ -28,22 +28,9 @@ export default defineEventHandler(async (event) => {
 		email: body.email,
 		code: body.code,
 	})
-	await emitEvent('user.registered', {
-		userId: user.id,
-		occurredAt: user.createdAt,
-	})
+	schedulePostCommitEventDrain()
 
 	if (ticket.kind === 'GAME_ACCOUNT' && ticket.minecraftAccountId) {
-		await emitEvent('minecraft.account.bound', {
-			userId: user.id,
-			minecraftAccountId: ticket.minecraftAccountId,
-			occurredAt: new Date(),
-		})
-		await emitEvent('minecraft.account.primary-set', {
-			userId: user.id,
-			minecraftAccountId: ticket.minecraftAccountId,
-			occurredAt: new Date(),
-		})
 		await recordSecurityEvent({
 			event,
 			userId: user.id,
@@ -62,24 +49,11 @@ export default defineEventHandler(async (event) => {
 			description: ticket.minecraftAccount?.username ?? null,
 		})
 	} else if (ticket.kind === 'OAUTH' && ticket.oauthProvider) {
-		const externalAccount = await prisma.externalAccount.findFirstOrThrow({
-			where: {
-				userId: user.id,
-				provider: ticket.oauthProvider,
-			},
-		})
 		await recordSecurityEvent({
 			event,
 			userId: user.id,
 			type: 'LOGIN_SUCCESS',
 			title: `${ticket.oauthProvider} OAuth 注册并登录成功`,
-		})
-		await emitEvent('user.oauth.linked', {
-			userId: user.id,
-			provider: ticket.oauthProvider,
-			providerAccountId: externalAccount.providerAccountId,
-			externalAccountId: externalAccount.id,
-			updatedAt: new Date(),
 		})
 	}
 
