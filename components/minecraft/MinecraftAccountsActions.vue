@@ -29,7 +29,7 @@
 		</div>
 		<div>
 			<UTooltip
-				v-if="selectedAccount"
+				v-if="accounts.length"
 				:text="t('minecraftAccounts.actions.unbind')"
 			>
 				<UButton
@@ -37,9 +37,14 @@
 					color="error"
 					variant="ghost"
 					icon="i-lucide-unlink"
-					:loading="unbindingId === selectedAccount.id"
+					:loading="
+						!!(
+							unbindingTargetAccount &&
+							unbindingId === unbindingTargetAccount.id
+						)
+					"
 					:aria-label="t('minecraftAccounts.actions.unbind')"
-					@click="unbindConfirmOpen = true"
+					@click="openUnbindConfirm"
 				/>
 			</UTooltip>
 		</div>
@@ -53,18 +58,32 @@
 		/>
 
 		<UModal
-			v-if="selectedAccount"
+			v-if="accounts.length"
 			v-model:open="unbindConfirmOpen"
 			:title="t('minecraftAccounts.actions.unbind')"
 			:ui="{ content: 'max-w-lg' }"
 		>
 			<template #body>
 				<div class="space-y-4">
-					<div class="flex items-start gap-3">
+					<div v-if="!unbindingTargetAccount" class="space-y-2">
+						<p class="text-sm font-medium text-slate-700 dark:text-slate-200">
+							{{ t('minecraftAccounts.unbind.targetLabel') }}
+						</p>
+						<MinecraftAccountsSelector
+							:accounts="accounts"
+							:selected-account-id="unbindingTargetAccountId"
+							@select="unbindingTargetAccountId = $event"
+						/>
+						<p class="text-sm leading-6 text-slate-500 dark:text-slate-400">
+							{{ t('minecraftAccounts.unbind.targetDescription') }}
+						</p>
+					</div>
+
+					<div v-if="unbindingTargetAccount" class="flex items-start gap-3">
 						<div class="relative size-10 shrink-0 overflow-hidden rounded-lg">
 							<SkeletonImage
-								:src="resolveAvatarUrl(selectedAccount)"
-								:alt="resolveDisplayName(selectedAccount)"
+								:src="resolveAvatarUrl(unbindingTargetAccount)"
+								:alt="resolveDisplayName(unbindingTargetAccount)"
 								class="size-10 select-none"
 								skeleton-class="rounded-lg"
 								:image-class="'size-10 rounded-lg object-cover drop-shadow-sm'"
@@ -72,7 +91,7 @@
 						</div>
 						<div class="min-w-0">
 							<p class="truncate font-medium text-slate-950 dark:text-white">
-								{{ resolveDisplayName(selectedAccount) }}
+								{{ resolveDisplayName(unbindingTargetAccount) }}
 							</p>
 							<p
 								class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400"
@@ -83,6 +102,7 @@
 					</div>
 
 					<CapWidget
+						v-if="unbindingTargetAccount"
 						ref="unbindCaptchaWidgetRef"
 						v-model="unbindCaptcha.token.value"
 					/>
@@ -95,7 +115,12 @@
 						type="button"
 						color="neutral"
 						variant="ghost"
-						:disabled="unbindingId === selectedAccount.id"
+						:disabled="
+							!!(
+								unbindingTargetAccount &&
+								unbindingId === unbindingTargetAccount.id
+							)
+						"
 						@click="unbindConfirmOpen = false"
 					>
 						{{ t('common.cancel') }}
@@ -104,7 +129,12 @@
 						type="button"
 						color="error"
 						icon="i-lucide-unlink"
-						:loading="unbindingId === selectedAccount.id"
+						:loading="
+							!!(
+								unbindingTargetAccount &&
+								unbindingId === unbindingTargetAccount.id
+							)
+						"
 						:disabled="unbindSubmitDisabled"
 						@click="submitUnbind"
 					>
@@ -118,10 +148,12 @@
 
 <script setup lang="ts">
 import SkeletonImage from '~/components/common/SkeletonImage.vue'
+import MinecraftAccountsSelector from '~/components/minecraft/MinecraftAccountsSelector.vue'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 import type { MinecraftAccountForm } from '~/utils/minecraft/accounts'
 
 interface MinecraftAccountsActionsProps {
+	accounts: MinecraftAccountForm[]
 	selectedAccount: MinecraftAccountForm | null
 	savingId: string | null
 	unbindingId: string | null
@@ -144,14 +176,21 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const settingsOpen = ref(false)
 const unbindConfirmOpen = ref(false)
+const unbindingTargetAccountId = ref<string | null>(null)
 const unbindCaptcha = useCap(true)
 const unbindCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
+const unbindingTargetAccount = computed<MinecraftAccountForm | null>(
+	() =>
+		props.accounts.find(
+			(account) => account.id === unbindingTargetAccountId.value,
+		) ?? null,
+)
 
 const unbindSubmitDisabled = computed(
 	() =>
-		!props.selectedAccount ||
+		!unbindingTargetAccount.value ||
 		!unbindCaptcha.token.value ||
-		props.unbindingId === props.selectedAccount.id,
+		props.unbindingId === unbindingTargetAccount.value.id,
 )
 
 const resolveDisplayName = (account: MinecraftAccountForm): string =>
@@ -165,13 +204,18 @@ const resetUnbindCaptcha = (): void => {
 	unbindCaptchaWidgetRef.value?.reset()
 }
 
+const openUnbindConfirm = (): void => {
+	unbindingTargetAccountId.value = null
+	unbindConfirmOpen.value = true
+}
+
 const submitUnbind = (): void => {
-	if (unbindSubmitDisabled.value || !props.selectedAccount) {
+	if (unbindSubmitDisabled.value || !unbindingTargetAccount.value) {
 		return
 	}
 
 	emit('unbind', {
-		account: props.selectedAccount,
+		account: unbindingTargetAccount.value,
 		captchaToken: unbindCaptcha.consumeToken(),
 	})
 }
@@ -181,16 +225,23 @@ watch(unbindConfirmOpen, () => {
 })
 
 watch(
-	() => props.selectedAccount?.id ?? null,
-	(selectedAccountId) => {
-		if (!selectedAccountId && unbindConfirmOpen.value) {
+	() => props.accounts,
+	(accounts) => {
+		if (!accounts.length && unbindConfirmOpen.value) {
 			unbindConfirmOpen.value = false
 		}
 
-		if (unbindConfirmOpen.value) {
-			resetUnbindCaptcha()
+		const targetExists = unbindingTargetAccountId.value
+			? accounts.some(
+					(account) => account.id === unbindingTargetAccountId.value,
+				)
+			: false
+
+		if (!targetExists) {
+			unbindingTargetAccountId.value = null
 		}
 	},
+	{ deep: true },
 )
 
 watch(
@@ -206,6 +257,7 @@ watch(
 	() => props.unbindSuccessToken,
 	() => {
 		unbindConfirmOpen.value = false
+		unbindingTargetAccountId.value = null
 		resetUnbindCaptcha()
 	},
 )

@@ -114,6 +114,10 @@
 			"setPrimary": "Set as primary",
 			"unbind": "Unbind account"
 		},
+		"unbind": {
+			"targetLabel": "Choose an official profile to unbind",
+			"targetDescription": "Nothing is preselected here. Choose the official profile for this unbind action first, then complete the CAPTCHA."
+		},
 		"empty": {
 			"title": "No Minecraft account is bound yet",
 			"description": "Finish one verification and binding flow first, then synced player details will show up here.",

@@ -114,6 +114,10 @@
 			"setPrimary": "設為主檔案",
 			"unbind": "解除綁定"
 		},
+		"unbind": {
+			"targetLabel": "選擇要解除綁定的正式檔案",
+			"targetDescription": "這裡不會預先選中任何檔案。請先手動選擇這次要解除綁定的正式檔案，再完成人機驗證。"
+		},
 		"empty": {
 			"title": "還沒有綁定的 Minecraft 帳號",
 			"description": "先完成一次帳號核驗與綁定，後續同步到的玩家資料就會集中顯示在這裡。",

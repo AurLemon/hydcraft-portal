@@ -114,6 +114,10 @@
 			"setPrimary": "设为主档案",
 			"unbind": "解绑账号"
 		},
+		"unbind": {
+			"targetLabel": "选择要解绑的正式档案",
+			"targetDescription": "这里不会预先选中任何档案。请先手动选择本次要解绑的正式档案，随后再完成人机验证。"
+		},
 		"empty": {
 			"title": "还没有绑定的 Minecraft 账号",
 			"description": "先完成一次账号核验与绑定，后续同步到的玩家资料就会集中展示在这里。",
