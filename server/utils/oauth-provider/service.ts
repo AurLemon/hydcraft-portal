@@ -10,6 +10,7 @@ export const oauthSupportedScopes = [
 	'profile',
 	'email',
 	'hydroline',
+	'directory.read',
 ] as const
 
 export type OAuthScope = (typeof oauthSupportedScopes)[number]
@@ -239,7 +240,13 @@ export const consumeAuthorizationCode = async (input: {
 	clientId: string
 	redirectUri: string
 	codeVerifier: string
-}): Promise<{ user: User; scopes: string[]; nonce: string | null }> => {
+}): Promise<{
+	user: User & {
+		preferences: { language: 'ZH_CN' | 'ZH_TW' | 'EN_US' | 'JA_JP' } | null
+	}
+	scopes: string[]
+	nonce: string | null
+}> => {
 	if (!/^[A-Za-z0-9._~-]{43,128}$/.test(input.codeVerifier)) {
 		throw createApiError({ statusCode: 400, code: 'OAUTH_PKCE_INVALID' })
 	}
@@ -247,7 +254,7 @@ export const consumeAuthorizationCode = async (input: {
 	const codeHash = createHash('sha256').update(input.code).digest('hex')
 	const record = await prisma.oAuthAuthorizationCode.findUnique({
 		where: { codeHash },
-		include: { user: true, client: true },
+		include: { user: { include: { preferences: true } }, client: true },
 	})
 
 	if (

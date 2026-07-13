@@ -21,6 +21,9 @@ const analyticsPlugins =
 export default defineNuxtConfig({
 	compatibilityDate: '2024-04-03',
 	ssr: true,
+	routeRules: {
+		'/**': { prerender: false },
+	},
 	devtools: { enabled: false },
 	plugins: [...analyticsPlugins],
 	modules: [
@@ -207,14 +210,6 @@ export default defineNuxtConfig({
 		global: false,
 		defaultImport: 'component',
 	},
-	nitro: {
-		serverAssets: [
-			{
-				baseName: 'ip2region',
-				dir: './data/ip2region',
-			},
-		],
-	},
 	seo: {
 		enabled: false,
 	},
@@ -308,6 +303,23 @@ export default defineNuxtConfig({
 		},
 	},
 	nitro: {
+		// Portal is SSR-only. Disabling crawl prevents Nitro from spawning an
+		// otherwise-unused prerender worker, whose Windows ESM URL generation is
+		// not compatible with paths on a drive letter.
+		prerender: {
+			crawlLinks: false,
+		},
+		hooks: {
+			'prerender:routes'(routes) {
+				routes.clear()
+			},
+		},
+		serverAssets: [
+			{
+				baseName: 'ip2region',
+				dir: './data/ip2region',
+			},
+		],
 		experimental: {
 			tasks: true,
 		},

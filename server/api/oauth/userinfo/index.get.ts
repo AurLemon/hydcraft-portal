@@ -13,7 +13,10 @@ export default defineEventHandler(async (event) => {
 	const claims = verifyOAuthAccessToken(
 		authorization.slice('Bearer '.length).trim(),
 	)
-	const user = await prisma.user.findUnique({ where: { id: claims.sub } })
+	const user = await prisma.user.findUnique({
+		where: { id: claims.sub },
+		include: { preferences: true },
+	})
 	if (!user || user.status !== 'ACTIVE')
 		throw createApiError({
 			statusCode: 401,
@@ -32,6 +35,18 @@ export default defineEventHandler(async (event) => {
 	if (scopes.has('email')) {
 		result.email = user.email
 		result.email_verified = Boolean(user.emailVerifiedAt)
+	}
+	if (scopes.has('hydroline')) {
+		result.role = user.role
+		result.status = user.status
+		result.locale =
+			user.preferences?.language === 'ZH_TW'
+				? 'zh-TW'
+				: user.preferences?.language === 'JA_JP'
+					? 'ja-JP'
+					: user.preferences?.language === 'EN_US'
+						? 'en-US'
+						: 'zh-CN'
 	}
 	return result
 })

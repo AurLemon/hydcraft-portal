@@ -5,10 +5,10 @@ import {
 	createSign,
 	createVerify,
 } from 'node:crypto'
-import type { User } from '~/generated/prisma/client'
+import type { User, UserProfileLanguage } from '~/generated/prisma/client'
 import { createApiError } from '../errors'
 
-interface OAuthTokenClaims {
+export interface OAuthTokenClaims {
 	iss: string
 	sub: string
 	aud: string
@@ -18,6 +18,20 @@ interface OAuthTokenClaims {
 	nonce?: string
 	scope?: string
 	typ?: 'access_token' | 'id_token'
+	role?: string
+	status?: string
+	locale?: string
+}
+
+type OAuthTokenUser = User & {
+	preferences?: { language: UserProfileLanguage } | null
+}
+
+const toLocale = (language: UserProfileLanguage | undefined): string => {
+	if (language === 'ZH_TW') return 'zh-TW'
+	if (language === 'JA_JP') return 'ja-JP'
+	if (language === 'EN_US') return 'en-US'
+	return 'zh-CN'
 }
 
 const getIssuer = (): string =>
@@ -58,7 +72,7 @@ const sign = (payload: Record<string, unknown>): string => {
 }
 
 export const issueOAuthTokens = (input: {
-	user: User
+	user: OAuthTokenUser
 	clientId: string
 	scopes: string[]
 	nonce: string | null
@@ -84,6 +98,13 @@ export const issueOAuthTokens = (input: {
 		...(input.nonce ? { nonce: input.nonce } : {}),
 		typ: 'id_token',
 		hydroline_id: input.user.hydrolineId,
+		...(input.scopes.includes('hydroline')
+			? {
+					role: input.user.role,
+					status: input.user.status,
+					locale: toLocale(input.user.preferences?.language),
+				}
+			: {}),
 	})
 	return { accessToken, idToken, expiresIn: accessExpiresIn }
 }
@@ -135,7 +156,13 @@ export const getOAuthDiscoveryDocument = () => {
 		response_types_supported: ['code'],
 		grant_types_supported: ['authorization_code'],
 		code_challenge_methods_supported: ['S256'],
-		scopes_supported: ['openid', 'profile', 'email', 'hydroline'],
+		scopes_supported: [
+			'openid',
+			'profile',
+			'email',
+			'hydroline',
+			'directory.read',
+		],
 		subject_types_supported: ['public'],
 		claims_supported: [
 			'sub',
@@ -151,6 +178,9 @@ export const getOAuthDiscoveryDocument = () => {
 			'email',
 			'email_verified',
 			'hydroline_id',
+			'role',
+			'status',
+			'locale',
 		],
 		token_endpoint_auth_methods_supported: [
 			'client_secret_basic',
