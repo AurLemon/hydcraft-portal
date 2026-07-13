@@ -389,12 +389,11 @@ export default defineNuxtConfig({
 				return
 			}
 
-			config.optimizeDeps = {
-				...config.optimizeDeps,
-				include: include.filter(
-					(entry) => !INVALID_MDC_OPTIMIZE_DEPS.has(entry),
-				),
-			}
+			include.splice(
+				0,
+				include.length,
+				...include.filter((entry) => !INVALID_MDC_OPTIMIZE_DEPS.has(entry)),
+			)
 		},
 	},
 })

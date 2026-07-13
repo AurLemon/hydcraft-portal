@@ -13,7 +13,7 @@ export interface PostCommitEventMap {
 	}
 	'user.profile.attachment-replaced': {
 		userId: string
-		purpose: 'user-avatar' | 'user-cover' | 'external-account-avatar'
+		purpose: 'user-avatar' | 'user-cover'
 		activeAttachmentId: string | null
 	}
 	'user.oauth.attachment-replaced': {
