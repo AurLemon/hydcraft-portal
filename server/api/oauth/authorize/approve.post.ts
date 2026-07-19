@@ -14,7 +14,6 @@ interface ApproveBody {
 	redirect_uri?: string
 	scope?: string
 	state?: string
-	nonce?: string
 	code_challenge?: string
 	code_challenge_method?: string
 	consent_nonce?: string
@@ -51,7 +50,6 @@ export default defineEventHandler(async (event) => {
 		redirect_uri: body.redirect_uri,
 		scope: body.scope,
 		state: body.state,
-		nonce: body.nonce,
 		code_challenge: body.code_challenge,
 		code_challenge_method: body.code_challenge_method,
 	})
@@ -69,7 +67,6 @@ export default defineEventHandler(async (event) => {
 		clientId: client.id,
 		redirectUri: request.redirectUri,
 		scopes: request.scopes,
-		nonce: request.nonce,
 		codeChallenge: request.codeChallenge,
 	})
 

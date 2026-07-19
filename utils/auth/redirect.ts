@@ -53,3 +53,9 @@ export const getPortalRedirectQuery = (
 
 	return redirect === options.fallbackPath ? {} : { redirect }
 }
+
+export const requiresDocumentNavigation = (target: string): boolean => {
+	const url = new URL(target, 'https://hydcraft.portal')
+
+	return url.pathname === '/oauth/authorize'
+}

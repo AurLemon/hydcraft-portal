@@ -42,6 +42,7 @@ model User {
   oauthStateTokens   OAuthStateToken[]
   oauthClientGrants  OAuthClientGrant[]
   oauthAuthorizationCodes OAuthAuthorizationCode[]
+  oauthAccessTokens  OAuthAccessToken[]
   securityEvents     SecurityEvent[]
   profile            UserProfile?
   preferences        UserProfilePreferences?
@@ -281,13 +282,14 @@ model OAuthClient {
   clientSecretHash  String
   name              String
   redirectUris      String[]
-  allowedScopes     String[] @default(["openid", "profile", "email", "hydroline"])
+  allowedScopes     String[] @default(["profile", "email", "hydroline"])
   enabled           Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   grants             OAuthClientGrant[]
   authorizationCodes OAuthAuthorizationCode[]
+  accessTokens       OAuthAccessToken[]
 
   @@index([enabled])
 }
@@ -325,6 +327,25 @@ model OAuthAuthorizationCode {
   @@index([clientId, expiresAt])
   @@index([userId])
   @@index([expiresAt])
+}
+
+model OAuthAccessToken {
+  id         String      @id @default(cuid())
+  tokenHash  String      @unique
+  clientId   String
+  client     OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopes     String[]
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime    @default(now())
+
+  @@index([clientId, expiresAt])
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
 }
 
 model AuthRegistrationTicket {

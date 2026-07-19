@@ -1,7 +1,6 @@
 import { getHeader } from 'h3'
-import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
-import { verifyOAuthAccessToken } from '../../../utils/oauth-provider/tokens'
+import { resolveOAuthAccessToken } from '../../../utils/oauth-provider/tokens'
 
 export default defineEventHandler(async (event) => {
 	const authorization = getHeader(event, 'authorization')
@@ -10,19 +9,11 @@ export default defineEventHandler(async (event) => {
 			statusCode: 401,
 			code: 'OAUTH_ACCESS_TOKEN_INVALID',
 		})
-	const claims = verifyOAuthAccessToken(
+	const token = await resolveOAuthAccessToken(
 		authorization.slice('Bearer '.length).trim(),
 	)
-	const user = await prisma.user.findUnique({
-		where: { id: claims.sub },
-		include: { preferences: true },
-	})
-	if (!user || user.status !== 'ACTIVE')
-		throw createApiError({
-			statusCode: 401,
-			code: 'OAUTH_ACCESS_TOKEN_INVALID',
-		})
-	const scopes = new Set((claims.scope ?? '').split(' '))
+	const { user } = token
+	const scopes = new Set(token.scopes)
 	const result: Record<string, string | boolean | null> = {
 		sub: user.id,
 		hydroline_id: user.hydrolineId,

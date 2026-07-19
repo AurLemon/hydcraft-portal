@@ -4,7 +4,7 @@ import {
 	authenticateOAuthClient,
 	consumeAuthorizationCode,
 } from '../../../utils/oauth-provider/service'
-import { issueOAuthTokens } from '../../../utils/oauth-provider/tokens'
+import { issueOAuthAccessToken } from '../../../utils/oauth-provider/tokens'
 
 interface TokenBody {
 	grant_type?: string
@@ -50,19 +50,22 @@ export default defineEventHandler(async (event) => {
 			statusCode: 401,
 			code: 'OAUTH_CLIENT_AUTHENTICATION_FAILED',
 		})
-	await authenticateOAuthClient({ clientId, clientSecret })
-	const { user, scopes, nonce } = await consumeAuthorizationCode({
+	const client = await authenticateOAuthClient({ clientId, clientSecret })
+	const { user, scopes } = await consumeAuthorizationCode({
 		code: body.code,
 		clientId,
 		redirectUri: body.redirect_uri,
 		codeVerifier: body.code_verifier,
 	})
-	const tokens = issueOAuthTokens({ user, clientId, scopes, nonce })
+	const token = await issueOAuthAccessToken({
+		userId: user.id,
+		clientId: client.id,
+		scopes,
+	})
 	return {
-		access_token: tokens.accessToken,
+		access_token: token.accessToken,
 		token_type: 'Bearer',
-		expires_in: tokens.expiresIn,
+		expires_in: token.expiresIn,
 		scope: scopes.join(' '),
-		id_token: tokens.idToken,
 	}
 })

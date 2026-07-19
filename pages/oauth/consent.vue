@@ -1,7 +1,5 @@
 <template>
-	<main
-		class="mx-auto flex min-h-[calc(100vh-8rem)] max-w-xl items-center px-4 py-10"
-	>
+	<main class="mx-auto flex-1 h-full flex max-w-xl items-center px-4 py-10">
 		<section
 			class="w-full rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-950"
 		>
@@ -41,7 +39,7 @@ const route = useRoute()
 const pending = ref(false)
 const clientName = computed(() => String(route.query.client_name ?? 'HydCraft'))
 const scopes = computed(() =>
-	String(route.query.scope ?? 'openid')
+	String(route.query.scope ?? 'profile')
 		.split(' ')
 		.filter(Boolean),
 )
@@ -58,7 +56,6 @@ const submit = async (approved: boolean) => {
 					redirect_uri: route.query.redirect_uri,
 					scope: route.query.scope,
 					state: route.query.state,
-					nonce: route.query.nonce,
 					code_challenge: route.query.code_challenge,
 					code_challenge_method: route.query.code_challenge_method,
 					consent_nonce: route.query.consent_nonce,

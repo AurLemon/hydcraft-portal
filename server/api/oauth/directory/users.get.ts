@@ -1,7 +1,7 @@
 import { getHeader, getQuery } from 'h3'
 import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
-import { verifyOAuthAccessToken } from '../../../utils/oauth-provider/tokens'
+import { resolveOAuthAccessToken } from '../../../utils/oauth-provider/tokens'
 
 const positiveInteger = (value: unknown, fallback: number, maximum: number) => {
 	const parsed = Number(value)
@@ -17,15 +17,12 @@ export default defineEventHandler(async (event) => {
 			statusCode: 401,
 			code: 'OAUTH_ACCESS_TOKEN_INVALID',
 		})
-	const claims = verifyOAuthAccessToken(
+	const token = await resolveOAuthAccessToken(
 		authorization.slice('Bearer '.length).trim(),
 	)
-	if (!new Set((claims.scope ?? '').split(' ')).has('directory.read'))
+	if (!new Set(token.scopes).has('directory.read'))
 		throw createApiError({ statusCode: 403, code: 'ADMIN_ROLE_REQUIRED' })
-	const actor = await prisma.user.findUnique({
-		where: { id: claims.sub },
-		select: { role: true, status: true },
-	})
+	const actor = token.user
 	if (
 		!actor ||
 		actor.status !== 'ACTIVE' ||

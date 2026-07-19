@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import hydcraftLogo from '~/assets/resources/brands/logo_HydCraft.png'
 import { getPortalRedirectQuery } from '~/utils/auth/redirect'
+import { normalizeHeaderMenuPath } from '~/utils/layout/header-menu'
 
 interface LocaleItem {
 	label: string
@@ -72,9 +73,15 @@ const loginRoute = computed(() => ({
 		loginPath: localePath('/login'),
 	}),
 }))
-const isAuthHeaderHidden = computed(
-	() => route.meta.pageContainerVariant === 'auth',
-)
+const isHeaderMenuHidden = computed(() => {
+	const normalizedPath = normalizeHeaderMenuPath(route.path)
+
+	return (
+		route.meta.pageContainerVariant === 'auth' ||
+		normalizedPath === '/oauth' ||
+		normalizedPath.startsWith('/oauth/')
+	)
+})
 const userAvatarLabel = computed(() =>
 	(user.value?.displayName ?? user.value?.handle ?? '')
 		.slice(0, 1)
@@ -172,7 +179,7 @@ onMounted(() => {
 			<HeaderMenu
 				:active-nav-item-class="activeNavItemClass"
 				:fallback-nav-item-class="fallbackNavItemClass"
-				:hidden="isAuthHeaderHidden"
+				:hidden="isHeaderMenuHidden"
 				:inactive-nav-item-class="inactiveNavItemClass"
 			/>
 

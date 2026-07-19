@@ -76,17 +76,19 @@ const clientSecret = ref<string | null>(null)
 const form = reactive({
 	name: '',
 	redirectUris: '',
-	allowedScopes: ['openid', 'profile'],
+	allowedScopes: ['profile'],
 })
-const scopeItems = ['openid', 'profile', 'email', 'hydroline'].map((value) => ({
-	label: value,
-	value,
-}))
+const scopeItems = ['profile', 'email', 'hydroline', 'directory.read'].map(
+	(value) => ({
+		label: value,
+		value,
+	}),
+)
 
 const resetForm = (): void => {
 	form.name = ''
 	form.redirectUris = ''
-	form.allowedScopes = ['openid', 'profile']
+	form.allowedScopes = ['profile']
 	clientSecret.value = null
 }
 

@@ -76,10 +76,12 @@ const form = reactive({
 	redirectUris: '',
 	allowedScopes: [] as string[],
 })
-const scopeItems = ['openid', 'profile', 'email', 'hydroline'].map((value) => ({
-	label: value,
-	value,
-}))
+const scopeItems = ['profile', 'email', 'hydroline', 'directory.read'].map(
+	(value) => ({
+		label: value,
+		value,
+	}),
+)
 
 const syncForm = (): void => {
 	if (!props.client) return

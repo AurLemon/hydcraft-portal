@@ -8,6 +8,9 @@
 			"openid": "Hydroline ID の本人確認",
 			"profile": "公開プロフィール情報の読み取り",
 			"email": "メールアドレスと確認状態の読み取り",
+			"directory": {
+				"read": "ディレクトリ情報の読み取り"
+			},
 			"hydroline": "Hydroline ID の読み取り"
 		}
 	}

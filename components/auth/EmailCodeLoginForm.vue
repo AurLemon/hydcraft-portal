@@ -92,7 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import { normalizePortalRedirectPath } from '~/utils/auth/redirect'
+import {
+	normalizePortalRedirectPath,
+	requiresDocumentNavigation,
+} from '~/utils/auth/redirect'
 
 interface EmailCodeLoginFormProps {
 	intent?: 'LOGIN' | 'REGISTER'
@@ -156,6 +159,17 @@ const getRedirectPath = (): string =>
 			props.intent === 'REGISTER' ? localePath('/me/profile') : localePath('/'),
 		loginPath: localePath('/login'),
 	})
+
+const continueAfterAuthentication = async (): Promise<void> => {
+	const target = getRedirectPath()
+
+	if (requiresDocumentNavigation(target)) {
+		window.location.assign(target)
+		return
+	}
+
+	await navigateTo(target)
+}
 
 const resetCaptcha = (): void => {
 	captcha.reset(true)
@@ -264,7 +278,7 @@ const confirmCode = async (): Promise<void> => {
 					? t('emailCodeLogin.notifications.registerSuccessTitle')
 					: t('emailCodeLogin.notifications.successTitle'),
 		})
-		await navigateTo(getRedirectPath())
+		await continueAfterAuthentication()
 	} catch (error) {
 		notifyError(error, {
 			title: t('emailCodeLogin.notifications.failedTitle'),

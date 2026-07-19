@@ -39,7 +39,6 @@ export default defineEventHandler(async (event) => {
 		consentUrl.searchParams.set('code_challenge_method', 'S256')
 		consentUrl.searchParams.set('consent_nonce', consentNonce)
 		if (request.state) consentUrl.searchParams.set('state', request.state)
-		if (request.nonce) consentUrl.searchParams.set('nonce', request.nonce)
 		return sendRedirect(event, consentUrl.toString(), 302)
 	}
 
@@ -48,7 +47,6 @@ export default defineEventHandler(async (event) => {
 		clientId: client.id,
 		redirectUri: request.redirectUri,
 		scopes: request.scopes,
-		nonce: request.nonce,
 		codeChallenge: request.codeChallenge,
 	})
 

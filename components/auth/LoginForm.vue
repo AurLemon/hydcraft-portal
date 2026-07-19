@@ -235,7 +235,10 @@
 </template>
 
 <script setup lang="ts">
-import { normalizePortalRedirectPath } from '~/utils/auth/redirect'
+import {
+	normalizePortalRedirectPath,
+	requiresDocumentNavigation,
+} from '~/utils/auth/redirect'
 
 interface LoginFormState {
 	handleOrEmail: string
@@ -367,6 +370,17 @@ const getRedirectPath = (): string => {
 	})
 }
 
+const continueAfterAuthentication = async (): Promise<void> => {
+	const target = getRedirectPath()
+
+	if (requiresDocumentNavigation(target)) {
+		window.location.assign(target)
+		return
+	}
+
+	await navigateTo(target)
+}
+
 const resetPasswordCaptcha = (): void => {
 	passwordCaptcha.reset()
 	passwordCaptchaWidgetRef.value?.reset()
@@ -424,7 +438,7 @@ const submitPasswordLogin = async (): Promise<void> => {
 		notifySuccess({
 			title: t('login.notifications.successTitle'),
 		})
-		await navigateTo(getRedirectPath())
+		await continueAfterAuthentication()
 	} catch (error) {
 		handlePasswordAuthFailure(
 			error,
@@ -452,7 +466,7 @@ const submitMinecraftLogin = async (): Promise<void> => {
 		notifySuccess({
 			title: t('minecraftLogin.notifications.successTitle'),
 		})
-		await navigateTo(getRedirectPath())
+		await continueAfterAuthentication()
 	} catch (error) {
 		const errorCode = getErrorCode(error)
 		const registrationTokenCandidate = (error as ApiErrorWithData | null)?.data

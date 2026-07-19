@@ -1,37 +1,60 @@
-import {
-	createHash,
-	createPrivateKey,
-	createPublicKey,
-	createSign,
-	createVerify,
-} from 'node:crypto'
-import type { User, UserProfileLanguage } from '~/generated/prisma/client'
+import { createHash, randomBytes } from 'node:crypto'
+import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 
-export interface OAuthTokenClaims {
-	iss: string
-	sub: string
-	aud: string
-	exp: number
-	iat: number
-	auth_time?: number
-	nonce?: string
-	scope?: string
-	typ?: 'access_token' | 'id_token'
-	role?: string
-	status?: string
-	locale?: string
+const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000
+
+const hashToken = (token: string): string =>
+	createHash('sha256').update(token).digest('hex')
+
+export const issueOAuthAccessToken = async (input: {
+	userId: string
+	clientId: string
+	scopes: string[]
+}): Promise<{ accessToken: string; expiresIn: number }> => {
+	const accessToken = randomBytes(48).toString('base64url')
+	const expiresAt = new Date(Date.now() + ACCESS_TOKEN_TTL_MS)
+
+	await prisma.oAuthAccessToken.create({
+		data: {
+			tokenHash: hashToken(accessToken),
+			userId: input.userId,
+			clientId: input.clientId,
+			scopes: input.scopes,
+			expiresAt,
+		},
+	})
+
+	return {
+		accessToken,
+		expiresIn: Math.floor(ACCESS_TOKEN_TTL_MS / 1000),
+	}
 }
 
-type OAuthTokenUser = User & {
-	preferences?: { language: UserProfileLanguage } | null
-}
+export const resolveOAuthAccessToken = async (accessToken: string) => {
+	const record = await prisma.oAuthAccessToken.findUnique({
+		where: { tokenHash: hashToken(accessToken) },
+		include: { user: { include: { preferences: true } } },
+	})
 
-const toLocale = (language: UserProfileLanguage | undefined): string => {
-	if (language === 'ZH_TW') return 'zh-TW'
-	if (language === 'JA_JP') return 'ja-JP'
-	if (language === 'EN_US') return 'en-US'
-	return 'zh-CN'
+	if (
+		!record ||
+		record.revokedAt ||
+		record.expiresAt <= new Date() ||
+		record.user.status !== 'ACTIVE'
+	) {
+		throw createApiError({
+			statusCode: 401,
+			code: 'OAUTH_ACCESS_TOKEN_INVALID',
+		})
+	}
+
+	await prisma.oAuthAccessToken.update({
+		where: { id: record.id },
+		data: { lastUsedAt: new Date() },
+	})
+
+	return record
 }
 
 const getIssuer = (): string =>
@@ -41,110 +64,6 @@ const getIssuer = (): string =>
 		'http://localhost:3000'
 	).replace(/\/$/, '')
 
-const getPrivateKey = () => {
-	const value = process.env.OAUTH_SIGNING_PRIVATE_KEY?.replace(/\\n/g, '\n')
-	if (!value)
-		throw createApiError({ statusCode: 500, code: 'OAUTH_SIGNING_KEY_MISSING' })
-	return createPrivateKey(value)
-}
-
-const encode = (value: unknown): string =>
-	Buffer.from(JSON.stringify(value)).toString('base64url')
-
-const getPublicKeyId = (
-	publicKey: ReturnType<typeof createPublicKey>,
-): string =>
-	createHash('sha256')
-		.update(
-			publicKey.export({ type: 'spki', format: 'der' }).toString('base64url'),
-		)
-		.digest('base64url')
-
-const sign = (payload: Record<string, unknown>): string => {
-	const privateKey = getPrivateKey()
-	const publicKey = createPublicKey(privateKey)
-	const kid = getPublicKeyId(publicKey)
-	const input = `${encode({ alg: 'RS256', typ: 'JWT', kid })}.${encode(payload)}`
-	const signer = createSign('RSA-SHA256')
-	signer.update(input)
-	signer.end()
-	return `${input}.${signer.sign(privateKey, 'base64url')}`
-}
-
-export const issueOAuthTokens = (input: {
-	user: OAuthTokenUser
-	clientId: string
-	scopes: string[]
-	nonce: string | null
-}) => {
-	const now = Math.floor(Date.now() / 1000)
-	const accessExpiresIn = 900
-	const base = {
-		iss: getIssuer(),
-		sub: input.user.id,
-		aud: input.clientId,
-		iat: now,
-	}
-	const accessToken = sign({
-		...base,
-		exp: now + accessExpiresIn,
-		scope: input.scopes.join(' '),
-		typ: 'access_token',
-	})
-	const idToken = sign({
-		...base,
-		exp: now + accessExpiresIn,
-		auth_time: now,
-		...(input.nonce ? { nonce: input.nonce } : {}),
-		typ: 'id_token',
-		hydroline_id: input.user.hydrolineId,
-		...(input.scopes.includes('hydroline')
-			? {
-					role: input.user.role,
-					status: input.user.status,
-					locale: toLocale(input.user.preferences?.language),
-				}
-			: {}),
-	})
-	return { accessToken, idToken, expiresIn: accessExpiresIn }
-}
-
-export const verifyOAuthAccessToken = (token: string): OAuthTokenClaims => {
-	const [header, body, signature] = token.split('.')
-	if (!header || !body || !signature)
-		throw createApiError({
-			statusCode: 401,
-			code: 'OAUTH_ACCESS_TOKEN_INVALID',
-		})
-	const verifier = createVerify('RSA-SHA256')
-	verifier.update(`${header}.${body}`)
-	verifier.end()
-	if (
-		!verifier.verify(createPublicKey(getPrivateKey()), signature, 'base64url')
-	)
-		throw createApiError({
-			statusCode: 401,
-			code: 'OAUTH_ACCESS_TOKEN_INVALID',
-		})
-	try {
-		const claims = JSON.parse(
-			Buffer.from(body, 'base64url').toString('utf8'),
-		) as OAuthTokenClaims
-		if (
-			claims.iss !== getIssuer() ||
-			claims.typ !== 'access_token' ||
-			claims.exp <= Math.floor(Date.now() / 1000)
-		)
-			throw new Error('invalid')
-		return claims
-	} catch {
-		throw createApiError({
-			statusCode: 401,
-			code: 'OAUTH_ACCESS_TOKEN_INVALID',
-		})
-	}
-}
-
 export const getOAuthDiscoveryDocument = () => {
 	const issuer = getIssuer()
 	return {
@@ -152,47 +71,13 @@ export const getOAuthDiscoveryDocument = () => {
 		authorization_endpoint: `${issuer}/oauth/authorize`,
 		token_endpoint: `${issuer}/api/oauth/token`,
 		userinfo_endpoint: `${issuer}/api/oauth/userinfo`,
-		jwks_uri: `${issuer}/.well-known/jwks.json`,
 		response_types_supported: ['code'],
 		grant_types_supported: ['authorization_code'],
 		code_challenge_methods_supported: ['S256'],
-		scopes_supported: [
-			'openid',
-			'profile',
-			'email',
-			'hydroline',
-			'directory.read',
-		],
-		subject_types_supported: ['public'],
-		claims_supported: [
-			'sub',
-			'aud',
-			'exp',
-			'iat',
-			'iss',
-			'auth_time',
-			'nonce',
-			'preferred_username',
-			'name',
-			'picture',
-			'email',
-			'email_verified',
-			'hydroline_id',
-			'role',
-			'status',
-			'locale',
-		],
+		scopes_supported: ['profile', 'email', 'hydroline', 'directory.read'],
 		token_endpoint_auth_methods_supported: [
 			'client_secret_basic',
 			'client_secret_post',
 		],
-		id_token_signing_alg_values_supported: ['RS256'],
 	}
-}
-
-export const getOAuthJwks = () => {
-	const publicKey = createPublicKey(getPrivateKey())
-	const jwk = publicKey.export({ format: 'jwk' })
-	const kid = getPublicKeyId(publicKey)
-	return { keys: [{ ...jwk, use: 'sig', alg: 'RS256', kid }] }
 }

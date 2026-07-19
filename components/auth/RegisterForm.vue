@@ -359,7 +359,10 @@ import type {
 	PortalIpLocationSummary,
 	PortalRegistrationTicketSummary,
 } from '~/composables/usePortalAuth'
-import { normalizePortalRedirectPath } from '~/utils/auth/redirect'
+import {
+	normalizePortalRedirectPath,
+	requiresDocumentNavigation,
+} from '~/utils/auth/redirect'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 
 interface RegisterFormState {
@@ -749,6 +752,17 @@ const getRedirectPath = (): string => {
 	})
 }
 
+const continueAfterAuthentication = async (): Promise<void> => {
+	const target = getRedirectPath()
+
+	if (requiresDocumentNavigation(target)) {
+		window.location.assign(target)
+		return
+	}
+
+	await navigateTo(target)
+}
+
 const goBack = async (): Promise<void> => {
 	if (step.value === 'code') {
 		resetCodeStep()
@@ -939,7 +953,7 @@ const confirmRegister = async (): Promise<void> => {
 					? t('register.notifications.successDescription')
 					: t('register.notifications.ticketSuccessDescription'),
 		})
-		await navigateTo(getRedirectPath())
+		await continueAfterAuthentication()
 	} catch (error) {
 		if (getErrorCode(error) === 'USERNAME_TAKEN') {
 			step.value = 'details'

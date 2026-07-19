@@ -8,6 +8,9 @@
 			"openid": "Confirm your Hydroline ID identity",
 			"profile": "Read your public profile information",
 			"email": "Read your email address and verification status",
+			"directory": {
+				"read": "Read directory information"
+			},
 			"hydroline": "Read your Hydroline ID"
 		}
 	}
