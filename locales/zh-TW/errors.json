@@ -161,6 +161,7 @@
 			"OAUTH_TOKEN_REQUEST_INVALID": "OAuth 換取權杖請求無效。",
 			"OAUTH_AUTHORIZATION_CODE_INVALID": "OAuth 授權碼無效或已過期。",
 			"OAUTH_ACCESS_TOKEN_INVALID": "OAuth 存取權杖無效或已過期。",
+			"OAUTH_REFRESH_TOKEN_INVALID": "OAuth 刷新權杖無效或已過期。",
 			"OAUTH_CONSENT_INVALID": "OAuth 授權確認無效或已過期。",
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID 建立失敗。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID 產生失敗。"

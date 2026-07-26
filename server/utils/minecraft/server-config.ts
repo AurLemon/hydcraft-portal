@@ -11,6 +11,39 @@ interface ServerWithConfigs extends MinecraftServer {
 	periods: MinecraftServerPeriod[]
 }
 
+type LauncherServerDirectoryItem = Pick<
+	MinecraftServer,
+	| 'id'
+	| 'serverId'
+	| 'code'
+	| 'shortCode'
+	| 'nameZhCn'
+	| 'nameZhTw'
+	| 'nameEnUs'
+	| 'nameJaJp'
+	| 'enabled'
+	| 'status'
+	| 'isDefault'
+	| 'sortOrder'
+>
+
+export const toPublicLauncherServerDirectoryItem = (
+	server: LauncherServerDirectoryItem,
+) => ({
+	id: server.id,
+	serverId: server.serverId,
+	code: server.code,
+	shortCode: server.shortCode,
+	nameZhCn: server.nameZhCn,
+	nameZhTw: server.nameZhTw,
+	nameEnUs: server.nameEnUs,
+	nameJaJp: server.nameJaJp,
+	enabled: server.enabled,
+	status: server.status,
+	isDefault: server.isDefault,
+	sortOrder: server.sortOrder,
+})
+
 export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 	id: server.id,
 	serverId: server.serverId,

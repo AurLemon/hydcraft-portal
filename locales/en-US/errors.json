@@ -161,6 +161,7 @@
 			"OAUTH_TOKEN_REQUEST_INVALID": "The OAuth token request is invalid.",
 			"OAUTH_AUTHORIZATION_CODE_INVALID": "The OAuth authorization code is invalid or expired.",
 			"OAUTH_ACCESS_TOKEN_INVALID": "The OAuth access token is invalid or expired.",
+			"OAUTH_REFRESH_TOKEN_INVALID": "The OAuth refresh token is invalid or expired.",
 			"OAUTH_CONSENT_INVALID": "The OAuth consent confirmation is invalid or expired.",
 			"HYDROLINE_ID_CREATE_FAILED": "Failed to create a Hydroline ID.",
 			"HYDROLINE_ID_GENERATION_FAILED": "Failed to generate a Hydroline ID."

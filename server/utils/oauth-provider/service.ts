@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto'
-import type { OAuthClient, User } from '~/generated/prisma/client'
+import type { OAuthClient, Prisma, User } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { emitEvent } from '../events/event-bus'
@@ -35,6 +35,8 @@ export interface OAuthAuthorizationRequest {
 
 const AUTHORIZATION_CODE_TTL_MS = 5 * 60 * 1000
 const CLIENT_ID_PREFIX = 'hydcraft_'
+
+type OAuthDbClient = Prisma.TransactionClient | typeof prisma
 
 const toOAuthClientSummary = (client: OAuthClient): OAuthClientSummary => ({
 	id: client.id,
@@ -221,18 +223,21 @@ export const consumeAuthorizationCode = async (input: {
 	clientId: string
 	redirectUri: string
 	codeVerifier: string
+	db?: OAuthDbClient
 }): Promise<{
 	user: User & {
 		preferences: { language: 'ZH_CN' | 'ZH_TW' | 'EN_US' | 'JA_JP' } | null
 	}
 	scopes: string[]
 }> => {
+	const db = input.db ?? prisma
+
 	if (!/^[A-Za-z0-9._~-]{43,128}$/.test(input.codeVerifier)) {
 		throw createApiError({ statusCode: 400, code: 'OAUTH_PKCE_INVALID' })
 	}
 
 	const codeHash = createHash('sha256').update(input.code).digest('hex')
-	const record = await prisma.oAuthAuthorizationCode.findUnique({
+	const record = await db.oAuthAuthorizationCode.findUnique({
 		where: { codeHash },
 		include: { user: { include: { preferences: true } }, client: true },
 	})
@@ -258,7 +263,7 @@ export const consumeAuthorizationCode = async (input: {
 		throw createApiError({ statusCode: 400, code: 'OAUTH_PKCE_INVALID' })
 	}
 
-	const updated = await prisma.oAuthAuthorizationCode.updateMany({
+	const updated = await db.oAuthAuthorizationCode.updateMany({
 		where: { id: record.id, consumedAt: null },
 		data: { consumedAt: new Date() },
 	})

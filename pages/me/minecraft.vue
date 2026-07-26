@@ -294,7 +294,7 @@ const {
 	}),
 })
 const { data: serverOrderData } = await useFetch<MinecraftServerOrderResponse>(
-	'/api/minecraft/servers',
+	'/api/public/launcher/servers',
 	{
 		default: () => ({
 			servers: [],
