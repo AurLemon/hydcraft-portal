@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hydcraft_portal?schema=public
-      NUXT_SITE_URL: https://hydcraft.example
+		NUXT_PUBLIC_SITE_URL: https://hydcraft.example
       JWT_SECRET: ci-demo-jwt-secret
       CONFIG_ENCRYPTION_KEY: ci-demo-config-encryption-key
       HYDCRAFT_DISABLE_PORTAL_BRIDGE: '1'

@@ -256,10 +256,7 @@ export default defineNuxtConfig({
 		},
 	},
 	site: {
-		url:
-			process.env.NUXT_PUBLIC_SITE_URL ??
-			process.env.NUXT_SITE_URL ??
-			'http://localhost:3000',
+		url: process.env.NUXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
 		name: 'HydCraft Portal',
 		description:
 			'氢气工艺 HydCraft 是一个以城市建设和铁路建设为核心的 Minecraft 服务器，一个可以修楼、铺轨、造城、养老的服务器。至于为什么一个 MC 服务器用氢气命名？我也不知道。',
