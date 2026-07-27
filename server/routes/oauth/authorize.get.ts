@@ -7,6 +7,7 @@ import {
 	hasOAuthGrant,
 	parseAuthorizationRequest,
 } from '../../utils/oauth-provider/service'
+import { getPublicSiteOrigin } from '../../utils/runtime/site-url'
 
 export default defineEventHandler(async (event) => {
 	const { client, request } = await parseAuthorizationRequest(getQuery(event))
@@ -30,7 +31,7 @@ export default defineEventHandler(async (event) => {
 			path: '/api/oauth/authorize/approve',
 			maxAge: 10 * 60,
 		})
-		const consentUrl = new URL('/oauth/consent', getRequestURL(event).origin)
+		const consentUrl = new URL('/oauth/consent', getPublicSiteOrigin())
 		consentUrl.searchParams.set('client_id', request.clientId)
 		consentUrl.searchParams.set('client_name', client.name)
 		consentUrl.searchParams.set('redirect_uri', request.redirectUri)

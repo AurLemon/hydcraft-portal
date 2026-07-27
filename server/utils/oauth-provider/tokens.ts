@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import type { Prisma } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
+import { getOAuthIssuerUrl } from '../runtime/site-url'
 
 const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000
 const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
@@ -186,12 +187,7 @@ export const resolveOAuthAccessToken = async (accessToken: string) => {
 	return record
 }
 
-const getIssuer = (): string =>
-	(
-		process.env.OAUTH_ISSUER_URL ??
-		process.env.NUXT_PUBLIC_SITE_URL ??
-		'http://localhost:3000'
-	).replace(/\/$/, '')
+const getIssuer = (): string => getOAuthIssuerUrl()
 
 export const getOAuthDiscoveryDocument = () => {
 	const issuer = getIssuer()

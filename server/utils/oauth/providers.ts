@@ -1,4 +1,5 @@
 import type { ExternalProvider, Prisma } from '~/generated/prisma/client'
+import { getPublicSiteOrigin } from '../runtime/site-url'
 
 export interface OAuthUserProfile {
 	id: string
@@ -63,12 +64,7 @@ const hasOAuthProxyConfig = (): boolean =>
 			readString(process.env.PROXY_KEY)),
 	)
 
-const getBaseUrl = (): string =>
-	(
-		process.env.NUXT_PUBLIC_SITE_URL ??
-		process.env.NUXT_SITE_URL ??
-		'http://localhost:3000'
-	).replace(/\/$/, '')
+const getBaseUrl = (): string => getPublicSiteOrigin()
 
 const oauthProviderDefinitions = [
 	{

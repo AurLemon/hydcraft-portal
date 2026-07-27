@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { sendRedirect } from 'h3'
 import { normalizeMailLocale } from '../../../../utils/auth/locale'
+import { normalizePortalRedirectPath } from '../../../../../utils/auth/redirect'
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
@@ -50,14 +51,21 @@ export default defineEventHandler(async (event) => {
 	const user = await getOptionalCurrentUser(event)
 	const query = getQuery(event)
 	const state = randomBytes(32).toString('base64url')
+	const requestedRedirectTo =
+		typeof query.redirectTo === 'string' ? query.redirectTo : null
+	const redirectTo = requestedRedirectTo
+		? normalizePortalRedirectPath(requestedRedirectTo, {
+				fallbackPath: user ? '/me/connections?oauth=linked' : '/me/profile',
+				loginPath: '/login',
+			})
+		: null
 
 	await prisma.oAuthStateToken.create({
 		data: {
 			userId: user?.id ?? null,
 			provider,
 			stateHash: hashState(state),
-			redirectTo:
-				typeof query.redirectTo === 'string' ? query.redirectTo : null,
+			redirectTo,
 			locale: normalizeMailLocale(
 				typeof query.locale === 'string' ? query.locale : null,
 				user?.preferences?.language ?? 'ZH_CN',

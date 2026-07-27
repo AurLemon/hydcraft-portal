@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { sendRedirect } from 'h3'
 import type { Prisma, User } from '~/generated/prisma/client'
 import { createRegistrationTicket } from '../../../../utils/auth/registration-ticket'
+import { normalizePortalRedirectPath } from '../../../../../utils/auth/redirect'
 import { issueAuthCookies } from '../../../../utils/auth/session'
 import { normalizeEmail } from '../../../../utils/auth/validation'
 import { prisma } from '../../../../utils/db/prisma'
@@ -59,6 +60,15 @@ const getLocalizedRegisterPath = (locale: string): string => {
 			return '/register'
 	}
 }
+
+const getSafeOAuthRedirectPath = (
+	value: string | null | undefined,
+	fallbackPath: string,
+): string =>
+	normalizePortalRedirectPath(value, {
+		fallbackPath,
+		loginPath: '/login',
+	})
 
 const parseTokenResponse = (value: unknown): TokenResponse => {
 	if (typeof value === 'string') {
@@ -368,7 +378,11 @@ export default defineEventHandler(async (event) => {
 			description: profile.username,
 		})
 
-		return sendRedirect(event, stateToken.redirectTo || '/me/profile', 302)
+		return sendRedirect(
+			event,
+			getSafeOAuthRedirectPath(stateToken.redirectTo, '/me/profile'),
+			302,
+		)
 	}
 
 	if (!stateToken.userId) {
@@ -422,7 +436,9 @@ export default defineEventHandler(async (event) => {
 			where: { id: stateToken.id },
 			data: { consumedAt: new Date() },
 		})
-		const redirectTo = stateToken.redirectTo?.trim() || ''
+		const redirectTo = stateToken.redirectTo
+			? getSafeOAuthRedirectPath(stateToken.redirectTo, '/me/profile')
+			: ''
 		const registerPath = getLocalizedRegisterPath(stateToken.locale)
 		const params = new URLSearchParams({
 			mode: 'oauth',
@@ -544,7 +560,10 @@ export default defineEventHandler(async (event) => {
 	})
 	return sendRedirect(
 		event,
-		stateToken.redirectTo || '/me/connections?oauth=linked',
+		getSafeOAuthRedirectPath(
+			stateToken.redirectTo,
+			'/me/connections?oauth=linked',
+		),
 		302,
 	)
 })
