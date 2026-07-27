@@ -32,17 +32,22 @@
 </template>
 
 <script setup lang="ts">
+import { useExplicitRouteTitle } from '~/utils/layout/route-display'
+
 definePageMeta({ middleware: 'portal-auth' })
 
 const { t } = useI18n()
 const route = useRoute()
 const pending = ref(false)
+const pageTitle = computed(() => t('oauthConsent.pageTitle'))
 const clientName = computed(() => String(route.query.client_name ?? 'HydCraft'))
 const scopes = computed(() =>
 	String(route.query.scope ?? 'profile')
 		.split(' ')
 		.filter(Boolean),
 )
+
+useExplicitRouteTitle(pageTitle)
 
 const submit = async (approved: boolean) => {
 	pending.value = true

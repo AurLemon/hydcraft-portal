@@ -1,5 +1,6 @@
 {
 	"oauthConsent": {
+		"pageTitle": "サードパーティアプリを認可",
 		"title": "Hydroline ID を認可",
 		"description": "{client} が Hydroline ID 情報へのアクセスを要求しています。",
 		"approve": "許可",

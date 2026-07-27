@@ -1,5 +1,6 @@
 {
 	"oauthConsent": {
+		"pageTitle": "授權第三方應用",
 		"title": "授權 Hydroline ID",
 		"description": "{client} 要求存取你的 Hydroline ID 資訊。",
 		"approve": "允許",
