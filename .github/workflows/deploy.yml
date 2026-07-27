@@ -60,7 +60,7 @@ jobs:
       DEPLOY_RUNTIME_ENV: ${{ secrets.DEPLOY_RUNTIME_ENV }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build app in Docker
         run: |

@@ -22,12 +22,12 @@ jobs:
       CONFIG_ENCRYPTION_KEY: ci-demo-config-encryption-key
       HYDCRAFT_DISABLE_PORTAL_BRIDGE: '1'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Enable corepack
         run: corepack enable
