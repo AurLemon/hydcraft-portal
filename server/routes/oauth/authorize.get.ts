@@ -1,6 +1,6 @@
 import { getRequestURL, sendRedirect, setCookie } from 'h3'
 import { randomBytes } from 'node:crypto'
-import { getOptionalCurrentUser } from '../../utils/auth/session'
+import { getOptionalCurrentUserWithRefresh } from '../../utils/auth/session'
 import {
 	createAuthorizationCode,
 	createAuthorizationRedirect,
@@ -11,7 +11,7 @@ import { getPublicSiteOrigin } from '../../utils/runtime/site-url'
 
 export default defineEventHandler(async (event) => {
 	const { client, request } = await parseAuthorizationRequest(getQuery(event))
-	const user = await getOptionalCurrentUser(event)
+	const user = await getOptionalCurrentUserWithRefresh(event)
 
 	if (!user) {
 		const redirect = `${getRequestURL(event).pathname}${getRequestURL(event).search}`

@@ -1,6 +1,6 @@
 import { deleteCookie, getCookie } from 'h3'
 import { createHash } from 'node:crypto'
-import { getOptionalCurrentUser } from '../../../utils/auth/session'
+import { getOptionalCurrentUserWithRefresh } from '../../../utils/auth/session'
 import { createApiError } from '../../../utils/errors'
 import {
 	createAuthorizationCode,
@@ -34,7 +34,7 @@ const hasValidConsentNonce = (
 }
 
 export default defineEventHandler(async (event) => {
-	const user = await getOptionalCurrentUser(event)
+	const user = await getOptionalCurrentUserWithRefresh(event)
 	if (!user)
 		throw createApiError({ statusCode: 401, code: 'AUTHENTICATION_REQUIRED' })
 	const body = await readBody<ApproveBody>(event)

@@ -171,6 +171,9 @@ const isUnauthorizedError = (error: unknown): boolean =>
 	'statusCode' in error &&
 	(error as { statusCode?: number }).statusCode === 401
 
+let clientFetchCurrentUserPromise: Promise<PortalUserSummary | null> | null =
+	null
+
 export const usePortalAuth = () => {
 	const user = useState<PortalUserSummary | null>(
 		'portal-auth:user',
@@ -185,35 +188,53 @@ export const usePortalAuth = () => {
 	)
 
 	const fetchCurrentUser = async (): Promise<PortalUserSummary | null> => {
-		pending.value = true
-		const requestFetch = import.meta.server ? useRequestFetch() : $fetch
+		if (import.meta.client && clientFetchCurrentUserPromise) {
+			return clientFetchCurrentUserPromise
+		}
 
-		try {
-			const response = await requestFetch<PortalAuthMeResponse>('/api/auth/me')
-			user.value = response.user
-			return response.user
-		} catch (error) {
-			if (!isUnauthorizedError(error)) {
-				user.value = null
-				return null
-			}
+		const request = (async (): Promise<PortalUserSummary | null> => {
+			pending.value = true
+			const requestFetch = import.meta.server ? useRequestFetch() : $fetch
 
 			try {
-				const response = await requestFetch<PortalAuthMeResponse>(
-					'/api/auth/refresh',
-					{
-						method: 'POST',
-					},
-				)
+				const response =
+					await requestFetch<PortalAuthMeResponse>('/api/auth/me')
 				user.value = response.user
 				return response.user
-			} catch {
-				user.value = null
-				return null
+			} catch (error) {
+				if (!isUnauthorizedError(error)) {
+					user.value = null
+					return null
+				}
+
+				try {
+					const response = await requestFetch<PortalAuthMeResponse>(
+						'/api/auth/refresh',
+						{
+							method: 'POST',
+						},
+					)
+					user.value = response.user
+					return response.user
+				} catch {
+					user.value = null
+					return null
+				}
+			} finally {
+				pending.value = false
+				resolved.value = true
 			}
+		})()
+
+		if (!import.meta.client) return request
+
+		clientFetchCurrentUserPromise = request
+		try {
+			return await request
 		} finally {
-			pending.value = false
-			resolved.value = true
+			if (clientFetchCurrentUserPromise === request) {
+				clientFetchCurrentUserPromise = null
+			}
 		}
 	}
 

@@ -60,6 +60,17 @@ const REFRESH_TOKEN_MAX_AGE_SECONDS = Number(
 	process.env.REFRESH_TOKEN_EXPIRES_IN_SECONDS ?? 2592000,
 )
 
+interface IssuedAuthCookiePair {
+	token: string
+	refreshToken: string
+}
+
+interface RotatedRefreshSession extends IssuedAuthCookiePair {
+	user: User
+}
+
+const refreshInFlight = new Map<string, Promise<RotatedRefreshSession>>()
+
 export const toUserSummary = (user: UserForSummary): UserSummary => ({
 	id: user.id,
 	handle: user.handle,
@@ -184,17 +195,31 @@ export const issueAuthCookies = async (
 	user: User,
 	source: UserAuthActivitySource = 'LOGIN',
 ): Promise<string> => {
+	const pair = await issueAuthCookiePair(event, user, source)
+
+	setAuthCookie(event, pair.token)
+	setRefreshCookie(event, pair.refreshToken)
+
+	return pair.token
+}
+
+const issueAuthCookiePair = async (
+	event: H3Event,
+	user: User,
+	source: UserAuthActivitySource,
+): Promise<IssuedAuthCookiePair> => {
 	const token = issueAuthToken(user)
 	const refreshToken = await issueRefreshToken(event, user)
 
-	setAuthCookie(event, token)
-	setRefreshCookie(event, refreshToken)
 	await observeUserAuthActivity({
 		userId: user.id,
 		source,
 	})
 
-	return token
+	return {
+		token,
+		refreshToken,
+	}
 }
 
 export const revokeRefreshToken = async (
@@ -263,50 +288,81 @@ export const rotateRefreshToken = async (
 		})
 	}
 
-	const session = await prisma.refreshToken.findUnique({
-		where: {
-			tokenHash: hashRefreshToken(refreshToken),
-		},
-		include: {
-			user: {
+	const refreshTokenHash = hashRefreshToken(refreshToken)
+	const existingRefresh = refreshInFlight.get(refreshTokenHash)
+	const refreshPromise =
+		existingRefresh ??
+		(async (): Promise<RotatedRefreshSession> => {
+			const session = await prisma.refreshToken.findUnique({
+				where: {
+					tokenHash: refreshTokenHash,
+				},
 				include: {
-					preferences: {
-						select: {
-							language: true,
+					user: {
+						include: {
+							preferences: {
+								select: {
+									language: true,
+								},
+							},
 						},
 					},
 				},
-			},
-		},
-	})
+			})
 
-	if (
-		!session ||
-		session.revokedAt ||
-		session.expiresAt <= new Date() ||
-		session.user.status !== 'ACTIVE'
-	) {
+			if (
+				!session ||
+				session.revokedAt ||
+				session.expiresAt <= new Date() ||
+				session.user.status !== 'ACTIVE'
+			) {
+				throw createApiError({
+					statusCode: 401,
+					code: 'REFRESH_TOKEN_EXPIRED',
+				})
+			}
+
+			const revoked = await prisma.refreshToken.updateMany({
+				where: {
+					id: session.id,
+					revokedAt: null,
+				},
+				data: {
+					revokedAt: new Date(),
+				},
+			})
+
+			if (revoked.count !== 1) {
+				throw createApiError({
+					statusCode: 401,
+					code: 'REFRESH_TOKEN_EXPIRED',
+				})
+			}
+
+			const pair = await issueAuthCookiePair(event, session.user, 'REFRESH')
+
+			return {
+				...pair,
+				user: session.user,
+			}
+		})()
+
+	if (!existingRefresh) refreshInFlight.set(refreshTokenHash, refreshPromise)
+
+	try {
+		const result = await refreshPromise
+		setAuthCookie(event, result.token)
+		setRefreshCookie(event, result.refreshToken)
+
+		return {
+			token: result.token,
+			user: result.user,
+		}
+	} catch (error) {
 		clearAuthCookies(event)
-		throw createApiError({
-			statusCode: 401,
-			code: 'REFRESH_TOKEN_EXPIRED',
-		})
-	}
-
-	await prisma.refreshToken.update({
-		where: {
-			id: session.id,
-		},
-		data: {
-			revokedAt: new Date(),
-		},
-	})
-
-	const token = await issueAuthCookies(event, session.user, 'REFRESH')
-
-	return {
-		token,
-		user: session.user,
+		throw error
+	} finally {
+		if (!existingRefresh) refreshInFlight.delete(refreshTokenHash)
 	}
 }
 
@@ -424,4 +480,23 @@ export const getOptionalCurrentUser = async (
 	}
 
 	return user
+}
+
+export const getOptionalCurrentUserWithRefresh = async (
+	event: H3Event,
+): Promise<UserForSummary | null> => {
+	const authorization = getHeader(event, 'authorization')
+	if (authorization?.startsWith('Bearer ')) {
+		return getOptionalCurrentUser(event)
+	}
+
+	const user = await getOptionalCurrentUser(event)
+	if (user) return user
+
+	try {
+		return (await rotateRefreshToken(event)).user
+	} catch {
+		clearAuthCookies(event)
+		return null
+	}
 }
