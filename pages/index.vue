@@ -1,23 +1,5 @@
 <template>
 	<div class="home-hero-shell flex flex-col justify-end pt-24">
-		<UAlert
-			class="relative z-10 mb-8"
-			color="warning"
-			icon="i-lucide-info"
-			:title="t('home.notice.title')"
-		>
-			<template #description>
-				<span>{{ t('home.notice.description') }}</span>
-				<a
-					class="font-medium underline underline-offset-2 hover:no-underline"
-					href="https://map.oxygen.hydcraft.cn"
-					target="_blank"
-					rel="noreferrer"
-				>
-					{{ t('home.notice.openSatelliteMap') }}
-				</a>
-			</template>
-		</UAlert>
 		<div class="flex flex-col">
 			<div class="relative z-10">
 				<div class="max-w-4xl [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">
@@ -37,6 +19,17 @@
 						{{ t('home.lead') }}
 					</p>
 				</div>
+
+				<UAlert
+					class="relative z-10 mt-4 !bg-white !text-slate-900 dark:!bg-slate-950 dark:!text-slate-100"
+					color="neutral"
+					icon="i-lucide-info"
+				>
+					<template #description>
+						<strong>{{ t('home.notice.descriptionLead') }}</strong
+						>{{ t('home.notice.description') }}
+					</template>
+				</UAlert>
 
 				<section
 					class="relative z-60 mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"

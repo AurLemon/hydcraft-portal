@@ -1,9 +1,8 @@
 {
 	"home": {
 		"notice": {
-			"title": "This site is still under construction",
-			"description": "There is a lot of work and many things to handle, so the site is gradually adding content and features alongside the server. Some functions are not finished yet, and the MVP is expected to be completed before September 2026. The satellite map is not available directly inside the site for now because its map API has not been switched over yet.",
-			"openSatelliteMap": "Open the satellite map website"
+			"descriptionLead": "This site is still under construction. ",
+			"description": "There is a lot to handle on the server, so the site is gradually adding pages and features alongside its content. Some functions are not finished yet, and the MVP is expected to be completed before September 2026."
 		},
 		"lead": "Build towers, lay rails, shape cities, and settle down. Why name a Minecraft server after chemistry? I have no idea either.",
 		"cards": {
