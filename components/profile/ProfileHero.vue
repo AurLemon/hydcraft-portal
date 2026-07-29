@@ -3,11 +3,7 @@
 		<div class="absolute inset-0">
 			<SkeletonImage
 				:src="effectiveCoverImage"
-				:alt="
-					t('profile.media.coverAlt', {
-						name: profile.displayName || profile.username,
-					})
-				"
+				:alt="t('profile.media.coverAlt', { name: displayName })"
 				class="h-full w-full"
 				image-class="block h-full w-full object-cover"
 				skeleton-class="rounded-none"
@@ -24,19 +20,37 @@
 			class="relative z-20 flex min-h-96 flex-col sm:min-h-128 lg:h-96 lg:min-h-0"
 		>
 			<div
-				v-if="profile.isOwner"
+				v-if="hasActions"
 				class="z-20 flex flex-wrap justify-end gap-2 p-4 md:absolute md:top-6 md:right-6 md:p-0"
 			>
-				<UButton
-					color="neutral"
-					variant="soft"
-					size="sm"
-					icon="i-lucide-pencil"
-					:class="heroActionClass"
-					:to="localePath('/me/profile')"
-				>
-					{{ t('profile.actions.editPublicProfile') }}
-				</UButton>
+				<slot name="actions">
+					<template v-if="actions.length">
+						<UButton
+							v-for="action in actions"
+							:key="action.label"
+							color="neutral"
+							variant="soft"
+							size="sm"
+							:icon="action.icon"
+							:to="action.to"
+							:class="heroActionClass"
+							@click="action.onClick?.()"
+						>
+							{{ action.label }}
+						</UButton>
+					</template>
+					<UButton
+						v-else-if="mode === 'public' && profile.isOwner"
+						color="neutral"
+						variant="soft"
+						size="sm"
+						icon="i-lucide-pencil"
+						:class="heroActionClass"
+						:to="localePath('/me/profile')"
+					>
+						{{ t('profile.actions.editPublicProfile') }}
+					</UButton>
+				</slot>
 			</div>
 
 			<div
@@ -45,49 +59,58 @@
 				<div
 					class="flex min-w-0 flex-col items-center gap-3 text-center sm:flex-row sm:gap-4 sm:text-left lg:mt-10"
 				>
-					<div
-						class="relative h-24 w-24 shrink-0 rounded-full border border-white/40 bg-slate-900/40 p-0 sm:h-28 sm:w-28"
+					<slot
+						name="avatar"
+						:avatar-url="avatarUrl"
+						:display-name="displayName"
+						:username="username"
 					>
-						<div class="h-full w-full overflow-hidden rounded-full">
-							<template v-if="profile.avatarUrl && !avatarImageFailed">
-								<USkeleton
-									v-if="!avatarImageReady"
-									class="block h-full w-full rounded-full"
-								/>
-								<img
-									ref="avatarImageRef"
-									:src="profile.avatarUrl"
-									:alt="profile.displayName || profile.username"
-									class="block h-full w-full rounded-full object-cover transition-opacity duration-200"
-									:class="avatarImageReady ? 'opacity-100' : 'hidden opacity-0'"
-									loading="eager"
-									decoding="async"
-									@load="markAvatarImageReady"
-									@error="markAvatarImageFailed"
-								/>
-							</template>
-							<div
-								v-else
-								class="flex h-full w-full items-center justify-center rounded-full bg-slate-700 text-3xl leading-none font-semibold text-slate-300 sm:text-4xl"
-							>
-								{{ avatarInitial }}
+						<div
+							class="relative h-24 w-24 shrink-0 rounded-full border border-white/40 bg-slate-900/40 p-0 sm:h-28 sm:w-28"
+						>
+							<div class="h-full w-full overflow-hidden rounded-full">
+								<template v-if="avatarUrl && !avatarImageFailed">
+									<USkeleton
+										v-if="!avatarImageReady"
+										class="block h-full w-full rounded-full"
+									/>
+									<img
+										ref="avatarImageRef"
+										:src="avatarUrl"
+										:alt="displayName"
+										class="block h-full w-full rounded-full object-cover transition-opacity duration-200"
+										:class="
+											avatarImageReady ? 'opacity-100' : 'hidden opacity-0'
+										"
+										loading="eager"
+										decoding="async"
+										@load="markAvatarImageReady"
+										@error="markAvatarImageFailed"
+									/>
+								</template>
+								<div
+									v-else
+									class="flex h-full w-full items-center justify-center rounded-full bg-slate-700 text-3xl leading-none font-semibold text-slate-300 sm:text-4xl"
+								>
+									{{ avatarInitial }}
+								</div>
 							</div>
+							<span
+								v-if="profile.activityStatus"
+								class="absolute right-1 bottom-1 h-5 w-5 rounded-full border-[3px] border-slate-950 shadow-lg"
+								:class="statusDotClass"
+								:title="activityText"
+								:aria-label="activityText"
+							/>
 						</div>
-						<span
-							v-if="profile.activityStatus"
-							class="absolute right-1 bottom-1 h-5 w-5 rounded-full border-[3px] border-slate-950 shadow-lg"
-							:class="statusDotClass"
-							:title="activityText"
-							:aria-label="activityText"
-						/>
-					</div>
+					</slot>
 
 					<div class="min-w-0 max-w-full">
 						<div
 							class="flex max-w-full items-center justify-center gap-2 break-words text-3xl leading-tight font-semibold text-white [text-shadow:0_1px_3px_rgba(15,23,42,0.42)] sm:justify-start sm:truncate sm:text-4xl"
 						>
 							<span class="min-w-0 truncate">
-								{{ profile.displayName || profile.username }}
+								{{ displayName }}
 							</span>
 							<UIcon
 								v-if="profile.verified?.enabled"
@@ -99,8 +122,14 @@
 						<div
 							class="mt-1 truncate text-base text-slate-100 [text-shadow:0_1px_2px_rgba(15,23,42,0.36)] sm:text-lg"
 						>
-							@{{ profile.username }}
+							@{{ username }}
 						</div>
+						<p
+							v-if="subtitle"
+							class="mt-3 max-w-2xl text-sm leading-6 text-slate-100/90 [text-shadow:0_1px_2px_rgba(15,23,42,0.36)] sm:text-base"
+						>
+							{{ subtitle }}
+						</p>
 					</div>
 				</div>
 			</div>
@@ -111,7 +140,7 @@
 				>
 					<div
 						v-if="profile.verified?.enabled"
-						class="flex min-w-0 justify-center gap-2 text-sm lg:text-base font-medium text-sky-100 md:justify-start"
+						class="flex min-w-0 justify-center gap-2 text-sm font-medium text-sky-100 md:justify-start lg:text-base"
 					>
 						<UIcon
 							name="i-lucide-check-circle-2"
@@ -123,10 +152,10 @@
 						>
 					</div>
 					<div
-						class="flex flex-wrap justify-center gap-2 md:flex-nowrap md:whitespace-nowrap md:flex-1 md:justify-end md:ml-auto"
+						class="flex flex-wrap justify-center gap-2 md:ml-auto md:flex-1 md:flex-nowrap md:justify-end md:whitespace-nowrap"
 					>
 						<UBadge
-							v-for="badge in profile.badges ?? []"
+							v-for="badge in visibleBadges"
 							:key="badge.id"
 							color="neutral"
 							variant="subtle"
@@ -141,26 +170,9 @@
 							{{ badgeLabel(badge) }}
 						</UBadge>
 						<UBadge
-							v-if="profile.roleBadge"
 							color="neutral"
 							variant="subtle"
-							class="gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold shadow-[0_10px_26px_rgba(0,0,0,0.26)] backdrop-blur-md"
-							:class="getProfileBadgeDarkStyle(profile.roleBadge.color).class"
-						>
-							<UIcon
-								:name="getProfileBadgeDarkStyle(profile.roleBadge.color).icon"
-								class="h-4 w-4"
-								:class="
-									getProfileBadgeDarkStyle(profile.roleBadge.color).iconClass
-								"
-							/>
-							{{ badgeLabel(profile.roleBadge) }}
-						</UBadge>
-						<UBadge
-							v-if="joinedDays !== null"
-							color="neutral"
-							variant="subtle"
-							class="gap-1.5 rounded-md border border-white/20 bg-slate-950/38 px-3 py-1.5 text-sm font-semibold text-slate-100 shadow-[0_10px_26px_rgba(0,0,0,0.24)] backdrop-blur-md"
+							class="gap-1.5 rounded-md border border-white/20 bg-slate-950/38 px-3 py-1.5 text-sm font-semibold text-slate-100 shadow-[0_10px_26px_rgba(0,0,0,0.24)]"
 						>
 							<UIcon name="i-lucide-calendar" class="h-4 w-4 text-slate-300" />
 							{{ t('profile.badges.joinedDays', { days: joinedDays }) }}
@@ -175,65 +187,91 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import defaultCover from '~/assets/resources/pages/timeline_cover.webp'
+import type { ProfileBadge, ProfileVerified } from '~/utils/profile/edit'
 import { getProfileBadgeDarkStyle } from '~/utils/profile/badges'
 
-interface PublicProfileBadge {
-	id: string
-	badgeId: string | null
-	key: string | null
-	label: string
-	labelZhCn: string
-	labelZhTw: string
-	labelEnUs: string
-	labelJaJp: string
-	color: string | null
-	sortOrder: number
-}
+type ProfileHeroMode = 'public' | 'readonly' | 'edit'
 
-interface PublicProfileVerified {
-	enabled: boolean
-	textZhCn: string | null
-	textZhTw: string | null
-	textEnUs: string | null
-	textJaJp: string | null
-}
-
-interface PublicProfileActivityStatus {
+interface ProfileHeroActivityStatus {
 	onlineStatus: 'ONLINE' | 'OFFLINE' | 'RECENTLY_ACTIVE'
 	lastActiveAt: string | null
 }
 
-interface PublicHeroProfile {
+interface ProfileHeroProfile {
 	username: string
 	displayName: string | null
 	avatarUrl: string | null
 	coverUrl: string | null
-	joinedAt?: string
-	badges?: PublicProfileBadge[]
-	roleBadge?: PublicProfileBadge | null
-	verified?: PublicProfileVerified
-	activityStatus?: PublicProfileActivityStatus
-	isOwner: boolean
+	joinedAt?: string | null
+	badges?: ProfileBadge[]
+	roleBadge?: ProfileBadge | null
+	verified?: ProfileVerified | null
+	activityStatus?: ProfileHeroActivityStatus
+	isOwner?: boolean
 }
 
-interface ProfilePublicHeroProps {
-	profile: PublicHeroProfile
+interface ProfileHeroForm {
+	username: string
+	displayName: string
+	avatarUrl: string
 }
 
-const props = defineProps<ProfilePublicHeroProps>()
+interface ProfileHeroAction {
+	label: string
+	icon: string
+	to?: string
+	onClick?: () => void
+}
+
+interface ProfileHeroProps {
+	profile: ProfileHeroProfile
+	mode?: ProfileHeroMode
+	form?: ProfileHeroForm
+	coverImage?: string
+	subtitle?: string
+	actions?: ProfileHeroAction[]
+}
+
+const props = withDefaults(defineProps<ProfileHeroProps>(), {
+	mode: 'readonly',
+	form: undefined,
+	coverImage: undefined,
+	subtitle: '',
+	actions: () => [],
+})
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const slots = useSlots()
 const avatarImageRef = ref<HTMLImageElement | null>(null)
 const avatarImageReady = ref(false)
 const avatarImageFailed = ref(false)
 
+const username = computed(() =>
+	props.mode === 'edit'
+		? props.form?.username || props.profile.username
+		: props.profile.username,
+)
+const displayName = computed(() =>
+	props.mode === 'edit'
+		? props.form?.displayName || props.profile.username
+		: props.profile.displayName || props.profile.username,
+)
+const avatarUrl = computed(() =>
+	props.mode === 'edit' ? props.form?.avatarUrl || '' : props.profile.avatarUrl,
+)
 const effectiveCoverImage = computed(
-	() => props.profile.coverUrl || defaultCover,
+	() =>
+		(props.mode === 'edit' ? props.coverImage : props.profile.coverUrl) ||
+		defaultCover,
 )
 const avatarInitial = computed(() =>
-	(props.profile.displayName || props.profile.username || '?')
-		.slice(0, 1)
-		.toUpperCase(),
+	(displayName.value || username.value || '?').slice(0, 1).toUpperCase(),
+)
+const hasActions = computed(
+	() =>
+		Boolean(slots.actions) ||
+		props.actions.length > 0 ||
+		(props.mode === 'public' && Boolean(props.profile.isOwner)),
 )
 const joinedDays = computed(() => {
 	if (!props.profile.joinedAt) {
@@ -242,6 +280,10 @@ const joinedDays = computed(() => {
 
 	return Math.max(dayjs().diff(dayjs(props.profile.joinedAt), 'day'), 0)
 })
+const visibleBadges = computed(() => [
+	...(props.profile.badges ?? []),
+	...(props.profile.roleBadge ? [props.profile.roleBadge] : []),
+])
 const verifiedText = computed(() => {
 	const verified = props.profile.verified
 
@@ -263,7 +305,7 @@ const verifiedText = computed(() => {
 
 	return verified.textZhCn || t('profile.verified.text')
 })
-const badgeLabel = (badge: PublicProfileBadge): string => {
+const badgeLabel = (badge: ProfileBadge): string => {
 	if (badge.key === 'server-member') {
 		return t('profile.badges.serverMember')
 	}
@@ -317,7 +359,7 @@ const statusDotClass = computed(() => {
 	return 'bg-slate-400'
 })
 const heroActionClass =
-	'border border-white/18 !bg-slate-950/46 !text-white shadow-lg backdrop-blur-md hover:!bg-slate-950/62'
+	'border border-white/18 !bg-slate-950/46 !text-white shadow-lg backdrop-blur-md hover:!bg-slate-950/62 disabled:!bg-slate-950/46 disabled:!text-white disabled:opacity-70'
 
 const markAvatarImageReady = (): void => {
 	avatarImageReady.value = true
@@ -332,7 +374,7 @@ const markAvatarImageFailed = (): void => {
 const syncCachedAvatarImageState = async (): Promise<void> => {
 	await nextTick()
 
-	if (!props.profile.avatarUrl || !avatarImageRef.value?.complete) {
+	if (!avatarUrl.value || !avatarImageRef.value?.complete) {
 		return
 	}
 
@@ -344,14 +386,11 @@ const syncCachedAvatarImageState = async (): Promise<void> => {
 	markAvatarImageFailed()
 }
 
-watch(
-	() => props.profile.avatarUrl,
-	() => {
-		avatarImageReady.value = false
-		avatarImageFailed.value = false
-		void syncCachedAvatarImageState()
-	},
-)
+watch(avatarUrl, () => {
+	avatarImageReady.value = false
+	avatarImageFailed.value = false
+	void syncCachedAvatarImageState()
+})
 
 onMounted(() => {
 	void syncCachedAvatarImageState()

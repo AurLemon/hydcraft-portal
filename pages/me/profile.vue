@@ -14,13 +14,48 @@
 
 		<div v-else-if="profile" class="grid w-full gap-5">
 			<div class="site-shell mx-auto w-full">
-				<ProfileEditHero
+				<ProfileHero
+					mode="edit"
 					:cover-image="coverImage"
 					:form="form"
 					:profile="profile"
-					@avatar-uploaded="handleAvatarUploaded"
-					@cover-uploaded="handleCoverUploaded"
-				/>
+				>
+					<template #actions>
+						<UButton
+							color="neutral"
+							variant="soft"
+							size="sm"
+							icon="i-lucide-eye"
+							class="border border-white/18 !bg-slate-950/46 !text-white shadow-lg backdrop-blur-md hover:!bg-slate-950/62 disabled:!bg-slate-950/46 disabled:!text-white disabled:opacity-70"
+							:to="localePath(`/u/${form.username}`)"
+						>
+							{{ t('profile.actions.viewPublicProfile') }}
+						</UButton>
+						<AttachmentUploadButton
+							purpose="user-cover"
+							owner-type="user"
+							:owner-id="profile.id"
+							preview-shape="cover"
+							color="neutral"
+							variant="soft"
+							size="sm"
+							icon="i-lucide-image"
+							button-class="border border-white/18 !bg-slate-950/46 !text-white shadow-lg backdrop-blur-md hover:!bg-slate-950/62 disabled:!bg-slate-950/46 disabled:!text-white disabled:opacity-70"
+							@uploaded="handleCoverUploaded"
+						>
+							{{ t('profile.actions.editCover') }}
+						</AttachmentUploadButton>
+					</template>
+					<template #avatar>
+						<ProfileAvatarUploadButton
+							:owner-id="profile.id"
+							:avatar-url="form.avatarUrl"
+							:display-name="form.displayName"
+							:username="form.username"
+							@uploaded="handleAvatarUploaded"
+						/>
+					</template>
+				</ProfileHero>
 			</div>
 
 			<form class="mx-auto mt-16 grid w-full max-w-3xl gap-16" @submit.prevent>
@@ -78,6 +113,7 @@ definePageMeta({
 
 const toast = useToast()
 const { locale, t } = useI18n()
+const localePath = useLocalePath()
 const runtimeConfig = useRuntimeConfig()
 const { user: currentUser } = usePortalAuth()
 const { notifyError } = useAdminToast()

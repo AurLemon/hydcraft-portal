@@ -17,7 +17,7 @@
 		/>
 
 		<div v-else class="grid gap-12">
-			<ProfilePublicHero :profile="profile" />
+			<ProfileHero mode="public" :profile="profile" />
 
 			<div class="flex flex-col-reverse gap-10 lg:grid lg:gap-6 lg:grid-cols-4">
 				<div class="flex flex-col gap-8 lg:gap-10 lg:col-span-3">

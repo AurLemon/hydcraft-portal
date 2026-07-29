@@ -14,7 +14,7 @@
 
 		<div v-else-if="profile && connections" class="grid w-full gap-5">
 			<div class="site-shell mx-auto w-full">
-				<ProfileReadonlyHero :profile="profile" />
+				<ProfileHero :profile="profile" />
 			</div>
 
 			<div class="mx-auto mt-16 grid w-full max-w-3xl gap-16">
