@@ -109,11 +109,9 @@ export const listPublicOverviewServers = async (): Promise<
 > => {
 	const servers = await prisma.minecraftServer.findMany({
 		where: {
-			enabled: true,
+			status: 'ONLINE',
 			portalBridge: {
-				is: {
-					enabled: true,
-				},
+				isNot: null,
 			},
 		},
 		orderBy: [
@@ -194,7 +192,7 @@ export const listPublicOverviewServers = async (): Promise<
 				}),
 				isDefault: server.isDefault,
 				bridgeStatus: {
-					enabled: server.portalBridge?.enabled ?? false,
+					enabled: true,
 					connected,
 					running: runtime?.running ?? false,
 					manualRequired: runtime?.manualRequired ?? false,

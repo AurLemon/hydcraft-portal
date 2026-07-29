@@ -29,7 +29,7 @@ const partnerInclude = {
 			serverId: true,
 			code: true,
 			nameZhCn: true,
-			enabled: true,
+			status: true,
 		},
 	},
 	coreMembers: {
@@ -106,7 +106,7 @@ type PartnerWithRelations = PartnerEntry & {
 		serverId: string
 		code: string
 		nameZhCn: string
-		enabled: boolean
+		status: 'ONLINE' | 'ARCHIVED'
 	} | null
 	editors?: (PartnerEditor & {
 		user: {
@@ -155,7 +155,7 @@ const summarizePartner = (
 				serverId: partner.linkedMinecraftServer.serverId,
 				code: partner.linkedMinecraftServer.code,
 				name: partner.linkedMinecraftServer.nameZhCn,
-				enabled: partner.linkedMinecraftServer.enabled,
+				enabled: partner.linkedMinecraftServer.status === 'ONLINE',
 			}
 		: null,
 	enabled: partner.enabled,

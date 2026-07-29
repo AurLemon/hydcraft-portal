@@ -59,7 +59,7 @@
 					"description": "有効 {enabled} / 設定済み {configured}"
 				},
 				"portalBridge": {
-					"label": "PortalBridge",
+					"label": "Portal Bridge",
 					"description": "有効 {enabled} / 設定済み {configured}"
 				}
 			},
@@ -312,7 +312,7 @@
 			},
 			"sections": {
 				"onlinePlayers": "オンライン人数",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"archiveStatus": "アーカイブ状態",
 				"serverInfo": "サーバー情報",
 				"dataSources": "データソース",
@@ -952,7 +952,7 @@
 				"mapConfigDescription": "このサーバーで地図を有効にするか、タイルが利用可能かを設定します。",
 				"periods": "ライフサイクル期間",
 				"periodsDescription": "このサーバーの稼働、保管、イベント期間を手動で管理します。",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"portalBridgeDescription": "このサーバーの Bridge 接続情報と同期入口を設定します。",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -1022,6 +1022,7 @@
 					"test": "テストサーバー"
 				},
 				"serverStatus": {
+					"online": "オンライン",
 					"planned": "計画中",
 					"live": "稼働中",
 					"frozen": "凍結",

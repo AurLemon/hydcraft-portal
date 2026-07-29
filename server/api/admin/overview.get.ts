@@ -29,31 +29,35 @@ export default defineEventHandler(async (event) => {
 	const todayStart = startOfToday()
 	const [
 		serverCount,
-		enabledServerCount,
+		onlineServerCount,
+		onlineConnectedBridgeCount,
 		serverErrorCount,
 		userCount,
 		usersCreatedToday,
 		authMeState,
 		luckPermsState,
 		portalBridgeCount,
-		enabledPortalBridgeCount,
+		onlinePortalBridgeCount,
 		portalBridgeErrorCount,
 	] = await Promise.all([
 		prisma.minecraftServer.count(),
 		prisma.minecraftServer.count({
+			where: { status: 'ONLINE' },
+		}),
+		prisma.portalBridgeConfig.count({
 			where: {
-				enabled: true,
+				minecraftServer: { status: 'ONLINE' },
+				lastConnectionState: 'CONNECTED',
 			},
 		}),
 		prisma.minecraftServer.count({
 			where: {
-				enabled: true,
+				status: 'ONLINE',
 				OR: [
 					{ portalBridge: { is: { lastError: { not: null } } } },
 					{
 						portalBridge: {
 							is: {
-								enabled: true,
 								lastConnectionState: {
 									not: 'CONNECTED',
 								},
@@ -83,13 +87,11 @@ export default defineEventHandler(async (event) => {
 		}),
 		prisma.portalBridgeConfig.count(),
 		prisma.portalBridgeConfig.count({
-			where: {
-				enabled: true,
-			},
+			where: { minecraftServer: { status: 'ONLINE' } },
 		}),
 		prisma.portalBridgeConfig.count({
 			where: {
-				enabled: true,
+				minecraftServer: { status: 'ONLINE' },
 				OR: [
 					{
 						lastError: {
@@ -114,11 +116,11 @@ export default defineEventHandler(async (event) => {
 	const luckPermsCount = luckPermsConfig.databaseUrl ? 1 : 0
 	const enabledLuckPermsCount = luckPermsConfig.enabled ? 1 : 0
 	const serverStatus: OverviewStatus =
-		serverErrorCount > 0
-			? 'error'
-			: serverCount === 0 || enabledServerCount < serverCount
-				? 'inactive'
-				: 'normal'
+		onlineServerCount > 0 && onlineConnectedBridgeCount === onlineServerCount
+			? 'normal'
+			: serverErrorCount > 0
+				? 'error'
+				: 'inactive'
 	const authMeStatus: OverviewStatus = authMeState?.lastError
 		? 'error'
 		: authMeCount === 0 || enabledAuthMeCount === 0
@@ -132,7 +134,7 @@ export default defineEventHandler(async (event) => {
 	const portalBridgeStatus: OverviewStatus =
 		portalBridgeErrorCount > 0
 			? 'error'
-			: portalBridgeCount === 0 || enabledPortalBridgeCount === 0
+			: portalBridgeCount === 0 || onlinePortalBridgeCount === 0
 				? 'inactive'
 				: 'normal'
 	const postgresqlStatus: OverviewStatus = process.env.DATABASE_URL
@@ -141,7 +143,6 @@ export default defineEventHandler(async (event) => {
 
 	return {
 		serverCount,
-		enabledServerCount,
 		serverStatus,
 		userCount,
 		userDeltaSinceYesterday: usersCreatedToday,
@@ -168,7 +169,7 @@ export default defineEventHandler(async (event) => {
 				key: 'portalBridge',
 				status: portalBridgeStatus,
 				configuredCount: portalBridgeCount,
-				enabledCount: enabledPortalBridgeCount,
+				enabledCount: onlinePortalBridgeCount,
 			},
 		],
 	}

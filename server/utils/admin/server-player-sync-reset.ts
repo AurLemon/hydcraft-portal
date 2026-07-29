@@ -74,9 +74,8 @@ const clearServerPlayerSyncState = async (serverId: string) => {
 		where: {
 			minecraftServer: {
 				serverId,
-				enabled: true,
+				status: 'ONLINE',
 			},
-			enabled: true,
 		},
 		select: {
 			id: true,
@@ -179,9 +178,8 @@ export const resetAndResyncServerPlayers = async (
 			where: {
 				minecraftServer: {
 					serverId: input.serverId,
-					enabled: true,
+					status: 'ONLINE',
 				},
-				enabled: true,
 			},
 			select: {
 				id: true,

@@ -26,7 +26,6 @@
 						v-else
 						class="text-3xl font-semibold text-slate-950 dark:text-white"
 					>
-						{{ overview?.enabledServerCount ?? 0 }} /
 						{{ overview?.serverCount ?? 0 }}
 					</p>
 				</div>
@@ -276,7 +275,6 @@ interface AdminOverviewService {
 
 interface AdminOverviewResponse {
 	serverCount: number
-	enabledServerCount: number
 	serverStatus: OverviewStatus
 	userCount: number
 	userDeltaSinceYesterday: number

@@ -172,22 +172,22 @@
 									</div>
 								</td>
 								<td
-									class="p-3 align-top text-xs text-slate-600 dark:text-slate-300"
+									class="p-3 align-top text-sm text-slate-600 dark:text-slate-300"
 								>
 									{{ element.code }}
 								</td>
 								<td
-									class="p-3 align-top text-xs text-slate-600 dark:text-slate-300"
+									class="p-3 align-top text-sm text-slate-600 dark:text-slate-300"
 								>
 									{{
-										element.dataSourceMode === 'IMPORTED'
+										element.status === 'ARCHIVED'
 											? ''
 											: `${element.host}:${element.port}`
 									}}
 								</td>
 								<td class="p-3 align-top">
 									<UBadge
-										v-if="element.dataSourceMode !== 'IMPORTED'"
+										v-if="element.status === 'ONLINE'"
 										color="neutral"
 										variant="subtle"
 									>
@@ -199,13 +199,13 @@
 								</td>
 								<td class="p-3 align-top">
 									<UBadge
-										:color="element.enabled ? 'success' : 'neutral'"
+										:color="element.status === 'ONLINE' ? 'success' : 'neutral'"
 										variant="subtle"
 									>
 										{{
-											element.enabled
-												? t('admin.serverDetail.states.enabled')
-												: t('admin.serverDetail.states.disabled')
+											t(
+												`admin.serverConfig.values.serverStatus.${element.status.toLowerCase()}`,
+											)
 										}}
 									</UBadge>
 								</td>

@@ -59,7 +59,7 @@
 					"description": "Enabled {enabled} / configured {configured}"
 				},
 				"portalBridge": {
-					"label": "PortalBridge",
+					"label": "Portal Bridge",
 					"description": "Enabled {enabled} / configured {configured}"
 				}
 			},
@@ -312,7 +312,7 @@
 			},
 			"sections": {
 				"onlinePlayers": "Online players",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"archiveStatus": "Archive status",
 				"serverInfo": "Server info",
 				"dataSources": "Data sources",
@@ -942,7 +942,7 @@
 				"mapConfigDescription": "Control whether this server exposes map support and whether map tiles are available.",
 				"periods": "Lifecycle periods",
 				"periodsDescription": "Manually maintain the live, archive, or event periods for this server.",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"portalBridgeDescription": "Configure the Bridge connection details and sync entry for this server.",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -1012,6 +1012,7 @@
 					"test": "Test server"
 				},
 				"serverStatus": {
+					"online": "Online",
 					"planned": "Planned",
 					"live": "Live",
 					"frozen": "Frozen",

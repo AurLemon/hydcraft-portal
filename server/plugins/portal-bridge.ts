@@ -10,10 +10,7 @@ export default defineNitroPlugin(() => {
 	}
 
 	void portalBridgeManager.startEnabled()
-	onEvent('minecraft-server.portal-bridge-config.saved', (payload) => {
-		void portalBridgeManager.refresh(payload.configId)
-	})
-	onEvent('minecraft-server.portal-bridge-config.deleted', (payload) => {
-		portalBridgeManager.disconnect(payload.configId)
+	onEvent('minecraft-server.lifecycle.updated', (payload) => {
+		void portalBridgeManager.refreshForServer(payload.serverId)
 	})
 })

@@ -108,9 +108,8 @@ export default defineEventHandler(async (event) => {
 			where: {
 				minecraftServer: {
 					serverId,
-					enabled: true,
+					status: 'ONLINE',
 				},
-				enabled: true,
 			},
 		})
 

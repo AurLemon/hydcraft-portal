@@ -6,6 +6,7 @@ import type {
 	Prisma,
 } from '~/generated/prisma/client'
 import { prisma } from '../db/prisma'
+import { createApiError } from '../errors'
 import { syncMinecraftAccountFromAuthMeProjection } from './account-binding'
 import type {
 	ArchiveScanArtifact,
@@ -296,17 +297,16 @@ export const importArchiveArtifact = async (
 		where: {
 			serverId: input.serverId,
 		},
-		include: {
-			portalBridge: {
-				select: {
-					id: true,
-				},
-			},
-		},
 	})
 
 	if (!server) {
 		throw new Error(`Minecraft server not found: ${input.serverId}`)
+	}
+	if (server.status !== 'ARCHIVED') {
+		throw createApiError({
+			statusCode: 409,
+			code: 'MINECRAFT_SERVER_ARCHIVE_IMPORT_REQUIRES_ARCHIVED',
+		})
 	}
 
 	const run = await prisma.archiveImportRun.create({
@@ -329,15 +329,6 @@ export const importArchiveArtifact = async (
 	let historicalAccountsCreated = 0
 
 	try {
-		await prisma.minecraftServer.update({
-			where: {
-				id: server.id,
-			},
-			data: {
-				dataSourceMode: server.portalBridge ? 'MIXED' : 'IMPORTED',
-			},
-		})
-
 		const snapshotId = `archive:${server.serverId}:${artifact.scannedAt}`
 
 		for (const player of artifact.players) {

@@ -216,7 +216,6 @@ async function main() {
 			module: defaultServer.portalBridge.module,
 			wsUrl: defaultServer.portalBridge.wsUrl,
 			encryptedSecret: encryptConfigValue(defaultServer.portalBridge.secret),
-			enabled: true,
 			requestedTopics: [],
 			allowedTopics: [],
 			coreSyncIntervalMinutes:
@@ -227,7 +226,6 @@ async function main() {
 			module: defaultServer.portalBridge.module,
 			wsUrl: defaultServer.portalBridge.wsUrl,
 			encryptedSecret: encryptConfigValue(defaultServer.portalBridge.secret),
-			enabled: true,
 			coreSyncIntervalMinutes:
 				defaultServer.portalBridge.coreSyncIntervalMinutes,
 		},

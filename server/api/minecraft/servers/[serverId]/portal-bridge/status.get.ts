@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
 		where: {
 			minecraftServer: {
 				serverId,
+				status: 'ONLINE',
 			},
 		},
 	})
@@ -38,7 +39,7 @@ export default defineEventHandler(async (event) => {
 			bridgeId: bridgeConfig.bridgeId,
 			module: bridgeConfig.module,
 			wsUrl: bridgeConfig.wsUrl,
-			enabled: bridgeConfig.enabled,
+			enabled: true,
 			lastConnectionState: bridgeConfig.lastConnectionState,
 			lastConnectedAt: bridgeConfig.lastConnectedAt,
 			lastDisconnectedAt: bridgeConfig.lastDisconnectedAt,

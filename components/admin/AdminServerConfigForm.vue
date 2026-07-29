@@ -48,30 +48,10 @@
 						/>
 					</label>
 					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.kind') }}</span>
-						<USelect
-							v-model="form.kind"
-							:items="serverKindItems"
-							value-key="value"
-							label-key="label"
-							class="w-full"
-						/>
-					</label>
-					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.status') }}</span>
 						<USelect
 							v-model="form.status"
 							:items="serverStatusItems"
-							value-key="value"
-							label-key="label"
-							class="w-full"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.dataSourceMode') }}</span>
-						<USelect
-							v-model="form.dataSourceMode"
-							:items="dataSourceModeItems"
 							value-key="value"
 							label-key="label"
 							class="w-full"
@@ -90,12 +70,6 @@
 							min="1"
 							max="65535"
 						/>
-					</label>
-					<label :class="[fieldClass, 'md:col-span-2']">
-						<div class="flex items-center justify-between gap-3">
-							<span>{{ t('admin.serverConfig.fields.enabled') }}</span>
-							<USwitch v-model="form.enabled" />
-						</div>
 					</label>
 				</div>
 			</section>
@@ -262,7 +236,7 @@
 			</section>
 
 			<section
-				v-if="visibleSections.portalBridge && !isImportedDataSource"
+				v-if="visibleSections.portalBridge && form.status === 'ONLINE'"
 				class="grid w-full gap-3 break-inside-avoid"
 			>
 				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
@@ -270,28 +244,11 @@
 				</div>
 				<div :class="cardClass" class="grid gap-4">
 					<label :class="fieldClass">
-						<div class="flex items-center justify-between gap-3">
-							<span>{{ t('admin.serverConfig.fields.bridgeEnabled') }}</span>
-							<USwitch
-								v-model="form.portalBridge.enabled"
-								:disabled="form.portalBridge.remove"
-							/>
-						</div>
-					</label>
-					<label
-						v-if="server?.portalBridge"
-						class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
-					>
-						<UCheckbox v-model="form.portalBridge.remove" />
-						<span>{{ t('admin.serverConfig.fields.removePortalBridge') }}</span>
-					</label>
-					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.bridgeId') }}</span>
 						<UInput
 							v-model="form.portalBridge.bridgeId"
 							class="w-full"
-							:disabled="form.portalBridge.remove"
-							:required="!form.portalBridge.remove"
+							required
 						/>
 					</label>
 					<label :class="fieldClass">
@@ -299,18 +256,12 @@
 						<UInput
 							v-model="form.portalBridge.module"
 							class="w-full"
-							:disabled="form.portalBridge.remove"
-							:required="!form.portalBridge.remove"
+							required
 						/>
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.wsUrl') }}</span>
-						<UInput
-							v-model="form.portalBridge.wsUrl"
-							class="w-full"
-							:disabled="form.portalBridge.remove"
-							:required="!form.portalBridge.remove"
-						/>
+						<UInput v-model="form.portalBridge.wsUrl" class="w-full" required />
 					</label>
 					<label :class="fieldClass">
 						<span>{{ t('admin.serverConfig.fields.secret') }}</span>
@@ -318,7 +269,6 @@
 							v-model="form.portalBridge.secret"
 							class="w-full"
 							type="password"
-							:disabled="form.portalBridge.remove"
 							:placeholder="
 								server?.portalBridge?.hasSecret
 									? t('admin.serverConfig.placeholders.keepSecret')
@@ -339,7 +289,7 @@
 				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="fieldClass">
 						<span
-							>PortalBridge
+							>{{ t('admin.serverConfig.sections.portalBridge') }}
 							{{ t('admin.serverConfig.fields.syncInterval') }}</span
 						>
 						<UInput
@@ -384,9 +334,7 @@ interface PortalBridgeForm {
 	module: string
 	wsUrl: string
 	secret: string
-	enabled: boolean
 	coreSyncIntervalMinutes: number
-	remove: boolean
 }
 
 interface ServerMapConfigForm {
@@ -421,10 +369,7 @@ interface ServerForm {
 	nameJaJp: string
 	host: string
 	port: number
-	enabled: boolean
-	kind: string
 	status: string
-	dataSourceMode: string
 	isDefault: boolean
 	sortOrder: number
 	mapConfig: ServerMapConfigForm
@@ -474,7 +419,6 @@ const visibleSections = computed(() => ({
 	sync: formMode.value === 'sync',
 }))
 const fieldClass = adminFieldClass
-const isCreateMode = computed(() => formMode.value === 'create')
 const showSectionHeading = computed(() => props.surface !== 'plain')
 const cardClass = computed(() =>
 	props.surface === 'plain' ? 'grid w-full gap-4' : profileCardClass,
@@ -485,46 +429,14 @@ const sectionsContainerClass = computed(() =>
 		: 'grid w-full gap-6',
 )
 
-const serverKindItems = computed(() => [
-	{ label: t('admin.serverConfig.values.serverKind.main'), value: 'MAIN' },
-	{
-		label: t('admin.serverConfig.values.serverKind.archive'),
-		value: 'ARCHIVE',
-	},
-	{ label: t('admin.serverConfig.values.serverKind.event'), value: 'EVENT' },
-	{ label: t('admin.serverConfig.values.serverKind.test'), value: 'TEST' },
-])
 const serverStatusItems = computed(() => [
 	{
-		label: t('admin.serverConfig.values.serverStatus.planned'),
-		value: 'PLANNED',
-	},
-	{ label: t('admin.serverConfig.values.serverStatus.live'), value: 'LIVE' },
-	{
-		label: t('admin.serverConfig.values.serverStatus.frozen'),
-		value: 'FROZEN',
+		label: t('admin.serverConfig.values.serverStatus.online'),
+		value: 'ONLINE',
 	},
 	{
 		label: t('admin.serverConfig.values.serverStatus.archived'),
 		value: 'ARCHIVED',
-	},
-	{
-		label: t('admin.serverConfig.values.serverStatus.hidden'),
-		value: 'HIDDEN',
-	},
-])
-const dataSourceModeItems = computed(() => [
-	{
-		label: t('admin.serverConfig.values.dataSourceMode.portalBridge'),
-		value: 'PORTAL_BRIDGE',
-	},
-	{
-		label: t('admin.serverConfig.values.dataSourceMode.imported'),
-		value: 'IMPORTED',
-	},
-	{
-		label: t('admin.serverConfig.values.dataSourceMode.mixed'),
-		value: 'MIXED',
 	},
 ])
 const tileExtensionItems = computed(() => [
@@ -580,10 +492,7 @@ const createEmptyForm = (): ServerForm => ({
 	nameJaJp: '',
 	host: '',
 	port: 25565,
-	enabled: true,
-	kind: 'MAIN',
-	status: 'LIVE',
-	dataSourceMode: 'PORTAL_BRIDGE',
+	status: 'ONLINE',
 	isDefault: false,
 	sortOrder: 0,
 	mapConfig: {
@@ -603,19 +512,13 @@ const createEmptyForm = (): ServerForm => ({
 		module: '',
 		wsUrl: '',
 		secret: '',
-		enabled: false,
 		coreSyncIntervalMinutes: 30,
-		remove: false,
 	},
 })
 
 const form = reactive<ServerForm>(createEmptyForm())
-const isImportedDataSource = computed(() => form.dataSourceMode === 'IMPORTED')
 const showAddressFields = computed(
-	() =>
-		visibleSections.value.core &&
-		!isCreateMode.value &&
-		!isImportedDataSource.value,
+	() => visibleSections.value.core && form.status === 'ONLINE',
 )
 
 const resetForm = (): void => {
@@ -631,10 +534,7 @@ const resetForm = (): void => {
 				nameJaJp: source.nameJaJp ?? source.nameZhCn,
 				host: source.host,
 				port: source.port,
-				enabled: source.enabled,
-				kind: source.kind,
 				status: source.status,
-				dataSourceMode: source.dataSourceMode,
 				isDefault: source.isDefault,
 				sortOrder: source.sortOrder,
 				mapConfig: {
@@ -663,10 +563,8 @@ const resetForm = (): void => {
 					module: source.portalBridge?.module ?? 'portalbridge-core',
 					wsUrl: source.portalBridge?.wsUrl ?? '',
 					secret: '',
-					enabled: source.portalBridge?.enabled ?? false,
 					coreSyncIntervalMinutes:
 						source.portalBridge?.coreSyncIntervalMinutes ?? 30,
-					remove: false,
 				},
 			}
 		: createEmptyForm()
@@ -693,10 +591,7 @@ const buildPayload = () => ({
 							port: form.port,
 						}
 					: {}),
-				enabled: form.enabled,
-				kind: form.kind,
 				status: form.status,
-				dataSourceMode: form.dataSourceMode,
 				isDefault: form.isDefault,
 				sortOrder: form.sortOrder,
 			}
@@ -730,19 +625,15 @@ const buildPayload = () => ({
 					.filter((period) => Boolean(period.startedAt)),
 			}
 		: {}),
-	...(visibleSections.value.portalBridge && !isImportedDataSource.value
+	...(visibleSections.value.portalBridge && form.status === 'ONLINE'
 		? {
-				portalBridge: form.portalBridge.remove
-					? null
-					: {
-							bridgeId: form.portalBridge.bridgeId,
-							module: form.portalBridge.module,
-							wsUrl: form.portalBridge.wsUrl,
-							secret: form.portalBridge.secret || undefined,
-							enabled: form.portalBridge.enabled,
-							coreSyncIntervalMinutes:
-								form.portalBridge.coreSyncIntervalMinutes,
-						},
+				portalBridge: {
+					bridgeId: form.portalBridge.bridgeId,
+					module: form.portalBridge.module,
+					wsUrl: form.portalBridge.wsUrl,
+					secret: form.portalBridge.secret || undefined,
+					coreSyncIntervalMinutes: form.portalBridge.coreSyncIntervalMinutes,
+				},
 			}
 		: visibleSections.value.sync
 			? {

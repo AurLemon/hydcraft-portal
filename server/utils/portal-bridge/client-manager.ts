@@ -1,6 +1,7 @@
 import { prisma } from '../db/prisma'
 import { createApiError } from '../errors'
 import { PortalBridgeConnection } from './client-connection'
+import { shouldRunMinecraftPortalBridge } from '../minecraft/server-lifecycle'
 import type {
 	BridgeRuntimeConfig,
 	PortalBridgeRuntimeSnapshot,
@@ -29,15 +30,13 @@ export class PortalBridgeManager {
 	async startEnabled(): Promise<void> {
 		const configs = await prisma.portalBridgeConfig.findMany({
 			where: {
-				enabled: true,
-				minecraftServer: {
-					enabled: true,
-				},
+				minecraftServer: { status: 'ONLINE' },
 			},
 			include: {
 				minecraftServer: {
 					select: {
 						serverId: true,
+						status: true,
 					},
 				},
 			},
@@ -57,13 +56,18 @@ export class PortalBridgeManager {
 				minecraftServer: {
 					select: {
 						serverId: true,
-						enabled: true,
+						status: true,
 					},
 				},
 			},
 		})
 
-		if (!config || !config.enabled || !config.minecraftServer.enabled) {
+		if (!config) {
+			this.stop(configId)
+			return
+		}
+
+		if (!shouldRunMinecraftPortalBridge(config.minecraftServer)) {
 			this.stop(configId)
 			return
 		}
@@ -74,6 +78,19 @@ export class PortalBridgeManager {
 				serverId: config.minecraftServer.serverId,
 			},
 		})
+	}
+
+	async refreshForServer(serverId: string): Promise<void> {
+		const configs = await prisma.portalBridgeConfig.findMany({
+			where: {
+				minecraftServer: { serverId },
+			},
+			select: { id: true },
+		})
+
+		for (const config of configs) {
+			await this.refresh(config.id)
+		}
 	}
 
 	async connect(configId: string): Promise<void> {

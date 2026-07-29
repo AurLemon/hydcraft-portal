@@ -64,11 +64,9 @@ interface EventMap {
 		snapshotId: string
 		observedAt: Date
 	}
-	'minecraft-server.portal-bridge-config.saved': {
-		configId: string
-	}
-	'minecraft-server.portal-bridge-config.deleted': {
-		configId: string
+	'minecraft-server.lifecycle.updated': {
+		serverId: string
+		status: 'ONLINE' | 'ARCHIVED'
 	}
 	'user.profile.updated': {
 		userId: string

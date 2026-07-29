@@ -3,7 +3,9 @@ import { toPublicLauncherServerDirectoryItem } from '../../../utils/minecraft/se
 
 export default defineEventHandler(async () => {
 	const servers = await prisma.minecraftServer.findMany({
-		where: { enabled: true },
+		where: {
+			status: 'ONLINE',
+		},
 		orderBy: [
 			{ isDefault: 'desc' },
 			{ sortOrder: 'asc' },
@@ -18,7 +20,6 @@ export default defineEventHandler(async () => {
 			nameZhTw: true,
 			nameEnUs: true,
 			nameJaJp: true,
-			enabled: true,
 			status: true,
 			isDefault: true,
 			sortOrder: true,

@@ -91,25 +91,9 @@ enum MinecraftAccountSource {
   OTHER
 }
 
-enum MinecraftServerKind {
-  MAIN
-  ARCHIVE
-  EVENT
-  TEST
-}
-
 enum MinecraftServerStatus {
-  PLANNED
-  LIVE
-  FROZEN
+  ONLINE
   ARCHIVED
-  HIDDEN
-}
-
-enum MinecraftServerDataSourceMode {
-  PORTAL_BRIDGE
-  IMPORTED
-  MIXED
 }
 
 enum MinecraftServerPeriodKind {

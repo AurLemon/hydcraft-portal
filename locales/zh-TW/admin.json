@@ -59,7 +59,7 @@
 					"description": "已啟用 {enabled} / 已設定 {configured}"
 				},
 				"portalBridge": {
-					"label": "PortalBridge",
+					"label": "Portal Bridge",
 					"description": "已啟用 {enabled} / 已設定 {configured}"
 				}
 			},
@@ -312,7 +312,7 @@
 			},
 			"sections": {
 				"onlinePlayers": "線上人數",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"archiveStatus": "存檔狀態",
 				"serverInfo": "伺服器資訊",
 				"dataSources": "資料來源",
@@ -952,7 +952,7 @@
 				"mapConfigDescription": "設定這個伺服器是否啟用地圖，以及是否已接入地圖瓦片。",
 				"periods": "生命週期",
 				"periodsDescription": "手動維護該伺服器的開啟、關閉、存檔或活動時間段。",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"portalBridgeDescription": "設定這個伺服器的 Bridge 連線資訊與同步入口。",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -1022,6 +1022,7 @@
 					"test": "測試伺服器"
 				},
 				"serverStatus": {
+					"online": "在線",
 					"planned": "規劃中",
 					"live": "運行中",
 					"frozen": "凍結",

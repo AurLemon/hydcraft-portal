@@ -60,10 +60,7 @@ model MinecraftServer {
   nameJaJp       String
   host           String
   port           Int                           @default(25565)
-  enabled        Boolean                       @default(true)
-  kind           MinecraftServerKind           @default(MAIN)
-  status         MinecraftServerStatus         @default(LIVE)
-  dataSourceMode MinecraftServerDataSourceMode @default(PORTAL_BRIDGE)
+  status         MinecraftServerStatus         @default(ONLINE)
   isDefault      Boolean                       @default(false)
   sortOrder      Int                           @default(0)
   createdAt      DateTime                      @default(now())
@@ -147,7 +144,6 @@ model PortalBridgeConfig {
   module              String                      @default("portalbridge-core")
   wsUrl               String
   encryptedSecret     String?
-  enabled             Boolean                     @default(false)
   requestedTopics     String[]                    @default([])
   allowedTopics       String[]                    @default([])
   coreSyncIntervalMinutes Int                     @default(30)
@@ -164,7 +160,6 @@ model PortalBridgeConfig {
   commands PortalBridgeCommand[]
 
   @@unique([bridgeId, module])
-  @@index([enabled])
   @@index([lastConnectionState])
 }
 

@@ -21,7 +21,6 @@ type LauncherServerDirectoryItem = Pick<
 	| 'nameZhTw'
 	| 'nameEnUs'
 	| 'nameJaJp'
-	| 'enabled'
 	| 'status'
 	| 'isDefault'
 	| 'sortOrder'
@@ -38,7 +37,7 @@ export const toPublicLauncherServerDirectoryItem = (
 	nameZhTw: server.nameZhTw,
 	nameEnUs: server.nameEnUs,
 	nameJaJp: server.nameJaJp,
-	enabled: server.enabled,
+	enabled: true,
 	status: server.status,
 	isDefault: server.isDefault,
 	sortOrder: server.sortOrder,
@@ -55,10 +54,7 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 	nameJaJp: server.nameJaJp,
 	host: server.host,
 	port: server.port,
-	enabled: server.enabled,
-	kind: server.kind,
 	status: server.status,
-	dataSourceMode: server.dataSourceMode,
 	isDefault: server.isDefault,
 	sortOrder: server.sortOrder,
 	createdAt: server.createdAt.toISOString(),
@@ -69,7 +65,6 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 				bridgeId: server.portalBridge.bridgeId,
 				module: server.portalBridge.module,
 				wsUrl: server.portalBridge.wsUrl,
-				enabled: server.portalBridge.enabled,
 				requestedTopics: server.portalBridge.requestedTopics,
 				allowedTopics: server.portalBridge.allowedTopics,
 				coreSyncIntervalMinutes: server.portalBridge.coreSyncIntervalMinutes,

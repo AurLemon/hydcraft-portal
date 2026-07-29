@@ -72,10 +72,7 @@ export interface MinecraftServerSummary {
 	nameJaJp: string
 	host: string
 	port: number
-	enabled: boolean
-	kind: string
 	status: string
-	dataSourceMode: string
 	isDefault: boolean
 	sortOrder: number
 	createdAt: string

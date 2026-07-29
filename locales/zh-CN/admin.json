@@ -59,7 +59,7 @@
 					"description": "已启用 {enabled} / 已配置 {configured}"
 				},
 				"portalBridge": {
-					"label": "PortalBridge",
+					"label": "Portal Bridge",
 					"description": "已启用 {enabled} / 已配置 {configured}"
 				}
 			},
@@ -312,7 +312,7 @@
 			},
 			"sections": {
 				"onlinePlayers": "在线人数",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"archiveStatus": "存档状态",
 				"serverInfo": "服务器信息",
 				"dataSources": "数据源",
@@ -942,7 +942,7 @@
 				"mapConfigDescription": "配置这个服务器是否启用地图，以及是否已经接入地图瓦片。",
 				"periods": "生命周期",
 				"periodsDescription": "人工维护该服务器的开启、关闭、存档或活动时间段。",
-				"portalBridge": "PortalBridge",
+				"portalBridge": "Portal Bridge",
 				"portalBridgeDescription": "配置这个服务器的 Bridge 连接信息与同步入口。",
 				"authMe": "AuthMe MySQL",
 				"luckPerms": "LuckPerms MySQL",
@@ -1012,6 +1012,7 @@
 					"test": "测试服务器"
 				},
 				"serverStatus": {
+					"online": "在线",
 					"planned": "计划中",
 					"live": "运行中",
 					"frozen": "冻结",

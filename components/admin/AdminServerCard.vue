@@ -19,14 +19,14 @@
 					</h2>
 				</div>
 				<UBadge
-					:color="server.enabled ? 'success' : 'neutral'"
+					:color="server.status === 'ONLINE' ? 'success' : 'neutral'"
 					variant="subtle"
 					class="shrink-0"
 				>
 					{{
-						server.enabled
-							? t('admin.serverDetail.states.enabled')
-							: t('admin.serverDetail.states.disabled')
+						t(
+							`admin.serverConfig.values.serverStatus.${server.status.toLowerCase()}`,
+						)
 					}}
 				</UBadge>
 			</div>
@@ -38,7 +38,7 @@
 						class="mt-1 truncate font-medium text-slate-900 dark:text-slate-50"
 					>
 						{{
-							server.dataSourceMode === 'IMPORTED'
+							server.status === 'ARCHIVED'
 								? ''
 								: `${server.host}:${server.port}`
 						}}
@@ -50,7 +50,7 @@
 						class="mt-1 truncate font-medium text-slate-900 dark:text-slate-50"
 					>
 						{{
-							server.dataSourceMode === 'IMPORTED'
+							server.status === 'ARCHIVED'
 								? ''
 								: (server.portalBridge?.lastConnectionState ?? '未配置')
 						}}

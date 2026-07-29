@@ -44,9 +44,9 @@
 				:title="t('admin.serverDetail.sections.onlinePlayers')"
 				:latest-online-text="latestOnlineText"
 				:latest-status-at="latestStatusAt"
-				:server-enabled="server.enabled"
+				:server-enabled="server.status === 'ONLINE'"
 				:state-text="
-					server.enabled
+					server.status === 'ONLINE'
 						? t('admin.serverDetail.states.enabled')
 						: t('admin.serverDetail.states.disabled')
 				"
@@ -70,7 +70,6 @@
 			/>
 
 			<ServerDetailSyncStatusCard
-				v-if="isArchiveServer || !isImportedOnlyServer"
 				:title="
 					isArchiveServer
 						? t('admin.serverDetail.sections.archiveStatus')
@@ -146,14 +145,14 @@
 			@saved="handleSaved"
 		/>
 		<AdminServerConfigModal
-			v-if="!isImportedOnlyServer"
+			v-if="supportsPortalBridgeRuntime"
 			v-model:open="portalBridgeOpen"
 			mode="portalBridge"
 			:server="server"
 			@saved="handleSaved"
 		/>
 		<AdminServerConfigModal
-			v-if="!isImportedOnlyServer"
+			v-if="supportsPortalBridgeRuntime"
 			v-model:open="syncRateOpen"
 			mode="sync"
 			:server="server"
@@ -671,15 +670,8 @@ const overview = computed(() => data.value ?? null)
 const server = computed<MinecraftServerSummary | null>(
 	() => overview.value?.server ?? null,
 )
-const isImportedOnlyServer = computed(
-	() => server.value?.dataSourceMode === 'IMPORTED',
-)
-const isArchiveServer = computed(
-	() => server.value?.kind === 'ARCHIVE' || server.value?.status === 'ARCHIVED',
-)
-const supportsPortalBridgeRuntime = computed(
-	() => !isArchiveServer.value && !isImportedOnlyServer.value,
-)
+const isArchiveServer = computed(() => server.value?.status === 'ARCHIVED')
+const supportsPortalBridgeRuntime = computed(() => !isArchiveServer.value)
 const serverDisplayName = computed(() =>
 	server.value
 		? resolveMinecraftServerLocalizedName(server.value, locale.value)
@@ -701,23 +693,10 @@ const formatDate = (value: string | null | undefined): string => {
 }
 const formatJson = (value: unknown): string =>
 	JSON.stringify(value ?? null, null, 2)
-const formatServerKind = (value: string | null | undefined): string =>
-	t(`admin.serverConfig.values.serverKind.${value?.toLowerCase() ?? 'main'}`)
-
 const formatServerStatus = (value: string | null | undefined): string =>
-	t(`admin.serverConfig.values.serverStatus.${value?.toLowerCase() ?? 'live'}`)
-
-const formatDataSourceMode = (value: string | null | undefined): string => {
-	switch (value) {
-		case 'IMPORTED':
-			return t('admin.serverConfig.values.dataSourceMode.imported')
-		case 'MIXED':
-			return t('admin.serverConfig.values.dataSourceMode.mixed')
-		case 'PORTAL_BRIDGE':
-		default:
-			return t('admin.serverConfig.values.dataSourceMode.portalBridge')
-	}
-}
+	t(
+		`admin.serverConfig.values.serverStatus.${value?.toLowerCase() ?? 'online'}`,
+	)
 
 const headerActions = computed(() => {
 	const actions = [
@@ -754,8 +733,6 @@ const headerActions = computed(() => {
 			color: 'primary' as const,
 			onClick: () => (portalBridgeOpen.value = true),
 		})
-	} else if (isImportedOnlyServer.value) {
-		actions.splice(3, 1)
 	}
 
 	return actions
@@ -799,18 +776,10 @@ const serverInfoItems = computed<ServerDetailMetaItem[]>(() => [
 		value: server.value?.code ?? t('admin.serverDetail.states.empty'),
 	},
 	{
-		label: t('admin.serverDetail.fields.kind'),
-		value: formatServerKind(server.value?.kind),
-	},
-	{
 		label: t('admin.serverDetail.fields.status'),
 		value: formatServerStatus(server.value?.status),
 	},
-	{
-		label: t('admin.serverDetail.fields.dataSourceMode'),
-		value: formatDataSourceMode(server.value?.dataSourceMode),
-	},
-	...(!isImportedOnlyServer.value
+	...(!isArchiveServer.value
 		? [
 				{
 					label: t('admin.serverDetail.fields.address'),
@@ -1537,11 +1506,7 @@ const refreshOverview = async () => {
 	overviewReadAt.value = new Date().toISOString()
 }
 const refreshObservedOverview = async () => {
-	if (
-		isArchiveServer.value ||
-		isImportedOnlyServer.value ||
-		!server.value?.portalBridge?.id
-	) {
+	if (isArchiveServer.value || !server.value?.portalBridge?.id) {
 		return await refreshOverview()
 	}
 	try {
