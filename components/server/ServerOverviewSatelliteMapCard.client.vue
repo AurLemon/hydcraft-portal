@@ -2,7 +2,7 @@
 	<ServerOverviewMapShell
 		:title="t('content.serverOverview.cards.satellite.title')"
 		:open-label="t('content.serverOverview.actions.openMap')"
-		open-to="https://map.nitrogen.hydcraft.cn"
+		open-to="https://map.oxygen.hydcraft.cn"
 		body-class="h-42"
 		title-class="text-white [text-shadow:0_1px_2px_rgba(15,23,42,0.72)]"
 		open-label-class="text-white [text-shadow:0_1px_2px_rgba(15,23,42,0.72)]"

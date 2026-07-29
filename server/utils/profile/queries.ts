@@ -106,7 +106,6 @@ export const getPublicUserProfile = async (
 		getPublicMinecraftAccounts(username),
 		getHistoricalMinecraftAccountsForUser(user.id),
 		prisma.minecraftServer.findMany({
-			where: { status: 'ONLINE' },
 			orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
 			select: {
 				serverId: true,

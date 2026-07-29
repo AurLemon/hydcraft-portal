@@ -1,8 +1,8 @@
 ---
-updatedAt: 2026-06-21T23:24:34+08:00
+updatedAt: 2026-07-30T04:36:29+08:00
 ---
 
-> HydCraft, pronounced /ˈhaɪd.kræft/, is known in Chinese as "氢气工艺" and is usually shortened to "氢气". HydCraft is a Minecraft server focused on city building and railway transportation. The server was founded on September 1, 2018, and currently runs on Forge 1.20.1. Its main gameplay mods include MTR and Create.
+> HydCraft, pronounced /ˈhaɪd.kræft/, is known in Chinese as "氢气工艺" and is usually shortened to "氢气". HydCraft is a Minecraft server focused on city building and railway transportation. The server was founded on September 1, 2018, and is currently in Season 8 on NeoForge 1.21.1. Its main gameplay mods include MTR 4 and Create.
 
 This site is the central entry point and unified portal for HydCraft. It organizes server-related information, public services, status monitoring, map entry points, and community resources. In the future, it will also gradually integrate player profiles, account binding, server status, and more community systems. More detailed rules, tutorials, and references will continue to be maintained in the Wiki and Docs. A more complete server history can be read on the "Timeline" page.
 

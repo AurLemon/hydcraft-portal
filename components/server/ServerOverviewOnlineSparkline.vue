@@ -9,12 +9,6 @@
 			preserveAspectRatio="none"
 		>
 			<path
-				:d="baselinePath"
-				fill="none"
-				:stroke="baselineColor"
-				stroke-width="1"
-			/>
-			<path
 				:d="pathData"
 				fill="none"
 				:stroke="glowColor"
@@ -92,9 +86,6 @@ const axisMax = computed(() => {
 })
 
 const drawableHeight = computed(() => HEIGHT - PADDING_TOP - PADDING_BOTTOM)
-const baselineY = computed(
-	() => PADDING_TOP + drawableHeight.value * (1 - MIN_RATIO),
-)
 
 const points = computed<Point[]>(() => {
 	const stepX =
@@ -137,30 +128,6 @@ const pathData = computed(() => {
 		const controlX = (previous.x + point.x) / 2
 		return `${path} C ${controlX} ${previous.y}, ${controlX} ${point.y}, ${point.x} ${point.y}`
 	}, '')
-})
-
-const baselinePath = computed(
-	() =>
-		`M ${PADDING_X} ${baselineY.value} L ${WIDTH - PADDING_X} ${baselineY.value}`,
-)
-
-const baselineColor = computed(() => {
-	if (props.bridgeStatus.connected) {
-		return toRgba(16, 185, 129, 0.12)
-	}
-
-	if (
-		props.bridgeStatus.lastConnectionState === 'ERROR' ||
-		props.bridgeStatus.lastConnectionState === 'REJECTED'
-	) {
-		return toRgba(244, 63, 94, 0.12)
-	}
-
-	if (props.bridgeStatus.running || props.bridgeStatus.manualRequired) {
-		return toRgba(245, 158, 11, 0.12)
-	}
-
-	return toRgba(148, 163, 184, 0.16)
 })
 
 const lineColor = computed(() => {
@@ -213,7 +180,13 @@ function toRgba(r: number, g: number, b: number, alpha: number): string {
 	return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-const valuesSignature = computed(() => values.value.join(','))
+const animationSignature = computed(() => {
+	const currentValues = values.value
+	const firstValue = currentValues[0]
+	const isFlat = currentValues.every((value) => value === firstValue)
+
+	return isFlat ? `flat:${firstValue ?? ''}` : currentValues.join(',')
+})
 
 const playReveal = () => {
 	dashOffset.value = dashLength
@@ -229,7 +202,7 @@ const playReveal = () => {
 	})
 }
 
-watch(valuesSignature, () => {
+watch(animationSignature, () => {
 	if (!hasMounted.value) {
 		return
 	}

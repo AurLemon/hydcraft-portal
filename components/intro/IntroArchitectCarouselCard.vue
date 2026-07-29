@@ -45,10 +45,14 @@
 										visibleArchitectCount > 1 && memberIndex > 0,
 								}"
 							>
-								<img
+								<SkeletonImage
 									:src="member.imageUrl"
 									:alt="member.id"
-									class="h-full w-full scale-105 object-cover select-none"
+									:reveal-delay-ms="90"
+									class="h-full w-full"
+									image-class="block h-full w-full scale-105 object-cover select-none"
+									skeleton-class="rounded-none"
+									loading="lazy"
 								/>
 								<div
 									class="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.22)_0%,rgba(255,255,255,0.04)_20%,rgba(15,23,42,0.12)_44%,rgba(15,23,42,0.78)_100%)] dark:bg-[linear-gradient(180deg,rgba(2,6,23,0.16)_0%,rgba(2,6,23,0.04)_20%,rgba(2,6,23,0.28)_44%,rgba(2,6,23,0.9)_100%)]"

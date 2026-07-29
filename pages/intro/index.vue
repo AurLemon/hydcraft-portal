@@ -1,5 +1,11 @@
 <template>
 	<div class="flex flex-col gap-16">
+		<UAlert
+			color="warning"
+			icon="i-lucide-info"
+			:title="t('content.intro.outdatedNotice.title')"
+			:description="t('content.intro.outdatedNotice.description')"
+		/>
 		<IntroHeroBanner />
 		<IntroRequirementsCard />
 		<IntroMarquee

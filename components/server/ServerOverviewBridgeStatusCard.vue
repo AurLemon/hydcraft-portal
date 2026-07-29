@@ -89,19 +89,14 @@
 						</div>
 					</div>
 
-					<div
-						class="flex flex-col sm:flex-row items-start justify-between gap-1 sm:gap-4"
-					>
+					<div class="flex flex-col">
 						<div class="min-w-0 text-2xl text-slate-950 dark:text-white">
 							<div class="truncate">
 								{{ selectedServerName }}
 							</div>
 						</div>
 
-						<div
-							v-if="headItems.length"
-							class="flex max-w-[50%] flex-wrap content-start justify-end gap-1.5 mt-1"
-						>
+						<div v-if="headItems.length" class="flex flex-wrap gap-1.5 mt-1">
 							<UTooltip
 								v-for="player in headItems"
 								:key="player.uuid"
@@ -291,19 +286,19 @@ const playerLink = (
 const mapLinkItems = computed(() => [
 	{
 		label: t('content.serverOverview.cards.bridge.links.satellite'),
-		to: 'https://map.nitrogen.hydcraft.cn',
+		to: 'https://map.oxygen.hydcraft.cn',
 		icon: 'i-lucide-map',
 		external: true,
 	},
 	{
 		label: t('content.serverOverview.cards.bridge.links.mtr'),
-		to: 'https://rail.nitrogen.hydcraft.cn',
+		to: 'https://rail.oxygen.hydcraft.cn',
 		icon: 'i-lucide-train-front',
 		external: true,
 	},
 	{
 		label: t('content.serverOverview.cards.bridge.links.createRail'),
-		to: 'https://track.nitrogen.hydcraft.cn',
+		to: 'https://track.oxygen.hydcraft.cn',
 		icon: 'i-lucide-route',
 		external: true,
 	},

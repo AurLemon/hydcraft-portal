@@ -56,12 +56,10 @@
 					"cta": "サーバーの長期運営を支えていただけるなら、Afdian でのご支援を歓迎します。",
 					"action": "Afdian を開く"
 				},
-				"seasonEightTerrain": {
-					"title": "第八周目の地形を鋭意制作中、新しい周目は 7 月末に正式始動予定！",
-					"subtitle": "地形づくりの名手 CatPillager が、サーバーに最高のマップデザインを届けます！",
-					"openPreview": "第八周目の予定地形図を見る",
-					"previewAlt": "第八周目の予定地形図",
-					"previewCaption": "第八周目の予定地形図"
+				"seasonEight": {
+					"title": "第八周目は 2026 年 7 月 15 日に正式始動しました！",
+					"subtitle": "Create、Create Aeronautics、MTR 4、Immersive Vehicles、YSM、Media Player、Fashion Workshop…… 飛行機を飛ばし、飛行機を作り、Mod を作り、映画を見て、語り合う。終わりが見えないほど広い地図と、さらに豊かな Mod の遊びが HydCraft 第八周目です！",
+					"openMap": "第八周目のマップを開く"
 				},
 				"users": {
 					"title": "ユーザー",

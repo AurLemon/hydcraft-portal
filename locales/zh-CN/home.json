@@ -1,11 +1,16 @@
 {
 	"home": {
+		"notice": {
+			"title": "本站仍在持续建设中",
+			"description": "因为工作和事情比较多，网站正在跟随服务器内容逐步补充页面与功能。站内部分功能尚未完成，预计在 2026 年 9 月前完成 MVP。站内卫星地图暂时不可用，可以前往卫星地图网站查看；地图 API 尚未切换完成。",
+			"openSatelliteMap": "前往卫星地图网站"
+		},
 		"lead": "修楼、铺轨、造城、养老。至于为什么一个 MC 服务器叫氢气？我也不知道。",
 		"cards": {
 			"backgroundAlt": "{title} 背景",
 			"comingSoon": "开发中",
-			"nitrogen": {
-				"description": "服务器现行周目（1.20.1）"
+			"oxygen": {
+				"description": "服务器现行周目（1.21.1）"
 			},
 			"railway": {
 				"description": "铁路系统与交通网络"

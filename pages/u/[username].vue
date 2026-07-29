@@ -239,30 +239,18 @@
 								</p>
 							</div>
 							<div class="grid gap-3">
-								<div class="flex items-center justify-between gap-3 text-sm">
-									<span class="text-slate-500 dark:text-slate-400">
-										{{ t('minecraftAccounts.summary.deaths') }}
-									</span>
-									<span class="text-slate-950 dark:text-white">
-										{{ minecraftArchiveSummary.totalDeaths }}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-3 text-sm">
-									<span class="text-slate-500 dark:text-slate-400">
-										{{ t('minecraftAccounts.summary.leaveCount') }}
-									</span>
-									<span class="text-slate-950 dark:text-white">
-										{{ minecraftArchiveSummary.totalLeaveCount }}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-3 text-sm">
-									<span class="text-slate-500 dark:text-slate-400">
-										{{ t('minecraftAccounts.summary.distance') }}
-									</span>
-									<span class="text-slate-950 dark:text-white">
-										{{ minecraftArchiveDistanceLabel }}
-									</span>
-								</div>
+								<ProfileInfoRow
+									:label="t('minecraftAccounts.summary.deaths')"
+									:value="String(minecraftArchiveSummary.totalDeaths)"
+								/>
+								<ProfileInfoRow
+									:label="t('minecraftAccounts.summary.leaveCount')"
+									:value="String(minecraftArchiveSummary.totalLeaveCount)"
+								/>
+								<ProfileInfoRow
+									:label="t('minecraftAccounts.summary.distance')"
+									:value="minecraftArchiveDistanceLabel"
+								/>
 							</div>
 						</div>
 					</section>

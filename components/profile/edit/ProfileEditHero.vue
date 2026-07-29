@@ -15,6 +15,9 @@
 			/>
 		</div>
 		<div
+			class="profile-hero-identity-scrim pointer-events-none absolute inset-0 z-10"
+		/>
+		<div
 			class="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-slate-950/46 via-slate-950/16 to-transparent backdrop-blur-[32px] mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.92)_14%,rgba(0,0,0,0.66)_24%,rgba(0,0,0,0.28)_34%,transparent_48%)]"
 		/>
 		<div

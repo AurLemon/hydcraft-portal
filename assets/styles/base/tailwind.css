@@ -1,6 +1,31 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+@layer components {
+	.profile-hero-identity-scrim {
+		background: linear-gradient(
+			to right,
+			rgb(15 23 42 / 0.46) 0%,
+			rgb(15 23 42 / 0.26) 32%,
+			rgb(15 23 42 / 0.08) 58%,
+			transparent 78%
+		);
+	}
+
+	@media (max-width: 639px) {
+		.profile-hero-identity-scrim {
+			background: linear-gradient(
+				to bottom,
+				transparent 18%,
+				rgb(15 23 42 / 0.08) 30%,
+				rgb(15 23 42 / 0.28) 52%,
+				rgb(15 23 42 / 0.08) 72%,
+				transparent 90%
+			);
+		}
+	}
+}
+
 @theme {
 	--color-hydcraft-red: rgb(211, 47, 47);
 	--color-hydcraft-blue: rgb(3, 169, 244);

@@ -1,28 +1,32 @@
 <template>
 	<div
-		class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4 text-sm"
+		class="grid min-w-0 gap-2 text-sm md:grid-cols-[fit-content(60%)_minmax(0,1fr)] md:items-start md:gap-1"
 	>
-		<span class="text-slate-500 dark:text-slate-400">{{ label }}</span>
+		<span
+			class="min-w-0 max-w-full wrap-break-word hyphens-auto text-slate-500 dark:text-slate-400"
+		>
+			{{ label }}
+		</span>
 		<a
 			v-if="href"
 			:href="href"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="flex min-w-0 items-center md:justify-end gap-2 transition-colors hover:text-slate-950 dark:hover:text-white"
+			class="flex min-w-0 max-w-full items-start justify-end gap-2 transition-colors hover:text-slate-950 dark:hover:text-white"
 		>
 			<span
-				class="min-w-0 truncate md:text-right text-slate-800 dark:text-slate-100"
+				class="min-w-0 max-w-full break-all text-right text-slate-800 dark:text-slate-100"
 			>
 				{{ value }}
 			</span>
 			<UIcon
 				name="i-lucide-external-link"
-				class="size-3.5 shrink-0 text-slate-400"
+				class="mt-0.5 size-3.5 shrink-0 text-slate-400"
 			/>
 		</a>
 		<span
 			v-else
-			class="min-w-0 truncate md:text-right text-slate-800 dark:text-slate-100"
+			class="min-w-0 max-w-full break-all text-right text-slate-800 dark:text-slate-100"
 		>
 			{{ value }}
 		</span>

@@ -2,7 +2,7 @@
 	<ServerOverviewMapShell
 		:title="t('content.serverOverview.cards.mtr.title')"
 		:open-label="t('content.serverOverview.actions.openMap')"
-		open-to="https://rail.nitrogen.hydcraft.cn"
+		open-to="https://rail.oxygen.hydcraft.cn"
 		body-class="h-42"
 	>
 		<div class="relative h-full w-full overflow-hidden bg-slate-900">

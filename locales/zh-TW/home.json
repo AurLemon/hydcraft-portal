@@ -1,11 +1,16 @@
 {
 	"home": {
+		"notice": {
+			"title": "本站仍在持續建設中",
+			"description": "由於工作和事情比較多，網站正在跟隨伺服器內容逐步補充頁面與功能。站內部分功能尚未完成，預計在 2026 年 9 月前完成 MVP。站內衛星地圖暫時不可用，可以前往衛星地圖網站查看；地圖 API 尚未切換完成。",
+			"openSatelliteMap": "前往衛星地圖網站"
+		},
 		"lead": "修樓、鋪軌、造城、養老。至於為什麼一個 MC 伺服器叫氫氣？我也不知道。",
 		"cards": {
 			"backgroundAlt": "{title} 背景",
 			"comingSoon": "開發中",
-			"nitrogen": {
-				"description": "伺服器目前周目（1.20.1）"
+			"oxygen": {
+				"description": "伺服器目前周目（1.21.1）"
 			},
 			"railway": {
 				"description": "鐵路系統與交通網路"

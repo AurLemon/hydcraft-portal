@@ -1,6 +1,10 @@
 {
 	"content": {
 		"intro": {
+			"outdatedNotice": {
+				"title": "このページの内容は古くなっています",
+				"description": "第八周目は 2026 年 7 月 15 日に始動しました。現在は NeoForge 1.21.1 で、MTR 4、Create、Create Aeronautics、Immersive Vehicles、YSM、Media Player、Fashion Workshop などが主なゲームプレイ Mod です。第八周目の詳しい紹介はまだ準備中のため、このページの他の内容はまだ更新されていません。"
+			},
 			"hero": {
 				"coverAlt": "HydCraft 募集案内カバー",
 				"eyebrow": "HYDCRAFT INTRO",
@@ -30,13 +34,13 @@
 				"title": "私たちの成果",
 				"imageAlt": "HydCraft 成果画像 {index}",
 				"requirements": {
-					"summaryPrefix": "サーバー向けの推奨メモリは",
-					"summaryMemory": "16GB",
+					"summaryPrefix": "サーバークライアントには PC 性能の条件があり、メモリは最低でも",
+					"summaryMemory": "16 GB",
 					"summaryMiddle": "以上で、端末は",
-					"summaryYear": "2020 年以降",
-					"summaryConnector": "かつ",
-					"summaryTier": "中級クラス以上",
-					"summarySuffix": "が望ましいです。",
+					"summaryYear": "2020 年以降の",
+					"summaryConnector": "",
+					"summaryTier": "ミドルレンジ以上の",
+					"summarySuffix": "機器が望ましいです。",
 					"detail": "メモリは最低でも 8GB は必要で、クライアント側だけでも 4GB を使います。OS の最低ラインは Windows 10 です。Apple シリコンの MacBook なら動かせますし、Windows ノートは CPU 次第で、7840HS 級ならかなり余裕があります。快適に遊べるかどうかは CPU が大きく、Core i5 第 8 世代や Ryzen 5 3000 系以降だとかなり楽になります。古い環境でも絶対に起動不可というわけではなく、G4560 + 8GB + 内蔵グラフィックでもサーバーに入れている人はいますが、そこは我慢が必要です。"
 				}
 			},

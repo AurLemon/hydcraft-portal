@@ -16,24 +16,26 @@
 
 				<div class="min-w-0 flex-1">
 					<p
-						class="font-arkpixel text-2xl leading-8 text-slate-900 dark:text-slate-100"
+						class="font-arkpixel text-2xl leading-8 text-slate-900 dark:text-slate-100 break-all"
 					>
 						<span>
 							{{ summaryPrefix }}
 						</span>
-						<span class="leading-none mx-3 lg:text-4xl">
+						<span class="lg:hidden" v-text="'\u00a0'" />
+						<span class="leading-none lg:ml-3 lg:text-4xl">
 							{{ summaryMemory }}
 						</span>
 						<span>
 							{{ summaryMiddle }}
 						</span>
-						<span class="leading-none mx-3 lg:text-4xl">
+						<span class="lg:hidden" v-text="'\u00a0'" />
+						<span class="leading-none lg:mx-3 lg:text-4xl">
 							{{ summaryYear }}
 						</span>
 						<span>
 							{{ summaryConnector }}
 						</span>
-						<span class="leading-none mx-3 lg:text-4xl">
+						<span class="leading-none lg:ml-3 lg:mr-3 lg:text-4xl">
 							{{ summaryTier }}
 						</span>
 						<span>

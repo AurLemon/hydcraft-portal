@@ -1,5 +1,23 @@
 <template>
 	<div class="home-hero-shell flex flex-col justify-end pt-24">
+		<UAlert
+			class="relative z-10 mb-8"
+			color="warning"
+			icon="i-lucide-info"
+			:title="t('home.notice.title')"
+		>
+			<template #description>
+				<span>{{ t('home.notice.description') }}</span>
+				<a
+					class="font-medium underline underline-offset-2 hover:no-underline"
+					href="https://map.oxygen.hydcraft.cn"
+					target="_blank"
+					rel="noreferrer"
+				>
+					{{ t('home.notice.openSatelliteMap') }}
+				</a>
+			</template>
+		</UAlert>
 		<div class="flex flex-col">
 			<div class="relative z-10">
 				<div class="max-w-4xl [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">
@@ -51,7 +69,7 @@
 <script setup lang="ts">
 import HomeInfoCard from '~/components/cards/HomeInfoCard.vue'
 import cultureBackground from '~/assets/resources/homepage/culture_bg.webp'
-import nitrogenBackground from '~/assets/resources/homepage/nitrogen_bg.webp'
+import oxygenBackground from '~/assets/resources/homepage/oxygen_bg.webp'
 import railwayBackground from '~/assets/resources/homepage/railway_bg.webp'
 import citiesBackground from '~/assets/resources/homepage/cities_bg.webp'
 
@@ -59,7 +77,7 @@ definePageMeta({
 	headerVariant: 'hero',
 })
 
-type HomeCardKey = 'nitrogen' | 'railway' | 'players' | 'cities'
+type HomeCardKey = 'oxygen' | 'railway' | 'players' | 'cities'
 
 interface HomeCard {
 	index: number
@@ -100,10 +118,10 @@ const updateFrame = ref<number | null>(null)
 const homeCards = computed<HomeCard[]>(() => [
 	{
 		index: 0,
-		key: 'nitrogen',
-		title: 'Nitrogen',
-		description: t('home.cards.nitrogen.description'),
-		backgroundSrc: nitrogenBackground,
+		key: 'oxygen',
+		title: 'Oxygen',
+		description: t('home.cards.oxygen.description'),
+		backgroundSrc: oxygenBackground,
 		backgroundClass: 'object-center',
 		to: localePath('/server'),
 	},

@@ -1,6 +1,10 @@
 {
 	"content": {
 		"intro": {
+			"outdatedNotice": {
+				"title": "This page is outdated",
+				"description": "Season 8 launched on July 15, 2026. It now runs on NeoForge 1.21.1, with MTR 4, Create, Create Aeronautics, Immersive Vehicles, YSM, Media Player, and Fashion Workshop among its main gameplay mods. The detailed Season 8 introduction is not ready yet, so the rest of this page has not been updated."
+			},
 			"hero": {
 				"coverAlt": "HydCraft intro cover",
 				"eyebrow": "HYDCRAFT INTRO",
@@ -30,13 +34,13 @@
 				"title": "Our Works",
 				"imageAlt": "HydCraft showcase image {index}",
 				"requirements": {
-					"summaryPrefix": "We recommend at least",
+					"summaryPrefix": "The server client has hardware requirements: memory must be at least",
 					"summaryMemory": "16 GB",
-					"summaryMiddle": "of RAM, and ideally a",
+					"summaryMiddle": ", and preferably a",
 					"summaryYear": "2020 or newer",
-					"summaryConnector": "device in the",
+					"summaryConnector": "",
 					"summaryTier": "mid-range or above",
-					"summarySuffix": "tier.",
+					"summarySuffix": "device.",
 					"detail": "8 GB is the minimum, because the client alone will take 4 GB, and Windows 10 is the lowest supported baseline. Apple silicon MacBooks can run it, while Windows laptops mostly come down to the CPU, and something like a 7840HS is more than enough. Whether the game feels smooth really depends on the CPU. A Core i5 8th gen or Ryzen 5 3000 series and up will be a lot more comfortable. Older hardware is not completely locked out, though. One player can even get into the server on a G4560 with 8 GB RAM and integrated graphics. You just have to tolerate the rough edges."
 				}
 			},

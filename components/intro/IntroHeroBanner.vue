@@ -7,7 +7,7 @@
 				:src="stableIntroCover"
 				:alt="t('content.intro.hero.coverAlt')"
 				class="h-full w-full"
-				image-class="block h-full w-full object-cover brightness-105 dark:brightness-110"
+				image-class="block h-full w-full object-cover brightness-85"
 				skeleton-class="rounded-none"
 				loading="eager"
 			/>

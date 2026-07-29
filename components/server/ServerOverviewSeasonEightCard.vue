@@ -1,12 +1,11 @@
 <template>
 	<div class="group block">
-		<button
-			type="button"
+		<a
+			href="https://map.oxygen.hydcraft.cn"
+			target="_blank"
+			rel="noreferrer"
 			class="block w-full cursor-pointer text-left"
-			:aria-label="
-				t('content.serverOverview.cards.seasonEightTerrain.openPreview')
-			"
-			@click="lightboxOpen = true"
+			:aria-label="t('content.serverOverview.cards.seasonEight.openMap')"
 		>
 			<section
 				class="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-950 sm:p-7"
@@ -36,47 +35,27 @@
 						<h2
 							class="font-arkpixel text-2xl leading-8 text-slate-900 dark:text-slate-50 lg:text-3xl lg:leading-10"
 						>
-							{{ t('content.serverOverview.cards.seasonEightTerrain.title') }}
+							{{ t('content.serverOverview.cards.seasonEight.title') }}
 						</h2>
 						<p
 							class="mt-3 text-base leading-7 text-slate-700 dark:text-slate-200 lg:text-lg"
 						>
-							{{
-								t('content.serverOverview.cards.seasonEightTerrain.subtitle')
-							}}
+							{{ t('content.serverOverview.cards.seasonEight.subtitle') }}
 						</p>
 					</div>
 				</div>
 			</section>
-		</button>
+		</a>
 	</div>
-
-	<ContentImageLightbox
-		:open="lightboxOpen"
-		:image="previewImage"
-		@update:open="lightboxOpen = $event"
-	/>
 </template>
 
 <script setup lang="ts">
-import type { NormalizedContentImageItem } from '~/components/content/utils/content-image'
-import terrainAdvanceImage from '~/assets/resources/minecraft-gallery/season_8/terrain_advance_screenshots.webp'
-import terrainMapImage from '~/assets/resources/minecraft-gallery/season_8/terrain_map_202606.webp'
+import spawnpointImage from '~/assets/resources/minecraft-gallery/season_8/spawnpoint_screenshots_1.webp'
 import { getStableAssetUrl } from '~/utils/assets/stable-asset-url'
 
 const { t } = useI18n()
-const lightboxOpen = ref(false)
 
 const backgroundStyle = {
-	backgroundImage: `url('${getStableAssetUrl(terrainAdvanceImage)}')`,
+	backgroundImage: `url('${getStableAssetUrl(spawnpointImage)}')`,
 }
-
-const previewImage = computed<NormalizedContentImageItem>(() => ({
-	src: getStableAssetUrl(terrainMapImage),
-	alt: t('content.serverOverview.cards.seasonEightTerrain.previewAlt'),
-	caption: t('content.serverOverview.cards.seasonEightTerrain.previewCaption'),
-	width: '1254',
-	height: '1254',
-	aspectRatio: 1,
-}))
 </script>

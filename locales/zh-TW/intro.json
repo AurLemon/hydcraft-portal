@@ -1,6 +1,10 @@
 {
 	"content": {
 		"intro": {
+			"outdatedNotice": {
+				"title": "本頁面內容已過時",
+				"description": "第八周目已於 2026 年 7 月 15 日啟動，目前為 1.21.1 NeoForge，主要玩法包括 MTR 4、機械動力、航空學、沉浸載具、YSM、媒體放映器與時裝工坊等。由於第八周目的詳細介紹尚未完成，頁面其餘內容暫未更新。"
+			},
 			"hero": {
 				"coverAlt": "HydCraft 招新簡介封面",
 				"eyebrow": "HYDCRAFT INTRO",
@@ -30,13 +34,13 @@
 				"title": "我們的成果",
 				"imageAlt": "HydCraft 成果展示圖 {index}",
 				"requirements": {
-					"summaryPrefix": "伺服器建議記憶體不要低於",
-					"summaryMemory": "16G",
+					"summaryPrefix": "伺服器客戶端對電腦配置有要求，記憶體不能低於",
+					"summaryMemory": "16 GB",
 					"summaryMiddle": "，最好是",
-					"summaryYear": "2020 年以後",
-					"summaryConnector": "且定位",
-					"summaryTier": "中階以上的設備",
-					"summarySuffix": "。",
+					"summaryYear": "2020 年",
+					"summaryConnector": "以後的",
+					"summaryTier": "中高階",
+					"summarySuffix": "設備。",
 					"detail": "記憶體最少也要 8G，因為客戶端會分走 4G 記憶體，系統最低 Windows 10。MacBook M 系列能跑，而 Windows 筆電主要看 CPU，像 7840HS 這類就非常夠用。能不能玩得順主要看 CPU，Core i5 第 8 代或 Ryzen 5 3000 系以上會好很多。老平台不是完全打不開，也有人用 G4560 + 8G + 核顯都能進服，只是得多忍一點。"
 				}
 			},
