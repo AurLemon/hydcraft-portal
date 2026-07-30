@@ -140,7 +140,10 @@
 						"joinedAt": "参加日時"
 					},
 					"filters": {
-						"search": "ユーザー名、表示名、自己紹介で検索"
+						"search": "ユーザー名、表示名、自己紹介で検索",
+						"builderRank": "建築ランク",
+						"allBuilderRanks": "すべての建築ランク",
+						"unassignedBuilderRank": "建築ランクなし"
 					}
 				},
 				"players": {

@@ -140,7 +140,10 @@
 						"joinedAt": "Join time"
 					},
 					"filters": {
-						"search": "Search username, display name, or bio"
+						"search": "Search username, display name, or bio",
+						"builderRank": "Builder rank",
+						"allBuilderRanks": "All builder ranks",
+						"unassignedBuilderRank": "No builder rank"
 					}
 				},
 				"players": {

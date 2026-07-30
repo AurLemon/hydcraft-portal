@@ -43,6 +43,15 @@
 				:placeholder="t('admin.sort.field')"
 			/>
 			<USelect
+				v-if="filters.sortField === 'builderRank'"
+				v-model="filters.builderRank"
+				:items="builderRankItems"
+				:placeholder="
+					t('content.serverOverview.directories.users.filters.builderRank')
+				"
+			/>
+			<USelect
+				v-else
 				v-model="filters.sortDirection"
 				:items="sortDirectionItems"
 				:placeholder="t('admin.sort.direction')"
@@ -233,6 +242,10 @@ import type {
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
 import { getProfileBadgeStyle } from '~/utils/profile/badges'
+import {
+	builderRankValues,
+	type BuilderRank,
+} from '~/utils/profile/builder-ranks'
 
 definePageMeta({
 	headerVariant: 'solid',
@@ -241,18 +254,26 @@ definePageMeta({
 const { locale, t } = useI18n()
 const { getErrorCode } = useApiError()
 const localePath = useLocalePath()
+type BuilderRankFilter = BuilderRank | 'UNASSIGNED' | 'ALL'
+
 const page = ref(1)
 const pageSize = ref(20)
 const filters = reactive({
 	search: '',
 	sortField: 'joinedAt',
 	sortDirection: 'desc',
+	builderRank: 'ALL' as BuilderRankFilter,
 })
 const query = computed(() => ({
 	page: page.value,
 	pageSize: pageSize.value,
 	search: filters.search || undefined,
-	sortField: filters.sortField,
+	builderRank:
+		filters.sortField === 'builderRank' && filters.builderRank !== 'ALL'
+			? filters.builderRank
+			: undefined,
+	sortField:
+		filters.sortField === 'builderRank' ? 'joinedAt' : filters.sortField,
 	sortDirection: filters.sortDirection,
 }))
 const { data, pending, error, refresh } =
@@ -299,6 +320,10 @@ const sortFieldItems = [
 		value: 'createdAt',
 	},
 	{
+		label: t('content.serverOverview.directories.users.filters.builderRank'),
+		value: 'builderRank',
+	},
+	{
 		label: t('content.serverOverview.directories.users.fields.playTime'),
 		value: 'playTimeTicks',
 	},
@@ -313,6 +338,24 @@ const sortFieldItems = [
 	{ label: t('admin.users.fields.username'), value: 'username' },
 	{ label: t('admin.users.fields.displayName'), value: 'displayName' },
 	{ label: t('admin.sort.fields.updatedAt'), value: 'updatedAt' },
+]
+const builderRankItems = [
+	{
+		label: t(
+			'content.serverOverview.directories.users.filters.allBuilderRanks',
+		),
+		value: 'ALL',
+	},
+	{
+		label: t(
+			'content.serverOverview.directories.users.filters.unassignedBuilderRank',
+		),
+		value: 'UNASSIGNED',
+	},
+	...builderRankValues.map((rank) => ({
+		label: t(`profile.public.builderRanks.ranks.${rank}`),
+		value: rank,
+	})),
 ]
 const sortDirectionItems = [
 	{ label: t('admin.sort.desc'), value: 'desc' },
@@ -431,6 +474,7 @@ const resetFilters = (): void => {
 	filters.search = ''
 	filters.sortField = 'joinedAt'
 	filters.sortDirection = 'desc'
+	filters.builderRank = 'ALL'
 }
 
 const setPageSize = (value: number): void => {

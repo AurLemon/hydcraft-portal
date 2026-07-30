@@ -22,13 +22,10 @@
 		<div class="mt-4 md:mt-2 flex flex-col gap-1.5">
 			<div
 				:class="[
-					'md:w-full! flex size-24 items-center justify-center overflow-hidden rank-emblem-shell',
+					'md:w-full! flex size-24 items-center justify-center rank-emblem-shell',
 				]"
 			>
-				<div
-					class="rank-emblem-image relative size-30 overflow-hidden"
-					:style="emblemStyle"
-				>
+				<div class="rank-emblem-image relative size-30" :style="emblemStyle">
 					<div
 						class="rank-emblem-content relative size-30 -translate-x-2.5 md:translate-x-0"
 					>
@@ -42,9 +39,6 @@
 							alt=""
 							aria-hidden="true"
 							:data-hologram-active="hologramActive"
-							:data-hologram-looping="hologramLooping"
-							@animationend="handleHologramEnd"
-							@animationiteration="handleHologramIteration"
 							class="rank-emblem-hologram absolute inset-0 size-30 max-w-none object-contain select-none"
 						/>
 					</div>
@@ -52,23 +46,29 @@
 			</div>
 			<div class="min-w-0">
 				<div
-					class="flex gap-x-1 flex-wrap md:justify-center items-baseline font-medium text-2xl md:text-center md:text-[28px] leading-[normal]"
+					class="flex gap-x-1 flex-wrap md:justify-center items-baseline text-2xl md:text-center md:text-[28px] leading-[normal]"
 					:class="visual.titleClass"
 				>
-					<span class="uppercase">
+					<span class="uppercase font-medium">
 						{{ rankLabel }}
 					</span>
 
 					<span
 						v-if="locale !== 'en-US'"
-						class="block md:hidden text-sm text-slate-600 dark:text-slate-300"
+						:class="[
+							visual.titleClass,
+							'block md:hidden text-base font-medium opacity-70',
+						]"
 					>
 						{{ visual.englishLabel }}
 					</span>
 				</div>
 				<p
 					v-show="locale !== 'en-US'"
-					class="hidden md:block text-sm text-slate-600 dark:text-slate-300 md:text-center"
+					:class="[
+						visual.titleClass,
+						'hidden md:block text-sm md:text-center font-medium leading-[normal]',
+					]"
 				>
 					{{ visual.englishLabel }}
 				</p>
@@ -104,9 +104,6 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const cardRef = ref<HTMLElement | null>(null)
 const hologramActive = ref(false)
-const hologramLooping = ref(false)
-const hologramStopRequested = ref(false)
-const isPointerInside = ref(false)
 const supportsFineHover = ref(false)
 const pointerPosition = reactive({ x: 0.5, y: 0.5 })
 let hologramFrame: number | null = null
@@ -162,13 +159,6 @@ const handlePointerEnter = (event: PointerEvent): void => {
 		return
 	}
 
-	if (initialHologramTimer !== null) {
-		window.clearTimeout(initialHologramTimer)
-		initialHologramTimer = null
-	}
-
-	isPointerInside.value = true
-	triggerHologram(true)
 	updatePointerPosition(event)
 }
 
@@ -183,31 +173,16 @@ const handlePointerLeave = (): void => {
 		return
 	}
 
-	isPointerInside.value = false
-
-	if (hologramFrame !== null) {
-		window.cancelAnimationFrame(hologramFrame)
-		hologramFrame = null
-		hologramActive.value = false
-		hologramLooping.value = false
-	} else if (hologramActive.value && hologramLooping.value) {
-		hologramStopRequested.value = true
-	}
-
 	pointerPosition.x = 0.5
 	pointerPosition.y = 0.5
 }
 
-const triggerHologram = (looping: boolean): void => {
-	hologramStopRequested.value = false
-
+const triggerHologram = (): void => {
 	if (hologramActive.value) {
-		hologramLooping.value = looping
 		return
 	}
 
 	hologramActive.value = false
-	hologramLooping.value = looping
 
 	if (hologramFrame !== null) {
 		window.cancelAnimationFrame(hologramFrame)
@@ -218,23 +193,6 @@ const triggerHologram = (looping: boolean): void => {
 		hologramFrame = null
 	})
 }
-
-const handleHologramEnd = (): void => {
-	if (!hologramLooping.value) {
-		hologramActive.value = false
-	}
-}
-
-const handleHologramIteration = (): void => {
-	if (!hologramStopRequested.value) {
-		return
-	}
-
-	hologramStopRequested.value = false
-	hologramLooping.value = false
-	hologramActive.value = false
-}
-
 const scheduleInitialHologram = (): void => {
 	if (initialHologramTimer !== null) {
 		return
@@ -243,9 +201,7 @@ const scheduleInitialHologram = (): void => {
 	initialHologramTimer = window.setTimeout(() => {
 		initialHologramTimer = null
 
-		if (!isPointerInside.value) {
-			triggerHologram(!supportsFineHover.value)
-		}
+		triggerHologram()
 	}, INITIAL_HOLOGRAM_DELAY_MS)
 }
 
@@ -273,9 +229,7 @@ onMounted(() => {
 			hologramObserver?.disconnect()
 			hologramObserver = null
 
-			if (!isPointerInside.value) {
-				scheduleInitialHologram()
-			}
+			scheduleInitialHologram()
 		},
 		{ threshold: 0.35 },
 	)
@@ -348,12 +302,8 @@ onBeforeUnmount(() => {
 	-webkit-mask-size: 32% 100%;
 }
 
-.rank-emblem-hologram[data-hologram-active='true'][data-hologram-looping='false'] {
-	animation: rank-emblem-hologram 1.4s ease-out both;
-}
-
-.rank-emblem-hologram[data-hologram-active='true'][data-hologram-looping='true'] {
-	animation: rank-emblem-hologram 1.4s ease-out infinite;
+.rank-emblem-hologram[data-hologram-active='true'] {
+	animation: rank-emblem-hologram 2.4s ease-out infinite;
 }
 
 @keyframes rank-emblem-hologram {
@@ -363,14 +313,15 @@ onBeforeUnmount(() => {
 		-webkit-mask-position: -40% 0;
 	}
 
-	18% {
+	12% {
 		opacity: 0.64;
 	}
 
-	72% {
+	46% {
 		opacity: 0.28;
 	}
 
+	58%,
 	100% {
 		opacity: 0;
 		mask-position: 140% 0;

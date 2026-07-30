@@ -1,4 +1,4 @@
-import type { Prisma } from '~/generated/prisma/client'
+import type { BuilderRank, Prisma } from '~/generated/prisma/client'
 import type {
 	ServerDirectoryPlayerItem,
 	ServerDirectoryUserItem,
@@ -393,11 +393,18 @@ export const listPublicServerUsers = async (input: {
 	page: number
 	pageSize: number
 	search?: string
+	builderRank?: BuilderRank | 'UNASSIGNED'
 	sortField?: string
 	sortDirection?: 'asc' | 'desc'
 }) => {
 	const where: Prisma.UserWhereInput = {
 		status: 'ACTIVE',
+		...(input.builderRank
+			? {
+					builderRank:
+						input.builderRank === 'UNASSIGNED' ? null : input.builderRank,
+				}
+			: {}),
 		OR: [
 			{
 				privacy: null,

@@ -140,7 +140,10 @@
 						"joinedAt": "加入时间"
 					},
 					"filters": {
-						"search": "搜索用户名、显示名或简介"
+						"search": "搜索用户名、显示名或简介",
+						"builderRank": "建筑职阶",
+						"allBuilderRanks": "全部职阶",
+						"unassignedBuilderRank": "未授予职阶"
 					}
 				},
 				"players": {
