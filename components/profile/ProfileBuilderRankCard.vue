@@ -29,21 +29,25 @@
 					class="rank-emblem-image relative size-30 overflow-hidden"
 					:style="emblemStyle"
 				>
-					<img
-						:src="visual.icon"
-						:alt="rankLabel"
-						class="size-30 max-w-none object-contain select-none"
-					/>
-					<img
-						:src="visual.icon"
-						alt=""
-						aria-hidden="true"
-						:data-hologram-active="hologramActive"
-						:data-hologram-looping="hologramLooping"
-						@animationend="handleHologramEnd"
-						@animationiteration="handleHologramIteration"
-						class="rank-emblem-hologram absolute inset-0 size-30 max-w-none object-contain select-none"
-					/>
+					<div
+						class="rank-emblem-content relative size-30 -translate-x-2.5 md:translate-x-0"
+					>
+						<img
+							:src="visual.icon"
+							:alt="rankLabel"
+							class="size-30 max-w-none object-contain select-none"
+						/>
+						<img
+							:src="visual.icon"
+							alt=""
+							aria-hidden="true"
+							:data-hologram-active="hologramActive"
+							:data-hologram-looping="hologramLooping"
+							@animationend="handleHologramEnd"
+							@animationiteration="handleHologramIteration"
+							class="rank-emblem-hologram absolute inset-0 size-30 max-w-none object-contain select-none"
+						/>
+					</div>
 				</div>
 			</div>
 			<div class="min-w-0">
@@ -175,6 +179,10 @@ const handlePointerMove = (event: PointerEvent): void => {
 }
 
 const handlePointerLeave = (): void => {
+	if (!supportsFineHover.value) {
+		return
+	}
+
 	isPointerInside.value = false
 
 	if (hologramFrame !== null) {
