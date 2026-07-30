@@ -363,6 +363,17 @@ export const toPublicProfile = (
 	if (privacy.showMinecraftProfileLink) {
 		profile.minecraftSummary = minecraftSummary
 	}
+	profile.builderRank = user.builderRank
+		? {
+				rank: user.builderRank,
+				comments: {
+					zhCn: user.builderRankCommentZhCn,
+					zhTw: user.builderRankCommentZhTw,
+					enUs: user.builderRankCommentEnUs,
+					jaJp: user.builderRankCommentJaJp,
+				},
+			}
+		: null
 	profile.minecraftArchiveSummary = extra?.minecraftArchiveSummary ?? null
 	profile.minecraftServerTimeline = extra?.minecraftServerTimeline ?? []
 

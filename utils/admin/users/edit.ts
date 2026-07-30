@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { AdminUser } from '~/components/admin/types'
+import type { AdminBuilderRank, AdminUser } from '~/components/admin/types'
 import {
 	countryItems,
 	privacyItems,
@@ -22,6 +22,13 @@ export interface AdminUserForm {
 	location: string
 	countryOrRegion: string
 	birthday: string
+	builderRank: AdminBuilderRank | null
+	builderRankComments: {
+		zhCn: string
+		zhTw: string
+		enUs: string
+		jaJp: string
+	}
 	role: AdminUser['role']
 	status: AdminUser['status']
 	statusReason: string
@@ -59,6 +66,7 @@ export type AdminUserSaveSection =
 	| 'preferences'
 	| 'social'
 	| 'achievements'
+	| 'builder-rank'
 	| 'privacy'
 
 /**
@@ -89,6 +97,13 @@ export const createEmptyAdminUserForm = (): AdminUserForm => ({
 	location: '',
 	countryOrRegion: '',
 	birthday: '',
+	builderRank: null,
+	builderRankComments: {
+		zhCn: '',
+		zhTw: '',
+		enUs: '',
+		jaJp: '',
+	},
 	role: 'USER',
 	status: 'ACTIVE',
 	statusReason: '',
@@ -129,6 +144,11 @@ export const assignAdminUserForm = (
 	form.location = user.location ?? ''
 	form.countryOrRegion = user.countryOrRegion ?? ''
 	form.birthday = user.birthday ? dayjs(user.birthday).format('YYYY-MM-DD') : ''
+	form.builderRank = user.builderRank.rank
+	form.builderRankComments.zhCn = user.builderRank.comments.zhCn ?? ''
+	form.builderRankComments.zhTw = user.builderRank.comments.zhTw ?? ''
+	form.builderRankComments.enUs = user.builderRank.comments.enUs ?? ''
+	form.builderRankComments.jaJp = user.builderRank.comments.jaJp ?? ''
 	form.role = user.role
 	form.status = user.status
 	form.statusReason = user.statusReason ?? ''

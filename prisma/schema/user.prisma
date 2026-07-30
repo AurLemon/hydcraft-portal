@@ -18,6 +18,12 @@ model User {
   countryOrRegion    String?
   gender             UserGender @default(UNSPECIFIED)
   birthday           DateTime?
+  builderRank        BuilderRank?
+  builderRankCommentZhCn String?
+  builderRankCommentZhTw String?
+  builderRankCommentEnUs String?
+  builderRankCommentJaJp String?
+  builderRankManagedByAdmin Boolean @default(false)
   role               UserRole   @default(USER)
   status             UserStatus @default(ACTIVE)
   statusReason       String?
@@ -59,6 +65,7 @@ model User {
   reviewedFriendLinkApplications FriendLinkApplication[] @relation("FriendLinkReviewer")
 
   @@index([lastAuthActivityAt])
+  @@index([builderRank])
 }
 
 model UserActivityEvent {

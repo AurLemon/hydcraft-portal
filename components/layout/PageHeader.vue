@@ -154,6 +154,7 @@ onMounted(() => {
 
 <template>
 	<header
+		data-page-header
 		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:px-8 lg:pt-10 lg:pb-16"
 	>
 		<div

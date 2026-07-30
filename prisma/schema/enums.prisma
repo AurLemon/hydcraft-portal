@@ -20,9 +20,16 @@ enum UserProfileLanguage {
 }
 
 enum UserGender {
-  UNSPECIFIED
-  MALE
-  FEMALE
+	UNSPECIFIED
+	MALE
+	FEMALE
+}
+
+enum BuilderRank {
+	CHIEF
+	SENIOR
+	PRACTICING
+	APPRENTICE
 }
 
 enum TimezoneMode {

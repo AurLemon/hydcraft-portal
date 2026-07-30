@@ -35,6 +35,7 @@
 		"meSecurity": "セキュリティ",
 		"meConnections": "連携と認可",
 		"adminAchievements": "実績",
+		"adminBuilderRanks": "建築ランク",
 		"adminOAuthClients": "OAuth クライアント"
 	},
 	"main": {

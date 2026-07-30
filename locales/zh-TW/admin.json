@@ -672,7 +672,8 @@
 				"preferences": "偏好",
 				"social": "社交連結",
 				"privacy": "公開資訊",
-				"achievements": "成就與認證"
+				"achievements": "成就與認證",
+				"builderRank": "建築職階"
 			},
 			"fields": {
 				"user": "使用者",
@@ -1102,6 +1103,31 @@
 				"createBadge": "新增 Badge",
 				"editBadge": "編輯 Badge",
 				"assignBadges": "授予 Badge"
+			}
+		},
+		"builderRanks": {
+			"title": "建築職階",
+			"filters": { "search": "搜尋使用者名稱、信箱或 Hydroline ID" },
+			"fields": {
+				"user": "使用者",
+				"rank": "職階",
+				"comment": "目前語言說明",
+				"comments": "自訂說明"
+			},
+			"ranks": {
+				"NONE": "無職階",
+				"CHIEF": "首席建築師",
+				"SENIOR": "資深建築師",
+				"PRACTICING": "執業建築師",
+				"APPRENTICE": "見習建築師"
+			},
+			"actions": { "assign": "批量授權", "edit": "編輯職階" },
+			"modal": { "edit": "編輯建築職階" },
+			"notifications": {
+				"assigned": "職階已更新",
+				"assignFailed": "批量更新職階失敗",
+				"saved": "建築職階已儲存",
+				"saveFailed": "儲存建築職階失敗"
 			}
 		},
 		"oauthClients": {

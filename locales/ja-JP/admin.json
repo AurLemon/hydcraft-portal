@@ -672,7 +672,8 @@
 				"preferences": "設定",
 				"social": "ソーシャルリンク",
 				"privacy": "公開情報",
-				"achievements": "実績と認証"
+				"achievements": "実績と認証",
+				"builderRank": "建築ランク"
 			},
 			"fields": {
 				"user": "ユーザー",
@@ -1102,6 +1103,31 @@
 				"createBadge": "Badge 作成",
 				"editBadge": "Badge 編集",
 				"assignBadges": "Badge 付与"
+			}
+		},
+		"builderRanks": {
+			"title": "建築ランク",
+			"filters": { "search": "ユーザー名、メール、Hydroline ID を検索" },
+			"fields": {
+				"user": "ユーザー",
+				"rank": "ランク",
+				"comment": "現在の言語の説明",
+				"comments": "カスタム説明"
+			},
+			"ranks": {
+				"NONE": "ランクなし",
+				"CHIEF": "チーフアーキテクト",
+				"SENIOR": "シニアアーキテクト",
+				"PRACTICING": "プラクティシングアーキテクト",
+				"APPRENTICE": "アプレンティスアーキテクト"
+			},
+			"actions": { "assign": "一括付与", "edit": "ランクを編集" },
+			"modal": { "edit": "建築ランクを編集" },
+			"notifications": {
+				"assigned": "建築ランクを更新しました",
+				"assignFailed": "建築ランクの一括更新に失敗しました",
+				"saved": "建築ランクを保存しました",
+				"saveFailed": "建築ランクの保存に失敗しました"
 			}
 		},
 		"oauthClients": {

@@ -35,6 +35,7 @@
 		"meSecurity": "Security",
 		"meConnections": "Connections",
 		"adminAchievements": "Achievements",
+		"adminBuilderRanks": "Builder Ranks",
 		"adminOAuthClients": "OAuth Clients"
 	},
 	"main": {

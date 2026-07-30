@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
 		search: getOptionalQueryString(query.search),
 		role: getOptionalQueryString(query.role),
 		status: getOptionalQueryString(query.status),
+		builderRank: getOptionalQueryString(query.builderRank),
 		sortField: getOptionalQueryString(query.sortField),
 		sortDirection: getSortDirection(query.sortDirection),
 	})

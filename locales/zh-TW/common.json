@@ -35,6 +35,7 @@
 		"meSecurity": "帳號安全",
 		"meConnections": "連接與授權",
 		"adminAchievements": "成就",
+		"adminBuilderRanks": "建築職階",
 		"adminOAuthClients": "OAuth 用戶端"
 	},
 	"main": {

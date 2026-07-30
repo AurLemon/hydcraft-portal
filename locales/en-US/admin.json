@@ -662,7 +662,8 @@
 				"preferences": "Preferences",
 				"social": "Social Links",
 				"privacy": "Visibility",
-				"achievements": "Achievements and verification"
+				"achievements": "Achievements and verification",
+				"builderRank": "Builder rank"
 			},
 			"fields": {
 				"user": "User",
@@ -1092,6 +1093,31 @@
 				"createBadge": "Create badge",
 				"editBadge": "Edit badge",
 				"assignBadges": "Grant badges"
+			}
+		},
+		"builderRanks": {
+			"title": "Builder Ranks",
+			"filters": { "search": "Search username, email, or Hydroline ID" },
+			"fields": {
+				"user": "User",
+				"rank": "Rank",
+				"comment": "Current-language comment",
+				"comments": "Custom comments"
+			},
+			"ranks": {
+				"NONE": "No rank",
+				"CHIEF": "Chief Architect",
+				"SENIOR": "Senior Architect",
+				"PRACTICING": "Practicing Architect",
+				"APPRENTICE": "Apprentice Architect"
+			},
+			"actions": { "assign": "Apply to selected", "edit": "Edit rank" },
+			"modal": { "edit": "Edit Builder Rank" },
+			"notifications": {
+				"assigned": "Builder ranks updated",
+				"assignFailed": "Failed to update builder ranks",
+				"saved": "Builder rank saved",
+				"saveFailed": "Failed to save builder rank"
 			}
 		},
 		"oauthClients": {

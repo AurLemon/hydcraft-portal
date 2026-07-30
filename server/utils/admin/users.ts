@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import type {
+	BuilderRank,
 	Prisma,
 	User,
 	UserRole,
@@ -61,6 +62,12 @@ const USER_STATUSES = new Set<UserStatus>([
 	'DISABLED',
 	'BANNED',
 ])
+const BUILDER_RANKS = new Set<BuilderRank>([
+	'CHIEF',
+	'SENIOR',
+	'PRACTICING',
+	'APPRENTICE',
+])
 const USER_SORT_FIELDS = new Set([
 	'joinedAt',
 	'createdAt',
@@ -70,6 +77,7 @@ const USER_SORT_FIELDS = new Set([
 	'hydrolineId',
 	'role',
 	'status',
+	'builderRank',
 ])
 const MINECRAFT_UUID_PATTERN =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -116,6 +124,20 @@ const normalizeStatus = (value: unknown): UserStatus | undefined => {
 	}
 
 	return value as UserStatus
+}
+
+const normalizeBuilderRank = (
+	value: unknown,
+): BuilderRank | null | undefined => {
+	if (value === undefined || value === null) {
+		return value
+	}
+
+	if (typeof value !== 'string' || !BUILDER_RANKS.has(value as BuilderRank)) {
+		throw badRequest('BUILDER_RANK_INVALID')
+	}
+
+	return value as BuilderRank
 }
 
 const normalizeJoinedAt = (value: unknown): Date | undefined => {
@@ -335,6 +357,16 @@ export const serializeAdminUser = (user: AdminUserEntity) => ({
 	location: user.location,
 	countryOrRegion: user.countryOrRegion,
 	birthday: user.birthday,
+	builderRank: {
+		rank: user.builderRank,
+		comments: {
+			zhCn: user.builderRankCommentZhCn,
+			zhTw: user.builderRankCommentZhTw,
+			enUs: user.builderRankCommentEnUs,
+			jaJp: user.builderRankCommentJaJp,
+		},
+		managedByAdmin: user.builderRankManagedByAdmin,
+	},
 	role: user.role,
 	status: user.status,
 	statusReason: user.statusReason,
@@ -452,12 +484,18 @@ export const listAdminUsers = async (input: {
 	search?: string
 	role?: string
 	status?: string
+	builderRank?: string
 	sortField?: string
 	sortDirection?: 'asc' | 'desc'
 }) => {
 	const where: Prisma.UserWhereInput = {
 		...(input.role ? { role: input.role as UserRole } : {}),
 		...(input.status ? { status: input.status as UserStatus } : {}),
+		...(input.builderRank === 'NONE'
+			? { builderRank: null }
+			: input.builderRank && BUILDER_RANKS.has(input.builderRank as BuilderRank)
+				? { builderRank: input.builderRank as BuilderRank }
+				: {}),
 		...(input.search
 			? {
 					OR: [
@@ -799,6 +837,11 @@ interface AdminUserUpdateBody {
 	verifiedTextZhTw?: unknown
 	verifiedTextEnUs?: unknown
 	verifiedTextJaJp?: unknown
+	builderRank?: unknown
+	builderRankCommentZhCn?: unknown
+	builderRankCommentZhTw?: unknown
+	builderRankCommentEnUs?: unknown
+	builderRankCommentJaJp?: unknown
 	resetAvatar?: unknown
 	resetCover?: unknown
 	avatarAttachmentId?: unknown
@@ -871,6 +914,34 @@ export const updateAdminUser = async (
 		120,
 		'verifiedTextJaJp',
 	)
+	const builderRank = normalizeBuilderRank(body.builderRank)
+	const builderRankCommentZhCn = normalizeOptionalText(
+		body.builderRankCommentZhCn,
+		240,
+		'builderRankCommentZhCn',
+	)
+	const builderRankCommentZhTw = normalizeOptionalText(
+		body.builderRankCommentZhTw,
+		240,
+		'builderRankCommentZhTw',
+	)
+	const builderRankCommentEnUs = normalizeOptionalText(
+		body.builderRankCommentEnUs,
+		240,
+		'builderRankCommentEnUs',
+	)
+	const builderRankCommentJaJp = normalizeOptionalText(
+		body.builderRankCommentJaJp,
+		240,
+		'builderRankCommentJaJp',
+	)
+	const hasBuilderRankUpdate = [
+		builderRank,
+		builderRankCommentZhCn,
+		builderRankCommentZhTw,
+		builderRankCommentEnUs,
+		builderRankCommentJaJp,
+	].some((value) => value !== undefined)
 	const resetAvatar = normalizeBoolean(body.resetAvatar, 'resetAvatar')
 	const resetCover = normalizeBoolean(body.resetCover, 'resetCover')
 	const avatarAttachmentId = normalizeAttachmentId(
@@ -934,6 +1005,12 @@ export const updateAdminUser = async (
 		...(verifiedTextZhTw !== undefined ? { verifiedTextZhTw } : {}),
 		...(verifiedTextEnUs !== undefined ? { verifiedTextEnUs } : {}),
 		...(verifiedTextJaJp !== undefined ? { verifiedTextJaJp } : {}),
+		...(builderRank !== undefined ? { builderRank } : {}),
+		...(builderRankCommentZhCn !== undefined ? { builderRankCommentZhCn } : {}),
+		...(builderRankCommentZhTw !== undefined ? { builderRankCommentZhTw } : {}),
+		...(builderRankCommentEnUs !== undefined ? { builderRankCommentEnUs } : {}),
+		...(builderRankCommentJaJp !== undefined ? { builderRankCommentJaJp } : {}),
+		...(hasBuilderRankUpdate ? { builderRankManagedByAdmin: true } : {}),
 		...(resetAvatar ? { avatarUrl: null, avatarAttachmentId: null } : {}),
 		...(resetCover ? { coverUrl: null, coverAttachmentId: null } : {}),
 		...(avatarAttachmentId !== undefined

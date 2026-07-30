@@ -662,7 +662,8 @@
 				"preferences": "偏好",
 				"social": "社交链接",
 				"privacy": "公开信息",
-				"achievements": "成就与认证"
+				"achievements": "成就与认证",
+				"builderRank": "建筑职阶"
 			},
 			"fields": {
 				"user": "用户",
@@ -1092,6 +1093,31 @@
 				"createBadge": "新建 Badge",
 				"editBadge": "编辑 Badge",
 				"assignBadges": "授予 Badge"
+			}
+		},
+		"builderRanks": {
+			"title": "建筑职阶",
+			"filters": { "search": "搜索用户名、邮箱或 Hydroline ID" },
+			"fields": {
+				"user": "用户",
+				"rank": "职阶",
+				"comment": "当前语言说明",
+				"comments": "自定义说明"
+			},
+			"ranks": {
+				"NONE": "无职阶",
+				"CHIEF": "首席建筑师",
+				"SENIOR": "资深建筑师",
+				"PRACTICING": "执业建筑师",
+				"APPRENTICE": "见习建筑师"
+			},
+			"actions": { "assign": "批量授权", "edit": "编辑职阶" },
+			"modal": { "edit": "编辑建筑职阶" },
+			"notifications": {
+				"assigned": "职阶已更新",
+				"assignFailed": "批量更新职阶失败",
+				"saved": "建筑职阶已保存",
+				"saveFailed": "保存建筑职阶失败"
 			}
 		},
 		"oauthClients": {

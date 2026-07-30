@@ -474,6 +474,7 @@ export interface PortalBridgeInspectResponse {
 
 export type AdminUserRole = 'USER' | 'MEMBER' | 'ADMIN' | 'OWNER'
 export type AdminUserStatus = 'PENDING' | 'ACTIVE' | 'DISABLED' | 'BANNED'
+export type AdminBuilderRank = 'CHIEF' | 'SENIOR' | 'PRACTICING' | 'APPRENTICE'
 
 export interface AdminUser {
 	id: string
@@ -490,6 +491,16 @@ export interface AdminUser {
 	location: string | null
 	countryOrRegion: string | null
 	birthday: string | null
+	builderRank: {
+		rank: AdminBuilderRank | null
+		comments: {
+			zhCn: string | null
+			zhTw: string | null
+			enUs: string | null
+			jaJp: string | null
+		}
+		managedByAdmin: boolean
+	}
 	role: AdminUserRole
 	status: AdminUserStatus
 	statusReason: string | null

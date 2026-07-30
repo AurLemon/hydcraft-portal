@@ -126,6 +126,11 @@
 				:submitting="savingSection === 'achievements'"
 				@submit="saveAchievements"
 			/>
+			<AdminUserBuilderRankSection
+				v-model:form="form"
+				:submitting="savingSection === 'builder-rank'"
+				@submit="saveBuilderRank"
+			/>
 			<AdminUserPrivacySection v-model:form="form" />
 			<AdminUserSecuritySection
 				:security="securityData?.security ?? null"
@@ -722,6 +727,10 @@ const syncAdminFormSection = (
 			form.verifiedTextJaJp = nextForm.verifiedTextJaJp
 			form.badgeIds = nextForm.badgeIds
 			return
+		case 'builder-rank':
+			form.builderRank = nextForm.builderRank
+			form.builderRankComments = nextForm.builderRankComments
+			return
 		case 'privacy':
 			form.privacy = nextForm.privacy
 			return
@@ -817,6 +826,16 @@ const saveAchievements = async (): Promise<void> => {
 		verifiedTextZhTw: form.verifiedTextZhTw,
 		verifiedTextEnUs: form.verifiedTextEnUs,
 		verifiedTextJaJp: form.verifiedTextJaJp,
+	})
+}
+
+const saveBuilderRank = async (): Promise<void> => {
+	await patchAdminUser('builder-rank', {
+		builderRank: form.builderRank,
+		builderRankCommentZhCn: form.builderRankComments.zhCn || null,
+		builderRankCommentZhTw: form.builderRankComments.zhTw || null,
+		builderRankCommentEnUs: form.builderRankComments.enUs || null,
+		builderRankCommentJaJp: form.builderRankComments.jaJp || null,
 	})
 }
 

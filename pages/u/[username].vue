@@ -255,6 +255,11 @@
 						</div>
 					</section>
 
+					<ProfileBuilderRankCard
+						v-if="profile.builderRank"
+						:builder-rank="profile.builderRank"
+					/>
+
 					<section :class="sideCardClass">
 						<h3 :class="sideTitleClass">
 							{{ t('profile.public.sections.profile') }}
@@ -399,6 +404,15 @@ interface PublicProfile {
 		textEnUs: string | null
 		textJaJp: string | null
 	}
+	builderRank?: {
+		rank: 'CHIEF' | 'SENIOR' | 'PRACTICING' | 'APPRENTICE'
+		comments: {
+			zhCn: string | null
+			zhTw: string | null
+			enUs: string | null
+			jaJp: string | null
+		}
+	} | null
 	bio?: string | null
 	schoolOrCompany?: string | null
 	occupationOrMajor?: string | null

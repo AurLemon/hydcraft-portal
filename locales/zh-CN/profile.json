@@ -129,6 +129,22 @@
 			"actions": {
 				"viewMinecraftProfile": "查看 Minecraft 档案"
 			},
+			"builderRanks": {
+				"title": "建筑职阶",
+				"viewSystem": "查看体系",
+				"ranks": {
+					"CHIEF": "首席建筑师",
+					"SENIOR": "资深建筑师",
+					"PRACTICING": "执业建筑师",
+					"APPRENTICE": "见习建筑师"
+				},
+				"fallback": {
+					"CHIEF": "风格成熟、完成度高，能够代表服务器的建设水准。",
+					"SENIOR": "长期参与服务器建设，拥有稳定产出与清晰的个人风格。",
+					"PRACTICING": "能够独立完成作品，是服务器日常建设的重要力量。",
+					"APPRENTICE": "在实践与协作中积累经验，持续提升建设能力。"
+				}
+			},
 			"empty": {
 				"unavailable": "个人主页不可访问",
 				"bio": "这个用户还没有填写个人简介。",
