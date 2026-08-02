@@ -84,18 +84,6 @@ if ! command -v node >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v pnpm >/dev/null 2>&1; then
-  if command -v corepack >/dev/null 2>&1; then
-    corepack enable
-    corepack prepare pnpm@10.14.0 --activate
-  elif command -v npm >/dev/null 2>&1; then
-    npm install -g pnpm@10.14.0
-  else
-    echo 'DEPLOY_RUNTIME_MISSING_PNPM: neither corepack nor npm is available on remote host' >&2
-    exit 1
-  fi
-fi
-
 rsync -a --no-owner --no-group --delete --exclude='.env' \
   "$REMOTE_TEMP_DIR/" \
   "$REMOTE_DEPLOY_PATH/"
@@ -105,11 +93,17 @@ set -a
 source <(sed 's/\r$//' ./.env)
 set +a
 
-if [ "$BASELINE_EXISTING_DB" = 'true' ]; then
-  pnpm prisma migrate resolve --applied 0_init
+PRISMA_CLI='./node_modules/.bin/prisma'
+if [ ! -x "$PRISMA_CLI" ]; then
+  echo 'DEPLOY_ARTIFACT_MISSING_PRISMA: Prisma CLI is required in the deployment artifact' >&2
+  exit 1
 fi
 
-pnpm prisma:deploy
+if [ "$BASELINE_EXISTING_DB" = 'true' ]; then
+  "$PRISMA_CLI" migrate resolve --applied 0_init
+fi
+
+"$PRISMA_CLI" migrate deploy
 
 if [ "$RUN_PRODUCTION_INIT" = 'true' ]; then
   node ./dist-cli/scripts/production-init.js
