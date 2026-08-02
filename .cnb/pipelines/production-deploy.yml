@@ -9,7 +9,7 @@ v2:
       stages:
         - name: Build
           script: |
-            set -euo pipefail
+            set -eu
             apt-get update
             apt-get install -y --no-install-recommends openssh-client rsync
             rm -rf /var/lib/apt/lists/*
