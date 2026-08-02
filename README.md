@@ -1,12 +1,17 @@
-# HydCraft Portal
+# hydcraft-portal
 
-HydCraft 的统一门户与控制面，提供公共站点、Hydroline 身份、Minecraft 账号资料、服务器数据展示和后台管理。
+The unified portal for HydCraft, connecting its public website,
+Hydroline identity system, Minecraft player accounts, and server administration.
+
+It provides account linking, player profiles, server introductions,
+live status, data showcases, and administrative tools in one place.
 
 ## Stack
 
 - Nuxt 4, Vue 3, TypeScript, Nuxt UI, Tailwind CSS
 - PostgreSQL and Prisma 7
 - Nuxt Content and Nuxt i18n
+- Tencent EdgeOne, GitHub Actions and CNB
 
 ## Structure
 
@@ -24,7 +29,7 @@ prisma/       split schema and SQL migrations
 `server/utils/attachment` owns object-storage access. Business modules must not
 construct public object URLs or call a provider SDK directly.
 
-PortalBridge is configured per Minecraft server. AuthMe and LuckPerms are
+Portal Bridge is configured per Minecraft server. AuthMe and LuckPerms are
 read-only global external-sync sources configured through the runtime
 environment; they are not per-server Portal records.
 
@@ -72,9 +77,9 @@ The deployment workflow packages the built Nitro application, applies Prisma
 migrations on the remote host, optionally runs production initialization, and
 restarts PM2 with the updated runtime environment.
 
-## PortalBridge
+## Portal Bridge
 
-PortalBridge uses WebSocket JSON envelopes with HMAC-authenticated hello
+[Portal Bridge](https://github.com/Hydroline/portal-bridge) uses WebSocket JSON envelopes with HMAC-authenticated hello
 messages. Portal stores bridge runtime state and server-observed identity
 evidence, but evidence never automatically verifies a Minecraft account, binds
 a Portal user, or changes a user role.
