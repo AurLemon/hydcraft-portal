@@ -2,7 +2,7 @@ branch:
   - reg: ^v2$
     buttons:
       - name: 部署生产环境
-        description: 下载 GitHub 为 v2 构建的产物并部署到生产服务器
+        description: 在 CNB 构建 v2 并部署到生产服务器
         event: web_trigger_deploy
         groupName: 生产部署
         isDefault: true

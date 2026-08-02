@@ -1,4 +1,4 @@
-name: Build and sync to CNB
+name: CI
 
 on:
   workflow_dispatch:
@@ -13,7 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
+    name: Build
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hydcraft_portal?schema=public
@@ -21,8 +22,6 @@ jobs:
       JWT_SECRET: ci-demo-jwt-secret
       CONFIG_ENCRYPTION_KEY: ci-demo-config-encryption-key
       HYDCRAFT_DISABLE_PORTAL_BRIDGE: '1'
-      CNB_REPOSITORY_SLUG: ${{ vars.CNB_REPOSITORY_SLUG }}
-      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
     steps:
       - uses: actions/checkout@v6
 
@@ -43,28 +42,20 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Prepare deployment artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
-        run: |
-          pnpm build:production-init-cli
-
-          rm -rf deploy-artifact hydcraft-portal-deploy.tar.gz
-          mkdir -p deploy-artifact/data
-          cp package.json pnpm-lock.yaml prisma.config.ts deploy-artifact/
-          cp -R dist-cli prisma .output deploy-artifact/
-          cp -R data/ip2region deploy-artifact/data/
-          pnpm install --prod --frozen-lockfile --dir deploy-artifact
-
-          test -f deploy-artifact/.output/server/index.mjs
-          test -f deploy-artifact/dist-cli/scripts/production-init.js
-          test -f deploy-artifact/prisma.config.ts
-          test -f deploy-artifact/prisma/schema/migrations/migration_lock.toml
-          test -f deploy-artifact/node_modules/.bin/prisma
-
-          tar -czf hydcraft-portal-deploy.tar.gz -C deploy-artifact .
+  sync:
+    name: Sync CNB
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
+    runs-on: ubuntu-latest
+    env:
+      CNB_REPOSITORY_SLUG: ${{ vars.CNB_REPOSITORY_SLUG }}
+      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Validate CNB configuration
-        if: github.event_name == 'push'
         run: |
           test -n "$CNB_REPOSITORY_SLUG" || {
             echo 'CNB_REPOSITORY_SLUG GitHub Actions variable is required.' >&2
@@ -75,8 +66,7 @@ jobs:
             exit 1
           }
 
-      - name: Sync Git refs to CNB
-        if: github.event_name == 'push'
+      - name: Sync
         run: |
           docker run --rm \
             -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
@@ -85,19 +75,8 @@ jobs:
             -e 'PLUGIN_AUTH_TYPE=https' \
             -e 'PLUGIN_USERNAME=cnb' \
             -e "PLUGIN_PASSWORD=$CNB_TOKEN" \
+            -e 'PLUGIN_BRANCH=v2' \
+            -e 'PLUGIN_GIT_USER=cnb' \
+            -e 'PLUGIN_GIT_EMAIL=cnb@cnb.cool' \
             -e 'PLUGIN_FORCE=true' \
-            -e 'PLUGIN_PUSH_TAGS=true' \
             tencentcom/git-sync
-
-      - name: Upload deployment artifact to CNB
-        if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
-        run: |
-          docker run --rm \
-            -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
-            -w "$GITHUB_WORKSPACE" \
-            -e "CNB_TOKEN=$CNB_TOKEN" \
-            -e 'CNB_API_ENDPOINT=https://api.cnb.cool' \
-            -e "CNB_REPO_SLUG=$CNB_REPOSITORY_SLUG" \
-            -e "PLUGIN_COMMIT=$GITHUB_SHA" \
-            -e 'PLUGIN_ATTACHMENTS=hydcraft-portal-deploy.tar.gz' \
-            cnbcool/attachments:latest

@@ -1,4 +1,4 @@
-name: Trigger CNB production deployment
+name: Deploy
 
 on:
   workflow_dispatch:
