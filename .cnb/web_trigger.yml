@@ -1,0 +1,33 @@
+branch:
+  - reg: ^v2$
+    buttons:
+      - name: 部署生产环境
+        description: 下载 GitHub 为 v2 构建的产物并部署到生产服务器
+        event: web_trigger_deploy
+        groupName: 生产部署
+        isDefault: true
+        permissions:
+          roles:
+            - owner
+            - master
+        inputs:
+          BASELINE_EXISTING_DB:
+            name: 既有数据库基线
+            description: 仅首次向已有数据库部署时启用
+            type: switch
+            default: 'false'
+            options:
+              - name: 不执行
+                value: 'false'
+              - name: 标记 0_init 已应用
+                value: 'true'
+          RUN_PRODUCTION_INIT:
+            name: 运行生产初始化
+            description: 迁移完成后运行生产初始化脚本
+            type: switch
+            default: 'false'
+            options:
+              - name: 不执行
+                value: 'false'
+              - name: 执行初始化
+                value: 'true'

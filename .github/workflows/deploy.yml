@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Trigger CNB production deployment
 
 on:
   workflow_dispatch:
@@ -14,244 +14,48 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  build-and-deploy:
+  trigger:
+    name: Trigger CNB production deployment
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    environment: production
     env:
-      # Required secrets:
-      # BACKEND_DEPLOY_HOST
-      # BACKEND_DEPLOY_USER
-      # BACKEND_DEPLOY_SSH_PRIVATE_KEY
-      # BACKEND_PM2_APP_NAME
-      # ARTIFACT_BUCKET
-      #   Example: hydcraft-portal-artifact-1254268741
-      # ARTIFACT_UPLOAD_ENDPOINT
-      #   Example: cos.ap-shanghai.myqcloud.com
-      #   Do not include the bucket name or https://
-      # ARTIFACT_DOWNLOAD_ENDPOINT
-      #   Example: cos.ap-shanghai.myqcloud.com
-      #   Do not include the bucket name or https://
-      # COS_ACCESS_KEY_ID
-      # COS_SECRET_ACCESS_KEY
-      #
-      # Optional secrets:
-      # BACKEND_DEPLOY_SSH_PORT
-      # BACKEND_REMOTE_DEPLOY_PATH
-      # ARTIFACT_REGION
-      # DEPLOY_RUNTIME_ENV
-      SSH_HOST: ${{ secrets.BACKEND_DEPLOY_HOST }}
-      SSH_PORT: ${{ secrets.BACKEND_DEPLOY_SSH_PORT || '233' }}
-      SSH_USER: ${{ secrets.BACKEND_DEPLOY_USER }}
-      DEPLOY_SSH_KEY: ${{ secrets.BACKEND_DEPLOY_SSH_PRIVATE_KEY }}
-      REMOTE_DEPLOY_PATH: ${{ secrets.BACKEND_REMOTE_DEPLOY_PATH || '/www/wwwroot/hydcraft-portal' }}
-      REMOTE_TEMP_DIR: /tmp/hydcraft-portal-deploy-${{ github.run_id }}-${{ github.run_attempt }}
-      PM2_APP_NAME: ${{ secrets.BACKEND_PM2_APP_NAME }}
-      ARTIFACT_BUCKET: ${{ secrets.ARTIFACT_BUCKET }}
-      ARTIFACT_UPLOAD_ENDPOINT: ${{ secrets.ARTIFACT_UPLOAD_ENDPOINT }}
-      ARTIFACT_DOWNLOAD_ENDPOINT: ${{ secrets.ARTIFACT_DOWNLOAD_ENDPOINT }}
-      ARTIFACT_REGION: ${{ secrets.ARTIFACT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.COS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.COS_SECRET_ACCESS_KEY }}
-      DEPLOY_RUNTIME_ENV: ${{ secrets.DEPLOY_RUNTIME_ENV }}
-
+      CNB_REPOSITORY_SLUG: ${{ vars.CNB_REPOSITORY_SLUG }}
+      CNB_API_TOKEN: ${{ secrets.CNB_API_TOKEN }}
+      CNB_BRANCH: v2
+      BASELINE_EXISTING_DB: ${{ inputs.baseline_existing_db }}
+      RUN_PRODUCTION_INIT: ${{ inputs.run_production_init }}
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Build app in Docker
+      - name: Validate CNB configuration
         run: |
-          docker run --rm \
-            -e DATABASE_URL="postgresql://prisma:prisma@127.0.0.1:5432/prisma?schema=public" \
-            -e DEPLOY_RUNTIME_ENV="$DEPLOY_RUNTIME_ENV" \
-            -v "$GITHUB_WORKSPACE":/app \
-            -w /app \
-            node:24-bookworm \
-            bash -lc '
-              set -euo pipefail
-              corepack enable
-              corepack prepare pnpm@10.14.0 --activate
-              pnpm install --frozen-lockfile
-              pnpm exec prisma generate
-              pnpm build:production-init-cli
-
-              if [ -n "$DEPLOY_RUNTIME_ENV" ]; then
-                printf "%s\n" "$DEPLOY_RUNTIME_ENV" > .env
-              fi
-
-              pnpm build
-
-              rm -rf /app/deploy-artifact
-              mkdir -p /app/deploy-artifact
-
-              cp /app/package.json /app/pnpm-lock.yaml /app/prisma.config.ts /app/deploy-artifact/
-              cp -R /app/dist-cli /app/deploy-artifact/dist-cli
-              cp -R /app/prisma /app/deploy-artifact/prisma
-              cp -R /app/.output/public \
-                    /app/.output/server \
-                    /app/deploy-artifact/
-              mkdir -p /app/deploy-artifact/data
-              cp -R /app/data/ip2region /app/deploy-artifact/data/
-              cp /app/.output/nitro.json /app/deploy-artifact/nitro.json
-
-              pnpm install --prod --frozen-lockfile --dir /app/deploy-artifact
-
-              test -f /app/deploy-artifact/package.json
-              test -f /app/deploy-artifact/dist-cli/scripts/production-init.js
-              test -f /app/deploy-artifact/prisma.config.ts
-              test -f /app/deploy-artifact/prisma/schema/migrations/migration_lock.toml
-              test -f /app/deploy-artifact/node_modules/.bin/prisma
-
-              chown -R "$(stat -c "%u:%g" /app)" /app/deploy-artifact
-            '
-
-      - name: Install COSCMD
-        run: python3 -m pip install -U coscmd
-
-      - name: Prepare SSH
-        run: |
-          mkdir -p ~/.ssh/cm
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
-
-          cat >> ~/.ssh/config <<EOF
-          Host deploy-host
-            HostName $SSH_HOST
-            User $SSH_USER
-            Port $SSH_PORT
-            IdentityFile ~/.ssh/deploy_key
-            ControlMaster auto
-            ControlPersist 5m
-            ControlPath ~/.ssh/cm/%r@%h:%p
-            ServerAliveInterval 10
-            ServerAliveCountMax 3
-            ConnectTimeout 30
-          EOF
-
-      - name: Warm up SSH connection
-        run: |
-          ssh deploy-host "echo SSH warmup OK"
-
-      - name: Create remote temp dir
-        run: |
-          ssh deploy-host "mkdir -p '$REMOTE_TEMP_DIR'"
-
-      - name: Pack deploy artifact
-        run: |
-          tar -czf deploy-artifact.tar.gz -C deploy-artifact .
-
-      - name: Upload deploy artifact
-        run: |
-          set -euo pipefail
-          coscmd config -a "$AWS_ACCESS_KEY_ID" -s "$AWS_SECRET_ACCESS_KEY" -b "$ARTIFACT_BUCKET" -e "$ARTIFACT_UPLOAD_ENDPOINT" -m 20 --retry 10 --timeout 120
-          coscmd delete -r --yes hydcraft-portal/ || true
-          coscmd upload --yes deploy-artifact.tar.gz "hydcraft-portal/deploy-artifact-${{ github.run_id }}.tar.gz"
-
-      - name: Deploy app on remote host
-        run: |
-          ssh deploy-host \
-            "export AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID' \
-            AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' \
-            ARTIFACT_BUCKET='$ARTIFACT_BUCKET' \
-            ARTIFACT_DOWNLOAD_ENDPOINT='$ARTIFACT_DOWNLOAD_ENDPOINT' \
-            ARTIFACT_REGION='$ARTIFACT_REGION' \
-            REMOTE_DEPLOY_PATH='$REMOTE_DEPLOY_PATH' \
-            REMOTE_TEMP_DIR='$REMOTE_TEMP_DIR' \
-            PM2_APP_NAME='$PM2_APP_NAME' \
-            DEPLOY_RUNTIME_ENV='$DEPLOY_RUNTIME_ENV' \
-            BASELINE_EXISTING_DB='${{ github.event.inputs.baseline_existing_db || 'false' }}' \
-            RUN_PRODUCTION_INIT='${{ github.event.inputs.run_production_init || 'false' }}'; bash -s" <<'EOF'
-          set -euo pipefail
-          export PATH="$HOME/.local/bin:$PATH"
-          export DEPLOY_TOOL_ROOT="$HOME/.local/share/hydcraft-deploy"
-          export COSCMD_VENV="$DEPLOY_TOOL_ROOT/coscmd-venv"
-
-          mkdir -p "$REMOTE_DEPLOY_PATH"
-          mkdir -p "$REMOTE_TEMP_DIR"
-          mkdir -p "$DEPLOY_TOOL_ROOT"
-
-          if ! command -v node >/dev/null 2>&1; then
-            echo "DEPLOY_RUNTIME_MISSING_NODE: node is required on remote host" >&2
+          test -n "$CNB_REPOSITORY_SLUG" || {
+            echo 'CNB_REPOSITORY_SLUG GitHub Actions variable is required.' >&2
             exit 1
-          fi
-
-          if ! command -v python3 >/dev/null 2>&1; then
-            echo "DEPLOY_RUNTIME_MISSING_PYTHON3: python3 is required on remote host" >&2
+          }
+          test -n "$CNB_API_TOKEN" || {
+            echo 'CNB_API_TOKEN GitHub Actions secret is required.' >&2
             exit 1
-          fi
+          }
+      - name: Trigger CNB pipeline
+        run: |
+          payload="$(jq -cn \
+            --arg event 'api_trigger_deploy' \
+            --arg branch "$CNB_BRANCH" \
+            --arg baselineExistingDb "$BASELINE_EXISTING_DB" \
+            --arg runProductionInit "$RUN_PRODUCTION_INIT" \
+            '{
+              event: $event,
+              branch: $branch,
+              env: {
+                BASELINE_EXISTING_DB: $baselineExistingDb,
+                RUN_PRODUCTION_INIT: $runProductionInit
+              }
+            }')"
 
-          if ! command -v pip3 >/dev/null 2>&1; then
-            python3 -m ensurepip --upgrade >/dev/null 2>&1 || true
-          fi
-
-          if ! command -v coscmd >/dev/null 2>&1; then
-            if [ ! -x "$COSCMD_VENV/bin/coscmd" ]; then
-              if ! python3 -m venv --help >/dev/null 2>&1; then
-                echo "DEPLOY_RUNTIME_MISSING_VENV: python3-venv is required to bootstrap coscmd" >&2
-                exit 1
-              fi
-              python3 -m venv "$COSCMD_VENV"
-              "$COSCMD_VENV/bin/pip" install -U pip coscmd
-            fi
-            export PATH="$COSCMD_VENV/bin:$PATH"
-            hash -r
-          fi
-
-          if ! command -v pnpm >/dev/null 2>&1; then
-            if command -v corepack >/dev/null 2>&1; then
-              corepack enable
-              corepack prepare pnpm@10.14.0 --activate
-            elif command -v npm >/dev/null 2>&1; then
-              npm install -g pnpm@10.14.0
-            else
-              echo "DEPLOY_RUNTIME_MISSING_PNPM: neither corepack nor npm is available on remote host" >&2
-              exit 1
-            fi
-            hash -r
-          fi
-
-          coscmd config -a "$AWS_ACCESS_KEY_ID" -s "$AWS_SECRET_ACCESS_KEY" -b "$ARTIFACT_BUCKET" -e "$ARTIFACT_DOWNLOAD_ENDPOINT" -m 20 --retry 10 --timeout 120
-          rm -f "$REMOTE_TEMP_DIR/deploy-artifact.tar.gz"
-          coscmd download -f "hydcraft-portal/deploy-artifact-${{ github.run_id }}.tar.gz" "$REMOTE_TEMP_DIR/deploy-artifact.tar.gz"
-
-          rm -rf "$REMOTE_TEMP_DIR/extracted"
-          mkdir -p "$REMOTE_TEMP_DIR/extracted"
-          tar -xzf "$REMOTE_TEMP_DIR/deploy-artifact.tar.gz" -C "$REMOTE_TEMP_DIR/extracted"
-
-          if [ -n "$DEPLOY_RUNTIME_ENV" ]; then
-            printf "%s\n" "$DEPLOY_RUNTIME_ENV" > "$REMOTE_DEPLOY_PATH/.env"
-          fi
-
-          rsync -a --no-owner --no-group --delete --exclude='.env' \
-            "$REMOTE_TEMP_DIR/extracted/" \
-            "$REMOTE_DEPLOY_PATH/"
-
-          cd "$REMOTE_DEPLOY_PATH"
-          set -a
-          source <(sed 's/\r$//' ./.env)
-          set +a
-
-          if [ "$BASELINE_EXISTING_DB" = "true" ]; then
-            pnpm prisma migrate resolve --applied 0_init
-          fi
-
-          pnpm prisma:deploy
-
-          if [ "$RUN_PRODUCTION_INIT" = "true" ]; then
-            node ./dist-cli/scripts/production-init.js
-          fi
-
-          if pm2 describe "$PM2_APP_NAME" >/dev/null 2>&1; then
-            pm2 restart "$PM2_APP_NAME" --update-env
-          else
-            pm2 start "$REMOTE_DEPLOY_PATH/.output/server/index.mjs" --name "$PM2_APP_NAME" --cwd "$REMOTE_DEPLOY_PATH"
-          fi
-
-          pm2 save
-
-          rm -rf "$REMOTE_TEMP_DIR"
-          EOF
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --url "https://api.cnb.cool/$CNB_REPOSITORY_SLUG/-/build/start" \
+            --header "Authorization: $CNB_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data "$payload" | jq .

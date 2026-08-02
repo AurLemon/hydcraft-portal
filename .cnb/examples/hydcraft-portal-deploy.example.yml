@@ -1,0 +1,18 @@
+# Copy this file to the CNB KeyStore as hydcraft-portal-deploy.yml.
+# Replace every placeholder. Never place the real file in this repository.
+allow_slugs: HydCraft/hydcraft-portal
+allow_events:
+  - web_trigger_deploy
+  - api_trigger_deploy
+allow_branches:
+  - v2
+
+BACKEND_DEPLOY_HOST: <server-host-or-ip>
+BACKEND_DEPLOY_SSH_PORT: '233'
+BACKEND_DEPLOY_USER: <deploy-user>
+BACKEND_DEPLOY_SSH_PRIVATE_KEY: |-
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  <paste-the-complete-private-key-here>
+  -----END OPENSSH PRIVATE KEY-----
+BACKEND_PM2_APP_NAME: hydcraft-portal
+BACKEND_REMOTE_DEPLOY_PATH: /www/wwwroot/hydcraft-portal
