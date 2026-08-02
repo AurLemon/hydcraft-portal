@@ -14,29 +14,59 @@ on:
         default: false
         type: boolean
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   trigger:
-    name: Trigger CNB production deployment
+    name: Sync & deploy CNB
     runs-on: ubuntu-latest
+    concurrency:
+      group: cnb-v2-sync
+      cancel-in-progress: false
     env:
       CNB_REPOSITORY_SLUG: ${{ vars.CNB_REPOSITORY_SLUG }}
+      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
       CNB_API_TOKEN: ${{ secrets.CNB_API_TOKEN }}
       CNB_BRANCH: v2
       BASELINE_EXISTING_DB: ${{ inputs.baseline_existing_db }}
       RUN_PRODUCTION_INIT: ${{ inputs.run_production_init }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: v2
+          fetch-depth: 0
+
       - name: Validate CNB configuration
         run: |
           test -n "$CNB_REPOSITORY_SLUG" || {
             echo 'CNB_REPOSITORY_SLUG GitHub Actions variable is required.' >&2
             exit 1
           }
+          test -n "$CNB_TOKEN" || {
+            echo 'CNB_TOKEN GitHub Actions secret is required.' >&2
+            exit 1
+          }
           test -n "$CNB_API_TOKEN" || {
             echo 'CNB_API_TOKEN GitHub Actions secret is required.' >&2
             exit 1
           }
+
+      - name: Sync CNB
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+            -w "$GITHUB_WORKSPACE" \
+            -e "PLUGIN_TARGET_URL=https://cnb.cool/$CNB_REPOSITORY_SLUG.git" \
+            -e 'PLUGIN_AUTH_TYPE=https' \
+            -e 'PLUGIN_USERNAME=cnb' \
+            -e "PLUGIN_PASSWORD=$CNB_TOKEN" \
+            -e 'PLUGIN_BRANCH=v2' \
+            -e 'PLUGIN_GIT_USER=cnb' \
+            -e 'PLUGIN_GIT_EMAIL=cnb@cnb.cool' \
+            -e 'PLUGIN_FORCE=true' \
+            tencentcom/git-sync
+
       - name: Trigger CNB pipeline
         run: |
           payload="$(jq -cn \

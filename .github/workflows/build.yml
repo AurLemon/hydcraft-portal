@@ -44,9 +44,11 @@ jobs:
 
   sync:
     name: Sync CNB
-    needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
     runs-on: ubuntu-latest
+    concurrency:
+      group: cnb-v2-sync
+      cancel-in-progress: false
     env:
       CNB_REPOSITORY_SLUG: ${{ vars.CNB_REPOSITORY_SLUG }}
       CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
