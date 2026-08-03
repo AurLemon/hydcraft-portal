@@ -121,10 +121,11 @@
 					</div>
 				</div>
 
-				<CapWidget
+				<TurnstileWidget
 					v-if="passwordCaptcha.required.value"
 					ref="passwordCaptchaWidgetRef"
 					v-model="passwordCaptcha.token.value"
+					:action="TURNSTILE_ACTIONS.LOGIN"
 				/>
 
 				<UButton
@@ -202,9 +203,10 @@
 					</label>
 				</div>
 
-				<CapWidget
+				<TurnstileWidget
 					ref="minecraftCaptchaWidgetRef"
 					v-model="minecraftCaptcha.token.value"
+					:action="TURNSTILE_ACTIONS.MINECRAFT_LOGIN"
 				/>
 
 				<UButton
@@ -235,6 +237,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import {
 	normalizePortalRedirectPath,
 	requiresDocumentNavigation,
@@ -272,9 +275,9 @@ const rememberMe = ref(true)
 const passwordVisible = ref(false)
 const gamePasswordVisible = ref(false)
 const authMode = ref<LoginAuthMode>(parseAuthMode(route.query.mode))
-const passwordCaptcha = useCap(false)
+const passwordCaptcha = useTurnstile(false)
 const passwordCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
-const minecraftCaptcha = useCap(true)
+const minecraftCaptcha = useTurnstile(true)
 const minecraftCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const passwordForm = reactive<LoginFormState>({
 	handleOrEmail: '',

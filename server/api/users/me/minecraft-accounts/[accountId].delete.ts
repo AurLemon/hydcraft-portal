@@ -2,7 +2,8 @@ import { requireCurrentUser } from '../../../../utils/auth/session'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError, createBadRequestError } from '../../../../utils/errors'
 import { unbindMinecraftAccountFromUser } from '../../../../utils/minecraft/account-binding'
-import { validateCapToken } from '../../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 
 interface UnbindMinecraftAccountBody {
 	captchaToken?: string
@@ -17,8 +18,10 @@ export default defineEventHandler(async (event) => {
 		throw createBadRequestError('MINECRAFT_ACCOUNT_ID_REQUIRED')
 	}
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.MINECRAFT_UNBIND,
 	})
 
 	const account = await prisma.minecraftAccount.findFirst({

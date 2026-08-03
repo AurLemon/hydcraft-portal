@@ -1,4 +1,5 @@
-import { validateCapToken } from '../../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { submitFriendLinkApplication } from '../../../../utils/friend-links/service'
 
@@ -10,8 +11,10 @@ export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
 	const body = await readBody<SubmitFriendLinkApplicationBody>(event)
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.FRIEND_LINK_APPLICATION,
 	})
 
 	return await submitFriendLinkApplication(

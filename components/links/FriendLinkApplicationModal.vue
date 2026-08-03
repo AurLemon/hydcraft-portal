@@ -90,7 +90,11 @@
 				</UFormField>
 
 				<UFormField :label="t('content.links.application.fields.captcha')">
-					<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+					<TurnstileWidget
+						ref="captchaWidgetRef"
+						v-model="captcha.token.value"
+						:action="TURNSTILE_ACTIONS.FRIEND_LINK_APPLICATION"
+					/>
 				</UFormField>
 			</form>
 		</template>
@@ -120,6 +124,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import type { AttachmentUploadResult } from '~/composables/useAttachmentUploader'
 import {
 	friendLinkApplicationCategoryValues,
@@ -151,7 +156,7 @@ const draft = ref<FriendLinkApplicationSummary | null>(null)
 const creatingDraft = ref(false)
 const submitting = ref(false)
 const avatarPreviewUrl = ref('')
-const captcha = useCap(true)
+const captcha = useTurnstile(true)
 const captchaWidgetRef = captcha.widgetRef
 const form = reactive({
 	category: 'PERSONAL' as FriendLinkCategory,

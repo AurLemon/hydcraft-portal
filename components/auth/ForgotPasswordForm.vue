@@ -42,7 +42,11 @@
 					/>
 				</label>
 
-				<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+				<TurnstileWidget
+					ref="captchaWidgetRef"
+					v-model="captcha.token.value"
+					:action="TURNSTILE_ACTIONS.PASSWORD_RESET"
+				/>
 			</div>
 			<div v-else key="confirm" class="space-y-4 overflow-hidden">
 				<label
@@ -131,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 interface ForgotPasswordFormProps {
 	embedded?: boolean
 }
@@ -152,7 +157,7 @@ const { notifyError, notifySuccess } = useAdminToast()
 const submitting = ref(false)
 const step = ref<'email' | 'confirm'>('email')
 const passwordVisible = ref(false)
-const captcha = useCap(true)
+const captcha = useTurnstile(true)
 const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive<ForgotPasswordFormState>({
 	email: '',

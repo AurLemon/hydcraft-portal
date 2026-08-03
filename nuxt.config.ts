@@ -28,6 +28,7 @@ export default defineNuxtConfig({
 	plugins: [...analyticsPlugins],
 	modules: [
 		'@nuxt/eslint',
+		'@nuxtjs/turnstile',
 		'nuxt-svgo',
 		[
 			'@nuxtjs/i18n',
@@ -268,9 +269,6 @@ export default defineNuxtConfig({
 			apiKey: '',
 			baseUrl: 'https://afdian.com',
 		},
-		cap: {
-			baseUrl: '',
-		},
 		cos: {
 			secretId: '',
 			secretKey: '',
@@ -280,7 +278,6 @@ export default defineNuxtConfig({
 		},
 		public: {
 			siteUrl: '',
-			capBaseUrl: '',
 			baiduStatKey: '',
 			msClarityId: '',
 			minecraftMap: {
@@ -330,13 +327,6 @@ export default defineNuxtConfig({
 	],
 	vite: {
 		plugins: [tailwindcss()],
-		vue: {
-			template: {
-				compilerOptions: {
-					isCustomElement: (tag) => tag === 'cap-widget',
-				},
-			},
-		},
 	},
 	app: {
 		head: {

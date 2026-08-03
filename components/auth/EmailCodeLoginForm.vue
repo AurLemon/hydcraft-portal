@@ -20,7 +20,11 @@
 						variant="outline"
 					/>
 				</label>
-				<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+				<TurnstileWidget
+					ref="captchaWidgetRef"
+					v-model="captcha.token.value"
+					:action="TURNSTILE_ACTIONS.EMAIL_CODE"
+				/>
 			</div>
 			<div v-else key="code" class="overflow-hidden">
 				<div class="space-y-2">
@@ -92,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import {
 	normalizePortalRedirectPath,
 	requiresDocumentNavigation,
@@ -119,7 +124,7 @@ const submitting = ref(false)
 const resendCountdown = ref(0)
 let resendTimer: number | null = null
 const step = ref<'email' | 'code'>('email')
-const captcha = useCap(true)
+const captcha = useTurnstile(true)
 const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive<EmailCodeLoginFormState>({
 	email: '',

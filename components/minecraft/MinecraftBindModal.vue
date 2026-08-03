@@ -50,7 +50,11 @@
 						</UInput>
 					</label>
 
-					<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+					<TurnstileWidget
+						ref="captchaWidgetRef"
+						v-model="captcha.token.value"
+						:action="TURNSTILE_ACTIONS.MINECRAFT_BIND"
+					/>
 
 					<div class="flex justify-end">
 						<UButton
@@ -70,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import type { BindMinecraftAccountBody } from '~/utils/minecraft/accounts'
 
 interface MinecraftBindModalProps {
@@ -86,7 +91,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const open = defineModel<boolean>('open', { default: false })
 const passwordVisible = ref(false)
-const captcha = useCap(true)
+const captcha = useTurnstile(true)
 const captchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const form = reactive({
 	username: '',

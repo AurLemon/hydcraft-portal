@@ -10,7 +10,8 @@ import {
 	recordMinecraftAccountVerification,
 	syncMinecraftAccountFromVerifiedAuthMe,
 } from '../../../utils/minecraft/account-binding'
-import { validateCapToken } from '../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import { verifyAuthMeCredentials } from '../../../utils/authme/verification'
 
 interface MinecraftRegisterTicketBody {
@@ -21,8 +22,10 @@ interface MinecraftRegisterTicketBody {
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<MinecraftRegisterTicketBody>(event)
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.MINECRAFT_REGISTER,
 	})
 
 	const verifiedAccount = await verifyAuthMeCredentials(

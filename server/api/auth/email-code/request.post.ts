@@ -3,7 +3,8 @@ import { assertEmail } from '../../../utils/auth/validation'
 import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
 import { sendAuthEmailCode } from '../../../utils/auth/email-code'
-import { validateCapToken } from '../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 
 interface RequestEmailCodeLoginBody {
 	email: string
@@ -54,8 +55,10 @@ export default defineEventHandler(async (event) => {
 	const email = assertEmail(body.email)
 	const locale = normalizeMailLocale(body.locale)
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.EMAIL_CODE,
 	})
 
 	if (body.intent !== 'LOGIN' && body.intent !== 'REGISTER') {

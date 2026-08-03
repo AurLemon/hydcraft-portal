@@ -356,9 +356,10 @@
 					</div>
 
 					<div v-if="passwordResetStep === 'request'" class="mt-6">
-						<CapWidget
+						<TurnstileWidget
 							ref="passwordResetCaptchaWidgetRef"
 							v-model="passwordResetCaptcha.token.value"
+							:action="TURNSTILE_ACTIONS.ACCOUNT_PASSWORD_RESET"
 						/>
 					</div>
 					<div v-else class="mt-6 space-y-4">
@@ -587,9 +588,10 @@
 						/>
 					</label>
 					<div v-if="addEmailStep === 'email'" class="mt-4">
-						<CapWidget
+						<TurnstileWidget
 							ref="addEmailCaptchaWidgetRef"
 							v-model="addEmailCaptcha.token.value"
+							:action="TURNSTILE_ACTIONS.EMAIL_VERIFICATION"
 						/>
 					</div>
 
@@ -713,9 +715,10 @@
 						/>
 					</label>
 					<div class="mt-4">
-						<CapWidget
+						<TurnstileWidget
 							ref="verifyEmailCaptchaWidgetRef"
 							v-model="verifyEmailCaptcha.token.value"
+							:action="TURNSTILE_ACTIONS.ACCOUNT_EMAIL_VERIFICATION"
 						/>
 					</div>
 
@@ -763,6 +766,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import dayjs from 'dayjs'
 import {
 	profileCardClass,
@@ -906,11 +910,11 @@ const verifyEmailCooldown = ref(0)
 const verifyEmailForm = reactive<{ code: string }>({ code: '' })
 const verifyEmailTarget = ref<AccountSecurityEmail | null>(null)
 let verifyEmailCooldownTimer: ReturnType<typeof setInterval> | null = null
-const passwordResetCaptcha = useCap(true)
+const passwordResetCaptcha = useTurnstile(true)
 const passwordResetCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
-const addEmailCaptcha = useCap(true)
+const addEmailCaptcha = useTurnstile(true)
 const addEmailCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
-const verifyEmailCaptcha = useCap(true)
+const verifyEmailCaptcha = useTurnstile(true)
 const verifyEmailCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 
 const readonlyFieldClass =

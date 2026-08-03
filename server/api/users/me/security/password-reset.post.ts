@@ -1,6 +1,7 @@
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { createBadRequestError } from '../../../../utils/errors'
-import { validateCapToken } from '../../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import { issuePasswordResetVerificationCode } from '../../../../utils/security/password-reset'
 
 interface PasswordResetRequestBody {
@@ -15,8 +16,10 @@ export default defineEventHandler(async (event) => {
 		throw createBadRequestError('EMAIL_REQUIRED')
 	}
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.ACCOUNT_PASSWORD_RESET,
 	})
 
 	return await issuePasswordResetVerificationCode({

@@ -4,7 +4,8 @@ import { assertEmail } from '../../../../utils/auth/validation'
 import { prisma } from '../../../../utils/db/prisma'
 import { createApiError } from '../../../../utils/errors'
 import { sendEmailVerificationCode } from '../../../../utils/security/account-security'
-import { validateCapToken } from '../../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 
 interface RequestEmailVerificationBody {
 	email: string
@@ -28,8 +29,10 @@ export default defineEventHandler(async (event) => {
 	const email = assertEmail(body.email)
 	const purpose = resolvePurpose(body.purpose)
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.EMAIL_VERIFICATION,
 	})
 
 	if (!EMAIL_PURPOSES.includes(purpose)) {

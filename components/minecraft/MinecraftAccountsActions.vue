@@ -101,10 +101,11 @@
 						</div>
 					</div>
 
-					<CapWidget
+					<TurnstileWidget
 						v-if="unbindingTargetAccount"
 						ref="unbindCaptchaWidgetRef"
 						v-model="unbindCaptcha.token.value"
+						:action="TURNSTILE_ACTIONS.MINECRAFT_UNBIND"
 					/>
 				</div>
 			</template>
@@ -147,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import SkeletonImage from '~/components/common/SkeletonImage.vue'
 import MinecraftAccountsSelector from '~/components/minecraft/MinecraftAccountsSelector.vue'
 import { getMinecraftHeadRendererUrl } from '~/utils/minecraft/body-renderer'
@@ -177,7 +179,7 @@ const { t } = useI18n()
 const settingsOpen = ref(false)
 const unbindConfirmOpen = ref(false)
 const unbindingTargetAccountId = ref<string | null>(null)
-const unbindCaptcha = useCap(true)
+const unbindCaptcha = useTurnstile(true)
 const unbindCaptchaWidgetRef = ref<{ reset: () => void } | null>(null)
 const unbindingTargetAccount = computed<MinecraftAccountForm | null>(
 	() =>

@@ -12,7 +12,11 @@
 		</div>
 
 		<div class="max-w-md">
-			<CapWidget ref="captchaWidgetRef" v-model="captcha.token.value" />
+			<TurnstileWidget
+				ref="captchaWidgetRef"
+				v-model="captcha.token.value"
+				:action="TURNSTILE_ACTIONS.DIRECTORY_SEARCH"
+			/>
 		</div>
 
 		<div class="flex flex-wrap items-center gap-3">
@@ -30,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 interface ServerDirectorySearchCaptchaCardProps {
 	title: string
 	description: string
@@ -42,7 +47,7 @@ const emit = defineEmits<{
 }>()
 
 const { getErrorMessage } = useApiError()
-const captcha = useCap(true)
+const captcha = useTurnstile(true)
 const captchaWidgetRef = captcha.widgetRef
 const submitting = ref(false)
 const errorMessage = ref('')

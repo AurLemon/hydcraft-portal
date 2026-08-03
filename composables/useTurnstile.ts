@@ -1,19 +1,23 @@
-interface UseCapState {
-	token: Ref<string>
-	required: Ref<boolean>
-	widgetRef: Ref<{ reset: () => void } | null>
+interface TurnstileWidgetRef {
+	reset: () => void
 }
 
-export const useCap = (
+interface UseTurnstileState {
+	token: Ref<string>
+	required: Ref<boolean>
+	widgetRef: Ref<TurnstileWidgetRef | null>
+}
+
+export const useTurnstile = (
 	requiredByDefault = false,
-): UseCapState & {
+): UseTurnstileState & {
 	markRequired: () => void
 	reset: (keepRequired?: boolean) => void
 	consumeToken: () => string
 } => {
 	const token = ref('')
 	const required = ref(requiredByDefault)
-	const widgetRef = ref<{ reset: () => void } | null>(null)
+	const widgetRef = ref<TurnstileWidgetRef | null>(null)
 
 	const reset = (keepRequired = required.value): void => {
 		token.value = ''

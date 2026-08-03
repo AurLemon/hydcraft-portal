@@ -6,7 +6,8 @@ import {
 	recordMinecraftAccountVerification,
 	syncMinecraftAccountFromVerifiedAuthMe,
 } from '../../../utils/minecraft/account-binding'
-import { validateCapToken } from '../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import { recordSecurityEvent } from '../../../utils/security/security-events'
 import { verifyAuthMeCredentials } from '../../../utils/authme/verification'
 
@@ -18,8 +19,10 @@ interface MinecraftLoginBody {
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<MinecraftLoginBody>(event)
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.MINECRAFT_LOGIN,
 	})
 
 	const verifiedAccount = await verifyAuthMeCredentials(

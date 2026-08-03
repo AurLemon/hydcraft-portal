@@ -4,7 +4,8 @@ import { issueAuthCookies, toUserSummary } from '../../utils/auth/session'
 import { normalizeEmail, normalizeHandle } from '../../utils/auth/validation'
 import { createApiError } from '../../utils/errors'
 import { recordSecurityEvent } from '../../utils/security/security-events'
-import { validateCapToken } from '../../utils/security/cap'
+import { validateTurnstileToken } from '../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import {
 	recordLoginFailure,
 	shouldRequireLoginCaptcha,
@@ -39,8 +40,10 @@ export default defineEventHandler(async (event) => {
 	})
 
 	if (user && (await shouldRequireLoginCaptcha(event, user.id))) {
-		await validateCapToken({
+		await validateTurnstileToken({
+			event,
 			token: body.captchaToken,
+			action: TURNSTILE_ACTIONS.LOGIN,
 		})
 	}
 

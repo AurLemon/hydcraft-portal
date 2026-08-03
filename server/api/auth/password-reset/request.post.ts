@@ -1,7 +1,8 @@
 import { normalizeMailLocale } from '../../../utils/auth/locale'
 import { normalizeEmail } from '../../../utils/auth/validation'
 import { createBadRequestError } from '../../../utils/errors'
-import { validateCapToken } from '../../../utils/security/cap'
+import { validateTurnstileToken } from '../../../utils/security/turnstile'
+import { TURNSTILE_ACTIONS } from '~/utils/security/turnstile-actions'
 import {
 	findPasswordResetUserByEmail,
 	issuePasswordResetVerificationCode,
@@ -21,8 +22,10 @@ export default defineEventHandler(async (event) => {
 		throw createBadRequestError('EMAIL_REQUIRED')
 	}
 
-	await validateCapToken({
+	await validateTurnstileToken({
+		event,
 		token: body.captchaToken,
+		action: TURNSTILE_ACTIONS.PASSWORD_RESET,
 	})
 
 	const user = await findPasswordResetUserByEmail(email)
