@@ -327,6 +327,18 @@ export default defineNuxtConfig({
 	],
 	vite: {
 		plugins: [tailwindcss()],
+		optimizeDeps: {
+			include: [
+				'chart.js',
+				'dayjs',
+				'leaflet',
+				'lunar-typescript',
+				'skinview3d',
+				'vue-chartjs',
+				'vue-picture-cropper',
+				'vuedraggable',
+			],
+		},
 	},
 	app: {
 		head: {
