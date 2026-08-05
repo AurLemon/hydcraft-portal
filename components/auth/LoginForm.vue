@@ -267,10 +267,11 @@ const parseAuthMode = (value: unknown): LoginAuthMode =>
 const route = useRoute()
 const localePath = useLocalePath()
 const { t } = useI18n()
-const { login, loginWithMinecraft } = usePortalAuth()
+const { isLoggedIn, login, loginWithMinecraft } = usePortalAuth()
 const { notifyError, notifySuccess } = useAdminToast()
 const { getErrorCode } = useApiError()
 const submitting = ref(false)
+const redirectingAfterAuthentication = ref(false)
 const rememberMe = ref(true)
 const passwordVisible = ref(false)
 const gamePasswordVisible = ref(false)
@@ -374,6 +375,11 @@ const getRedirectPath = (): string => {
 }
 
 const continueAfterAuthentication = async (): Promise<void> => {
+	if (redirectingAfterAuthentication.value) {
+		return
+	}
+
+	redirectingAfterAuthentication.value = true
 	const target = getRedirectPath()
 
 	if (requiresDocumentNavigation(target)) {
@@ -381,8 +387,30 @@ const continueAfterAuthentication = async (): Promise<void> => {
 		return
 	}
 
-	await navigateTo(target)
+	try {
+		await navigateTo(target)
+	} finally {
+		redirectingAfterAuthentication.value = false
+	}
 }
+
+watch(
+	isLoggedIn,
+	(isLoggedIn) => {
+		if (!isLoggedIn || !requiresDocumentNavigation(getRedirectPath())) {
+			return
+		}
+
+		void continueAfterAuthentication().catch((error: unknown) => {
+			redirectingAfterAuthentication.value = false
+			notifyError(error, {
+				title: t('login.notifications.failedTitle'),
+				description: t('login.notifications.failedDescription'),
+			})
+		})
+	},
+	{ immediate: true, flush: 'post' },
+)
 
 const resetPasswordCaptcha = (): void => {
 	passwordCaptcha.reset()
