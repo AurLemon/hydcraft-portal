@@ -166,6 +166,8 @@
 			"OAUTH_ACCESS_TOKEN_INVALID": "OAuth アクセストークンが無効または期限切れです。",
 			"OAUTH_REFRESH_TOKEN_INVALID": "OAuth リフレッシュトークンが無効または期限切れです。",
 			"OAUTH_CONSENT_INVALID": "OAuth の認可確認が無効または期限切れです。",
+			"OAUTH_GRANT_ID_REQUIRED": "OIDC 認可 ID が不足しています。",
+			"OAUTH_GRANT_NOT_FOUND": "OIDC 認可が見つかりません。",
 			"HYDROLINE_ID_CREATE_FAILED": "Hydroline ID の作成に失敗しました。",
 			"HYDROLINE_ID_GENERATION_FAILED": "Hydroline ID の生成に失敗しました。"
 		},

@@ -19,7 +19,7 @@
 				<USkeleton class="h-160 rounded-3xl" />
 			</div>
 			<UAlert
-				v-else-if="accountError"
+				v-else-if="accountError && !accountLoaded"
 				color="error"
 				icon="i-lucide-circle-alert"
 				:title="t('minecraftAccounts.empty.loadFailed')"
@@ -116,12 +116,12 @@
 								t('minecraftAccounts.history.explainer.description')
 							"
 						/>
-						<div v-if="historyPending" class="grid gap-4">
+						<div v-if="historyPending && !historyLoaded" class="grid gap-4">
 							<USkeleton class="h-48 rounded-lg" />
 							<USkeleton class="h-48 rounded-lg" />
 						</div>
 						<UAlert
-							v-else-if="historyError"
+							v-else-if="historyError && !historyLoaded"
 							color="error"
 							icon="i-lucide-circle-alert"
 							:title="t('minecraftAccounts.history.loadFailed')"
@@ -147,12 +147,12 @@
 					</div>
 
 					<div v-else key="all" class="grid gap-6">
-						<div v-if="historyPending" class="grid gap-4">
+						<div v-if="historyPending && !historyLoaded" class="grid gap-4">
 							<USkeleton class="h-48 rounded-lg" />
 							<USkeleton class="h-48 rounded-lg" />
 						</div>
 						<UAlert
-							v-else-if="historyError"
+							v-else-if="historyError && !historyLoaded"
 							color="error"
 							icon="i-lucide-circle-alert"
 							:title="t('minecraftAccounts.history.loadFailed')"
@@ -233,6 +233,10 @@ definePageMeta({
 
 interface HistoricalAccountsResponse {
 	accounts: MinecraftAccountForm[]
+	serverOrder: Array<{
+		serverId: string
+		serverNames: MinecraftServerLocalizedName
+	}>
 	servers: Array<{
 		serverId: string
 		serverNames: MinecraftServerLocalizedName | null
@@ -240,17 +244,6 @@ interface HistoricalAccountsResponse {
 			account: MinecraftAccountForm
 			serverViewId: string
 		}>
-	}>
-}
-
-interface MinecraftServerOrderResponse {
-	servers: Array<{
-		serverId: string
-		shortCode: string
-		nameZhCn: string
-		nameZhTw: string
-		nameEnUs: string
-		nameJaJp: string
 	}>
 }
 
@@ -290,26 +283,40 @@ const {
 } = await useFetch<HistoricalAccountsResponse>('/api/users/me/history', {
 	default: () => ({
 		accounts: [],
+		serverOrder: [],
 		servers: [],
 	}),
 })
-const { data: serverOrderData } = await useFetch<MinecraftServerOrderResponse>(
-	'/api/public/launcher/servers',
-	{
-		default: () => ({
-			servers: [],
-		}),
-	},
-)
 const accountsState = ref<MinecraftAccountForm[]>([])
+const historyState = ref<HistoricalAccountsResponse>({
+	accounts: [],
+	serverOrder: [],
+	servers: [],
+})
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const initialLoading = ref(true)
+const accountLoaded = ref(false)
+const historyLoaded = ref(false)
 watch(
 	[data, accountError],
 	() => {
+		if (data.value) {
+			accountLoaded.value = true
+		}
+
 		if (initialLoading.value && (data.value || accountError.value)) {
 			initialLoading.value = false
+		}
+	},
+	{ immediate: true },
+)
+
+watch(
+	[historyPending, historyError],
+	([pending, error]) => {
+		if (!pending && !error) {
+			historyLoaded.value = true
 		}
 	},
 	{ immediate: true },
@@ -405,6 +412,26 @@ const reconcileAccountList = (
 	})
 }
 
+const reconcileHistory = (
+	current: HistoricalAccountsResponse,
+	next: HistoricalAccountsResponse,
+): HistoricalAccountsResponse => {
+	const accounts = reconcileAccountList(current.accounts, next.accounts)
+	const accountById = new Map(accounts.map((account) => [account.id, account]))
+
+	return {
+		accounts,
+		serverOrder: next.serverOrder,
+		servers: next.servers.map((server) => ({
+			...server,
+			accounts: server.accounts.map((item) => ({
+				...item,
+				account: accountById.get(item.account.id) ?? item.account,
+			})),
+		})),
+	}
+}
+
 watch(
 	data,
 	(value) => {
@@ -412,6 +439,18 @@ watch(
 			accountsState.value,
 			value?.accounts ?? [],
 		)
+	},
+	{ immediate: true },
+)
+
+watch(
+	historyData,
+	(value) => {
+		historyState.value = reconcileHistory(historyState.value, {
+			accounts: value?.accounts ?? [],
+			serverOrder: value?.serverOrder ?? [],
+			servers: value?.servers ?? [],
+		})
 	},
 	{ immediate: true },
 )
@@ -426,7 +465,7 @@ const resolveServerDisplayName = (
 		: fallback
 
 const historicalAccounts = computed<MinecraftAccountForm[]>(
-	() => historyData.value?.accounts ?? [],
+	() => historyState.value.accounts,
 )
 const primaryAccount = computed<MinecraftAccountForm | null>(
 	() =>
@@ -459,19 +498,12 @@ const allAccountsByServer = computed(() => {
 	const serverOrder = new Map<string, number>()
 	const serverNames = new Map<string, MinecraftServerLocalizedName>()
 
-	for (const [index, server] of (
-		serverOrderData.value?.servers ?? []
-	).entries()) {
+	for (const [index, server] of historyState.value.serverOrder.entries()) {
 		serverOrder.set(server.serverId, index)
-		serverNames.set(server.serverId, {
-			nameZhCn: server.nameZhCn,
-			nameZhTw: server.nameZhTw,
-			nameEnUs: server.nameEnUs,
-			nameJaJp: server.nameJaJp,
-		})
+		serverNames.set(server.serverId, server.serverNames)
 	}
 
-	for (const group of historyData.value?.servers ?? []) {
+	for (const group of historyState.value.servers) {
 		if (!serverOrder.has(group.serverId)) {
 			serverOrder.set(group.serverId, serverOrder.size)
 		}
@@ -522,7 +554,7 @@ const allAccountsByServer = computed(() => {
 		grouped.set(serverId, bucket)
 	}
 
-	for (const group of historyData.value?.servers ?? []) {
+	for (const group of historyState.value.servers) {
 		for (const item of group.accounts) {
 			appendAccountToGroup(
 				item.account,

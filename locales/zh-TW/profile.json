@@ -267,7 +267,22 @@
 			"empty": { "loadFailed": "連線與授權資訊載入失敗" },
 			"sections": {
 				"oauth": "第三方登入",
+				"oidc": "OIDC 授權",
 				"minecraft": "Minecraft 檔案"
+			},
+			"oidc": {
+				"empty": "目前沒有 OIDC 授權",
+				"status": { "authorized": "已授權" },
+				"fields": {
+					"scopes": "授權範圍",
+					"grantedAt": "授權時間",
+					"updatedAt": "最近更新"
+				},
+				"actions": { "revoke": "解除授權" },
+				"notifications": {
+					"revoked": "OIDC 授權已解除",
+					"revokeFailed": "OIDC 授權解除失敗"
+				}
 			},
 			"status": {
 				"connected": "已綁定",

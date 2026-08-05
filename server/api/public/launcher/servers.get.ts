@@ -6,11 +6,7 @@ export default defineEventHandler(async () => {
 		where: {
 			status: 'ONLINE',
 		},
-		orderBy: [
-			{ isDefault: 'desc' },
-			{ sortOrder: 'asc' },
-			{ createdAt: 'asc' },
-		],
+		orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
 		select: {
 			id: true,
 			serverId: true,

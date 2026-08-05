@@ -1,24 +1,24 @@
 import { requireCurrentUser } from '../../../../utils/auth/session'
 import { getHistoricalMinecraftAccountsForUser } from '../../../../utils/minecraft/historical-accounts'
 import { getServerViewSelectionValueForSummary } from '~/utils/minecraft/accounts'
+import { toMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 import { prisma } from '../../../../utils/db/prisma'
 
 export default defineEventHandler(async (event) => {
 	const currentUser = await requireCurrentUser(event)
 	const accounts = await getHistoricalMinecraftAccountsForUser(currentUser.id)
+	const orderedServers = await prisma.minecraftServer.findMany({
+		select: {
+			serverId: true,
+			nameZhCn: true,
+			nameZhTw: true,
+			nameEnUs: true,
+			nameJaJp: true,
+		},
+		orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+	})
 	const serverOrder = new Map(
-		(
-			await prisma.minecraftServer.findMany({
-				select: {
-					serverId: true,
-				},
-				orderBy: [
-					{ isDefault: 'desc' },
-					{ sortOrder: 'asc' },
-					{ createdAt: 'asc' },
-				],
-			})
-		).map((server, index) => [server.serverId, index]),
+		orderedServers.map((server, index) => [server.serverId, index]),
 	)
 	const servers = accounts
 		.flatMap((account) =>
@@ -72,5 +72,9 @@ export default defineEventHandler(async (event) => {
 	return {
 		accounts,
 		servers,
+		serverOrder: orderedServers.map((server) => ({
+			serverId: server.serverId,
+			serverNames: toMinecraftServerLocalizedName(server),
+		})),
 	}
 })

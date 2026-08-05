@@ -178,6 +178,72 @@ export const grantOAuthClientAccess = async (
 	})
 }
 
+export const revokeOAuthClientGrant = async (
+	userId: string,
+	grantId: string,
+): Promise<void> => {
+	const revokedAt = new Date()
+	const grant = await prisma.$transaction(async (tx) => {
+		const existing = await tx.oAuthClientGrant.findFirst({
+			where: {
+				id: grantId,
+				userId,
+			},
+		})
+
+		if (!existing) {
+			throw createApiError({
+				statusCode: 404,
+				code: 'OAUTH_GRANT_NOT_FOUND',
+			})
+		}
+
+		await tx.oAuthClientGrant.delete({
+			where: {
+				id: existing.id,
+			},
+		})
+		await tx.oAuthAuthorizationCode.updateMany({
+			where: {
+				clientId: existing.clientId,
+				userId,
+				consumedAt: null,
+			},
+			data: {
+				consumedAt: revokedAt,
+			},
+		})
+		await tx.oAuthAccessToken.updateMany({
+			where: {
+				clientId: existing.clientId,
+				userId,
+				revokedAt: null,
+			},
+			data: {
+				revokedAt,
+			},
+		})
+		await tx.oAuthRefreshToken.updateMany({
+			where: {
+				clientId: existing.clientId,
+				userId,
+				revokedAt: null,
+			},
+			data: {
+				revokedAt,
+			},
+		})
+
+		return existing
+	})
+
+	await emitEvent('oauth.client.revoked', {
+		clientId: grant.clientId,
+		userId,
+		revokedAt,
+	})
+}
+
 export const createAuthorizationCode = async (input: {
 	userId: string
 	clientId: string

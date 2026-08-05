@@ -269,7 +269,22 @@
 			},
 			"sections": {
 				"oauth": "第三方登录",
+				"oidc": "OIDC 授权",
 				"minecraft": "Minecraft 档案"
+			},
+			"oidc": {
+				"empty": "暂无 OIDC 授权",
+				"status": { "authorized": "已授权" },
+				"fields": {
+					"scopes": "授权范围",
+					"grantedAt": "授权时间",
+					"updatedAt": "最近更新"
+				},
+				"actions": { "revoke": "解除授权" },
+				"notifications": {
+					"revoked": "OIDC 授权已解除",
+					"revokeFailed": "OIDC 授权解除失败"
+				}
 			},
 			"status": {
 				"connected": "已绑定",

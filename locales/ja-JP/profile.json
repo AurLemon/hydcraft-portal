@@ -267,7 +267,22 @@
 			"empty": { "loadFailed": "連携と認可情報の読み込みに失敗しました" },
 			"sections": {
 				"oauth": "外部ログイン",
+				"oidc": "OIDC 認可",
 				"minecraft": "Minecraft プロフィール"
+			},
+			"oidc": {
+				"empty": "OIDC 認可はありません",
+				"status": { "authorized": "認可済み" },
+				"fields": {
+					"scopes": "認可スコープ",
+					"grantedAt": "認可日時",
+					"updatedAt": "最終更新"
+				},
+				"actions": { "revoke": "認可を解除" },
+				"notifications": {
+					"revoked": "OIDC 認可を解除しました",
+					"revokeFailed": "OIDC 認可の解除に失敗しました"
+				}
 			},
 			"status": {
 				"connected": "連携済み",

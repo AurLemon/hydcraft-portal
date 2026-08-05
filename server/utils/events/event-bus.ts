@@ -19,6 +19,11 @@ interface EventMap {
 		scopes: string[]
 		grantedAt: Date
 	}
+	'oauth.client.revoked': {
+		clientId: string
+		userId: string
+		revokedAt: Date
+	}
 	'user.auth-activity.observed': {
 		userId: string
 		observedAt: Date

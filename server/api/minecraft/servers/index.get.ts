@@ -7,9 +7,6 @@ export default defineEventHandler(async (event) => {
 	const servers = await prisma.minecraftServer.findMany({
 		orderBy: [
 			{
-				isDefault: 'desc',
-			},
-			{
 				sortOrder: 'asc',
 			},
 			{

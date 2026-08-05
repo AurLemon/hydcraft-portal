@@ -166,6 +166,8 @@
 			"OAUTH_ACCESS_TOKEN_INVALID": "The OAuth access token is invalid or expired.",
 			"OAUTH_REFRESH_TOKEN_INVALID": "The OAuth refresh token is invalid or expired.",
 			"OAUTH_CONSENT_INVALID": "The OAuth consent confirmation is invalid or expired.",
+			"OAUTH_GRANT_ID_REQUIRED": "The OIDC grant ID is missing.",
+			"OAUTH_GRANT_NOT_FOUND": "The OIDC grant was not found.",
 			"HYDROLINE_ID_CREATE_FAILED": "Failed to create a Hydroline ID.",
 			"HYDROLINE_ID_GENERATION_FAILED": "Failed to generate a Hydroline ID."
 		},

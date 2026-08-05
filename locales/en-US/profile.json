@@ -268,7 +268,22 @@
 			"empty": { "loadFailed": "Failed to load connections" },
 			"sections": {
 				"oauth": "Third-party sign-in",
+				"oidc": "OIDC authorizations",
 				"minecraft": "Minecraft profile"
+			},
+			"oidc": {
+				"empty": "No OIDC authorizations",
+				"status": { "authorized": "Authorized" },
+				"fields": {
+					"scopes": "Granted scopes",
+					"grantedAt": "Granted at",
+					"updatedAt": "Last updated"
+				},
+				"actions": { "revoke": "Revoke authorization" },
+				"notifications": {
+					"revoked": "OIDC authorization revoked",
+					"revokeFailed": "Failed to revoke OIDC authorization"
+				}
 			},
 			"status": {
 				"connected": "Linked",

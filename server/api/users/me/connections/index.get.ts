@@ -7,7 +7,7 @@ import {
 
 export default defineEventHandler(async (event) => {
 	const user = await requireCurrentUser(event)
-	const [accounts, minecraftCount, credential] = await Promise.all([
+	const [accounts, minecraftCount, credential, oidcGrants] = await Promise.all([
 		prisma.externalAccount.findMany({
 			where: {
 				userId: user.id,
@@ -28,6 +28,21 @@ export default defineEventHandler(async (event) => {
 			},
 			select: {
 				id: true,
+			},
+		}),
+		prisma.oAuthClientGrant.findMany({
+			where: {
+				userId: user.id,
+			},
+			include: {
+				client: {
+					select: {
+						name: true,
+					},
+				},
+			},
+			orderBy: {
+				updatedAt: 'desc',
 			},
 		}),
 	])
@@ -51,6 +66,13 @@ export default defineEventHandler(async (event) => {
 				count: minecraftCount,
 				href: '/me/minecraft',
 			},
+			oidcGrants: oidcGrants.map((grant) => ({
+				id: grant.id,
+				clientName: grant.client.name,
+				scopes: grant.scopes,
+				grantedAt: grant.grantedAt.toISOString(),
+				updatedAt: grant.updatedAt.toISOString(),
+			})),
 		},
 	}
 })

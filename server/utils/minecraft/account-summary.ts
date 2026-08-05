@@ -623,10 +623,6 @@ const buildServerViews = (
 	}
 
 	const sortedPlayers = [...players].sort((left, right) => {
-		if (left.server.isDefault !== right.server.isDefault) {
-			return left.server.isDefault ? -1 : 1
-		}
-
 		if (left.server.sortOrder !== right.server.sortOrder) {
 			return left.server.sortOrder - right.server.sortOrder
 		}
