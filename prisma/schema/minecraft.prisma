@@ -74,7 +74,7 @@ model MinecraftServer {
   partnerEntries PartnerEntry[]
   externalSyncTaskStates ExternalSyncTaskState[]
   periods      MinecraftServerPeriod[]
-  mapConfig    MinecraftServerMapConfig?
+  blueMapConfig MinecraftServerBlueMapConfig?
   archiveImportRuns ArchiveImportRun[]
 }
 
@@ -95,19 +95,12 @@ model MinecraftServerPeriod {
   @@index([endedAt])
 }
 
-model MinecraftServerMapConfig {
+model MinecraftServerBlueMapConfig {
   id                String          @id @default(cuid())
   minecraftServerId String          @unique
   minecraftServer   MinecraftServer @relation(fields: [minecraftServerId], references: [id], onDelete: Cascade)
-  enabled           Boolean         @default(false)
-  hasTiles          Boolean         @default(false)
-  tileBaseUrl       String?
-  worldName         String          @default("world")
-  mapName           String          @default("flat")
-  tileExtension     String          @default("jpg")
-  defaultCenterX    Float           @default(811)
-  defaultCenterZ    Float           @default(2933)
-  defaultZoom       Int             @default(0)
+  assetsBaseUrl     String
+  dimensions        Json?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 }

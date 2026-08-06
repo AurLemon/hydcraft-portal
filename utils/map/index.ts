@@ -1,18 +1,14 @@
-export * from './core/types'
-export { createLeafletMapController } from './core/controller'
+export * from './bluemap/types'
 export {
-	createPortalDynmapConfig,
-	hydcraftDynmapDefaults,
-	resolveDynmapTileBaseUrl,
-} from './providers/dynmap/config'
+	BlueMapAssetsError,
+	getBlueMapCapabilities,
+	isBlueMapModeEnabled,
+	loadBlueMapSettings,
+	normalizeBlueMapAssetsBaseUrl,
+	pathFromBlueMapTileCoords,
+	resolveBlueMapAssetUrl,
+} from './bluemap/assets'
 export {
-	createDynmapProvider,
-	createPortalDynmapProvider,
-} from './providers/dynmap/provider'
-export type {
-	DynmapMapConfig,
-	DynmapMapDefaults,
-	DynmapMapIdentity,
-	DynmapProjectionOptions,
-	DynmapProvider,
-} from './providers/dynmap/types'
+	BlueMapControllerImpl,
+	createBlueMapController,
+} from './bluemap/controller'

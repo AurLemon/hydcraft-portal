@@ -75,6 +75,7 @@
 							:selected-account="selectedAccount"
 							:saving-id="savingId"
 							:require-map-for-selector="true"
+							map-mode="perspective"
 							@bind="bindOpen = true"
 						/>
 					</div>

@@ -39,16 +39,9 @@ interface MinecraftServerPeriodBody {
 	sortOrder?: number
 }
 
-interface MinecraftServerMapConfigBody {
-	enabled?: boolean
-	hasTiles?: boolean
-	tileBaseUrl?: string | null
-	worldName?: string
-	mapName?: string
-	tileExtension?: string
-	defaultCenterX?: number
-	defaultCenterZ?: number
-	defaultZoom?: number
+interface MinecraftServerBlueMapConfigBody {
+	assetsBaseUrl?: string | null
+	dimensions?: string[] | null
 }
 
 export interface CreateMinecraftServerInput {
@@ -65,7 +58,7 @@ export interface CreateMinecraftServerInput {
 	isDefault?: boolean
 	sortOrder?: number
 	portalBridge?: PortalBridgeConfigBody | null
-	mapConfig?: MinecraftServerMapConfigBody | null
+	blueMapConfig?: MinecraftServerBlueMapConfigBody | null
 	periods?: MinecraftServerPeriodBody[]
 	authMe?: SourceConfigBody | null
 	luckPerms?: SourceConfigBody | null
@@ -107,6 +100,30 @@ const normalizeStatus = (
 const normalizeList = (value: string[] | undefined) =>
 	value?.map((item) => item.trim()).filter(Boolean)
 
+const normalizeBlueMapDimensions = (
+	value: MinecraftServerBlueMapConfigBody['dimensions'],
+) => {
+	if (value === undefined) return undefined
+	if (value === null) return []
+
+	const dimensions = new Map<string, string>()
+	for (const item of value) {
+		const dimension = item.trim()
+		if (!dimension) {
+			throw createBadRequestError('MINECRAFT_SERVER_BLUEMAP_DIMENSION_INVALID')
+		}
+		const key = dimension.toLowerCase()
+		if (dimensions.has(key)) {
+			throw createBadRequestError(
+				'MINECRAFT_SERVER_BLUEMAP_DIMENSION_DUPLICATE',
+			)
+		}
+		dimensions.set(key, dimension)
+	}
+
+	return [...dimensions.values()]
+}
+
 const normalizeInterval = (value: number | undefined) =>
 	value === undefined ? undefined : Math.max(1, Math.floor(value || 30))
 
@@ -134,7 +151,7 @@ const buildPeriods = (periods: MinecraftServerPeriodBody[]) =>
 
 const serverInclude = {
 	portalBridge: true,
-	mapConfig: true,
+	blueMapConfig: true,
 	periods: { orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }] },
 } satisfies Prisma.MinecraftServerInclude
 
@@ -250,21 +267,12 @@ export const createMinecraftServer = async (
 									},
 								}
 							: undefined,
-					mapConfig: input.mapConfig
+					blueMapConfig: input.blueMapConfig?.assetsBaseUrl?.trim()
 						? {
 								create: {
-									enabled: input.mapConfig.enabled ?? false,
-									hasTiles: input.mapConfig.hasTiles ?? false,
-									tileBaseUrl: input.mapConfig.tileBaseUrl?.trim() || null,
-									worldName: input.mapConfig.worldName?.trim() || 'world',
-									mapName: input.mapConfig.mapName?.trim() || 'flat',
-									tileExtension:
-										input.mapConfig.tileExtension === 'png' ? 'png' : 'jpg',
-									defaultCenterX: input.mapConfig.defaultCenterX ?? 811,
-									defaultCenterZ: input.mapConfig.defaultCenterZ ?? 2933,
-									defaultZoom: Math.max(
-										0,
-										Math.floor(input.mapConfig.defaultZoom ?? 0),
+									assetsBaseUrl: input.blueMapConfig.assetsBaseUrl.trim(),
+									dimensions: normalizeBlueMapDimensions(
+										input.blueMapConfig.dimensions,
 									),
 								},
 							}
@@ -416,48 +424,37 @@ export const updateMinecraftServer = async (
 			})
 		}
 
-		if (input.mapConfig)
-			await tx.minecraftServerMapConfig.upsert({
+		if (input.blueMapConfig === null) {
+			await tx.minecraftServerBlueMapConfig.deleteMany({
 				where: { minecraftServerId: existing.id },
-				create: {
-					minecraftServerId: existing.id,
-					enabled: input.mapConfig.enabled ?? false,
-					hasTiles: input.mapConfig.hasTiles ?? false,
-					tileBaseUrl: input.mapConfig.tileBaseUrl?.trim() || null,
-					worldName: input.mapConfig.worldName?.trim() || 'world',
-					mapName: input.mapConfig.mapName?.trim() || 'flat',
-					tileExtension:
-						input.mapConfig.tileExtension === 'png' ? 'png' : 'jpg',
-					defaultCenterX: input.mapConfig.defaultCenterX ?? 811,
-					defaultCenterZ: input.mapConfig.defaultCenterZ ?? 2933,
-					defaultZoom: Math.max(
-						0,
-						Math.floor(input.mapConfig.defaultZoom ?? 0),
-					),
-				},
-				update: {
-					enabled: input.mapConfig.enabled,
-					hasTiles: input.mapConfig.hasTiles,
-					tileBaseUrl:
-						input.mapConfig.tileBaseUrl === undefined
-							? undefined
-							: input.mapConfig.tileBaseUrl?.trim() || null,
-					worldName: optionalText(input.mapConfig.worldName) ?? undefined,
-					mapName: optionalText(input.mapConfig.mapName) ?? undefined,
-					tileExtension:
-						input.mapConfig.tileExtension === undefined
-							? undefined
-							: input.mapConfig.tileExtension === 'png'
-								? 'png'
-								: 'jpg',
-					defaultCenterX: input.mapConfig.defaultCenterX,
-					defaultCenterZ: input.mapConfig.defaultCenterZ,
-					defaultZoom:
-						input.mapConfig.defaultZoom === undefined
-							? undefined
-							: Math.max(0, Math.floor(input.mapConfig.defaultZoom || 0)),
-				},
 			})
+		} else if (
+			input.blueMapConfig?.assetsBaseUrl !== undefined ||
+			input.blueMapConfig?.dimensions !== undefined
+		) {
+			const assetsBaseUrl = input.blueMapConfig.assetsBaseUrl?.trim() || null
+			const dimensions = normalizeBlueMapDimensions(
+				input.blueMapConfig.dimensions,
+			)
+			if (assetsBaseUrl) {
+				await tx.minecraftServerBlueMapConfig.upsert({
+					where: { minecraftServerId: existing.id },
+					create: {
+						minecraftServerId: existing.id,
+						assetsBaseUrl,
+						dimensions,
+					},
+					update: {
+						assetsBaseUrl,
+						...(dimensions === undefined ? {} : { dimensions }),
+					},
+				})
+			} else {
+				await tx.minecraftServerBlueMapConfig.deleteMany({
+					where: { minecraftServerId: existing.id },
+				})
+			}
+		}
 		if (input.periods) {
 			await tx.minecraftServerPeriod.deleteMany({
 				where: { minecraftServerId: existing.id },

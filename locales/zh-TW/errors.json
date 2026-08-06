@@ -115,6 +115,8 @@
 			"MINECRAFT_SERVER_NOT_FOUND": "Minecraft 伺服器不存在。",
 			"INVALID_MINECRAFT_SERVER_ID": "伺服器 ID 格式無效。請使用 3 到 64 位的小寫字母、數字或連字號。",
 			"MINECRAFT_SERVER_REQUIRED_FIELDS_MISSING": "伺服器基礎資訊必填項不完整。",
+			"MINECRAFT_SERVER_BLUEMAP_DIMENSION_INVALID": "BlueMap 世界維度不可為空。",
+			"MINECRAFT_SERVER_BLUEMAP_DIMENSION_DUPLICATE": "BlueMap 維度對應不能重複填寫相同的維度識別。",
 			"MINECRAFT_SERVER_ID_CONFLICT": "伺服器 ID 已存在。",
 			"MINECRAFT_SERVER_CODE_CONFLICT": "伺服器代號已存在。",
 			"MINECRAFT_SERVER_PORTAL_BRIDGE_CONFLICT": "PortalBridge 識別已被其他伺服器佔用。",

@@ -3,6 +3,10 @@ import {
 	toMinecraftServerLocalizedName,
 	type MinecraftServerLocalizedName,
 } from '~/utils/minecraft/server-name'
+import {
+	resolveBlueMapDimensionAssetsUrl,
+	toBlueMapDimensions,
+} from './server-config'
 import type { createLuckPermsPrimaryGroupResolver } from '../luckperms/primary-group'
 
 interface MinecraftLocationSummary {
@@ -31,7 +35,7 @@ interface CustomStatsSummary {
 interface ObservedPlayerSummary {
 	serverId: string
 	serverNames: MinecraftServerLocalizedName | null
-	serverHasTiles: boolean
+	serverHasBlueMap: boolean
 	uuid: string
 	username: string | null
 	online: boolean
@@ -70,14 +74,10 @@ interface ServerViewSummary {
 	uuid: string | null
 	label: string
 	hasMap: boolean
-	mapConfig: {
-		tileBaseUrl: string | null
-		worldName: string
-		mapName: string
-		tileExtension: string
-		defaultCenterX: number
-		defaultCenterZ: number
-		defaultZoom: number
+	blueMapConfig: {
+		assetsBaseUrl: string
+		defaultAssetsBaseUrl: string
+		dimensions: string[]
 	} | null
 	online: boolean
 	firstJoinedAt: string | null
@@ -162,7 +162,7 @@ type AccountWithAuthMe = Prisma.MinecraftAccountGetPayload<{
 export const minecraftAccountSummaryPlayerInclude = {
 	server: {
 		include: {
-			mapConfig: true,
+			blueMapConfig: true,
 		},
 	},
 	playerData: true,
@@ -444,10 +444,7 @@ const toObservedPlayerSummary = (
 	return {
 		serverId: matchedPlayer.server.serverId,
 		serverNames: toMinecraftServerLocalizedName(matchedPlayer.server),
-		serverHasTiles: Boolean(
-			matchedPlayer.server.mapConfig?.enabled &&
-			matchedPlayer.server.mapConfig?.hasTiles,
-		),
+		serverHasBlueMap: Boolean(matchedPlayer.server.blueMapConfig),
 		uuid: matchedPlayer.uuid,
 		username:
 			matchedPlayer.username ?? matchedPlayer.playerData?.lastKnownName ?? null,
@@ -613,7 +610,7 @@ const buildServerViews = (
 		uuid: null,
 		label: 'Aggregate',
 		hasMap: false,
-		mapConfig: null,
+		blueMapConfig: null,
 		online: players.some((player) => player.online),
 		firstJoinedAt: toIsoString(aggregateFirstJoinedAt),
 		lastSeenAt: toIsoString(aggregateLastSeenAt),
@@ -636,23 +633,22 @@ const buildServerViews = (
 		serverNames: toMinecraftServerLocalizedName(player.server),
 		uuid: player.uuid,
 		label: player.server.nameZhCn,
-		hasMap: Boolean(
-			player.server.mapConfig?.enabled && player.server.mapConfig?.hasTiles,
-		),
-		mapConfig:
-			player.server.mapConfig &&
-			player.server.mapConfig.enabled &&
-			player.server.mapConfig.hasTiles
-				? {
-						tileBaseUrl: player.server.mapConfig.tileBaseUrl,
-						worldName: player.server.mapConfig.worldName,
-						mapName: player.server.mapConfig.mapName,
-						tileExtension: player.server.mapConfig.tileExtension,
-						defaultCenterX: player.server.mapConfig.defaultCenterX,
-						defaultCenterZ: player.server.mapConfig.defaultCenterZ,
-						defaultZoom: player.server.mapConfig.defaultZoom,
+		hasMap: Boolean(player.server.blueMapConfig),
+		blueMapConfig: player.server.blueMapConfig
+			? (() => {
+					const dimensions = toBlueMapDimensions(
+						player.server.blueMapConfig.dimensions,
+					)
+					return {
+						assetsBaseUrl: player.server.blueMapConfig.assetsBaseUrl,
+						defaultAssetsBaseUrl: resolveBlueMapDimensionAssetsUrl(
+							player.server.blueMapConfig.assetsBaseUrl,
+							dimensions[0] ?? '',
+						),
+						dimensions,
 					}
-				: null,
+				})()
+			: null,
 		online: player.online,
 		firstJoinedAt: toIsoString(player.playerData?.firstPlayedAt),
 		lastSeenAt: toIsoString(resolveObservedLastSeenAt(player)),

@@ -6,6 +6,10 @@ import type {
 	ServerOverviewResponse,
 } from '~/utils/server/overview'
 import { toMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
+import {
+	resolveBlueMapDimensionAssetsUrl,
+	toBlueMapDimensions,
+} from '../minecraft/server-config'
 
 const readNumber = (payload: unknown, key: string): number | null => {
 	if (!payload || typeof payload !== 'object') {
@@ -121,6 +125,7 @@ export const listPublicOverviewServers = async (): Promise<
 		],
 		include: {
 			portalBridge: true,
+			blueMapConfig: true,
 		},
 	})
 
@@ -191,6 +196,21 @@ export const listPublicOverviewServers = async (): Promise<
 					nameJaJp: server.nameJaJp,
 				}),
 				isDefault: server.isDefault,
+				blueMapConfig: server.blueMapConfig
+					? (() => {
+							const dimensions = toBlueMapDimensions(
+								server.blueMapConfig.dimensions,
+							)
+							return {
+								assetsBaseUrl: server.blueMapConfig.assetsBaseUrl,
+								defaultAssetsBaseUrl: resolveBlueMapDimensionAssetsUrl(
+									server.blueMapConfig.assetsBaseUrl,
+									dimensions[0] ?? '',
+								),
+								dimensions,
+							}
+						})()
+					: null,
 				bridgeStatus: {
 					enabled: true,
 					connected,

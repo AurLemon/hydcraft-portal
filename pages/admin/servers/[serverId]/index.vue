@@ -707,7 +707,7 @@ const headerActions = computed(() => {
 			onClick: () => (basicOpen.value = true),
 		},
 		{
-			label: t('admin.serverConfig.sections.mapConfig'),
+			label: t('admin.serverConfig.sections.blueMapConfig'),
 			icon: 'i-lucide-map',
 			color: 'primary' as const,
 			onClick: () => (mapOpen.value = true),

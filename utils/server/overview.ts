@@ -43,6 +43,11 @@ export interface ServerOverviewServerItem {
 	name: string
 	names: MinecraftServerLocalizedName
 	isDefault: boolean
+	blueMapConfig: {
+		assetsBaseUrl: string
+		defaultAssetsBaseUrl: string
+		dimensions: string[]
+	} | null
 	bridgeStatus: ServerOverviewBridgeStatus
 }
 

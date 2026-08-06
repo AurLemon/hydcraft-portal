@@ -56,7 +56,10 @@
 				/>
 
 				<ClientOnly>
-					<ServerOverviewSatelliteMapCard class="h-full" />
+					<ServerOverviewSatelliteMapCard
+						class="h-full"
+						:assets-base-url="selectedServerAssetsBaseUrl"
+					/>
 
 					<template #fallback>
 						<ServerOverviewMapShell
@@ -172,6 +175,12 @@ const overview = computed<ServerOverviewResponse | null>(() => {
 const sponsorStats = computed(() => sponsorData.value ?? null)
 const showInitialSkeleton = computed(() => pending.value && !overview.value)
 const showInitialError = computed(() => Boolean(error.value) && !overview.value)
+const selectedServerAssetsBaseUrl = computed(
+	() =>
+		overview.value?.servers.find(
+			(server) => server.serverId === selectedServerId.value,
+		)?.blueMapConfig?.defaultAssetsBaseUrl ?? null,
+)
 const sponsorSummary = computed<ServerOverviewSponsorCardSummary>(() => {
 	if (sponsorStats.value) {
 		return {

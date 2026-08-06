@@ -1,13 +1,40 @@
 import type {
 	MinecraftServer,
-	MinecraftServerMapConfig,
+	MinecraftServerBlueMapConfig,
 	MinecraftServerPeriod,
 	PortalBridgeConfig,
 } from '~/generated/prisma/client'
 
+export const toBlueMapDimensions = (value: unknown): string[] => {
+	if (!Array.isArray(value)) return []
+
+	const dimensions = new Map<string, string>()
+	for (const item of value) {
+		const legacyDimension =
+			item && typeof item === 'object'
+				? (item as Record<string, unknown>).dimension
+				: null
+		const dimension =
+			typeof item === 'string'
+				? item.trim()
+				: typeof legacyDimension === 'string'
+					? legacyDimension.trim()
+					: ''
+		if (dimension) dimensions.set(dimension.toLowerCase(), dimension)
+	}
+
+	return [...dimensions.values()]
+}
+
+export const resolveBlueMapDimensionAssetsUrl = (
+	assetsBaseUrl: string,
+	dimension: string,
+): string =>
+	`${assetsBaseUrl.replace(/\/+$/, '')}/${dimension.replace(/^\/+/, '')}`
+
 interface ServerWithConfigs extends MinecraftServer {
 	portalBridge: PortalBridgeConfig | null
-	mapConfig: MinecraftServerMapConfig | null
+	blueMapConfig: MinecraftServerBlueMapConfig | null
 	periods: MinecraftServerPeriod[]
 }
 
@@ -77,21 +104,21 @@ export const toMinecraftServerSummary = (server: ServerWithConfigs) => ({
 				hasSecret: Boolean(server.portalBridge.encryptedSecret),
 			}
 		: null,
-	mapConfig: server.mapConfig
-		? {
-				id: server.mapConfig.id,
-				enabled: server.mapConfig.enabled,
-				hasTiles: server.mapConfig.hasTiles,
-				tileBaseUrl: server.mapConfig.tileBaseUrl,
-				worldName: server.mapConfig.worldName,
-				mapName: server.mapConfig.mapName,
-				tileExtension: server.mapConfig.tileExtension,
-				defaultCenterX: server.mapConfig.defaultCenterX,
-				defaultCenterZ: server.mapConfig.defaultCenterZ,
-				defaultZoom: server.mapConfig.defaultZoom,
-				createdAt: server.mapConfig.createdAt.toISOString(),
-				updatedAt: server.mapConfig.updatedAt.toISOString(),
-			}
+	blueMapConfig: server.blueMapConfig
+		? (() => {
+				const dimensions = toBlueMapDimensions(server.blueMapConfig.dimensions)
+				return {
+					id: server.blueMapConfig.id,
+					assetsBaseUrl: server.blueMapConfig.assetsBaseUrl,
+					defaultAssetsBaseUrl: resolveBlueMapDimensionAssetsUrl(
+						server.blueMapConfig.assetsBaseUrl,
+						dimensions[0] ?? '',
+					),
+					dimensions,
+					createdAt: server.blueMapConfig.createdAt.toISOString(),
+					updatedAt: server.blueMapConfig.updatedAt.toISOString(),
+				}
+			})()
 		: null,
 	periods: server.periods.map((period) => ({
 		id: period.id,

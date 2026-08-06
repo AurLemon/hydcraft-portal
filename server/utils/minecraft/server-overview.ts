@@ -127,7 +127,7 @@ const computeMinecraftServerOverview = async (serverId: string) => {
 		},
 		include: {
 			portalBridge: true,
-			mapConfig: true,
+			blueMapConfig: true,
 			periods: {
 				orderBy: [{ sortOrder: 'asc' }, { startedAt: 'asc' }],
 			},

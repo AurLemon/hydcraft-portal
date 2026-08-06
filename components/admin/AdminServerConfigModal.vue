@@ -46,7 +46,7 @@ const modalTitle = computed(() => {
 		case 'basic':
 			return t('admin.serverConfig.sections.basic')
 		case 'map':
-			return t('admin.serverConfig.sections.mapConfig')
+			return t('admin.serverConfig.sections.blueMapConfig')
 		case 'periods':
 			return t('admin.serverConfig.sections.periods')
 		case 'portalBridge':

@@ -39,3 +39,7 @@
 *.otf binary
 *.eot binary
 *.pdf binary
+
+# Upstream rendering code is intentionally vendored and excluded from
+# GitHub language statistics.
+vendor/bluemap-webapp/** linguist-vendored

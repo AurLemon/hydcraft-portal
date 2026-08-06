@@ -115,6 +115,8 @@
 			"MINECRAFT_SERVER_NOT_FOUND": "Minecraft サーバーが見つかりません。",
 			"INVALID_MINECRAFT_SERVER_ID": "サーバー ID の形式が無効です。3 文字から 64 文字の小文字、数字、ハイフンを使用してください。",
 			"MINECRAFT_SERVER_REQUIRED_FIELDS_MISSING": "サーバー基礎情報の必須項目が不足しています。",
+			"MINECRAFT_SERVER_BLUEMAP_DIMENSION_INVALID": "BlueMap のワールドディメンションは必須です。",
+			"MINECRAFT_SERVER_BLUEMAP_DIMENSION_DUPLICATE": "同じ BlueMap ディメンション識別子は一度だけ設定できます。",
 			"MINECRAFT_SERVER_ID_CONFLICT": "サーバー ID は既に存在します。",
 			"MINECRAFT_SERVER_CODE_CONFLICT": "サーバーコードは既に存在します。",
 			"MINECRAFT_SERVER_PORTAL_BRIDGE_CONFLICT": "この PortalBridge 識別子は他のサーバーで既に使用されています。",

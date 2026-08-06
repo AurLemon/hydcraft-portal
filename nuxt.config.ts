@@ -9,6 +9,8 @@ const INVALID_MDC_OPTIMIZE_DEPS = new Set([
 	'@nuxtjs/mdc > unist-util-visit',
 	'@nuxtjs/mdc > unified',
 	'@nuxtjs/mdc > extend',
+	'@nuxtjs/mdc > parse5',
+	'@nuxtjs/mdc > debug',
 ])
 const analyticsPlugins =
 	process.env.NODE_ENV === 'production'
@@ -280,15 +282,6 @@ export default defineNuxtConfig({
 			siteUrl: '',
 			baiduStatKey: '',
 			msClarityId: '',
-			minecraftMap: {
-				dynmapTileBaseUrl: '',
-				dynmapWorldName: 'world',
-				dynmapMapName: 'flat',
-				dynmapTileExtension: 'jpg',
-				defaultCenterX: '811',
-				defaultCenterZ: '2933',
-				defaultZoom: '0',
-			},
 		},
 	},
 	content: {
@@ -327,11 +320,17 @@ export default defineNuxtConfig({
 	],
 	vite: {
 		plugins: [tailwindcss()],
+		resolve: {
+			// BlueMap and skinview3d must share one Three.js runtime. Loading
+			// two copies makes WebGL state and shader chunks diverge at runtime.
+			dedupe: ['three'],
+		},
 		optimizeDeps: {
 			include: [
+				'@microsoft/clarity',
 				'chart.js',
 				'dayjs',
-				'leaflet',
+				'dayjs/plugin/utc',
 				'lunar-typescript',
 				'skinview3d',
 				'vue-chartjs',

@@ -8,6 +8,7 @@
 				<MinecraftPresenceMap
 					:account="selectedAccount"
 					:selected-view-id="selectedViewId"
+					:map-mode="mapMode"
 				/>
 			</div>
 
@@ -60,13 +61,13 @@
 					<div class="min-w-0 flex-1">
 						<div
 							v-if="bodyRendererUrl"
-							class="relative z-10 mb-3 w-22 shrink-0 sm:absolute sm:bottom-0 sm:left-4 sm:mb-0 sm:w-26"
+							class="relative z-10 w-22 shrink-0 sm:absolute sm:bottom-0 sm:left-4 sm:w-30"
 							aria-hidden="true"
 						>
 							<img
 								:src="bodyRendererUrl"
 								:alt="displayName"
-								class="block w-full drop-shadow-sm translate-y-0 sm:translate-y-20"
+								class="block w-full drop-shadow-sm translate-y-0 sm:translate-y-16"
 							/>
 						</div>
 
@@ -216,6 +217,7 @@
 
 <script setup lang="ts">
 import { getMinecraftBodyRendererUrl } from '~/utils/minecraft/body-renderer'
+import type { BlueMapViewMode } from '~/utils/map'
 import {
 	AGGREGATE_SERVER_VIEW_ID,
 	formatMinecraftDateTime,
@@ -234,6 +236,7 @@ interface MinecraftAccountsContentProps {
 	savingId: string | null
 	requireMapForSelector?: boolean
 	showBindAction?: boolean
+	mapMode?: BlueMapViewMode
 }
 
 interface SummaryItem {
@@ -246,6 +249,7 @@ interface SummaryItem {
 const props = withDefaults(defineProps<MinecraftAccountsContentProps>(), {
 	requireMapForSelector: false,
 	showBindAction: true,
+	mapMode: 'perspective',
 })
 
 const emit = defineEmits<{

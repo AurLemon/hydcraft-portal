@@ -49,7 +49,13 @@
 		},
 		"map": {
 			"locationUnavailable": "このアカウントにはまだ表示できる最近の座標がありません。",
-			"providerUnavailable": "ベースマップが未設定です。先に Dynmap tiles の環境変数を設定してください。"
+			"providerUnavailable": "このサーバーには BlueMap マップが設定されていません。",
+			"unsupportedDimension": "現在の座標はまだ対応していないディメンションにあります。",
+			"viewerLoadFailed": "BlueMap マップを一時的に読み込めません。",
+			"viewMode": "マップ視点",
+			"flat": "平面",
+			"perspective": "透視",
+			"freeFlight": "自由飛行"
 		},
 		"toolbar": {
 			"bindTip": "バインドを追加",

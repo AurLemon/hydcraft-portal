@@ -13,6 +13,7 @@
 			</h3>
 
 			<UButton
+				v-if="openTo"
 				class="pointer-events-auto"
 				:class="resolvedOpenLabelClass"
 				color="neutral"
@@ -36,13 +37,14 @@
 interface Props {
 	title: string
 	openLabel: string
-	openTo: string
+	openTo?: string | null
 	bodyClass?: string
 	titleClass?: string
 	openLabelClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
+	openTo: null,
 	bodyClass: 'h-54',
 	titleClass: '',
 	openLabelClass: '',

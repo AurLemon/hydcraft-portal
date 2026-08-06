@@ -79,68 +79,50 @@
 				class="grid w-full gap-3 break-inside-avoid"
 			>
 				<div v-if="showSectionHeading" :class="profileSectionTitleClass">
-					{{ t('admin.serverConfig.sections.mapConfig') }}
+					{{ t('admin.serverConfig.sections.blueMapConfig') }}
 				</div>
 				<div :class="cardClass" class="grid gap-4 md:grid-cols-2">
 					<label :class="[fieldClass, 'md:col-span-2']">
+						<span>{{ t('admin.serverConfig.fields.assetsBaseUrl') }}</span>
+						<UInput v-model="form.blueMapConfig.assetsBaseUrl" class="w-full" />
+					</label>
+					<div class="grid gap-3 md:col-span-2">
 						<div class="flex items-center justify-between gap-3">
-							<span>{{ t('admin.serverConfig.fields.mapEnabled') }}</span>
-							<USwitch v-model="form.mapConfig.enabled" />
+							<span :class="fieldClass">
+								{{ t('admin.serverConfig.fields.blueMapDimensions') }}
+							</span>
+							<UButton
+								type="button"
+								size="xs"
+								color="neutral"
+								variant="soft"
+								icon="i-lucide-plus"
+								@click="addBlueMapDimension"
+							>
+								{{ t('admin.serverConfig.actions.addBlueMapDimension') }}
+							</UButton>
 						</div>
-					</label>
-					<label :class="[fieldClass, 'md:col-span-2']">
-						<div class="flex items-center justify-between gap-3">
-							<span>{{ t('admin.serverConfig.fields.hasTiles') }}</span>
-							<USwitch v-model="form.mapConfig.hasTiles" />
+						<div
+							v-for="(dimension, index) in form.blueMapConfig.dimensions"
+							:key="dimension.localId"
+							class="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]"
+						>
+							<UInput
+								v-model="dimension.dimension"
+								:placeholder="t('admin.serverConfig.fields.blueMapDimensionId')"
+							/>
+							<UButton
+								type="button"
+								color="error"
+								variant="ghost"
+								icon="i-lucide-trash-2"
+								:aria-label="
+									t('admin.serverConfig.actions.removeBlueMapDimension')
+								"
+								@click="removeBlueMapDimension(index)"
+							/>
 						</div>
-					</label>
-					<label :class="[fieldClass, 'md:col-span-2']">
-						<span>{{ t('admin.serverConfig.fields.tileBaseUrl') }}</span>
-						<UInput v-model="form.mapConfig.tileBaseUrl" class="w-full" />
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.worldName') }}</span>
-						<UInput v-model="form.mapConfig.worldName" class="w-full" />
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.mapName') }}</span>
-						<UInput v-model="form.mapConfig.mapName" class="w-full" />
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.tileExtension') }}</span>
-						<USelect
-							v-model="form.mapConfig.tileExtension"
-							:items="tileExtensionItems"
-							value-key="value"
-							label-key="label"
-							class="w-full"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.defaultZoom') }}</span>
-						<UInput
-							v-model.number="form.mapConfig.defaultZoom"
-							class="w-full"
-							type="number"
-							min="0"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.defaultCenterX') }}</span>
-						<UInput
-							v-model.number="form.mapConfig.defaultCenterX"
-							class="w-full"
-							type="number"
-						/>
-					</label>
-					<label :class="fieldClass">
-						<span>{{ t('admin.serverConfig.fields.defaultCenterZ') }}</span>
-						<UInput
-							v-model.number="form.mapConfig.defaultCenterZ"
-							class="w-full"
-							type="number"
-						/>
-					</label>
+					</div>
 				</div>
 			</section>
 
@@ -337,16 +319,14 @@ interface PortalBridgeForm {
 	coreSyncIntervalMinutes: number
 }
 
-interface ServerMapConfigForm {
-	enabled: boolean
-	hasTiles: boolean
-	tileBaseUrl: string
-	worldName: string
-	mapName: string
-	tileExtension: 'jpg' | 'png'
-	defaultCenterX: number
-	defaultCenterZ: number
-	defaultZoom: number
+interface ServerBlueMapConfigForm {
+	assetsBaseUrl: string
+	dimensions: ServerBlueMapDimensionForm[]
+}
+
+interface ServerBlueMapDimensionForm {
+	localId: string
+	dimension: string
 }
 
 interface ServerPeriodForm {
@@ -372,7 +352,7 @@ interface ServerForm {
 	status: string
 	isDefault: boolean
 	sortOrder: number
-	mapConfig: ServerMapConfigForm
+	blueMapConfig: ServerBlueMapConfigForm
 	periods: ServerPeriodForm[]
 	portalBridge: PortalBridgeForm
 }
@@ -406,6 +386,7 @@ const { notifyError } = useAdminToast()
 const saving = ref(false)
 const originalServerId = ref('')
 let periodCounter = 0
+let blueMapDimensionCounter = 0
 const submitMode = computed(() => (props.server ? 'edit' : 'create'))
 const formMode = computed(() => props.mode)
 const visibleSections = computed(() => ({
@@ -438,10 +419,6 @@ const serverStatusItems = computed(() => [
 		label: t('admin.serverConfig.values.serverStatus.archived'),
 		value: 'ARCHIVED',
 	},
-])
-const tileExtensionItems = computed(() => [
-	{ label: 'JPG', value: 'jpg' },
-	{ label: 'PNG', value: 'png' },
 ])
 const periodKindItems = computed(() => [
 	{ label: t('admin.serverConfig.values.periodKind.live'), value: 'LIVE' },
@@ -482,6 +459,19 @@ const createPeriodForm = (index = 0): ServerPeriodForm => ({
 	sortOrder: index,
 })
 
+const createBlueMapDimensionForm = (): ServerBlueMapDimensionForm => ({
+	localId: `bluemap-dimension-${blueMapDimensionCounter++}`,
+	dimension: '',
+})
+
+const addBlueMapDimension = (): void => {
+	form.blueMapConfig.dimensions.push(createBlueMapDimensionForm())
+}
+
+const removeBlueMapDimension = (index: number): void => {
+	form.blueMapConfig.dimensions.splice(index, 1)
+}
+
 const createEmptyForm = (): ServerForm => ({
 	serverId: '',
 	code: '',
@@ -495,16 +485,9 @@ const createEmptyForm = (): ServerForm => ({
 	status: 'ONLINE',
 	isDefault: false,
 	sortOrder: 0,
-	mapConfig: {
-		enabled: false,
-		hasTiles: false,
-		tileBaseUrl: '',
-		worldName: 'world',
-		mapName: 'flat',
-		tileExtension: 'jpg',
-		defaultCenterX: 811,
-		defaultCenterZ: 2933,
-		defaultZoom: 0,
+	blueMapConfig: {
+		assetsBaseUrl: '',
+		dimensions: [],
 	},
 	periods: [],
 	portalBridge: {
@@ -537,17 +520,13 @@ const resetForm = (): void => {
 				status: source.status,
 				isDefault: source.isDefault,
 				sortOrder: source.sortOrder,
-				mapConfig: {
-					enabled: source.mapConfig?.enabled ?? false,
-					hasTiles: source.mapConfig?.hasTiles ?? false,
-					tileBaseUrl: source.mapConfig?.tileBaseUrl ?? '',
-					worldName: source.mapConfig?.worldName ?? 'world',
-					mapName: source.mapConfig?.mapName ?? 'flat',
-					tileExtension:
-						source.mapConfig?.tileExtension === 'png' ? 'png' : 'jpg',
-					defaultCenterX: source.mapConfig?.defaultCenterX ?? 811,
-					defaultCenterZ: source.mapConfig?.defaultCenterZ ?? 2933,
-					defaultZoom: source.mapConfig?.defaultZoom ?? 0,
+				blueMapConfig: {
+					assetsBaseUrl: source.blueMapConfig?.assetsBaseUrl ?? '',
+					dimensions:
+						source.blueMapConfig?.dimensions.map((dimension) => ({
+							localId: `bluemap-dimension-${blueMapDimensionCounter++}`,
+							dimension,
+						})) ?? [],
 				},
 				periods: source.periods.map((period, index) => ({
 					id: period.id,
@@ -598,16 +577,11 @@ const buildPayload = () => ({
 		: {}),
 	...(visibleSections.value.map
 		? {
-				mapConfig: {
-					enabled: form.mapConfig.enabled,
-					hasTiles: form.mapConfig.hasTiles,
-					tileBaseUrl: form.mapConfig.tileBaseUrl || null,
-					worldName: form.mapConfig.worldName,
-					mapName: form.mapConfig.mapName,
-					tileExtension: form.mapConfig.tileExtension,
-					defaultCenterX: form.mapConfig.defaultCenterX,
-					defaultCenterZ: form.mapConfig.defaultCenterZ,
-					defaultZoom: form.mapConfig.defaultZoom,
+				blueMapConfig: {
+					assetsBaseUrl: form.blueMapConfig.assetsBaseUrl || null,
+					dimensions: form.blueMapConfig.dimensions.map(
+						(dimension) => dimension.dimension,
+					),
 				},
 			}
 		: {}),

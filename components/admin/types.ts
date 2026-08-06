@@ -33,17 +33,11 @@ export interface MinecraftServerPeriodSummary {
 	updatedAt: string
 }
 
-export interface MinecraftServerMapConfigSummary {
+export interface MinecraftServerBlueMapConfigSummary {
 	id: string
-	enabled: boolean
-	hasTiles: boolean
-	tileBaseUrl: string | null
-	worldName: string
-	mapName: string
-	tileExtension: string
-	defaultCenterX: number
-	defaultCenterZ: number
-	defaultZoom: number
+	assetsBaseUrl: string
+	defaultAssetsBaseUrl: string
+	dimensions: string[]
 	createdAt: string
 	updatedAt: string
 }
@@ -78,7 +72,7 @@ export interface MinecraftServerSummary {
 	createdAt: string
 	updatedAt: string
 	portalBridge: PortalBridgeSummary | null
-	mapConfig: MinecraftServerMapConfigSummary | null
+	blueMapConfig: MinecraftServerBlueMapConfigSummary | null
 	periods: MinecraftServerPeriodSummary[]
 	authMe: MysqlSourceSummary | null
 	luckPerms: MysqlSourceSummary | null

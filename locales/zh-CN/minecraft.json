@@ -49,7 +49,13 @@
 		},
 		"map": {
 			"locationUnavailable": "当前账号还没有可展示的最近坐标。",
-			"providerUnavailable": "地图底图尚未配置，请先在环境变量中设置 Dynmap tiles。"
+			"providerUnavailable": "该服务器尚未配置 BlueMap 地图。",
+			"unsupportedDimension": "当前坐标位于暂不支持的维度。",
+			"viewerLoadFailed": "BlueMap 地图暂时无法加载。",
+			"viewMode": "地图视角",
+			"flat": "平面",
+			"perspective": "透视",
+			"freeFlight": "自由飞行"
 		},
 		"toolbar": {
 			"bindTip": "新建绑定",

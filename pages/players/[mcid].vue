@@ -43,6 +43,7 @@
 						:saving-id="null"
 						:require-map-for-selector="true"
 						:show-bind-action="false"
+						map-mode="perspective"
 					/>
 				</div>
 			</template>

@@ -1,9 +1,7 @@
 <template>
 	<div class="group block">
-		<a
-			href="https://map.oxygen.hydcraft.cn"
-			target="_blank"
-			rel="noreferrer"
+		<NuxtLink
+			to="/server"
 			class="block w-full cursor-pointer text-left"
 			:aria-label="t('content.serverOverview.cards.seasonEight.openMap')"
 		>
@@ -45,7 +43,7 @@
 					</div>
 				</div>
 			</section>
-		</a>
+		</NuxtLink>
 	</div>
 </template>
 

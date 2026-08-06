@@ -17,7 +17,7 @@ export interface MinecraftLocationSummary {
 export interface MinecraftObservedPlayerSummary {
 	serverId: string
 	serverNames: MinecraftServerLocalizedName | null
-	serverHasTiles: boolean
+	serverHasBlueMap: boolean
 	uuid: string
 	username: string | null
 	online: boolean
@@ -47,14 +47,10 @@ export interface MinecraftAccountServerView {
 	uuid: string | null
 	label: string
 	hasMap: boolean
-	mapConfig: {
-		tileBaseUrl: string | null
-		worldName: string
-		mapName: string
-		tileExtension: string
-		defaultCenterX: number
-		defaultCenterZ: number
-		defaultZoom: number
+	blueMapConfig: {
+		assetsBaseUrl: string
+		defaultAssetsBaseUrl: string
+		dimensions: string[]
 	} | null
 	online: boolean
 	firstJoinedAt: string | null

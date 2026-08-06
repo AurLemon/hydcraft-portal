@@ -4,7 +4,11 @@
 		@mouseenter="handleUserInteraction"
 		@mousemove="handleUserInteraction"
 	>
-		<PortalDynmapViewport />
+		<BlueMapViewport
+			:assets-base-url="assetsBaseUrl ?? ''"
+			:initial-distance="1500"
+			mode="perspective"
+		/>
 
 		<div
 			class="pointer-events-none absolute inset-x-0 bottom-0 z-998 h-2/3 bg-linear-to-t from-slate-500/78 dark:from-slate-950/78 via-transparent dark:via-slate-950/1 to-transparent backdrop-blur-xl mask-[linear-gradient(to_top,black_0%,rgba(0,0,0,0.96)_18%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0.38)_56%,transparent_100%)]"
@@ -86,6 +90,14 @@
 </template>
 
 <script setup lang="ts">
+interface Props {
+	assetsBaseUrl?: string | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	assetsBaseUrl: null,
+})
+const assetsBaseUrl = computed(() => props.assetsBaseUrl?.trim() || null)
 const { t } = useI18n()
 const RULE_COUNT = 6
 

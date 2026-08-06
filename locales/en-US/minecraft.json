@@ -49,7 +49,13 @@
 		},
 		"map": {
 			"locationUnavailable": "No recent coordinates are available for this account yet.",
-			"providerUnavailable": "The base map is not configured yet. Set the Dynmap tiles env first."
+			"providerUnavailable": "This server has not configured a BlueMap yet.",
+			"unsupportedDimension": "This location is in a dimension that is not supported yet.",
+			"viewerLoadFailed": "The BlueMap viewer is temporarily unavailable.",
+			"viewMode": "Map view mode",
+			"flat": "Flat",
+			"perspective": "Perspective",
+			"freeFlight": "Free flight"
 		},
 		"toolbar": {
 			"bindTip": "Add binding",
