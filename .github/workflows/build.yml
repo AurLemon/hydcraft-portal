@@ -2,6 +2,12 @@ name: CI
 
 on:
   workflow_dispatch:
+    inputs:
+      sync_cnb:
+        description: 'Sync the v2 branch to CNB'
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - '**'
@@ -44,7 +50,7 @@ jobs:
 
   sync:
     name: Sync CNB
-    if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/v2') || (github.event_name == 'workflow_dispatch' && inputs.sync_cnb)
     runs-on: ubuntu-latest
     concurrency:
       group: cnb-v2-sync
@@ -55,6 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: v2
           fetch-depth: 0
 
       - name: Validate CNB configuration
