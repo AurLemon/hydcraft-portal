@@ -8,6 +8,15 @@
 					{{ t('admin.historicalPlayers.title') }}
 				</h1>
 			</div>
+			<UButton
+				type="button"
+				color="primary"
+				icon="i-lucide-user-plus"
+				class="self-start md:self-end"
+				@click="createModalOpen = true"
+			>
+				{{ t('admin.historicalPlayers.actions.create') }}
+			</UButton>
 		</div>
 
 		<div
@@ -206,6 +215,79 @@
 				@update:page-size="setPageSize"
 			/>
 		</div>
+
+		<UModal v-model:open="createModalOpen" :ui="{ content: 'max-w-md' }">
+			<template #content>
+				<div class="p-5">
+					<div class="flex items-start justify-between gap-4">
+						<h2 class="text-xl font-semibold text-slate-950 dark:text-white">
+							{{ t('admin.historicalPlayers.createModal.title') }}
+						</h2>
+						<UButton
+							icon="i-lucide-x"
+							color="neutral"
+							variant="ghost"
+							:aria-label="t('admin.actions.cancel')"
+							@click="createModalOpen = false"
+						/>
+					</div>
+					<p class="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
+						{{ t('admin.historicalPlayers.createModal.description') }}
+					</p>
+					<UInput
+						v-model="historicalUsername"
+						class="mt-4 w-full"
+						icon="i-lucide-user-round"
+						:placeholder="
+							t('admin.historicalPlayers.createModal.usernamePlaceholder')
+						"
+						autocomplete="off"
+					/>
+					<div class="mt-2 min-h-5">
+						<div
+							v-if="historicalUuidResolving"
+							class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
+						>
+							<UIcon
+								name="i-lucide-loader-circle"
+								class="size-4 animate-spin"
+							/>
+							{{ t('admin.historicalPlayers.createModal.calculating') }}
+						</div>
+						<code
+							v-else-if="historicalUuid"
+							class="block break-all text-xs text-slate-500 dark:text-slate-400"
+						>
+							{{ historicalUuid }}
+						</code>
+						<p v-else class="text-xs text-slate-500 dark:text-slate-400">
+							{{
+								historicalUuidError ??
+								t('admin.historicalPlayers.createModal.waiting')
+							}}
+						</p>
+					</div>
+					<div class="mt-5 flex items-center justify-end gap-3">
+						<UButton
+							color="neutral"
+							variant="ghost"
+							@click="createModalOpen = false"
+						>
+							{{ t('admin.actions.cancel') }}
+						</UButton>
+						<UButton
+							color="primary"
+							icon="i-lucide-user-plus"
+							:loading="createHistoricalLoading"
+							:disabled="!historicalUuid || historicalUuidResolving"
+							@click="createHistoricalPlayer"
+						>
+							{{ t('admin.historicalPlayers.createModal.confirm') }}
+						</UButton>
+					</div>
+				</div>
+			</template>
+		</UModal>
 
 		<UModal v-model:open="assignModalOpen" :ui="{ content: 'max-w-md' }">
 			<template #content>
@@ -445,6 +527,13 @@ const sortDirectionItems = [
 ]
 
 const assignModalOpen = ref(false)
+const createModalOpen = ref(false)
+const createHistoricalLoading = ref(false)
+const historicalUsername = ref('')
+const historicalUuid = ref<string | null>(null)
+const historicalUuidResolving = ref(false)
+const historicalUuidError = ref<string | null>(null)
+const minecraftUsernamePattern = /^[A-Za-z0-9_]{3,16}$/
 const pendingAssignAccountId = ref<string | null>(null)
 const assignUsername = ref<string | undefined>(undefined)
 const assignUserSearchTerm = ref('')
@@ -605,6 +694,104 @@ const unassignAccount = async (accountId: string) => {
 		actionType.value = null
 	}
 }
+
+const createHistoricalPlayer = async () => {
+	if (!historicalUuid.value || historicalUuidResolving.value) {
+		return
+	}
+
+	createHistoricalLoading.value = true
+	try {
+		const result = await $fetch<{ uuid: string; created: boolean }>(
+			'/api/admin/historical-players',
+			{
+				method: 'POST',
+				body: {
+					username: historicalUsername.value,
+				},
+			},
+		)
+		await refresh()
+		notifySuccess({
+			title: t(
+				result.created
+					? 'admin.historicalPlayers.notifications.created'
+					: 'admin.historicalPlayers.notifications.existing',
+				{ uuid: result.uuid },
+			),
+		})
+		createModalOpen.value = false
+		historicalUsername.value = ''
+	} catch (createError) {
+		notifyError(createError, {
+			title: t('admin.historicalPlayers.notifications.createFailed'),
+		})
+	} finally {
+		createHistoricalLoading.value = false
+	}
+}
+
+let historicalUuidDebounce: ReturnType<typeof setTimeout> | null = null
+let historicalUuidRequestId = 0
+
+const resolveHistoricalUuid = async (username: string, requestId: number) => {
+	historicalUuidResolving.value = true
+	try {
+		const identity = await $fetch<{ uuid: string }>(
+			'/api/admin/historical-players/offline-uuid',
+			{
+				query: { username },
+			},
+		)
+		if (requestId !== historicalUuidRequestId) {
+			return
+		}
+		historicalUuid.value = identity.uuid
+	} catch {
+		if (requestId !== historicalUuidRequestId) {
+			return
+		}
+		historicalUuidError.value = t(
+			'admin.historicalPlayers.createModal.invalidUsername',
+		)
+	} finally {
+		if (requestId === historicalUuidRequestId) {
+			historicalUuidResolving.value = false
+		}
+	}
+}
+
+watch(historicalUsername, (value) => {
+	historicalUuidRequestId += 1
+	const requestId = historicalUuidRequestId
+	historicalUuid.value = null
+	historicalUuidError.value = null
+	if (historicalUuidDebounce) {
+		clearTimeout(historicalUuidDebounce)
+	}
+
+	const username = value.trim()
+	if (!username) {
+		return
+	}
+	if (!minecraftUsernamePattern.test(username)) {
+		historicalUuidError.value = t(
+			'admin.historicalPlayers.createModal.invalidUsername',
+		)
+		return
+	}
+
+	historicalUuidResolving.value = true
+	historicalUuidDebounce = setTimeout(() => {
+		void resolveHistoricalUuid(username, requestId)
+	}, 350)
+})
+
+onBeforeUnmount(() => {
+	if (historicalUuidDebounce) {
+		clearTimeout(historicalUuidDebounce)
+	}
+})
 
 const getServerRefs = (account: AdminHistoricalPlayer) =>
 	account.serverViews

@@ -630,7 +630,8 @@
 			},
 			"actions": {
 				"assign": "Assign",
-				"unassign": "Unassign"
+				"unassign": "Unassign",
+				"create": "Add historical player"
 			},
 			"empty": {
 				"unassigned": "Unassigned"
@@ -640,11 +641,23 @@
 				"description": "Enter the Hydroline username to bind.",
 				"username": "Hydroline username"
 			},
+			"createModal": {
+				"title": "Add historical player",
+				"description": "Enter a Minecraft ID to create its historical archive using the offline UUID rule and include matching server data automatically.",
+				"usernamePlaceholder": "Enter Minecraft ID",
+				"waiting": "Enter a Minecraft ID to calculate automatically",
+				"calculating": "Calculating…",
+				"invalidUsername": "Use 3 to 16 letters, numbers, or underscores.",
+				"confirm": "Create historical archive"
+			},
 			"notifications": {
 				"assigned": "Historical archive assigned",
 				"assignFailed": "Failed to assign historical archive",
 				"unassigned": "Historical archive unassigned",
-				"unassignFailed": "Failed to unassign historical archive"
+				"unassignFailed": "Failed to unassign historical archive",
+				"created": "Historical archive created: {uuid}",
+				"existing": "Historical archive already exists: {uuid}",
+				"createFailed": "Failed to create historical archive"
 			}
 		},
 		"users": {

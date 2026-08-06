@@ -640,7 +640,8 @@
 			},
 			"actions": {
 				"assign": "割り当て",
-				"unassign": "割り当て解除"
+				"unassign": "割り当て解除",
+				"create": "履歴プレイヤーを追加"
 			},
 			"empty": {
 				"unassigned": "未割り当て"
@@ -650,11 +651,23 @@
 				"description": "紐付ける Hydroline ユーザー名を入力してください。",
 				"username": "Hydroline ユーザー名"
 			},
+			"createModal": {
+				"title": "履歴プレイヤーを追加",
+				"description": "Minecraft ID を入力すると、オフライン UUID ルールで履歴アーカイブを作成し、一致するサーバーデータを自動で集計します。",
+				"usernamePlaceholder": "Minecraft ID を入力",
+				"waiting": "Minecraft ID を入力すると自動計算されます",
+				"calculating": "計算中…",
+				"invalidUsername": "英字、数字、アンダースコアを 3～16 文字で入力してください。",
+				"confirm": "履歴アーカイブを作成"
+			},
 			"notifications": {
 				"assigned": "履歴アーカイブを割り当てました",
 				"assignFailed": "履歴アーカイブの割り当てに失敗しました",
 				"unassigned": "履歴アーカイブの割り当てを解除しました",
-				"unassignFailed": "履歴アーカイブの割り当て解除に失敗しました"
+				"unassignFailed": "履歴アーカイブの割り当て解除に失敗しました",
+				"created": "履歴アーカイブを作成しました：{uuid}",
+				"existing": "履歴アーカイブは既に存在します：{uuid}",
+				"createFailed": "履歴アーカイブの作成に失敗しました"
 			}
 		},
 		"users": {

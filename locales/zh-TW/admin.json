@@ -640,7 +640,8 @@
 			},
 			"actions": {
 				"assign": "指派",
-				"unassign": "取消指派"
+				"unassign": "取消指派",
+				"create": "新增歷史玩家"
 			},
 			"empty": {
 				"unassigned": "未指派"
@@ -650,11 +651,23 @@
 				"description": "輸入要綁定的 Hydroline 使用者名稱。",
 				"username": "Hydroline 使用者名稱"
 			},
+			"createModal": {
+				"title": "新增歷史玩家",
+				"description": "輸入 Minecraft ID 後，系統會依離線 UUID 規則建立歷史檔案，並自動納入現有伺服器資料彙總。",
+				"usernamePlaceholder": "輸入 Minecraft ID",
+				"waiting": "輸入 Minecraft ID 後自動計算",
+				"calculating": "正在計算…",
+				"invalidUsername": "請輸入 3 到 16 位英文字母、數字或底線。",
+				"confirm": "建立歷史檔案"
+			},
 			"notifications": {
 				"assigned": "歷史檔案已指派",
 				"assignFailed": "歷史檔案指派失敗",
 				"unassigned": "歷史檔案已取消指派",
-				"unassignFailed": "取消歷史檔案指派失敗"
+				"unassignFailed": "取消歷史檔案指派失敗",
+				"created": "歷史檔案已建立：{uuid}",
+				"existing": "歷史檔案已存在：{uuid}",
+				"createFailed": "建立歷史檔案失敗"
 			}
 		},
 		"users": {

@@ -630,7 +630,8 @@
 			},
 			"actions": {
 				"assign": "指派",
-				"unassign": "取消指派"
+				"unassign": "取消指派",
+				"create": "添加历史玩家"
 			},
 			"empty": {
 				"unassigned": "未指派"
@@ -640,11 +641,23 @@
 				"description": "输入要绑定的 Hydroline 用户名。",
 				"username": "Hydroline 用户名"
 			},
+			"createModal": {
+				"title": "添加历史玩家",
+				"description": "输入 Minecraft ID 后，系统会按离线 UUID 规则创建历史档案，并自动纳入已有服务器数据汇总。",
+				"usernamePlaceholder": "输入 Minecraft ID",
+				"waiting": "输入 Minecraft ID 后自动计算",
+				"calculating": "正在计算…",
+				"invalidUsername": "请输入 3 到 16 位字母、数字或下划线。",
+				"confirm": "创建历史档案"
+			},
 			"notifications": {
 				"assigned": "历史档案已指派",
 				"assignFailed": "历史档案指派失败",
 				"unassigned": "历史档案已取消指派",
-				"unassignFailed": "取消历史档案指派失败"
+				"unassignFailed": "取消历史档案指派失败",
+				"created": "历史档案已创建：{uuid}",
+				"existing": "历史档案已存在：{uuid}",
+				"createFailed": "创建历史档案失败"
 			}
 		},
 		"users": {
