@@ -273,7 +273,6 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				import('../../../vendor/bluemap-webapp/v5.3/map/Map.js'),
 				import('../../../vendor/bluemap-webapp/v5.3/controls/map/MapControls.js'),
 				import('../../../vendor/bluemap-webapp/v5.3/controls/freeflight/FreeFlightControls.js'),
-				// @ts-expect-error BlueMap's pinned Three r147 package ships without declarations.
 				import('three'),
 				import('../../../vendor/bluemap-webapp/v5.3/util/Utils.js'),
 			])
