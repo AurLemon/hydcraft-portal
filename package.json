@@ -79,6 +79,7 @@
 		"@types/cloudflare-turnstile": "^0.2.2",
 		"@types/nodemailer": "^8.0.1",
 		"@types/pg": "^8.20.0",
+		"@types/three": "0.156.0",
 		"eslint": "10.1.0",
 		"prettier": "3.8.1",
 		"puppeteer-core": "^25.1.0",

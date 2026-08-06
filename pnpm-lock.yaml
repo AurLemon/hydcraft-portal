@@ -138,6 +138,9 @@ importers:
       '@types/pg':
         specifier: ^8.20.0
         version: 8.20.0
+      '@types/three':
+        specifier: 0.156.0
+        version: 0.156.0
       eslint:
         specifier: 10.1.0
         version: 10.1.0(jiti@2.7.0)
