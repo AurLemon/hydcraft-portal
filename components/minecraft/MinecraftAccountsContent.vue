@@ -166,6 +166,27 @@
 									</UTooltip>
 								</div>
 							</div>
+							<div class="relative mt-3 sm:hidden">
+								<Transition name="stats-fade" mode="out-in">
+									<div
+										:key="statsCarouselIndex"
+										class="inline-flex items-baseline gap-1.5 text-xs text-white/90"
+									>
+										<span
+											class="inline-flex items-baseline gap-1 text-white/70"
+										>
+											<UIcon
+												:name="currentStat.icon"
+												class="size-3 translate-y-0.5"
+											/>
+											{{ currentStat.label }}
+										</span>
+										<span class="text-[17px] font-medium">
+											{{ currentStat.value }}
+										</span>
+									</div>
+								</Transition>
+							</div>
 						</div>
 					</div>
 
@@ -260,6 +281,9 @@ const emit = defineEmits<{
 const { locale, t } = useI18n()
 const selectedViewId = ref<string | null>(null)
 const serverMenuOpen = ref(false)
+const isMobileViewport = ref(false)
+let mobileViewportMediaQuery: MediaQueryList | null = null
+let statsCarouselTimer: ReturnType<typeof setInterval> | null = null
 
 const formatDateTime = (value: string | null): string =>
 	formatMinecraftDateTime(
@@ -474,6 +498,41 @@ const summaryItems = computed<SummaryItem[]>(() => [
 	},
 ])
 
+const statsCarouselIndex = ref(0)
+const currentStat = computed(
+	() =>
+		summaryItems.value[statsCarouselIndex.value] ??
+		summaryItems.value[0] ?? { key: '', label: '', value: '', icon: '' },
+)
+
+const stopStatsCarousel = () => {
+	if (statsCarouselTimer) {
+		clearInterval(statsCarouselTimer)
+		statsCarouselTimer = null
+	}
+}
+
+const startStatsCarousel = () => {
+	stopStatsCarousel()
+
+	if (
+		!import.meta.client ||
+		!isMobileViewport.value ||
+		summaryItems.value.length <= 1
+	) {
+		return
+	}
+
+	statsCarouselTimer = setInterval(() => {
+		statsCarouselIndex.value =
+			(statsCarouselIndex.value + 1) % summaryItems.value.length
+	}, 3000)
+}
+
+const syncMobileViewportState = () => {
+	isMobileViewport.value = mobileViewportMediaQuery?.matches ?? false
+}
+
 const serverViewItems = computed(() =>
 	currentAccount.value
 		? listServerViewItems(currentAccount.value, {
@@ -522,4 +581,57 @@ watch(
 	},
 	{ immediate: true },
 )
+
+watch(summaryItems, (items) => {
+	if (statsCarouselIndex.value >= items.length) {
+		statsCarouselIndex.value = 0
+	}
+
+	startStatsCarousel()
+})
+
+watch(isMobileViewport, startStatsCarousel)
+
+onMounted(() => {
+	if (import.meta.client) {
+		mobileViewportMediaQuery = window.matchMedia('(max-width: 639px)')
+		syncMobileViewportState()
+		mobileViewportMediaQuery.addEventListener('change', syncMobileViewportState)
+	}
+
+	startStatsCarousel()
+})
+
+onBeforeUnmount(() => {
+	stopStatsCarousel()
+	mobileViewportMediaQuery?.removeEventListener(
+		'change',
+		syncMobileViewportState,
+	)
+	mobileViewportMediaQuery = null
+})
 </script>
+
+<style scoped>
+.stats-fade-enter-active,
+.stats-fade-leave-active {
+	transition:
+		opacity 280ms ease-out,
+		transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+		filter 280ms ease-out;
+}
+
+.stats-fade-enter-from,
+.stats-fade-leave-to {
+	opacity: 0;
+	filter: blur(2px);
+	transform: translateY(6px);
+}
+
+.stats-fade-enter-to,
+.stats-fade-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	transform: translateY(0);
+}
+</style>
