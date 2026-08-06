@@ -5,6 +5,7 @@
 			:assets-base-url="effectiveAssetsBaseUrl ?? ''"
 			:focus="mapFocus"
 			:player="player"
+			:follow-key="followKey"
 			:mode="mapMode"
 		/>
 
@@ -114,6 +115,10 @@ const mapFocus = computed(() => {
 		dimension: location.dimension ?? location.worldName ?? undefined,
 	}
 })
+
+const followKey = computed(
+	() => `${props.account.id}:${selectedServerView.value?.id ?? ''}`,
+)
 
 const player = computed(() => {
 	const location = displayLocation.value

@@ -51,6 +51,7 @@ interface Props {
 	initialDistance?: number | null
 	focus?: BlueMapFocus | null
 	player?: BlueMapPlayerMarker | null
+	followKey?: string | null
 	compact?: boolean
 	showModeSwitcher?: boolean
 }
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
 	initialDistance: null,
 	focus: null,
 	player: null,
+	followKey: null,
 	compact: false,
 	showModeSwitcher: false,
 })
@@ -89,6 +91,7 @@ const errorMessage = ref('')
 const controller = createBlueMapController()
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
+const userInterruptedFollow = ref(false)
 
 const hasCapabilities = computed(() =>
 	Object.values(capabilities.value).some(Boolean),
@@ -159,11 +162,42 @@ const handleModeChange = async (mode: BlueMapViewMode) => {
 	}
 }
 
+const interruptFollow = () => {
+	userInterruptedFollow.value = true
+	controller.cancelFocus()
+}
+
+const hasSameFocus = (left: BlueMapFocus | null, right: BlueMapFocus | null) =>
+	left?.x === right?.x && left?.z === right?.z && left?.zoom === right?.zoom
+
 watch(
 	() => props.mode,
 	(mode) => {
 		if (mode !== currentMode.value) void handleModeChange(mode)
 	},
+)
+
+watch(
+	() => props.followKey,
+	() => {
+		userInterruptedFollow.value = false
+		if (props.focus) void controller.focus(props.focus)
+	},
+)
+
+watch(
+	() => props.focus,
+	(focus, previousFocus) => {
+		if (
+			!focus ||
+			userInterruptedFollow.value ||
+			hasSameFocus(focus, previousFocus)
+		) {
+			return
+		}
+		void controller.focus(focus)
+	},
+	{ deep: true },
 )
 
 watch(
@@ -179,7 +213,21 @@ watch(
 
 onMounted(() => void mountMap())
 
+onMounted(() => {
+	const container = containerRef.value
+	if (!container) return
+	container.addEventListener('pointerdown', interruptFollow, { passive: true })
+	container.addEventListener('touchstart', interruptFollow, { passive: true })
+	container.addEventListener('wheel', interruptFollow, { passive: true })
+	container.addEventListener('keydown', interruptFollow)
+})
+
 onBeforeUnmount(() => {
+	const container = containerRef.value
+	container?.removeEventListener('pointerdown', interruptFollow)
+	container?.removeEventListener('touchstart', interruptFollow)
+	container?.removeEventListener('wheel', interruptFollow)
+	container?.removeEventListener('keydown', interruptFollow)
 	clearListeners()
 	controller.destroy()
 })

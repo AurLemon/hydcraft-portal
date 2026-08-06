@@ -71,7 +71,12 @@ class BlueMapRuntimeError extends Error {
 }
 
 interface PlayerPresenceMarker {
-	position: { set(x: number, y: number, z: number): void }
+	position: {
+		x: number
+		y: number
+		z: number
+		set(x: number, y: number, z: number): void
+	}
 	renderOrder: number
 	geometry: { dispose(): void }
 	material: {
@@ -217,6 +222,8 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	private container: HTMLElement | null = null
 	private mode: BlueMapViewMode = 'flat'
 	private viewAnimation: { cancel(): void } | null = null
+	private focusAnimation: { cancel(): void } | null = null
+	private playerAnimation: { cancel(): void } | null = null
 	private animationScheduler:
 		| ((
 				animationFrame: (progress: number) => void,
@@ -543,7 +550,65 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	}
 
 	focus(focus: BlueMapFocus) {
-		this.setCamera(focus)
+		const viewer = this.viewer
+		const animate = this.animationScheduler
+		const easing = this.easing
+		if (!viewer || !animate || !easing) {
+			this.setCamera(focus)
+			return
+		}
+
+		const controls = viewer.controlsManager
+		const start = {
+			x: controls.position.x,
+			y: controls.position.y,
+			z: controls.position.z,
+			distance: controls.distance,
+		}
+		const target = this.getCameraTarget(focus)
+		if (
+			start.x === target.x &&
+			start.y === target.y &&
+			start.z === target.z &&
+			start.distance === target.distance
+		) {
+			return
+		}
+
+		this.focusAnimation?.cancel()
+		viewer.loadMapArea(
+			target.x,
+			target.z,
+			this.mode === 'flat' ? 0 : OfficialBlueMapRuntime.HIRES_VIEW_DISTANCE,
+			viewer.data.loadedLowresViewDistance,
+		)
+		this.focusAnimation = animate(
+			(progress) => {
+				const eased = easing.easeInOutQuad(progress)
+				controls.position.set(
+					start.x + (target.x - start.x) * eased,
+					start.y + (target.y - start.y) * eased,
+					start.z + (target.z - start.z) * eased,
+				)
+				controls.distance =
+					start.distance + (target.distance - start.distance) * eased
+				controls.updateCamera()
+			},
+			620,
+			(finished) => {
+				if (!finished) return
+				this.focusAnimation = null
+				controls.position.set(target.x, target.y, target.z)
+				controls.distance = target.distance
+				controls.updateCamera()
+				this.updateLoadedMapArea()
+			},
+		)
+	}
+
+	cancelFocus() {
+		this.focusAnimation?.cancel()
+		this.focusAnimation = null
 	}
 
 	setPresence(player: BlueMapPlayerMarker | null) {
@@ -551,6 +616,8 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		const viewer = this.viewer
 		if (!viewer) return
 		if (!player) {
+			this.playerAnimation?.cancel()
+			this.playerAnimation = null
 			if (this.playerMarker) viewer.markers.remove(this.playerMarker)
 			this.playerMarker = null
 			return
@@ -560,10 +627,46 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			this.playerMarker = this.createPlayerMarker()
 			viewer.markers.add(this.playerMarker)
 		}
-		this.playerMarker?.position.set(
-			player.x,
-			this.getTerrainHeight(player.x, player.z) + 8,
-			player.z,
+		const marker = this.playerMarker
+		if (!marker) return
+		const target = {
+			x: player.x,
+			y: this.getTerrainHeight(player.x, player.z) + 8,
+			z: player.z,
+		}
+		const isNewMarker =
+			marker.position.x === 0 &&
+			marker.position.y === 0 &&
+			marker.position.z === 0
+		if (isNewMarker || !this.animationScheduler || !this.easing) {
+			marker.position.set(target.x, target.y, target.z)
+			return
+		}
+		if (
+			Math.abs(marker.position.x - target.x) < 0.01 &&
+			Math.abs(marker.position.y - target.y) < 0.01 &&
+			Math.abs(marker.position.z - target.z) < 0.01
+		) {
+			return
+		}
+
+		const start = { ...marker.position }
+		this.playerAnimation?.cancel()
+		this.playerAnimation = this.animationScheduler(
+			(progress) => {
+				const eased = this.easing?.easeInOutQuad(progress) ?? progress
+				marker.position.set(
+					start.x + (target.x - start.x) * eased,
+					start.y + (target.y - start.y) * eased,
+					start.z + (target.z - start.z) * eased,
+				)
+			},
+			520,
+			(finished) => {
+				if (!finished) return
+				this.playerAnimation = null
+				marker.position.set(target.x, target.y, target.z)
+			},
 		)
 	}
 
@@ -573,6 +676,10 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		this.cacheBustFreeAssetsBaseUrl = null
 		this.viewAnimation?.cancel()
 		this.viewAnimation = null
+		this.focusAnimation?.cancel()
+		this.focusAnimation = null
+		this.playerAnimation?.cancel()
+		this.playerAnimation = null
 		this.mapControls?.stop?.()
 		this.freeFlightControls?.stop?.()
 		this.map?.dispose()
@@ -607,21 +714,24 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		const viewer = this.viewer
 		if (!viewer) return
 		const controls = viewer.controlsManager
-		controls.position.set(focus.x, 0, focus.z)
-		if (typeof focus.zoom === 'number' && Number.isFinite(focus.zoom)) {
-			controls.distance = Math.min(
-				100000,
-				Math.max(5, 1500 / Math.pow(2, focus.zoom)),
-			)
-		}
-		if (this.mode === 'flat') {
-			controls.distance = Math.max(
-				controls.distance,
-				OfficialBlueMapRuntime.FLAT_VIEW_DISTANCE,
-			)
-		}
+		const target = this.getCameraTarget(focus)
+		controls.position.set(target.x, target.y, target.z)
+		controls.distance = target.distance
 		controls.updateCamera()
 		this.updateLoadedMapArea()
+	}
+
+	private getCameraTarget(focus: BlueMapFocus) {
+		const controls = this.viewer?.controlsManager
+		let distance = controls?.distance ?? 300
+		if (typeof focus.zoom === 'number' && Number.isFinite(focus.zoom)) {
+			distance = Math.min(100000, Math.max(5, 1500 / Math.pow(2, focus.zoom)))
+		}
+		if (this.mode === 'flat') {
+			distance = Math.max(distance, OfficialBlueMapRuntime.FLAT_VIEW_DISTANCE)
+		}
+
+		return { x: focus.x, y: 0, z: focus.z, distance }
 	}
 
 	private updateLoadedMapArea() {
@@ -759,6 +869,10 @@ export class BlueMapControllerImpl implements BlueMapController {
 		if (!this.runtime) return
 		await this.runtime.focus(focus)
 		this.emit('focusChanged', { focus })
+	}
+
+	cancelFocus() {
+		this.runtime?.cancelFocus()
 	}
 
 	setPresence(player: BlueMapPlayerMarker | null) {
