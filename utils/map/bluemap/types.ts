@@ -58,6 +58,12 @@ export interface BlueMapFocusChangedEventPayload {
 	focus: BlueMapFocus
 }
 
+export interface BlueMapViewChangedEventPayload {
+	rotation: number
+	angle: number
+	tilt: number
+}
+
 export interface BlueMapErrorEventPayload {
 	code:
 		| 'INVALID_ASSETS_BASE_URL'
@@ -74,6 +80,7 @@ export interface BlueMapEventPayloadMap {
 	ready: BlueMapReadyEventPayload
 	modeChanged: BlueMapModeChangedEventPayload
 	focusChanged: BlueMapFocusChangedEventPayload
+	viewChanged: BlueMapViewChangedEventPayload
 	error: BlueMapErrorEventPayload
 	destroy: Record<string, never>
 }
@@ -87,6 +94,7 @@ export interface BlueMapRuntimeMountOptions {
 	initialDistance?: number
 	initialFocus?: BlueMapFocus
 	player?: BlueMapPlayerMarker | null
+	onViewChanged?: (view: BlueMapViewChangedEventPayload) => void
 }
 
 export interface BlueMapRuntime {
@@ -95,6 +103,8 @@ export interface BlueMapRuntime {
 	focus(focus: BlueMapFocus): void | Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
+	alignNorth(): void | Promise<void>
+	resetView(): void | Promise<void>
 	destroy(): void
 }
 
@@ -116,6 +126,8 @@ export interface BlueMapController {
 	focus(focus: BlueMapFocus): Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
+	alignNorth(): Promise<void>
+	resetView(): Promise<void>
 	destroy(): void
 	getSettings(): BlueMapMapSettings | null
 	getCapabilities(): BlueMapCapabilities

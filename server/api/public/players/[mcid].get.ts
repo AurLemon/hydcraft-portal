@@ -1,11 +1,16 @@
 import { getRouterParam } from 'h3'
 import { prisma } from '../../../utils/db/prisma'
 import { createApiError } from '../../../utils/errors'
+import { requireCurrentUser } from '../../../utils/auth/session'
 import {
 	buildMinecraftAccountSummary,
 	buildUnboundPlayerSummary,
 	minecraftAccountSummaryPlayerInclude,
 } from '../../../utils/minecraft/account-summary'
+import {
+	lookupIpLocation,
+	normalizeIpAddressForDisplay,
+} from '../../../utils/ip-location/ip-location'
 import { createLuckPermsPrimaryGroupResolver } from '../../../utils/luckperms/primary-group'
 import { readLuckPermsSnapshotBundle } from '../../../utils/luckperms/snapshot'
 import { toPrivacySummary } from '../../../utils/profile/mapper'
@@ -103,8 +108,42 @@ export default defineEventHandler(async (event) => {
 			histories,
 			luckPermsResolver,
 		)
+		const currentUser =
+			account.identityKind === 'AUTHENTICATED' && account.userId
+				? await requireCurrentUser(event).catch(() => null)
+				: null
+		const canViewAuthMeActivity =
+			account.identityKind === 'AUTHENTICATED' &&
+			Boolean(account.userId && account.userId === currentUser?.id)
+		const [lastLoginLocation, registrationLocation] = canViewAuthMeActivity
+			? await Promise.all([
+					lookupIpLocation(account.authMeAccount?.lastIp),
+					lookupIpLocation(account.authMeAccount?.registerIp),
+				])
+			: [null, null]
+		const lastLogin =
+			canViewAuthMeActivity && account.authMeAccount
+				? {
+						at: account.authMeAccount.lastLoginAt?.toISOString() ?? null,
+						ipAddress:
+							normalizeIpAddressForDisplay(account.authMeAccount.lastIp) ??
+							account.authMeAccount.lastIp,
+						ipLocation: lastLoginLocation?.display ?? null,
+					}
+				: null
+		const registration =
+			canViewAuthMeActivity && account.authMeAccount
+				? {
+						at: account.authMeAccount.registeredAt?.toISOString() ?? null,
+						ipAddress:
+							normalizeIpAddressForDisplay(account.authMeAccount.registerIp) ??
+							account.authMeAccount.registerIp,
+						ipLocation: registrationLocation?.display ?? null,
+					}
+				: null
 
-		// 脱敏：公开页不暴露登录账号信息与绑定历史，但保留字段形状以零改动复用 Content 组件。
+		// 公开页不暴露 AuthMe 账号标识与绑定历史；登录和注册摘要只在当前登录
+		// 用户查看确实绑定给自己的正式档案时返回，不向访客或其他用户下发。
 		return {
 			account: {
 				...summary,
@@ -113,6 +152,8 @@ export default defineEventHandler(async (event) => {
 				unlinkedAt: null,
 				recentHistory: [],
 				boundPortalUser,
+				lastLogin,
+				registration,
 			},
 		}
 	}
@@ -131,6 +172,8 @@ export default defineEventHandler(async (event) => {
 		account: {
 			...unboundSummary,
 			boundPortalUser: null,
+			lastLogin: null,
+			registration: null,
 		},
 	}
 })

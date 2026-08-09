@@ -4,6 +4,7 @@ import HeaderMenuRouteBadge from '~/components/layout/HeaderMenuRouteBadge.vue'
 
 const props = defineProps<{
 	activeNavItemClass: string
+	desktopActionClass: string
 	fallbackNavItemClass: string
 	hidden?: boolean
 	inactiveNavItemClass: string
@@ -187,7 +188,8 @@ onBeforeUnmount(() => {
 			<button
 				v-if="canGoBack"
 				type="button"
-				class="absolute top-1/2 right-full mr-5 flex h-6 w-6 -translate-y-1/2 items-center justify-center border-0 bg-transparent p-0 text-slate-800 opacity-80 transition duration-[220ms] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-slate-100"
+				class="absolute top-1/2 right-full mr-5 flex h-6 w-6 -translate-y-1/2 items-center justify-center border-0 bg-transparent p-0 opacity-80 transition duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
+				:class="props.desktopActionClass"
 				:aria-label="backButtonLabel"
 				@click="showParentMenu"
 			>
@@ -199,7 +201,8 @@ onBeforeUnmount(() => {
 			<button
 				v-if="displayedGroup.key !== routeGroupKey"
 				type="button"
-				class="absolute top-1/2 left-full ml-5 flex h-6 w-6 -translate-y-1/2 items-center justify-center border-0 bg-transparent p-0 text-slate-800 opacity-80 transition duration-[220ms] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-slate-100"
+				class="absolute top-1/2 left-full ml-5 flex h-6 w-6 -translate-y-1/2 items-center justify-center border-0 bg-transparent p-0 opacity-80 transition duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
+				:class="props.desktopActionClass"
 				:aria-label="t('header.nav.currentGroup')"
 				@click="showRouteMenu"
 			>

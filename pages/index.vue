@@ -1,5 +1,7 @@
 <template>
-	<div class="home-hero-shell flex flex-col justify-end pt-24">
+	<div
+		class="home-hero-shell immersive-site-shell flex flex-col justify-end pt-24"
+	>
 		<div class="flex flex-col">
 			<div class="relative z-10">
 				<div class="max-w-4xl [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">
@@ -68,6 +70,7 @@ import citiesBackground from '~/assets/resources/homepage/cities_bg.webp'
 
 definePageMeta({
 	headerVariant: 'hero',
+	pageContainerVariant: 'fullBleed',
 })
 
 type HomeCardKey = 'oxygen' | 'railway' | 'players' | 'cities'

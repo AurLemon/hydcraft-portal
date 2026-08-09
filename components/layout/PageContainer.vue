@@ -3,7 +3,7 @@
 		<HomeHeroVideo />
 		<main
 			id="page-container"
-			class="site-shell z-10 mx-auto flex w-full flex-1 flex-col lg:pt-4 px-6 pb-16"
+			class="z-10 mx-auto flex w-full flex-1 flex-col"
 			:class="[
 				mainClass,
 				'page-container-shell',
@@ -28,9 +28,21 @@ const pageContainerReady = ref(false)
 const resolvePageKey = (route: RouteLocationNormalizedLoaded): string =>
 	normalizeScrollPath(route.fullPath)
 
-const mainClass = computed(() =>
-	route.meta.pageContainerVariant === 'auth' ? 'pt-6' : 'pt-12',
-)
+const mainClass = computed(() => {
+	if (route.meta.pageContainerVariant === 'immersive') {
+		return 'max-w-full p-0'
+	}
+
+	if (route.meta.pageContainerVariant === 'fullBleed') {
+		return 'max-w-full px-0 pt-12 pb-16 lg:pt-4'
+	}
+
+	if (route.meta.pageContainerVariant === 'auth') {
+		return 'site-shell px-6 pt-6 pb-16 lg:pt-4'
+	}
+
+	return 'site-shell px-6 pt-12 pb-16 lg:pt-4'
+})
 
 onMounted(() => {
 	const revealContainer = () => {
@@ -54,7 +66,12 @@ onMounted(() => {
 	transform: translate3d(0, 18px, 0);
 	transition:
 		opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
-		transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+		transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+		max-width 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding-top 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding-right 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding-bottom 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding-left 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .page-container-shell--ready {

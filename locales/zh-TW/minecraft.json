@@ -52,6 +52,10 @@
 			"providerUnavailable": "此伺服器尚未設定 BlueMap 地圖。",
 			"unsupportedDimension": "目前座標位於暫不支援的維度。",
 			"viewerLoadFailed": "BlueMap 地圖暫時無法載入。",
+			"orientation": {
+				"alignNorth": "將地圖視角轉向正北",
+				"hint": "按一下朝向正北，按兩下重設為俯視正北"
+			},
 			"viewMode": "地圖視角",
 			"flat": "平面",
 			"perspective": "透視",
@@ -94,7 +98,15 @@
 			}
 		},
 		"overlay": {
-			"lastLogin": "上次登入"
+			"lastLogin": "上次登入",
+			"lastLocation": "上次位置",
+			"registration": "註冊時間",
+			"locatePlayer": "定位到玩家位置",
+			"unknownIpLocation": "未知歸屬地",
+			"unknownIp": "未知 IP",
+			"hiddenIp": "IP 已隱藏",
+			"showIp": "顯示完整 IP",
+			"hideIp": "隱藏完整 IP"
 		},
 		"bind": {
 			"title": "綁定新的 Minecraft 帳號",

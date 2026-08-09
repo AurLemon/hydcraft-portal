@@ -1,12 +1,14 @@
 <template>
 	<div class="relative h-full w-full">
 		<BlueMapViewport
+			ref="viewportRef"
 			v-if="effectiveAssetsBaseUrl"
 			:assets-base-url="effectiveAssetsBaseUrl ?? ''"
 			:focus="mapFocus"
 			:player="player"
 			:follow-key="followKey"
 			:mode="mapMode"
+			@view-change="emit('viewChange', $event)"
 		/>
 
 		<div
@@ -26,7 +28,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlueMapViewMode } from '~/utils/map'
+import type {
+	BlueMapViewChangedEventPayload,
+	BlueMapViewMode,
+} from '~/utils/map'
 import { resolveBlueMapDimensionDirectory } from '~/utils/map/bluemap/dimension-matcher'
 import {
 	AGGREGATE_SERVER_VIEW_ID,
@@ -47,6 +52,20 @@ const props = withDefaults(defineProps<MinecraftPresenceMapProps>(), {
 	mapMode: 'perspective',
 })
 const { t } = useI18n()
+const emit = defineEmits<{
+	viewChange: [view: BlueMapViewChangedEventPayload]
+}>()
+const viewportRef = ref<{
+	alignNorth: () => void
+	focusCurrentPosition: () => void
+	resetView: () => void
+} | null>(null)
+
+defineExpose({
+	alignNorth: () => viewportRef.value?.alignNorth(),
+	focusPlayer: () => viewportRef.value?.focusCurrentPosition(),
+	resetView: () => viewportRef.value?.resetView(),
+})
 
 const selectedServerView = computed<MinecraftAccountServerView | null>(() => {
 	const selected = resolveServerViewSummary(props.account, props.selectedViewId)

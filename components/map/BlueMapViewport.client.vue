@@ -41,6 +41,7 @@ import {
 	type BlueMapErrorEventPayload,
 	type BlueMapFocus,
 	type BlueMapPlayerMarker,
+	type BlueMapViewChangedEventPayload,
 	type BlueMapViewMode,
 } from '~/utils/map'
 
@@ -74,6 +75,7 @@ const emit = defineEmits<{
 	ready: [{ capabilities: BlueMapCapabilities }]
 	modeChange: [mode: BlueMapViewMode]
 	focusChange: [focus: BlueMapFocus]
+	viewChange: [view: BlueMapViewChangedEventPayload]
 	error: [payload: BlueMapErrorEventPayload]
 }>()
 
@@ -91,6 +93,7 @@ const errorMessage = ref('')
 const controller = createBlueMapController()
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
+let unbindViewChanged: (() => void) | null = null
 const userInterruptedFollow = ref(false)
 
 const hasCapabilities = computed(() =>
@@ -107,6 +110,8 @@ const clearListeners = () => {
 	unbindReady = null
 	unbindError?.()
 	unbindError = null
+	unbindViewChanged?.()
+	unbindViewChanged = null
 }
 
 const mountMap = async () => {
@@ -135,6 +140,9 @@ const mountMap = async () => {
 		errorMessage.value = t('minecraftAccounts.map.viewerLoadFailed')
 		emit('error', payload)
 	})
+	unbindViewChanged = controller.on('viewChanged', (payload) => {
+		emit('viewChange', payload)
+	})
 
 	try {
 		await controller.mount({
@@ -161,6 +169,29 @@ const handleModeChange = async (mode: BlueMapViewMode) => {
 		// Keep the previous mode when the optional upstream runtime is unavailable.
 	}
 }
+
+const alignNorth = () => {
+	void controller.alignNorth()
+}
+
+const resetView = () => {
+	void controller.resetView()
+}
+
+const focusCurrentPosition = () => {
+	if (!props.focus) return
+	userInterruptedFollow.value = false
+	void controller.focus({
+		...props.focus,
+		zoom: Math.max(props.focus.zoom ?? 0, 1),
+	})
+}
+
+defineExpose({
+	alignNorth,
+	focusCurrentPosition,
+	resetView,
+})
 
 const interruptFollow = () => {
 	userInterruptedFollow.value = true

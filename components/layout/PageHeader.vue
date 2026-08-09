@@ -28,6 +28,7 @@ const {
 	fallbackNavItemClass,
 	headerActionButtonClass,
 	headerLoginButtonClass,
+	headerMenuActionClass,
 	headerScrimClass,
 	headerUserMenuButtonClass,
 	headerUserMenuChevronClass,
@@ -82,6 +83,14 @@ const isHeaderMenuHidden = computed(() => {
 		normalizedPath.startsWith('/oauth/')
 	)
 })
+const isImmersivePage = computed(
+	() => route.meta.pageContainerVariant === 'immersive',
+)
+const usesWideHeaderShell = computed(
+	() =>
+		route.meta.pageContainerVariant === 'immersive' ||
+		route.meta.pageContainerVariant === 'fullBleed',
+)
 const userAvatarLabel = computed(() =>
 	(user.value?.displayName ?? user.value?.handle ?? '')
 		.slice(0, 1)
@@ -155,7 +164,8 @@ onMounted(() => {
 <template>
 	<header
 		data-page-header
-		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:px-8 lg:pt-10 lg:pb-16"
+		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:pt-10 lg:pb-16 lg:transition-[padding-left,padding-right] lg:duration-[520ms] lg:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+		:class="usesWideHeaderShell ? 'px-0' : 'lg:px-8'"
 	>
 		<div
 			class="pointer-events-none absolute top-0 right-0 -bottom-4/5 left-0 z-10 backdrop-blur-[48px] mask-[linear-gradient(to_bottom,black_0%,rgba(0,0,0,0.98)_30%,rgba(0,0,0,0.92)_45%,rgba(0,0,0,0.8)_55%,rgba(0,0,0,0.58)_65%,rgba(0,0,0,0.35)_75%,rgba(0,0,0,0.15)_85%,transparent_100%)] lg:-bottom-3/5"
@@ -163,7 +173,10 @@ onMounted(() => {
 		/>
 
 		<div
-			class="site-shell pointer-events-auto relative z-40 mx-auto flex items-center justify-between px-6 lg:px-0"
+			class="header-site-shell pointer-events-auto relative z-40 mx-auto flex w-full items-center justify-between"
+			:class="
+				usesWideHeaderShell ? 'immersive-site-shell' : 'site-shell px-6 lg:px-0'
+			"
 		>
 			<NuxtLink
 				:to="localePath('/')"
@@ -179,6 +192,7 @@ onMounted(() => {
 
 			<HeaderMenu
 				:active-nav-item-class="activeNavItemClass"
+				:desktop-action-class="headerMenuActionClass"
 				:fallback-nav-item-class="fallbackNavItemClass"
 				:hidden="isHeaderMenuHidden"
 				:inactive-nav-item-class="inactiveNavItemClass"
@@ -193,11 +207,21 @@ onMounted(() => {
 						color="neutral"
 						variant="ghost"
 						size="xs"
-						:class="headerActionButtonClass"
+						class="transition-colors duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+						:class="[
+							headerActionButtonClass,
+							isImmersivePage
+								? 'text-white! hover:text-white! active:text-white!'
+								: '',
+						]"
 						icon-only
 						:aria-label="t('header.theme.switch')"
 					>
-						<UIcon :name="themeButtonIcon" class="h-6 w-6" />
+						<UIcon
+							:name="themeButtonIcon"
+							class="h-6 w-6 transition-colors duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+							:class="isImmersivePage ? 'text-white!' : ''"
+						/>
 					</UButton>
 
 					<template #content>
@@ -237,11 +261,21 @@ onMounted(() => {
 						color="neutral"
 						variant="ghost"
 						size="xs"
-						:class="headerActionButtonClass"
+						class="transition-colors duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+						:class="[
+							headerActionButtonClass,
+							isImmersivePage
+								? 'text-white! hover:text-white! active:text-white!'
+								: '',
+						]"
 						icon-only
 						:aria-label="t('header.language.switch')"
 					>
-						<UIcon name="i-lucide-languages" class="h-6 w-6" />
+						<UIcon
+							name="i-lucide-languages"
+							class="h-6 w-6 transition-colors duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+							:class="isImmersivePage ? 'text-white!' : ''"
+						/>
 					</UButton>
 
 					<template #content>
@@ -309,12 +343,15 @@ onMounted(() => {
 						>
 							<button
 								type="button"
-								class="ml-0.5 flex h-9 items-center justify-center gap-1 rounded-full border-0 bg-transparent py-0 pr-1.5 pl-0 opacity-100 transition duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+								class="ml-0.5 flex h-9 items-center justify-center gap-1 rounded-full border-0 bg-transparent py-0 pr-1.5 pl-0 opacity-100 transition-[color,opacity] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
 								:class="headerUserMenuButtonClass"
 								:aria-label="t('header.userMenu.open')"
 							>
 								<span
-									class="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 text-sm font-semibold text-slate-700 ring ring-slate-200 transition duration-200 dark:bg-slate-700 dark:text-slate-100 dark:ring-slate-700"
+									class="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 text-sm font-semibold text-slate-700 ring ring-slate-200 transition-[color,background-color,box-shadow] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-slate-700 dark:text-slate-100 dark:ring-slate-700 motion-reduce:transition-none"
+									:class="
+										isImmersivePage ? 'header-user-avatar--immersive' : ''
+									"
 								>
 									<Transition
 										mode="out-in"
@@ -339,7 +376,7 @@ onMounted(() => {
 								</span>
 								<UIcon
 									name="i-lucide-chevron-down"
-									class="h-3.5 w-3.5 translate-y-0 opacity-80 transition duration-200"
+									class="h-3.5 w-3.5 translate-y-0 opacity-80 transition-[color,opacity,transform] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
 									:class="[
 										headerUserMenuChevronClass,
 										{ 'rotate-180': userMenuOpen },

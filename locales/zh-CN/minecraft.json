@@ -52,6 +52,10 @@
 			"providerUnavailable": "该服务器尚未配置 BlueMap 地图。",
 			"unsupportedDimension": "当前坐标位于暂不支持的维度。",
 			"viewerLoadFailed": "BlueMap 地图暂时无法加载。",
+			"orientation": {
+				"alignNorth": "将地图视角转向正北",
+				"hint": "单击朝向正北，双击重置为俯视正北"
+			},
 			"viewMode": "地图视角",
 			"flat": "平面",
 			"perspective": "透视",
@@ -94,7 +98,15 @@
 			}
 		},
 		"overlay": {
-			"lastLogin": "上次登录"
+			"lastLogin": "上次登录",
+			"lastLocation": "上次位置",
+			"registration": "注册时间",
+			"locatePlayer": "定位到玩家位置",
+			"unknownIpLocation": "未知归属地",
+			"unknownIp": "未知 IP",
+			"hiddenIp": "IP 已隐藏",
+			"showIp": "显示完整 IP",
+			"hideIp": "隐藏完整 IP"
 		},
 		"bind": {
 			"title": "绑定新的 Minecraft 账号",

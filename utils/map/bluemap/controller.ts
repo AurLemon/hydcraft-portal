@@ -16,6 +16,7 @@ import type {
 	BlueMapRuntime,
 	BlueMapRuntimeFactory,
 	BlueMapRuntimeMountOptions,
+	BlueMapViewChangedEventPayload,
 	BlueMapViewMode,
 } from './types'
 
@@ -236,6 +237,9 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	private playerMarker: PlayerPresenceMarker | null = null
 	private playerPresence: BlueMapPlayerMarker | null = null
 	private cacheBustFreeAssetsBaseUrl: string | null = null
+	private onViewChanged:
+		| ((view: BlueMapViewChangedEventPayload) => void)
+		| null = null
 
 	async mount(options: BlueMapRuntimeMountOptions) {
 		this.destroy()
@@ -251,6 +255,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		}
 
 		this.container = options.container
+		this.onViewChanged = options.onViewChanged ?? null
 		try {
 			const [
 				,
@@ -278,6 +283,27 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			])
 
 			const events = new EventTarget()
+			events.addEventListener('bluemapCameraMoved', (event) => {
+				const detail = (
+					event as CustomEvent<{
+						controlsManager?: {
+							rotation?: number
+							angle?: number
+							tilt?: number
+						}
+					}>
+				).detail
+				const controls = detail?.controlsManager
+				if (!controls || !this.onViewChanged) return
+
+				this.onViewChanged({
+					rotation: Number.isFinite(controls.rotation)
+						? (controls.rotation ?? 0)
+						: 0,
+					angle: Number.isFinite(controls.angle) ? (controls.angle ?? 0) : 0,
+					tilt: Number.isFinite(controls.tilt) ? (controls.tilt ?? 0) : 0,
+				})
+			})
 			events.addEventListener('bluemapTileLoaded', () => {
 				if (this.playerPresence) this.setPresence(this.playerPresence)
 			})
@@ -669,6 +695,14 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		)
 	}
 
+	alignNorth() {
+		this.animateViewOrientation({ rotation: 0 })
+	}
+
+	resetView() {
+		this.animateViewOrientation({ rotation: 0, angle: 0, tilt: 0 })
+	}
+
 	destroy() {
 		const viewer = this.viewer
 		unregisterCacheBustFreeAssets(this.cacheBustFreeAssetsBaseUrl)
@@ -707,6 +741,57 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		this.playerMarker?.geometry.dispose()
 		this.playerMarker = null
 		this.playerPresence = null
+		this.onViewChanged = null
+	}
+
+	private animateViewOrientation(target: {
+		rotation?: number
+		angle?: number
+		tilt?: number
+	}) {
+		const viewer = this.viewer
+		const animate = this.animationScheduler
+		const easing = this.easing
+		if (!viewer || !animate || !easing) return
+
+		const controls = viewer.controlsManager
+		const start = {
+			rotation: controls.rotation,
+			angle: controls.angle,
+			tilt: controls.tilt,
+		}
+		const end = {
+			rotation: target.rotation ?? start.rotation,
+			angle: target.angle ?? start.angle,
+			tilt: target.tilt ?? start.tilt,
+		}
+
+		this.viewAnimation?.cancel()
+		controls.controls = null
+		this.viewAnimation = animate(
+			(progress) => {
+				const eased = easing.easeInOutQuad(progress)
+				controls.rotation =
+					start.rotation + (end.rotation - start.rotation) * eased
+				controls.angle = start.angle + (end.angle - start.angle) * eased
+				controls.tilt = start.tilt + (end.tilt - start.tilt) * eased
+				controls.updateCamera()
+			},
+			OfficialBlueMapRuntime.MODE_TRANSITION_MS,
+			(finished) => {
+				if (!finished) return
+				this.viewAnimation = null
+				controls.rotation = end.rotation
+				controls.angle = end.angle
+				controls.tilt = end.tilt
+				this.mapControls?.reset?.()
+				controls.controls =
+					this.mode === 'freeFlight'
+						? this.freeFlightControls
+						: this.mapControls
+				controls.updateCamera()
+			},
+		)
 	}
 
 	private setCamera(focus: BlueMapFocus) {
@@ -783,6 +868,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 		ready: new Set(),
 		modeChanged: new Set(),
 		focusChanged: new Set(),
+		viewChanged: new Set(),
 		error: new Set(),
 		destroy: new Set(),
 	}
@@ -826,6 +912,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 				initialDistance: options.initialDistance,
 				initialFocus: options.focus,
 				player: options.player,
+				onViewChanged: (view) => this.emit('viewChanged', view),
 			}
 			await runtime.mount(runtimeOptions)
 			if (!this.isCurrentMount(mountGeneration)) {
@@ -876,6 +963,14 @@ export class BlueMapControllerImpl implements BlueMapController {
 
 	setPresence(player: BlueMapPlayerMarker | null) {
 		this.runtime?.setPresence(player)
+	}
+
+	async alignNorth() {
+		await this.runtime?.alignNorth()
+	}
+
+	async resetView() {
+		await this.runtime?.resetView()
 	}
 
 	destroy() {

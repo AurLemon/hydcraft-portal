@@ -26,6 +26,9 @@ interface NuxtI18nApi {
 const toast = useToast()
 const nuxtApp = useNuxtApp()
 const route = useRoute()
+const isImmersivePage = computed(
+	() => route.meta.pageContainerVariant === 'immersive',
+)
 const switchLocalePath = useSwitchLocalePath()
 const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale
 const { t } = useI18n({ useScope: 'global' })
@@ -341,10 +344,18 @@ useHead(() => ({
 			},
 		}"
 	>
-		<div id="app" class="relative flex min-h-[105vh] flex-col">
+		<div
+			id="app"
+			class="relative flex flex-col"
+			:class="
+				isImmersivePage
+					? 'h-dvh min-h-0 overflow-hidden bg-slate-950'
+					: 'min-h-[105vh]'
+			"
+		>
 			<PageHeader />
 			<PageContainer />
-			<PageFooter />
+			<PageFooter v-if="!isImmersivePage" />
 			<PageStatusBar />
 		</div>
 	</UApp>

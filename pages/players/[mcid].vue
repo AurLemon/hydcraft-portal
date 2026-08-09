@@ -1,53 +1,15 @@
 <template>
-	<div class="site-shell pb-16">
-		<div class="flex flex-col gap-4">
-			<div v-if="initialLoading" class="grid gap-4">
-				<USkeleton class="h-160 rounded-3xl" />
-			</div>
-			<PageInlineException
-				v-else-if="hasError"
-				:icon="errorIcon"
-				:title="errorTitle"
-			/>
-			<template v-else-if="account">
-				<div class="flex flex-col gap-3">
-					<div
-						v-if="boundPortalUser"
-						class="inline-flex flex-wrap items-center gap-0.5 px-1 text-sm text-slate-600 dark:text-slate-300"
-					>
-						<UIcon
-							name="i-lucide-arrow-right"
-							class="size-4 shrink-0 text-slate-400 dark:text-slate-500 mr-1"
-						/>
-						<span>{{ t('players.boundToPrefix') }}</span>
-						<NuxtLink
-							:to="localePath(`/u/${boundPortalUser.username}`)"
-							class="inline-flex items-center gap-1.5 rounded-full px-1 py-0.5 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800/80 dark:hover:text-white"
-						>
-							<UAvatar
-								:src="boundPortalUser.avatarUrl || undefined"
-								:alt="boundPortalUser.username"
-								size="xs"
-								:text="boundPortalUser.username.slice(0, 1).toUpperCase()"
-							/>
-							<span class="font-medium">
-								{{ boundPortalUser.username }}
-							</span>
-						</NuxtLink>
-						<span v-if="boundToSuffix">{{ boundToSuffix }}</span>
-					</div>
-
-					<MinecraftAccountsContent
-						:accounts="[account]"
-						:selected-account="account"
-						:saving-id="null"
-						:require-map-for-selector="true"
-						:show-bind-action="false"
-						map-mode="perspective"
-					/>
-				</div>
-			</template>
+	<div class="-mt-24 lg:-mt-36">
+		<div v-if="initialLoading" class="h-dvh bg-slate-950">
+			<USkeleton class="h-full w-full rounded-none" />
 		</div>
+		<div
+			v-else-if="hasError"
+			class="immersive-site-shell flex h-dvh items-center justify-center pt-24 lg:pt-36"
+		>
+			<PageInlineException :icon="errorIcon" :title="errorTitle" />
+		</div>
+		<PlayerImmersiveHero v-else-if="account" :account="account" />
 	</div>
 </template>
 
@@ -56,12 +18,16 @@ import type { MinecraftAccountForm } from '~/utils/minecraft/accounts'
 import { useExplicitRouteTitle } from '~/utils/layout/route-display'
 
 definePageMeta({
-	headerVariant: 'solid',
+	headerVariant: 'hero',
+	pageContainerVariant: 'immersive',
+	pageTransition: {
+		name: 'player-immersive',
+		mode: 'out-in',
+	},
 })
 
 const route = useRoute()
 const { t } = useI18n()
-const localePath = useLocalePath()
 
 const mcid = computed(() => String(route.params.mcid ?? ''))
 
@@ -108,8 +74,6 @@ watch(mcid, () => {
 })
 
 const account = computed<MinecraftAccountForm | null>(() => accountState.value)
-const boundPortalUser = computed(() => account.value?.boundPortalUser ?? null)
-const boundToSuffix = computed(() => t('players.boundToSuffix').trim())
 const pageTitle = computed(() =>
 	t('players.pageTitle', {
 		name: account.value?.username || mcid.value,

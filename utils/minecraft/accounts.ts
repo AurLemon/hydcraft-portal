@@ -14,6 +14,18 @@ export interface MinecraftLocationSummary {
 	observedAt: string | null
 }
 
+export interface MinecraftLastLoginSummary {
+	at: string | null
+	ipAddress: string | null
+	ipLocation: string | null
+}
+
+export interface MinecraftRegistrationSummary {
+	at: string | null
+	ipAddress: string | null
+	ipLocation: string | null
+}
+
 export interface MinecraftObservedPlayerSummary {
 	serverId: string
 	serverNames: MinecraftServerLocalizedName | null
@@ -133,6 +145,8 @@ export interface MinecraftAccountSummary {
 		username: string
 		avatarUrl: string | null
 	} | null
+	lastLogin?: MinecraftLastLoginSummary | null
+	registration?: MinecraftRegistrationSummary | null
 }
 
 export type MinecraftAccountForm = MinecraftAccountSummary

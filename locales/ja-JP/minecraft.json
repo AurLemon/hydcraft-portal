@@ -52,6 +52,10 @@
 			"providerUnavailable": "このサーバーには BlueMap マップが設定されていません。",
 			"unsupportedDimension": "現在の座標はまだ対応していないディメンションにあります。",
 			"viewerLoadFailed": "BlueMap マップを一時的に読み込めません。",
+			"orientation": {
+				"alignNorth": "マップを北向きにする",
+				"hint": "クリックで北向き、ダブルクリックで真上から北向きにリセット"
+			},
 			"viewMode": "マップ視点",
 			"flat": "平面",
 			"perspective": "透視",
@@ -94,7 +98,15 @@
 			}
 		},
 		"overlay": {
-			"lastLogin": "前回ログイン"
+			"lastLogin": "前回ログイン",
+			"lastLocation": "最終位置",
+			"registration": "登録日時",
+			"locatePlayer": "プレイヤーの位置へ移動",
+			"unknownIpLocation": "所在地不明",
+			"unknownIp": "IP 不明",
+			"hiddenIp": "IP は非表示です",
+			"showIp": "完全な IP を表示",
+			"hideIp": "完全な IP を隠す"
 		},
 		"bind": {
 			"title": "別の Minecraft アカウントをバインド",
