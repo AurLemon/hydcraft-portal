@@ -11,7 +11,7 @@
 		</div>
 
 		<div
-			class="pointer-events-none absolute inset-y-0 left-0 z-10 w-full bg-linear-to-r from-slate-950/78 via-slate-950/38 to-transparent lg:w-[46%]"
+			class="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-[46%] bg-linear-to-r from-slate-950/78 via-slate-950/38 to-transparent lg:block"
 		/>
 		<div
 			class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[32%] bg-linear-to-t from-slate-950/68 via-slate-950/22 to-transparent"
@@ -23,7 +23,7 @@
 			class="immersive-site-shell pointer-events-none relative z-30 flex h-dvh flex-col pt-28 pb-10 text-white lg:pt-44 lg:pb-14"
 		>
 			<div
-				class="pointer-events-auto absolute top-28 right-[clamp(1.5rem,3.5vw,4rem)] lg:top-40"
+				class="pointer-events-auto absolute top-40 right-[clamp(1.5rem,3.5vw,4rem)] hidden lg:block"
 			>
 				<BlueMapOrientationControl
 					:view="mapView"
@@ -32,7 +32,7 @@
 				/>
 			</div>
 
-			<div class="flex min-h-0 flex-1 flex-col justify-between lg:flex-row">
+			<div class="hidden min-h-0 flex-1 justify-between lg:flex lg:flex-row">
 				<div
 					class="player-immersive-panel pointer-events-none flex w-full max-w-xl self-stretch flex-col [text-shadow:rgba(0,0,0,0.72)_0_1px_6px]"
 				>
@@ -326,19 +326,332 @@
 				</Transition>
 			</div>
 
-			<div class="pointer-events-none mt-auto lg:hidden">
-				<Transition name="player-view-switch" mode="out-in">
-					<div
-						:key="`${selectedViewId ?? 'default'}-${statsCarouselIndex}`"
-						class="player-immersive-panel inline-flex items-baseline gap-2 text-sm"
-					>
-						<span class="inline-flex items-center gap-1.5 text-white/68">
-							<UIcon :name="currentStat.icon" class="size-4" />
-							{{ currentStat.label }}
-						</span>
-						<span class="text-lg font-medium">{{ currentStat.value }}</span>
+			<div class="flex min-h-0 flex-1 flex-col lg:hidden">
+				<div
+					class="pt-3 player-immersive-panel pointer-events-none [text-shadow:rgba(0,0,0,0.78)_0_1px_6px]"
+				>
+					<div class="flex min-w-0 items-center gap-3">
+						<SkeletonImage
+							:src="headRendererUrl"
+							:alt="displayName"
+							class="size-14 shrink-0"
+							skeleton-class="rounded-xl bg-white/12"
+							image-class="size-14 object-contain drop-shadow-lg"
+							loading="eager"
+						/>
+
+						<div class="min-w-0 flex-1">
+							<UPopover
+								v-if="showServerSelector"
+								v-model:open="mobileServerMenuOpen"
+								:popper="{ placement: 'bottom-start' }"
+							>
+								<button
+									type="button"
+									class="group pointer-events-auto inline-flex max-w-full cursor-pointer items-center gap-1 text-left transition-opacity hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+									:aria-label="displayName"
+								>
+									<span
+										class="truncate text-[22px] leading-tight font-arkpixel"
+									>
+										{{ displayName }}
+									</span>
+									<UIcon
+										name="i-lucide-chevron-down"
+										class="size-3.5 shrink-0 text-white/72 transition-transform duration-250"
+										:class="mobileServerMenuOpen ? 'rotate-180' : ''"
+									/>
+								</button>
+
+								<template #content>
+									<div
+										class="grid w-72 max-w-[calc(100vw-2rem)] gap-1 overflow-hidden rounded-lg p-1.5"
+									>
+										<button
+											v-for="item in serverViewItems"
+											:key="item.value"
+											type="button"
+											class="flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+											:class="{
+												'bg-primary-100/60 text-primary-600 dark:bg-primary-500/20 dark:text-primary-200':
+													item.value === selectedViewId,
+												'text-slate-600 dark:text-slate-300':
+													item.value !== selectedViewId,
+											}"
+											@click="selectServerView(item.value)"
+										>
+											<span class="min-w-0 flex-1 truncate">{{
+												item.label
+											}}</span>
+											<UIcon
+												v-if="item.value === selectedViewId"
+												name="i-lucide-check"
+												class="size-3.5 shrink-0"
+											/>
+										</button>
+									</div>
+								</template>
+							</UPopover>
+							<span
+								v-else
+								class="block truncate text-[22px] leading-tight font-arkpixel"
+							>
+								{{ displayName }}
+							</span>
+
+							<div class="mt-1.5 flex min-w-0 flex-wrap gap-1.5">
+								<UBadge
+									class="gap-1 px-1.5 py-0.5 text-[10px] text-shadow-none"
+									:class="
+										isOnline
+											? '!bg-emerald-500 !text-white'
+											: '!bg-slate-500 !text-white'
+									"
+									variant="solid"
+								>
+									<span
+										class="block size-1.5 rounded-full"
+										:class="isOnline ? 'bg-emerald-300' : 'bg-slate-300'"
+									/>
+									{{
+										isOnline
+											? t('minecraftAccounts.identity.online')
+											: t('minecraftAccounts.identity.offline')
+									}}
+								</UBadge>
+								<UBadge
+									v-if="account.isPrimary"
+									class="!bg-sky-500 !text-white px-1.5 py-0.5 text-[10px] text-shadow-none"
+									variant="solid"
+								>
+									{{ t('minecraftAccounts.badges.primary') }}
+								</UBadge>
+								<UBadge
+									v-if="account.identityKind === 'HISTORICAL'"
+									class="!bg-amber-500 !text-white px-1.5 py-0.5 text-[10px] text-shadow-none"
+									variant="solid"
+								>
+									{{ t('minecraftAccounts.kinds.historical') }}
+								</UBadge>
+								<UBadge
+									v-if="displayPrimaryGroup"
+									variant="solid"
+									class="px-1.5 py-0.5 text-[10px] uppercase text-shadow-none"
+									color="neutral"
+								>
+									{{ displayPrimaryGroup }}
+								</UBadge>
+							</div>
+						</div>
 					</div>
-				</Transition>
+
+					<Transition name="player-view-switch" mode="out-in">
+						<div
+							:key="`mobile-location-${selectedViewId ?? 'default'}`"
+							class="mt-4 grid w-fit gap-1.5 text-xs"
+						>
+							<div class="flex items-center gap-1.5">
+								<UIcon name="i-lucide-map-pin" class="size-3.5 text-white/68" />
+								<span class="text-white/68">
+									{{ t('minecraftAccounts.overlay.lastLocation') }}
+								</span>
+								<span class="text-sm font-medium">{{ coordsText }}</span>
+								<UButton
+									v-if="canLocatePlayer"
+									type="button"
+									color="neutral"
+									variant="link"
+									class="pointer-events-auto cursor-pointer px-0"
+									size="xs"
+									:aria-label="t('minecraftAccounts.overlay.locatePlayer')"
+									@click="presenceMapRef?.focusPlayer()"
+								>
+									<UIcon name="i-lucide-locate-fixed" class="size-3.5" />
+								</UButton>
+							</div>
+							<div class="flex items-center gap-1.5">
+								<UIcon name="i-lucide-clock-3" class="size-3.5 text-white/68" />
+								<span class="text-white/68">
+									{{ t('minecraftAccounts.summary.playTime') }}
+								</span>
+								<span class="text-sm font-medium">{{
+									playTimeHoursLabel
+								}}</span>
+							</div>
+						</div>
+					</Transition>
+				</div>
+
+				<div class="pointer-events-auto absolute right-6 bottom-44">
+					<BlueMapOrientationControl
+						:view="mapView"
+						@align-north="presenceMapRef?.alignNorth()"
+						@reset="presenceMapRef?.resetView()"
+					/>
+				</div>
+
+				<div class="pointer-events-auto mt-auto -mx-6">
+					<div
+						ref="mobileDataRailRef"
+						class="mobile-player-data-rail flex gap-2 overflow-x-auto px-6 pt-2 pb-1"
+						@scroll.passive="syncMobileDataScrollProgress"
+					>
+						<NuxtLink
+							v-if="boundPortalUser"
+							:to="localePath(`/u/${boundPortalUser.username}`)"
+							class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/58"
+						>
+							<UAvatar
+								:src="boundPortalUser.avatarUrl || undefined"
+								:alt="boundPortalUser.username"
+								size="sm"
+								:text="boundPortalUser.username.slice(0, 1).toUpperCase()"
+							/>
+							<span class="mt-1.5 text-[10px] text-white/64">
+								{{ t('minecraftAccounts.overlay.boundAccount') }}
+							</span>
+							<span class="mt-0.5 max-w-full truncate text-sm font-medium">
+								{{ boundPortalUser.username }}
+							</span>
+						</NuxtLink>
+
+						<button
+							v-if="officialLastLogin"
+							type="button"
+							class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
+							@click="openMobileAuthMeDetail('lastLogin')"
+						>
+							<UIcon name="i-lucide-log-in" class="size-5 text-white/82" />
+							<span class="mt-1 text-[10px] leading-tight text-white/64">
+								{{ t('minecraftAccounts.overlay.lastLogin') }}
+							</span>
+							<span class="mt-0.5 max-w-full truncate text-xs font-medium">
+								{{ lastLoginLocationLabel }}
+							</span>
+						</button>
+
+						<button
+							v-if="officialRegistration"
+							type="button"
+							class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
+							@click="openMobileAuthMeDetail('registration')"
+						>
+							<UIcon
+								name="i-lucide-user-round-plus"
+								class="size-5 text-white/82"
+							/>
+							<span class="mt-1 text-[10px] leading-tight text-white/64">
+								{{ t('minecraftAccounts.overlay.registration') }}
+							</span>
+							<span class="mt-0.5 max-w-full truncate text-xs font-medium">
+								{{ registrationLocationLabel }}
+							</span>
+						</button>
+
+						<div
+							v-for="item in mobileSummaryItems"
+							:key="item.key"
+							class="mobile-player-data-card flex size-28 shrink-0 flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm"
+						>
+							<UIcon :name="item.icon" class="size-5 text-white/82" />
+							<span class="mt-1.5 text-[10px] leading-tight text-white/64">
+								{{ item.label }}
+							</span>
+							<span class="mt-1 text-sm leading-tight font-medium">
+								{{ item.value }}
+							</span>
+						</div>
+					</div>
+
+					<div class="flex justify-center px-6 pt-1">
+						<input
+							type="range"
+							min="0"
+							max="1000"
+							step="1"
+							:value="mobileDataScrollProgress"
+							class="mobile-player-data-scrubber h-4 w-20 cursor-ew-resize"
+							:aria-label="t('minecraftAccounts.overlay.scrollData')"
+							@input="handleMobileDataScrubberInput"
+							@change="snapMobileDataRailToNearestCard"
+						/>
+					</div>
+				</div>
+
+				<UModal
+					v-model:open="mobileAuthMeModalOpen"
+					:title="mobileAuthMeDetail?.title"
+					:ui="{ content: 'max-w-sm' }"
+				>
+					<template #body>
+						<div v-if="mobileAuthMeDetail" class="grid gap-4">
+							<div
+								class="flex items-center gap-3 rounded-xl bg-slate-100 p-3 dark:bg-slate-900"
+							>
+								<UIcon
+									:name="mobileAuthMeDetail.icon"
+									class="size-5 shrink-0 text-primary-500"
+								/>
+								<div class="min-w-0">
+									<div class="text-xs text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.overlay.ipLocation') }}
+									</div>
+									<div
+										class="mt-0.5 truncate font-medium text-slate-900 dark:text-white"
+									>
+										{{ mobileAuthMeDetail.location }}
+									</div>
+								</div>
+							</div>
+
+							<div class="grid gap-3 text-sm">
+								<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
+									<span class="text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.overlay.ipAddress') }}
+									</span>
+									<div class="flex min-w-0 items-center gap-1">
+										<span
+											class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
+										>
+											{{ mobileAuthMeDetail.ipAddress }}
+										</span>
+										<UButton
+											v-if="mobileAuthMeDetail.hasIpAddress"
+											type="button"
+											color="neutral"
+											variant="ghost"
+											size="xs"
+											class="shrink-0 cursor-pointer"
+											:aria-label="
+												mobileAuthMeDetail.ipVisible
+													? t('minecraftAccounts.overlay.hideIp')
+													: t('minecraftAccounts.overlay.showIp')
+											"
+											@click="toggleMobileAuthMeIp"
+										>
+											<UIcon
+												:name="
+													mobileAuthMeDetail.ipVisible
+														? 'i-lucide-eye-off'
+														: 'i-lucide-eye'
+												"
+												class="size-4"
+											/>
+										</UButton>
+									</div>
+								</div>
+								<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
+									<span class="text-slate-500 dark:text-slate-400">
+										{{ t('minecraftAccounts.overlay.activityTime') }}
+									</span>
+									<span class="font-medium text-slate-900 dark:text-white">
+										{{ mobileAuthMeDetail.activityTime }}
+									</span>
+								</div>
+							</div>
+						</div>
+					</template>
+				</UModal>
 			</div>
 		</div>
 	</section>
@@ -370,11 +683,23 @@ interface SummaryItem {
 	icon: string
 }
 
+interface MobileAuthMeDetail {
+	kind: 'lastLogin' | 'registration'
+	title: string
+	icon: string
+	location: string
+	ipAddress: string
+	activityTime: string
+	hasIpAddress: boolean
+	ipVisible: boolean
+}
+
 const props = defineProps<PlayerImmersiveHeroProps>()
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const selectedViewId = ref<string | null>(null)
 const serverMenuOpen = ref(false)
+const mobileServerMenuOpen = ref(false)
 const ipAddressVisible = ref(false)
 const registrationIpAddressVisible = ref(false)
 const mapView = ref<BlueMapViewChangedEventPayload>({
@@ -387,8 +712,9 @@ const presenceMapRef = ref<{
 	focusPlayer: () => void
 	resetView: () => void
 } | null>(null)
-const statsCarouselIndex = ref(0)
-let statsCarouselTimer: ReturnType<typeof setInterval> | null = null
+const mobileDataRailRef = ref<HTMLElement | null>(null)
+const mobileDataScrollProgress = ref(0)
+const mobileAuthMeDetailKind = ref<MobileAuthMeDetail['kind'] | null>(null)
 
 const displayName = computed(
 	() =>
@@ -568,6 +894,60 @@ const registrationDetails = computed(() =>
 		formatAuthMeActivityTime(officialRegistration.value?.at ?? null),
 	].join(' '),
 )
+const mobileAuthMeDetail = computed<MobileAuthMeDetail | null>(() => {
+	if (mobileAuthMeDetailKind.value === 'lastLogin') {
+		return {
+			kind: 'lastLogin',
+			title: t('minecraftAccounts.overlay.lastLogin'),
+			icon: 'i-lucide-log-in',
+			location: lastLoginLocationLabel.value,
+			ipAddress: lastLoginIpLabel.value,
+			activityTime: formatAuthMeActivityTime(
+				officialLastLogin.value?.at ?? null,
+			),
+			hasIpAddress: Boolean(officialLastLogin.value?.ipAddress),
+			ipVisible: ipAddressVisible.value,
+		}
+	}
+
+	if (mobileAuthMeDetailKind.value === 'registration') {
+		return {
+			kind: 'registration',
+			title: t('minecraftAccounts.overlay.registration'),
+			icon: 'i-lucide-user-round-plus',
+			location: registrationLocationLabel.value,
+			ipAddress: registrationIpLabel.value,
+			activityTime: formatAuthMeActivityTime(
+				officialRegistration.value?.at ?? null,
+			),
+			hasIpAddress: Boolean(officialRegistration.value?.ipAddress),
+			ipVisible: registrationIpAddressVisible.value,
+		}
+	}
+
+	return null
+})
+const mobileAuthMeModalOpen = computed({
+	get: () => mobileAuthMeDetailKind.value !== null,
+	set: (open: boolean) => {
+		if (!open) mobileAuthMeDetailKind.value = null
+	},
+})
+
+const openMobileAuthMeDetail = (kind: MobileAuthMeDetail['kind']) => {
+	mobileAuthMeDetailKind.value = kind
+}
+
+const toggleMobileAuthMeIp = () => {
+	if (mobileAuthMeDetail.value?.kind === 'lastLogin') {
+		ipAddressVisible.value = !ipAddressVisible.value
+		return
+	}
+
+	if (mobileAuthMeDetail.value?.kind === 'registration') {
+		registrationIpAddressVisible.value = !registrationIpAddressVisible.value
+	}
+}
 const advancementsDisplayValue = computed(() =>
 	t('minecraftAccounts.summary.advancementsValue', {
 		completed: displayPlayerProfile.value.advancementsCompletedCount,
@@ -627,12 +1007,20 @@ const summaryItems = computed<SummaryItem[]>(() => [
 		icon: 'i-lucide-calendar-plus-2',
 	},
 ])
-const currentStat = computed(
-	() =>
-		summaryItems.value[statsCarouselIndex.value] ??
-		summaryItems.value[0] ?? { key: '', label: '', value: '', icon: '' },
-)
-
+const mobileSummaryItems = computed(() => {
+	const preferredOrder = [
+		'advancements',
+		'distance',
+		'deaths',
+		'leave-count',
+		'last-seen',
+		'first-joined',
+	]
+	return preferredOrder.flatMap((key) => {
+		const item = summaryItems.value.find((candidate) => candidate.key === key)
+		return item ? [item] : []
+	})
+})
 const serverViewItems = computed(() =>
 	listServerViewItems(props.account, {
 		locale: locale.value,
@@ -646,22 +1034,56 @@ const showServerSelector = computed(() => serverViewItems.value.length > 1)
 const selectServerView = (value: string) => {
 	selectedViewId.value = value
 	serverMenuOpen.value = false
+	mobileServerMenuOpen.value = false
 }
 
-const stopStatsCarousel = () => {
-	if (!statsCarouselTimer) return
-	clearInterval(statsCarouselTimer)
-	statsCarouselTimer = null
+const getMobileDataRailMaxScroll = (): number => {
+	const rail = mobileDataRailRef.value
+	if (!rail) return 0
+	return Math.max(0, rail.scrollWidth - rail.clientWidth)
 }
 
-const startStatsCarousel = () => {
-	stopStatsCarousel()
-	if (!import.meta.client || summaryItems.value.length <= 1) return
+const syncMobileDataScrollProgress = () => {
+	const rail = mobileDataRailRef.value
+	const maxScroll = getMobileDataRailMaxScroll()
+	mobileDataScrollProgress.value =
+		rail && maxScroll > 0 ? Math.round((rail.scrollLeft / maxScroll) * 1000) : 0
+}
 
-	statsCarouselTimer = setInterval(() => {
-		statsCarouselIndex.value =
-			(statsCarouselIndex.value + 1) % summaryItems.value.length
-	}, 3000)
+const handleMobileDataScrubberInput = (event: Event) => {
+	const rail = mobileDataRailRef.value
+	const input = event.currentTarget as HTMLInputElement | null
+	if (!rail || !input) return
+
+	const progress = Number(input.value)
+	mobileDataScrollProgress.value = progress
+	rail.scrollLeft = (getMobileDataRailMaxScroll() * progress) / 1000
+}
+
+const snapMobileDataRailToNearestCard = () => {
+	const rail = mobileDataRailRef.value
+	if (!rail) return
+
+	const cards = Array.from(
+		rail.querySelectorAll<HTMLElement>('.mobile-player-data-card'),
+	)
+	const firstCardOffset = cards[0]?.offsetLeft ?? 0
+	const nearestCard = cards.reduce<HTMLElement | null>((nearest, card) => {
+		if (!nearest) return card
+		const cardDistance = Math.abs(
+			card.offsetLeft - firstCardOffset - rail.scrollLeft,
+		)
+		const nearestDistance = Math.abs(
+			nearest.offsetLeft - firstCardOffset - rail.scrollLeft,
+		)
+		return cardDistance < nearestDistance ? card : nearest
+	}, null)
+	if (!nearestCard) return
+
+	rail.scrollTo({
+		left: nearestCard.offsetLeft - firstCardOffset,
+		behavior: 'smooth',
+	})
 }
 
 watch(
@@ -669,6 +1091,7 @@ watch(
 	() => {
 		ipAddressVisible.value = false
 		registrationIpAddressVisible.value = false
+		mobileAuthMeDetailKind.value = null
 		selectedViewId.value = getDefaultServerViewId(props.account, {
 			requireMap: true,
 		})
@@ -691,14 +1114,17 @@ watch(
 	{ immediate: true },
 )
 
-watch(summaryItems, (items) => {
-	if (statsCarouselIndex.value >= items.length) {
-		statsCarouselIndex.value = 0
-	}
+watch(selectedViewId, () => {
+	nextTick(() => {
+		mobileDataRailRef.value?.scrollTo({ left: 0, behavior: 'smooth' })
+		mobileDataScrollProgress.value = 0
+	})
 })
 
-onMounted(startStatsCarousel)
-onBeforeUnmount(stopStatsCarousel)
+onMounted(() => window.addEventListener('resize', syncMobileDataScrollProgress))
+onBeforeUnmount(() =>
+	window.removeEventListener('resize', syncMobileDataScrollProgress),
+)
 </script>
 
 <style scoped>
@@ -719,6 +1145,61 @@ onBeforeUnmount(stopStatsCarousel)
 	opacity: 0;
 	filter: blur(2px);
 	transform: translateY(6px);
+}
+
+.mobile-player-data-rail {
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: 1.5rem;
+	scrollbar-width: none;
+	overscroll-behavior-x: contain;
+	touch-action: pan-x;
+	-webkit-overflow-scrolling: touch;
+}
+
+.mobile-player-data-rail::-webkit-scrollbar {
+	display: none;
+}
+
+.mobile-player-data-card {
+	scroll-snap-align: start;
+	scroll-snap-stop: always;
+}
+
+.mobile-player-data-scrubber {
+	appearance: none;
+	background: transparent;
+}
+
+.mobile-player-data-scrubber::-webkit-slider-runnable-track {
+	height: 3px;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.2);
+}
+
+.mobile-player-data-scrubber::-webkit-slider-thumb {
+	width: 1.5rem;
+	height: 3px;
+	margin-top: 0;
+	appearance: none;
+	border: 0;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.82);
+	box-shadow: 0 0 10px rgb(125 211 252 / 0.34);
+}
+
+.mobile-player-data-scrubber::-moz-range-track {
+	height: 3px;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.2);
+}
+
+.mobile-player-data-scrubber::-moz-range-thumb {
+	width: 1.5rem;
+	height: 3px;
+	border: 0;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.82);
+	box-shadow: 0 0 10px rgb(125 211 252 / 0.34);
 }
 
 @keyframes player-immersive-panel-in {

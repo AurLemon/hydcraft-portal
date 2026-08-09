@@ -52,6 +52,8 @@
 			"providerUnavailable": "This server has not configured a BlueMap yet.",
 			"unsupportedDimension": "This location is in a dimension that is not supported yet.",
 			"viewerLoadFailed": "The BlueMap viewer is temporarily unavailable.",
+			"playerCoordinates": "Coordinates {coordinates}",
+			"playerDirection": "Facing {degrees}°",
 			"viewMode": "Map view mode",
 			"flat": "Flat",
 			"perspective": "Perspective",
@@ -94,7 +96,20 @@
 			}
 		},
 		"overlay": {
-			"lastLogin": "Last login"
+			"lastLogin": "Last login",
+			"lastLocation": "Last location",
+			"registration": "Registration time",
+			"locatePlayer": "Locate player",
+			"unknownIpLocation": "Unknown location",
+			"unknownIp": "Unknown IP",
+			"hiddenIp": "IP hidden",
+			"showIp": "Show full IP",
+			"hideIp": "Hide full IP",
+			"ipLocation": "IP location",
+			"ipAddress": "IP address",
+			"activityTime": "Time",
+			"boundAccount": "Bound account",
+			"scrollData": "Scroll player data"
 		},
 		"bind": {
 			"title": "Bind another Minecraft account",

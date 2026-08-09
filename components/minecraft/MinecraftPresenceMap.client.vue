@@ -40,6 +40,7 @@ import {
 	type MinecraftAccountSummary,
 	type MinecraftLocationSummary,
 } from '~/utils/minecraft/accounts'
+import { getMinecraftSkinRendererUrl } from '~/utils/minecraft/body-renderer'
 
 interface MinecraftPresenceMapProps {
 	account: MinecraftAccountSummary
@@ -130,6 +131,7 @@ const mapFocus = computed(() => {
 
 	return {
 		x: location.x ?? 0,
+		y: location.y,
 		z: location.z ?? 0,
 		dimension: location.dimension ?? location.worldName ?? undefined,
 	}
@@ -145,10 +147,38 @@ const player = computed(() => {
 		return null
 	}
 
+	const skinKey =
+		props.account.playerIdentity.playerId ??
+		props.account.authmeRealname ??
+		props.account.username
+	const normalizedYaw =
+		(((Number.isFinite(location.yaw) ? (location.yaw ?? 0) : 0) % 360) + 360) %
+		360
+	const formattedYaw = Number.isInteger(normalizedYaw)
+		? normalizedYaw.toFixed(0)
+		: normalizedYaw.toFixed(1)
+	const coordinates = [location.x, location.y, location.z]
+		.map((coordinate) =>
+			Number.isFinite(coordinate) ? Math.round(coordinate ?? 0) : '?',
+		)
+		.join(', ')
+
 	return {
 		id: props.account.id,
 		x: location.x ?? 0,
+		y: location.y,
 		z: location.z ?? 0,
+		yaw: location.yaw,
+		skinUrl: getMinecraftSkinRendererUrl(skinKey),
+		detailLabels: {
+			coordinates: t('minecraftAccounts.map.playerCoordinates', {
+				coordinates,
+			}),
+			direction: t('minecraftAccounts.map.playerDirection', {
+				degrees: formattedYaw,
+			}),
+			playerId: skinKey,
+		},
 		label:
 			selectedServerView.value?.label ??
 			props.account.playerIdentity.playerId ??

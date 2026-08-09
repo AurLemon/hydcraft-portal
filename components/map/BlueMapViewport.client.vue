@@ -181,9 +181,9 @@ const resetView = () => {
 const focusCurrentPosition = () => {
 	if (!props.focus) return
 	userInterruptedFollow.value = false
-	void controller.focus({
+	void controller.focusPlayer({
 		...props.focus,
-		zoom: Math.max(props.focus.zoom ?? 0, 1),
+		zoom: Math.max(props.focus.zoom ?? 0, 3),
 	})
 }
 
@@ -199,7 +199,10 @@ const interruptFollow = () => {
 }
 
 const hasSameFocus = (left: BlueMapFocus | null, right: BlueMapFocus | null) =>
-	left?.x === right?.x && left?.z === right?.z && left?.zoom === right?.zoom
+	left?.x === right?.x &&
+	left?.y === right?.y &&
+	left?.z === right?.z &&
+	left?.zoom === right?.zoom
 
 watch(
 	() => props.mode,
@@ -212,7 +215,7 @@ watch(
 	() => props.followKey,
 	() => {
 		userInterruptedFollow.value = false
-		if (props.focus) void controller.focus(props.focus)
+		if (props.focus) void controller.focusPlayer(props.focus)
 	},
 )
 
@@ -226,7 +229,7 @@ watch(
 		) {
 			return
 		}
-		void controller.focus(focus)
+		void controller.focusPlayer(focus)
 	},
 	{ deep: true },
 )
@@ -249,7 +252,6 @@ onMounted(() => {
 	if (!container) return
 	container.addEventListener('pointerdown', interruptFollow, { passive: true })
 	container.addEventListener('touchstart', interruptFollow, { passive: true })
-	container.addEventListener('wheel', interruptFollow, { passive: true })
 	container.addEventListener('keydown', interruptFollow)
 })
 
@@ -257,7 +259,6 @@ onBeforeUnmount(() => {
 	const container = containerRef.value
 	container?.removeEventListener('pointerdown', interruptFollow)
 	container?.removeEventListener('touchstart', interruptFollow)
-	container?.removeEventListener('wheel', interruptFollow)
 	container?.removeEventListener('keydown', interruptFollow)
 	clearListeners()
 	controller.destroy()

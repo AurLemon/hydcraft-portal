@@ -95,6 +95,9 @@ importers:
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
+      skinview-utils:
+        specifier: ^0.7.1
+        version: 0.7.1
       skinview3d:
         specifier: ^3.4.2
         version: 3.4.2

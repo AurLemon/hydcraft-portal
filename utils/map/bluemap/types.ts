@@ -6,6 +6,7 @@ export interface BlueMapAssetsSource {
 
 export interface BlueMapFocus {
 	x: number
+	y?: number | null
 	z: number
 	zoom?: number
 }
@@ -14,6 +15,13 @@ export interface BlueMapPlayerMarker extends BlueMapFocus {
 	id: string
 	label?: string
 	color?: string
+	yaw?: number | null
+	skinUrl?: string | null
+	detailLabels?: {
+		coordinates: string
+		direction: string
+		playerId: string
+	}
 }
 
 export interface BlueMapMapSettings {
@@ -101,6 +109,7 @@ export interface BlueMapRuntime {
 	mount(options: BlueMapRuntimeMountOptions): void | Promise<void>
 	setMode(mode: BlueMapViewMode): void | Promise<void>
 	focus(focus: BlueMapFocus): void | Promise<void>
+	focusPlayer(focus: BlueMapFocus): void | Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
 	alignNorth(): void | Promise<void>
@@ -124,6 +133,7 @@ export interface BlueMapController {
 	}): Promise<void>
 	setMode(mode: BlueMapViewMode): Promise<void>
 	focus(focus: BlueMapFocus): Promise<void>
+	focusPlayer(focus: BlueMapFocus): Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
 	alignNorth(): Promise<void>

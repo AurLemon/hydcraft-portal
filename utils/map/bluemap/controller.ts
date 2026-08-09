@@ -19,6 +19,8 @@ import type {
 	BlueMapViewChangedEventPayload,
 	BlueMapViewMode,
 } from './types'
+import type { IdleAnimation, NameTagObject, PlayerObject } from 'skinview3d'
+import type { Material } from 'three'
 
 const WEBGL_INFO_LOG_NORMALIZED = Symbol.for(
 	'hydcraft.bluemap.webgl-info-log-normalized',
@@ -78,17 +80,51 @@ interface PlayerPresenceMarker {
 		z: number
 		set(x: number, y: number, z: number): void
 	}
-	renderOrder: number
-	geometry: { dispose(): void }
-	material: {
-		map?: { dispose(): void }
-		dispose(): void
+	dot: {
+		visible: boolean
+		material: { opacity: number }
 	}
+	modelAnchor: {
+		visible: boolean
+		rotation: { y: number }
+		scale: { setScalar(scale: number): void }
+	}
+	detailAnchor: {
+		visible: boolean
+		quaternion: { copy(quaternion: unknown): void }
+	}
+	directionArrow: {
+		visible: boolean
+		setDirection(direction: { x: number; y: number; z: number }): void
+	}
+	detailLabels: {
+		coordinates: NameTagObject
+		direction: NameTagObject
+		playerId: NameTagObject
+	}
+	setDetailLabels(labels: {
+		coordinates: string
+		direction: string
+		playerId: string
+	}): void
+	setDirection(yawRadians: number): void
+	setPresentationOpacity(opacity: number): void
+	playerModel: PlayerObject
+	idleAnimation: IdleAnimation
+	skinTexture: { dispose(): void } | null
+	skinUrl: string | null
+	skinReady: boolean
+	skinLoadGeneration: number
+	dispose(): void
 }
 
 interface ThreeLoadingManager {
 	urlModifier?: (url: string) => string
 	setURLModifier(transform: (url: string) => string): void
+}
+
+interface PlayerRenderMaterial extends Material {
+	map?: unknown
 }
 
 const cacheBustFreeAssets = new Map<string, number>()
@@ -155,8 +191,14 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	private static readonly HIRES_VIEW_DISTANCE = 100
 	private static readonly FLAT_VIEW_DISTANCE = 1500
 	private static readonly PERSPECTIVE_DEFAULT_DISTANCE = 1200
-	private static readonly PERSPECTIVE_MIN_DISTANCE = 120
+	private static readonly PERSPECTIVE_MIN_DISTANCE = 35
 	private static readonly MODE_TRANSITION_MS = 520
+	private static readonly PLAYER_MODEL_HIDDEN_DISTANCE = 460
+	private static readonly PLAYER_MODEL_SWITCH_DISTANCE = 360
+	private static readonly PLAYER_MODEL_SCALE = 0.65
+	private static readonly PLAYER_VIEW_MAX_ANGLE = Math.PI / 5
+	private static readonly PLAYER_MARKER_HEIGHT_OFFSET = 8
+	private static readonly PLAYER_DIRECTION_LENGTH = 18
 
 	private viewer: {
 		data: {
@@ -182,6 +224,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			tilt: number
 			updateCamera(): void
 		}
+		camera: { quaternion: unknown }
 		renderer: {
 			debug: {
 				checkShaderErrors: boolean
@@ -214,6 +257,12 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	private mapControls: {
 		stop?(): void
 		reset?(): void
+		followPlayerMarker?(marker: unknown): void
+		stopFollowingPlayerMarker?(): void
+		mouseZoom?: {
+			deltaZoom: number
+			reset(): void
+		}
 		minDistance: number
 		maxDistance: number
 		update(delta: number, map: unknown): void
@@ -234,8 +283,18 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		| null = null
 	private easing: { easeInOutQuad(progress: number): number } | null = null
 	private createPlayerMarker: (() => PlayerPresenceMarker) | null = null
+	private loadPlayerSkin:
+		| ((marker: PlayerPresenceMarker, skinUrl: string) => void)
+		| null = null
 	private playerMarker: PlayerPresenceMarker | null = null
 	private playerPresence: BlueMapPlayerMarker | null = null
+	private followingPlayer = false
+	private preservedTargetY: number | null = null
+	private followRelease: {
+		elapsed: number
+		from: { x: number; y: number; z: number }
+		desired: { x: number; y: number; z: number }
+	} | null = null
 	private cacheBustFreeAssetsBaseUrl: string | null = null
 	private onViewChanged:
 		| ((view: BlueMapViewChangedEventPayload) => void)
@@ -264,13 +323,23 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				{ MapControls },
 				{ FreeFlightControls },
 				{
+					AmbientLight,
+					ArrowHelper,
 					Points,
 					PointsMaterial,
 					BufferGeometry,
 					Float32BufferAttribute,
 					CanvasTexture,
 					DefaultLoadingManager,
+					Group,
+					LinearFilter,
+					Mesh,
+					NearestFilter,
+					SRGBColorSpace,
+					Vector3,
 				},
+				{ PlayerObject, IdleAnimation, NameTagObject },
+				{ inferModelType, loadImage, loadSkinToCanvas },
 				{ animate, EasingFunctions },
 			] = await Promise.all([
 				import('./blue-map-bridge'),
@@ -279,6 +348,8 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				import('../../../vendor/bluemap-webapp/v5.3/controls/map/MapControls.js'),
 				import('../../../vendor/bluemap-webapp/v5.3/controls/freeflight/FreeFlightControls.js'),
 				import('three'),
+				import('skinview3d'),
+				import('skinview-utils'),
 				import('../../../vendor/bluemap-webapp/v5.3/util/Utils.js'),
 			])
 
@@ -290,11 +361,17 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 							rotation?: number
 							angle?: number
 							tilt?: number
+							distance?: number
 						}
 					}>
 				).detail
 				const controls = detail?.controlsManager
-				if (!controls || !this.onViewChanged) return
+				if (!controls) return
+
+				if (Number.isFinite(controls.distance)) {
+					this.updatePlayerMarkerAppearance(controls.distance ?? 0)
+				}
+				if (!this.onViewChanged) return
 
 				this.onViewChanged({
 					rotation: Number.isFinite(controls.rotation)
@@ -303,6 +380,14 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 					angle: Number.isFinite(controls.angle) ? (controls.angle ?? 0) : 0,
 					tilt: Number.isFinite(controls.tilt) ? (controls.tilt ?? 0) : 0,
 				})
+			})
+			events.addEventListener('bluemapRenderFrame', (event) => {
+				const marker = this.playerMarker
+				if (!marker?.modelAnchor.visible) return
+				marker.detailAnchor.quaternion.copy(this.viewer?.camera.quaternion)
+				const delta = (event as CustomEvent<{ delta?: number }>).detail?.delta
+				if (!Number.isFinite(delta)) return
+				marker.idleAnimation.update(marker.playerModel, (delta ?? 0) / 1000)
 			})
 			events.addEventListener('bluemapTileLoaded', () => {
 				if (this.playerPresence) this.setPresence(this.playerPresence)
@@ -329,6 +414,55 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				typeof this.animationScheduler
 			>
 			this.easing = EasingFunctions
+			const portalFontFamily =
+				getComputedStyle(options.container).fontFamily || 'sans-serif'
+			const labelTextureScale = Math.min(
+				3,
+				Math.max(2, Math.ceil(window.devicePixelRatio || 1)),
+			)
+			const createWorldLabel = (
+				text: string,
+				textStyle = '#ffffff',
+				height = 3.2,
+				compact = false,
+			) => {
+				const label = new NameTagObject(text || ' ', {
+					font: `${compact ? 500 : 600} ${42 * labelTextureScale}px ${portalFontFamily}`,
+					margin: (compact ? [0, 0, 0, 0] : [3, 5, 3, 5]).map(
+						(value) => value * labelTextureScale,
+					) as [number, number, number, number],
+					textStyle,
+					backgroundStyle: 'rgba(0, 0, 0, 0)',
+					height,
+				})
+				label.material.depthTest = false
+				label.material.depthWrite = false
+				label.material.map!.colorSpace = SRGBColorSpace
+				label.material.map!.magFilter = LinearFilter
+				label.material.map!.minFilter = LinearFilter
+				label.material.map!.needsUpdate = true
+				label.renderOrder = 1000
+				label.userData.labelText = text
+				return label
+			}
+			const setWorldLabelPosition = (
+				label: NameTagObject,
+				x: number,
+				y: number,
+				z: number,
+			) => {
+				label.position.set(x, y, z)
+			}
+			const setWorldLabelVisible = (label: NameTagObject, visible: boolean) => {
+				label.visible = visible
+			}
+			const setWorldLabelOpacity = (label: NameTagObject, opacity: number) => {
+				label.material.opacity = opacity
+			}
+			const disposeWorldLabel = (label: NameTagObject) => {
+				label.material.map?.dispose()
+				label.material.dispose()
+			}
 			this.createPlayerMarker = () => {
 				const canvas = document.createElement('canvas')
 				canvas.width = 96
@@ -365,7 +499,247 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 					}),
 				)
 				point.renderOrder = 1000
-				return point as unknown as PlayerPresenceMarker
+
+				const root = new Group()
+				root.add(point)
+				const modelAnchor = new Group()
+				modelAnchor.visible = false
+				modelAnchor.position.y = -8
+				const playerModel = new PlayerObject()
+				playerModel.position.y = 16
+				playerModel.cape.visible = false
+				playerModel.elytra.visible = false
+				playerModel.ears.visible = false
+				modelAnchor.add(playerModel)
+				root.add(modelAnchor)
+				root.add(new AmbientLight(0xffffff, 1))
+
+				const depthResetGeometry = new BufferGeometry()
+				depthResetGeometry.setAttribute(
+					'position',
+					new Float32BufferAttribute([0, 0, 0], 3),
+				)
+				const depthResetMaterial = new PointsMaterial({
+					size: 1,
+					sizeAttenuation: false,
+					depthTest: false,
+					depthWrite: false,
+				})
+				depthResetMaterial.colorWrite = false
+				const depthResetPoint = new Points(
+					depthResetGeometry,
+					depthResetMaterial,
+				)
+				depthResetPoint.frustumCulled = false
+				depthResetPoint.renderOrder = 999
+				depthResetPoint.onBeforeRender = (renderer) => renderer.clearDepth()
+				modelAnchor.add(depthResetPoint)
+
+				const modelGeometries = new Set<{ dispose(): void }>()
+				const modelMaterialStates = new Map<
+					PlayerRenderMaterial,
+					{ opacity: number; transparent: boolean }
+				>()
+				const playerMeshes: InstanceType<typeof Mesh>[] = []
+				playerModel.traverse((object) => {
+					if (!(object instanceof Mesh)) return
+					playerMeshes.push(object)
+					modelGeometries.add(object.geometry)
+				})
+				for (const mesh of playerMeshes) {
+					const sourceMaterials = (
+						Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+					) as PlayerRenderMaterial[]
+					for (const source of sourceMaterials) {
+						if (!modelMaterialStates.has(source)) {
+							modelMaterialStates.set(source, {
+								opacity: source.opacity,
+								transparent: source.transparent,
+							})
+						}
+					}
+					mesh.renderOrder = 1000
+				}
+
+				const createDirectionArrow = () => {
+					const arrow = new ArrowHelper(
+						new Vector3(0, 0, 1),
+						new Vector3(0, -7.7, 0),
+						OfficialBlueMapRuntime.PLAYER_DIRECTION_LENGTH,
+						0x38bdf8,
+						4,
+						2,
+					)
+					arrow.visible = false
+					arrow.line.renderOrder = 1000
+					arrow.cone.renderOrder = 1000
+					for (const material of [
+						arrow.line.material,
+						arrow.cone.material,
+					].flat()) {
+						material.depthTest = false
+						material.depthWrite = false
+						material.opacity = 0
+						material.transparent = true
+					}
+					return arrow
+				}
+				const directionArrow = createDirectionArrow()
+				root.add(directionArrow)
+
+				const detailAnchor = new Group()
+				detailAnchor.position.y = 8
+				detailAnchor.visible = false
+				const coordinateLabel = createWorldLabel(' ')
+				setWorldLabelPosition(coordinateLabel, -18, 0, 0)
+				const playerIdLabel = createWorldLabel(' ')
+				setWorldLabelPosition(playerIdLabel, 18, 0, 0)
+				detailAnchor.add(coordinateLabel, playerIdLabel)
+				root.add(detailAnchor)
+
+				const directionLabel = createWorldLabel(' ', '#bae6fd', 2.25, true)
+				setWorldLabelPosition(directionLabel, 0, -7.55, 9)
+				setWorldLabelVisible(directionLabel, false)
+				root.add(directionLabel)
+
+				const marker = root as unknown as PlayerPresenceMarker
+				marker.dot = point
+				marker.modelAnchor = modelAnchor
+				marker.detailAnchor = detailAnchor
+				marker.directionArrow = directionArrow
+				marker.detailLabels = {
+					coordinates: coordinateLabel,
+					direction: directionLabel,
+					playerId: playerIdLabel,
+				}
+				marker.setDetailLabels = (labels) => {
+					const replaceLabel = (
+						key: keyof PlayerPresenceMarker['detailLabels'],
+						text: string,
+						parent: typeof root,
+						position: { x: number; y: number; z: number },
+						textStyle = '#ffffff',
+						height = 3.2,
+						compact = false,
+					) => {
+						const current = marker.detailLabels[key]
+						if (current.userData.labelText === text) return
+						parent.remove(current)
+						disposeWorldLabel(current)
+						const next = createWorldLabel(text, textStyle, height, compact)
+						setWorldLabelPosition(next, position.x, position.y, position.z)
+						parent.add(next)
+						marker.detailLabels[key] = next
+					}
+
+					replaceLabel('coordinates', labels.coordinates, detailAnchor, {
+						x: -18,
+						y: 0,
+						z: 0,
+					})
+					replaceLabel('playerId', labels.playerId, detailAnchor, {
+						x: 18,
+						y: 0,
+						z: 0,
+					})
+					replaceLabel(
+						'direction',
+						labels.direction,
+						root,
+						marker.detailLabels.direction.position,
+						'#bae6fd',
+						2.25,
+						true,
+					)
+				}
+				marker.setDirection = (yawRadians) => {
+					const x = -Math.sin(yawRadians)
+					const z = Math.cos(yawRadians)
+					directionArrow.setDirection(new Vector3(x, 0, z))
+					setWorldLabelPosition(
+						marker.detailLabels.direction,
+						x * (OfficialBlueMapRuntime.PLAYER_DIRECTION_LENGTH / 2),
+						-7.55,
+						z * (OfficialBlueMapRuntime.PLAYER_DIRECTION_LENGTH / 2),
+					)
+				}
+				marker.setPresentationOpacity = (opacity) => {
+					const visible = opacity > 0.001
+					setWorldLabelVisible(marker.detailLabels.direction, visible)
+					for (const [material, state] of modelMaterialStates) {
+						material.opacity = state.opacity * opacity
+						const transparent = state.transparent || opacity < 0.999
+						if (material.transparent !== transparent) {
+							material.transparent = transparent
+							material.needsUpdate = true
+						}
+					}
+					for (const label of Object.values(marker.detailLabels)) {
+						setWorldLabelOpacity(label, opacity)
+					}
+					for (const material of [
+						directionArrow.line.material,
+						directionArrow.cone.material,
+					].flat()) {
+						material.opacity = opacity
+					}
+				}
+				marker.playerModel = playerModel
+				marker.idleAnimation = new IdleAnimation()
+				marker.skinTexture = null
+				marker.skinUrl = null
+				marker.skinReady = false
+				marker.skinLoadGeneration = 0
+				marker.dispose = () => {
+					marker.skinLoadGeneration += 1
+					marker.skinTexture?.dispose()
+					for (const label of Object.values(marker.detailLabels)) {
+						disposeWorldLabel(label)
+					}
+					directionArrow.dispose()
+					point.material.map?.dispose()
+					point.material.dispose()
+					point.geometry.dispose()
+					depthResetMaterial.dispose()
+					depthResetGeometry.dispose()
+					for (const material of modelMaterialStates.keys()) material.dispose()
+					for (const modelGeometry of modelGeometries) modelGeometry.dispose()
+				}
+				return marker
+			}
+			this.loadPlayerSkin = (marker, skinUrl) => {
+				if (marker.skinUrl === skinUrl) return
+				marker.skinUrl = skinUrl
+				marker.skinReady = false
+				marker.modelAnchor.visible = false
+				marker.dot.visible = true
+				marker.dot.material.opacity = 1
+				const generation = ++marker.skinLoadGeneration
+
+				void (async () => {
+					try {
+						const image = await loadImage(skinUrl)
+						if (generation !== marker.skinLoadGeneration) return
+						const skinCanvas = document.createElement('canvas')
+						skinCanvas.width = 64
+						skinCanvas.height = 64
+						loadSkinToCanvas(skinCanvas, image)
+						const texture = new CanvasTexture(skinCanvas)
+						texture.magFilter = NearestFilter
+						texture.minFilter = NearestFilter
+						texture.colorSpace = SRGBColorSpace
+						marker.skinTexture?.dispose()
+						marker.skinTexture = texture
+						marker.playerModel.skin.map = texture
+						marker.playerModel.skin.modelType = inferModelType(skinCanvas)
+						marker.skinReady = true
+						this.updatePlayerMarkerAppearance()
+					} catch {
+						if (generation !== marker.skinLoadGeneration) return
+						marker.skinReady = false
+						marker.modelAnchor.visible = false
+					}
+				})()
 			}
 			if (options.appendCacheBust === false) {
 				this.cacheBustFreeAssetsBaseUrl = options.assetsBaseUrl.replace(
@@ -390,16 +764,68 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				viewer.renderer.domElement,
 				options.container,
 			)
-			const nativeMapControlsUpdate = this.mapControls.update.bind(
-				this.mapControls,
-			)
-			this.mapControls.update = (delta, loadedMap) => {
-				nativeMapControlsUpdate(delta, loadedMap)
-				if (this.mode === 'perspective') {
-					viewer.controlsManager.distance = Math.max(
-						OfficialBlueMapRuntime.PERSPECTIVE_MIN_DISTANCE,
-						viewer.controlsManager.distance,
+			const mapControls = this.mapControls
+			const nativeMapControlsUpdate = mapControls.update.bind(mapControls)
+			mapControls.update = (delta, loadedMap) => {
+				const release = this.followRelease
+				if (release) {
+					viewer.controlsManager.position.set(
+						release.desired.x,
+						release.desired.y,
+						release.desired.z,
 					)
+				}
+				nativeMapControlsUpdate(delta, loadedMap)
+				if (this.followingPlayer && this.playerMarker) {
+					viewer.controlsManager.position.y = this.playerMarker.position.y
+				} else if (
+					this.mode === 'perspective' &&
+					this.preservedTargetY !== null
+				) {
+					viewer.controlsManager.position.y = this.preservedTargetY
+				}
+				if (release) {
+					release.desired = {
+						x: viewer.controlsManager.position.x,
+						y: viewer.controlsManager.position.y,
+						z: viewer.controlsManager.position.z,
+					}
+					release.elapsed += delta
+					const progress = Math.min(1, release.elapsed / 260)
+					const eased = 1 - Math.pow(1 - progress, 3)
+					viewer.controlsManager.position.set(
+						release.from.x + (release.desired.x - release.from.x) * eased,
+						release.from.y + (release.desired.y - release.from.y) * eased,
+						release.from.z + (release.desired.z - release.from.z) * eased,
+					)
+					if (progress >= 1) this.followRelease = null
+				}
+				if (this.mode === 'perspective') {
+					const reachedMinDistance =
+						viewer.controlsManager.distance <=
+						OfficialBlueMapRuntime.PERSPECTIVE_MIN_DISTANCE
+					const reachedMaxDistance =
+						viewer.controlsManager.distance >= mapControls.maxDistance
+					viewer.controlsManager.distance = Math.min(
+						mapControls.maxDistance,
+						Math.max(
+							OfficialBlueMapRuntime.PERSPECTIVE_MIN_DISTANCE,
+							viewer.controlsManager.distance,
+						),
+					)
+					if (
+						(reachedMinDistance &&
+							(mapControls.mouseZoom?.deltaZoom ?? 0) < 0) ||
+						(reachedMaxDistance && (mapControls.mouseZoom?.deltaZoom ?? 0) > 0)
+					) {
+						mapControls.mouseZoom?.reset()
+					}
+					if (this.playerPresence) {
+						viewer.controlsManager.angle = Math.max(
+							viewer.controlsManager.angle,
+							this.getPlayerViewingMinAngle(viewer.controlsManager.distance),
+						)
+					}
 				}
 			}
 			this.freeFlightControls = new FreeFlightControls(
@@ -461,6 +887,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			this.setCamera(initialFocus)
 			await this.setMode(options.mode, 0)
 			this.setPresence(options.player ?? null)
+			if (options.player) this.beginFollowingPlayer()
 		} catch (error) {
 			this.destroy()
 			if (error instanceof BlueMapRuntimeError) throw error
@@ -575,11 +1002,21 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	}
 
 	focus(focus: BlueMapFocus) {
+		this.focusTarget(focus, false)
+	}
+
+	focusPlayer(focus: BlueMapFocus) {
+		this.focusTarget(focus, true)
+	}
+
+	private focusTarget(focus: BlueMapFocus, followPlayer: boolean) {
 		const viewer = this.viewer
 		const animate = this.animationScheduler
 		const easing = this.easing
+		this.stopFollowingPlayer()
 		if (!viewer || !animate || !easing) {
 			this.setCamera(focus)
+			if (followPlayer) this.beginFollowingPlayer()
 			return
 		}
 
@@ -597,6 +1034,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			start.z === target.z &&
 			start.distance === target.distance
 		) {
+			if (followPlayer) this.beginFollowingPlayer()
 			return
 		}
 
@@ -627,6 +1065,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				controls.distance = target.distance
 				controls.updateCamera()
 				this.updateLoadedMapArea()
+				if (followPlayer) this.beginFollowingPlayer()
 			},
 		)
 	}
@@ -634,6 +1073,7 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 	cancelFocus() {
 		this.focusAnimation?.cancel()
 		this.focusAnimation = null
+		this.stopFollowingPlayer(true)
 	}
 
 	setPresence(player: BlueMapPlayerMarker | null) {
@@ -641,9 +1081,13 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		const viewer = this.viewer
 		if (!viewer) return
 		if (!player) {
+			this.stopFollowingPlayer()
 			this.playerAnimation?.cancel()
 			this.playerAnimation = null
-			if (this.playerMarker) viewer.markers.remove(this.playerMarker)
+			if (this.playerMarker) {
+				viewer.markers.remove(this.playerMarker)
+				this.playerMarker.dispose()
+			}
 			this.playerMarker = null
 			return
 		}
@@ -654,9 +1098,23 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		}
 		const marker = this.playerMarker
 		if (!marker) return
+		const yaw = Number.isFinite(player.yaw) ? (player.yaw ?? 0) : 0
+		const yawRadians = (yaw * Math.PI) / 180
+		marker.modelAnchor.rotation.y = -yawRadians
+		marker.setDetailLabels({
+			coordinates: player.detailLabels?.coordinates ?? '',
+			direction: player.detailLabels?.direction ?? '',
+			playerId: player.detailLabels?.playerId ?? player.label ?? '',
+		})
+		marker.setDirection(yawRadians)
+		if (player.skinUrl) this.loadPlayerSkin?.(marker, player.skinUrl)
+		this.updatePlayerMarkerAppearance()
+		const savedY = Number.isFinite(player.y)
+			? (player.y ?? 0)
+			: this.getTerrainHeight(player.x, player.z)
 		const target = {
 			x: player.x,
-			y: this.getTerrainHeight(player.x, player.z) + 8,
+			y: savedY + OfficialBlueMapRuntime.PLAYER_MARKER_HEIGHT_OFFSET,
 			z: player.z,
 		}
 		const isNewMarker =
@@ -693,6 +1151,50 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 				marker.position.set(target.x, target.y, target.z)
 			},
 		)
+	}
+
+	private updatePlayerMarkerAppearance(distance?: number) {
+		const marker = this.playerMarker
+		const cameraDistance = distance ?? this.viewer?.controlsManager.distance
+		if (!marker || !Number.isFinite(cameraDistance)) return
+
+		const modelOpacity = marker.skinReady
+			? Math.max(
+					0,
+					Math.min(
+						1,
+						(OfficialBlueMapRuntime.PLAYER_MODEL_HIDDEN_DISTANCE -
+							(cameraDistance ?? Number.POSITIVE_INFINITY)) /
+							(OfficialBlueMapRuntime.PLAYER_MODEL_HIDDEN_DISTANCE -
+								OfficialBlueMapRuntime.PLAYER_MODEL_SWITCH_DISTANCE),
+					),
+				)
+			: 0
+		const modelVisible = modelOpacity > 0.001
+		marker.modelAnchor.visible = modelVisible
+		marker.detailAnchor.visible = modelVisible
+		marker.directionArrow.visible = modelVisible
+		marker.setPresentationOpacity(modelOpacity)
+		marker.dot.material.opacity = 1 - modelOpacity
+		marker.dot.visible = marker.dot.material.opacity > 0.001
+		if (!marker.modelAnchor.visible) return
+
+		marker.modelAnchor.scale.setScalar(
+			OfficialBlueMapRuntime.PLAYER_MODEL_SCALE,
+		)
+	}
+
+	private getPlayerViewingMinAngle(distance: number) {
+		const progress = Math.max(
+			0,
+			Math.min(
+				1,
+				(OfficialBlueMapRuntime.PLAYER_MODEL_HIDDEN_DISTANCE - distance) /
+					(OfficialBlueMapRuntime.PLAYER_MODEL_HIDDEN_DISTANCE -
+						OfficialBlueMapRuntime.PERSPECTIVE_MIN_DISTANCE),
+			),
+		)
+		return progress * OfficialBlueMapRuntime.PLAYER_VIEW_MAX_ANGLE
 	}
 
 	alignNorth() {
@@ -736,11 +1238,13 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 		this.animationScheduler = null
 		this.easing = null
 		this.createPlayerMarker = null
-		this.playerMarker?.material.map?.dispose()
-		this.playerMarker?.material.dispose()
-		this.playerMarker?.geometry.dispose()
+		this.loadPlayerSkin = null
+		this.playerMarker?.dispose()
 		this.playerMarker = null
 		this.playerPresence = null
+		this.followingPlayer = false
+		this.preservedTargetY = null
+		this.followRelease = null
 		this.onViewChanged = null
 	}
 
@@ -815,7 +1319,41 @@ class OfficialBlueMapRuntime implements BlueMapRuntime {
 			distance = Math.max(distance, OfficialBlueMapRuntime.FLAT_VIEW_DISTANCE)
 		}
 
-		return { x: focus.x, y: 0, z: focus.z, distance }
+		const y = Number.isFinite(focus.y)
+			? (focus.y ?? 0) + OfficialBlueMapRuntime.PLAYER_MARKER_HEIGHT_OFFSET
+			: 0
+
+		return { x: focus.x, y, z: focus.z, distance }
+	}
+
+	private beginFollowingPlayer() {
+		if (!this.playerMarker) return
+		this.followingPlayer = true
+		this.preservedTargetY = null
+		this.followRelease = null
+		this.mapControls?.followPlayerMarker?.(this.playerMarker)
+	}
+
+	private stopFollowingPlayer(preserveTargetHeight = false) {
+		this.followingPlayer = false
+		if (
+			preserveTargetHeight &&
+			this.playerMarker &&
+			this.mode === 'perspective' &&
+			this.viewer
+		) {
+			const position = this.viewer.controlsManager.position
+			this.preservedTargetY = position.y
+			this.followRelease = {
+				elapsed: 0,
+				from: { x: position.x, y: position.y, z: position.z },
+				desired: { x: position.x, y: position.y, z: position.z },
+			}
+		} else if (!preserveTargetHeight) {
+			this.preservedTargetY = null
+			this.followRelease = null
+		}
+		this.mapControls?.stopFollowingPlayerMarker?.()
 	}
 
 	private updateLoadedMapArea() {
@@ -954,6 +1492,12 @@ export class BlueMapControllerImpl implements BlueMapController {
 	async focus(focus: BlueMapFocus) {
 		if (!this.runtime) return
 		await this.runtime.focus(focus)
+		this.emit('focusChanged', { focus })
+	}
+
+	async focusPlayer(focus: BlueMapFocus) {
+		if (!this.runtime) return
+		await this.runtime.focusPlayer(focus)
 		this.emit('focusChanged', { focus })
 	}
 
