@@ -358,7 +358,6 @@ const mobileAuthMeDetail = computed<PlayerImmersiveMobileAuthMeDetail | null>(
 			return {
 				kind: 'lastLogin',
 				title: t('minecraftAccounts.overlay.lastLogin'),
-				icon: 'i-lucide-log-in',
 				location: lastLoginLocationLabel.value,
 				ipAddress: lastLoginIpLabel.value,
 				activityTime: formatAuthMeActivityTime(
@@ -373,7 +372,6 @@ const mobileAuthMeDetail = computed<PlayerImmersiveMobileAuthMeDetail | null>(
 			return {
 				kind: 'registration',
 				title: t('minecraftAccounts.overlay.registration'),
-				icon: 'i-lucide-user-round-plus',
 				location: registrationLocationLabel.value,
 				ipAddress: registrationIpLabel.value,
 				activityTime: formatAuthMeActivityTime(

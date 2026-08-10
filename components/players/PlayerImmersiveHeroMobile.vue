@@ -264,67 +264,57 @@
 			@update:open="emit('update:authMeModalOpen', $event)"
 		>
 			<template #body>
-				<div v-if="authMeDetail" class="grid gap-4">
-					<div
-						class="flex items-center gap-3 rounded-xl bg-slate-100 p-3 dark:bg-slate-900"
-					>
-						<UIcon :name="authMeDetail.icon" class="size-5 shrink-0" />
-						<div class="min-w-0">
-							<div class="text-xs text-slate-500 dark:text-slate-400">
-								{{ t('minecraftAccounts.overlay.ipLocation') }}
-							</div>
-							<div
-								class="mt-0.5 truncate font-medium text-slate-900 dark:text-white"
+				<div v-if="authMeDetail" class="grid gap-3 text-sm">
+					<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
+						<span class="text-slate-500 dark:text-slate-400">
+							{{ t('minecraftAccounts.overlay.ipLocation') }}
+						</span>
+						<span
+							class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
+						>
+							{{ authMeDetail.location }}
+						</span>
+					</div>
+					<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
+						<span class="text-slate-500 dark:text-slate-400">
+							{{ t('minecraftAccounts.overlay.ipAddress') }}
+						</span>
+						<div class="flex min-w-0 items-center gap-1">
+							<span
+								class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
 							>
-								{{ authMeDetail.location }}
-							</div>
+								{{ authMeDetail.ipAddress }}
+							</span>
+							<UButton
+								v-if="authMeDetail.hasIpAddress"
+								type="button"
+								color="neutral"
+								variant="ghost"
+								size="xs"
+								class="shrink-0 cursor-pointer"
+								:aria-label="
+									authMeDetail.ipVisible
+										? t('minecraftAccounts.overlay.hideIp')
+										: t('minecraftAccounts.overlay.showIp')
+								"
+								@click="emit('toggleAuthMeIp')"
+							>
+								<UIcon
+									:name="
+										authMeDetail.ipVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'
+									"
+									class="size-4"
+								/>
+							</UButton>
 						</div>
 					</div>
-
-					<div class="grid gap-3 text-sm">
-						<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
-							<span class="text-slate-500 dark:text-slate-400">
-								{{ t('minecraftAccounts.overlay.ipAddress') }}
-							</span>
-							<div class="flex min-w-0 items-center gap-1">
-								<span
-									class="min-w-0 truncate font-medium text-slate-900 dark:text-white"
-								>
-									{{ authMeDetail.ipAddress }}
-								</span>
-								<UButton
-									v-if="authMeDetail.hasIpAddress"
-									type="button"
-									color="neutral"
-									variant="ghost"
-									size="xs"
-									class="shrink-0 cursor-pointer"
-									:aria-label="
-										authMeDetail.ipVisible
-											? t('minecraftAccounts.overlay.hideIp')
-											: t('minecraftAccounts.overlay.showIp')
-									"
-									@click="emit('toggleAuthMeIp')"
-								>
-									<UIcon
-										:name="
-											authMeDetail.ipVisible
-												? 'i-lucide-eye-off'
-												: 'i-lucide-eye'
-										"
-										class="size-4"
-									/>
-								</UButton>
-							</div>
-						</div>
-						<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
-							<span class="text-slate-500 dark:text-slate-400">
-								{{ t('minecraftAccounts.overlay.activityTime') }}
-							</span>
-							<span class="font-medium text-slate-900 dark:text-white">
-								{{ authMeDetail.activityTime }}
-							</span>
-						</div>
+					<div class="grid grid-cols-[5rem_1fr] items-center gap-3">
+						<span class="text-slate-500 dark:text-slate-400">
+							{{ t('minecraftAccounts.overlay.activityTime') }}
+						</span>
+						<span class="font-medium text-slate-900 dark:text-white">
+							{{ authMeDetail.activityTime }}
+						</span>
 					</div>
 				</div>
 			</template>
@@ -477,7 +467,7 @@ onBeforeUnmount(() =>
 }
 
 .mobile-player-data-rail {
-	scroll-snap-type: x mandatory;
+	scroll-snap-type: x proximity;
 	scroll-padding-inline: 1.5rem;
 	scrollbar-width: none;
 	overscroll-behavior-x: contain;
@@ -491,7 +481,6 @@ onBeforeUnmount(() =>
 
 .mobile-player-data-card {
 	scroll-snap-align: start;
-	scroll-snap-stop: always;
 }
 
 .mobile-player-data-scrubber {

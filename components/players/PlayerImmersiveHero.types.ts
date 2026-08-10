@@ -19,7 +19,6 @@ export interface PlayerImmersiveServerViewItem {
 export interface PlayerImmersiveMobileAuthMeDetail {
 	kind: 'lastLogin' | 'registration'
 	title: string
-	icon: string
 	location: string
 	ipAddress: string
 	activityTime: string
