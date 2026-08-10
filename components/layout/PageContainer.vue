@@ -1,5 +1,5 @@
 <template>
-	<div class="flex w-full flex-1 flex-col">
+	<div class="flex w-full flex-1 flex-col overflow-x-clip">
 		<HomeHeroVideo />
 		<main
 			id="page-container"
