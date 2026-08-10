@@ -107,6 +107,7 @@ export interface BlueMapRuntimeMountOptions {
 
 export interface BlueMapRuntime {
 	mount(options: BlueMapRuntimeMountOptions): void | Promise<void>
+	resize(): void
 	setMode(mode: BlueMapViewMode): void | Promise<void>
 	focus(focus: BlueMapFocus): void | Promise<void>
 	focusPlayer(focus: BlueMapFocus): void | Promise<void>
@@ -131,6 +132,7 @@ export interface BlueMapController {
 		focus?: BlueMapFocus
 		player?: BlueMapPlayerMarker | null
 	}): Promise<void>
+	resize(): void
 	setMode(mode: BlueMapViewMode): Promise<void>
 	focus(focus: BlueMapFocus): Promise<void>
 	focusPlayer(focus: BlueMapFocus): Promise<void>

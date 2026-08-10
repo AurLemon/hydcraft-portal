@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import hydcraftLogo from '~/assets/resources/brands/logo_HydCraft.png'
 import { getPortalRedirectQuery } from '~/utils/auth/redirect'
 import { normalizeHeaderMenuPath } from '~/utils/layout/header-menu'
+import { resolvePageContainerVariant } from '~/utils/layout/page-presentation'
 
 interface LocaleItem {
 	label: string
@@ -78,18 +79,18 @@ const isHeaderMenuHidden = computed(() => {
 	const normalizedPath = normalizeHeaderMenuPath(route.path)
 
 	return (
-		route.meta.pageContainerVariant === 'auth' ||
+		resolvePageContainerVariant(route) === 'auth' ||
 		normalizedPath === '/oauth' ||
 		normalizedPath.startsWith('/oauth/')
 	)
 })
 const isImmersivePage = computed(
-	() => route.meta.pageContainerVariant === 'immersive',
+	() => resolvePageContainerVariant(route) === 'immersive',
 )
 const usesWideHeaderShell = computed(
 	() =>
-		route.meta.pageContainerVariant === 'immersive' ||
-		route.meta.pageContainerVariant === 'fullBleed',
+		resolvePageContainerVariant(route) === 'immersive' ||
+		resolvePageContainerVariant(route) === 'fullBleed',
 )
 const userAvatarLabel = computed(() =>
 	(user.value?.displayName ?? user.value?.handle ?? '')
@@ -164,7 +165,7 @@ onMounted(() => {
 <template>
 	<header
 		data-page-header
-		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:pt-10 lg:pb-16 lg:transition-[padding-left,padding-right] lg:duration-[520ms] lg:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:pt-10 lg:pb-16 lg:transition-[padding-left,padding-right] lg:duration-520 lg:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
 		:class="usesWideHeaderShell ? 'px-0' : 'lg:px-8'"
 	>
 		<div

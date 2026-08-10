@@ -65,18 +65,27 @@
 		},
 		"toolbar": {
 			"bindTip": "バインドを追加",
-			"setPrimaryTip": "メイン設定"
+			"setPrimaryTip": "メイン設定",
+			"tabsLabel": "プロフィール範囲",
+			"viewModeLabel": "プロフィール表示",
+			"immersiveView": "没入表示",
+			"immersiveViewTip": "BlueMap の没入表示でプロフィールを見る",
+			"listView": "リスト表示",
+			"listViewTip": "カードリストでプロフィールを見る"
 		},
 		"tabs": {
 			"overview": "概要",
-			"official": "正式プロフィール",
-			"historical": "履歴アーカイブ",
-			"all": "すべてのアーカイブ",
+			"official": "正式",
+			"historical": "履歴",
+			"all": "すべて",
 			"officialEmptyTitle": "正式プロフィールはまだありません",
 			"officialEmptyDescription": "先に通常の Minecraft アカウントを紐付けると、正式プロフィールがここに表示されます。"
 		},
 		"selector": {
-			"aggregate": "総合情報"
+			"aggregate": "総合情報",
+			"previousAccount": "前のプロフィール",
+			"nextAccount": "次のプロフィール",
+			"selectAccount": "Minecraft プロフィールを選択"
 		},
 		"history": {
 			"profileSectionTitle": "履歴アーカイブ",

@@ -6,6 +6,7 @@ import {
 	buildMinecraftAccountSummary,
 	minecraftAccountSummaryPlayerInclude,
 } from '../../../../utils/minecraft/account-summary'
+import { buildMinecraftAuthMeActivitySummary } from '../../../../utils/minecraft/authme-activity'
 
 export default defineEventHandler(async (event) => {
 	const currentUser = await requireCurrentUser(event)
@@ -77,13 +78,16 @@ export default defineEventHandler(async (event) => {
 	)
 
 	return {
-		accounts: accounts.map((account) =>
-			buildMinecraftAccountSummary(
-				account,
-				players,
-				historyByAccountId.get(account.id) ?? [],
-				luckPermsResolver,
-			),
+		accounts: await Promise.all(
+			accounts.map(async (account) => ({
+				...buildMinecraftAccountSummary(
+					account,
+					players,
+					historyByAccountId.get(account.id) ?? [],
+					luckPermsResolver,
+				),
+				...(await buildMinecraftAuthMeActivitySummary(account.authMeAccount)),
+			})),
 		),
 	}
 })

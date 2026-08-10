@@ -1,90 +1,99 @@
 <template>
-	<div class="site-shell pb-16">
-		<div class="flex flex-col gap-4">
-			<div v-if="initialLoading" class="grid gap-4">
-				<div class="flex items-center justify-between gap-3 px-6">
-					<div class="flex items-center gap-2">
-						<USkeleton
-							v-for="index in 3"
-							:key="`minecraft-tab-skeleton-${index}`"
-							class="h-8 w-16 rounded-md"
-						/>
-					</div>
-					<div class="flex items-center gap-2">
-						<USkeleton class="size-8 rounded-md" />
-						<USkeleton class="size-8 rounded-md" />
-						<USkeleton class="size-8 rounded-md" />
-					</div>
-				</div>
-				<USkeleton class="h-160 rounded-3xl" />
-			</div>
+	<div :class="isImmersiveView ? '-mt-24 lg:-mt-36' : ''">
+		<div
+			class="pointer-events-none fixed inset-x-0 bottom-3 z-90 flex justify-center px-3 sm:bottom-4"
+		>
+			<MinecraftAccountsViewToolbar
+				class="pointer-events-auto"
+				:tabs="tabItems"
+				:active-tab="activeTab"
+				:view-mode="viewMode"
+				:accounts="accounts"
+				:selected-account="selectedAccount"
+				:saving-id="savingId"
+				:unbinding-id="unbindingId"
+				:unbind-success-token="unbindSuccessToken"
+				@update:active-tab="void setActiveTab($event)"
+				@update:view-mode="void setViewMode($event)"
+				@bind="bindOpen = true"
+				@save="saveAccount"
+				@unbind="unbindAccount"
+			/>
+		</div>
+
+		<div
+			v-if="initialLoading"
+			:class="isImmersiveView ? 'h-dvh' : 'grid gap-4 pt-20 sm:pt-16'"
+		>
+			<USkeleton
+				:class="
+					isImmersiveView
+						? 'h-full w-full rounded-none bg-slate-900'
+						: 'h-160 rounded-3xl'
+				"
+			/>
+		</div>
+		<div
+			v-else-if="accountError && !accountLoaded"
+			:class="
+				isImmersiveView
+					? 'immersive-site-shell flex h-dvh items-center justify-center pt-24 lg:pt-36'
+					: 'pt-20 sm:pt-16'
+			"
+		>
 			<UAlert
-				v-else-if="accountError && !accountLoaded"
 				color="error"
 				icon="i-lucide-circle-alert"
 				:title="t('minecraftAccounts.empty.loadFailed')"
 			/>
-			<template v-else>
+		</div>
+		<template v-else>
+			<template v-if="isImmersiveView">
 				<div
-					class="flex flex-col gap-3 items-center lg:mb-8 sm:flex-row sm:items-start sm:justify-between"
+					v-if="immersiveHistoryPending"
+					class="h-dvh bg-slate-950 pt-44 lg:pt-56"
 				>
-					<div
-						class="grid w-fit grid-cols-4 gap-1 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-950"
-					>
-						<button
-							v-for="tab in tabItems"
-							:key="tab.key"
-							type="button"
-							class="rounded-md px-3 py-1.5 text-sm transition-all duration-250 ease-out"
-							:class="
-								activeTab === tab.key
-									? 'bg-primary-500 text-white shadow-sm translate-y-0 dark:bg-white dark:text-slate-950'
-									: 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
-							"
-							@click="void setActiveTab(tab.key)"
-						>
-							{{ tab.label }}
-						</button>
-					</div>
-
-					<div v-if="accounts.length" class="flex items-center gap-3">
-						<MinecraftAccountsActions
-							:accounts="accounts"
-							:selected-account="selectedAccount"
-							:saving-id="savingId"
-							:unbinding-id="unbindingId"
-							:unbind-success-token="unbindSuccessToken"
-							@bind="bindOpen = true"
-							@save="saveAccount"
-							@unbind="unbindAccount"
-						/>
-					</div>
+					<USkeleton class="h-full w-full rounded-none bg-slate-900" />
 				</div>
-
-				<Transition name="history-tab-switch" mode="out-in">
-					<div v-if="activeTab === 'overview'" key="overview">
-						<div v-if="accounts.length" class="mb-4 px-6">
-							<MinecraftAccountsSelector
-								:accounts="accounts"
-								:selected-account-id="selectedAccountId"
-								@select="selectedAccountId = $event"
-							/>
-						</div>
-						<MinecraftAccountsContent
-							:accounts="accounts"
-							:selected-account="selectedAccount"
-							:saving-id="savingId"
-							:require-map-for-selector="true"
-							map-mode="perspective"
-							@bind="bindOpen = true"
-						/>
-					</div>
-
-					<div
-						v-else-if="activeTab === 'official'"
-						key="official"
-						class="grid gap-4"
+				<div
+					v-else-if="immersiveHistoryFailed"
+					class="immersive-site-shell flex h-dvh items-center justify-center pt-44 text-white lg:pt-56"
+				>
+					<UAlert
+						color="error"
+						icon="i-lucide-circle-alert"
+						:title="t('minecraftAccounts.history.loadFailed')"
+					/>
+				</div>
+				<PlayerImmersiveHero
+					v-else-if="selectedImmersiveAccount"
+					:account="selectedImmersiveAccount"
+					:accounts="immersiveAccounts"
+					:selected-account-id="selectedImmersiveAccount.id"
+					:has-overlay-toolbar="true"
+					:show-bound-portal-user="false"
+					@select-account="immersiveSelectedAccountId = $event"
+				/>
+				<div
+					v-else
+					class="flex h-dvh items-center justify-center bg-slate-950 pt-40 text-white lg:pt-52"
+				>
+					<PageInlineException
+						:icon="
+							activeTab === 'historical' ? 'i-lucide-archive' : 'i-lucide-box'
+						"
+						:title="immersiveEmptyTitle"
 					>
+						<p class="text-sm leading-6 text-white/70">
+							{{ immersiveEmptyDescription }}
+						</p>
+					</PageInlineException>
+				</div>
+			</template>
+
+			<Transition v-else name="history-tab-switch" mode="out-in">
+				<div :key="activeTab" class="grid gap-4 pb-24">
+					<template v-if="activeTab === 'official'">
 						<MinecraftPublicAccountsContent
 							v-for="account in accounts"
 							:key="account.id"
@@ -101,13 +110,9 @@
 								{{ t('minecraftAccounts.tabs.officialEmptyDescription') }}
 							</p>
 						</PageInlineException>
-					</div>
+					</template>
 
-					<div
-						v-else-if="activeTab === 'historical'"
-						key="historical"
-						class="grid gap-4"
-					>
+					<template v-else-if="activeTab === 'historical'">
 						<UAlert
 							color="neutral"
 							variant="soft"
@@ -145,9 +150,9 @@
 								{{ t('minecraftAccounts.history.emptyDescription') }}
 							</p>
 						</PageInlineException>
-					</div>
+					</template>
 
-					<div v-else key="all" class="grid gap-6">
+					<div v-else class="grid gap-6">
 						<div v-if="historyPending && !historyLoaded" class="grid gap-4">
 							<USkeleton class="h-48 rounded-lg" />
 							<USkeleton class="h-48 rounded-lg" />
@@ -199,9 +204,9 @@
 							</p>
 						</PageInlineException>
 					</div>
-				</Transition>
-			</template>
-		</div>
+				</div>
+			</Transition>
+		</template>
 
 		<MinecraftBindModal
 			v-model:open="bindOpen"
@@ -228,8 +233,13 @@ import {
 } from '~/utils/minecraft/server-name'
 
 definePageMeta({
-	headerVariant: 'solid',
+	headerVariant: 'minecraftAccounts',
+	pageContainerVariant: 'minecraftAccounts',
 	middleware: 'portal-auth',
+	pageTransition: {
+		name: 'player-immersive',
+		mode: 'out-in',
+	},
 })
 
 interface HistoricalAccountsResponse {
@@ -248,7 +258,8 @@ interface HistoricalAccountsResponse {
 	}>
 }
 
-type MinecraftTabKey = 'overview' | 'official' | 'historical' | 'all'
+type MinecraftTabKey = 'official' | 'historical' | 'all'
+type MinecraftViewMode = 'immersive' | 'list'
 
 const { locale, t } = useI18n()
 const route = useRoute()
@@ -262,10 +273,11 @@ const unbindSuccessToken = ref(0)
 const binding = ref(false)
 const bindSuccessToken = ref(0)
 const bindOpen = ref(false)
-const selectedAccountId = ref<string | null>(null)
-const DEFAULT_MINECRAFT_TAB: MinecraftTabKey = 'overview'
+const immersiveSelectedAccountId = ref<string | null>(null)
+const actionSelectedAccountId = ref<string | null>(null)
+const DEFAULT_MINECRAFT_TAB: MinecraftTabKey = 'official'
+const DEFAULT_MINECRAFT_VIEW: MinecraftViewMode = 'immersive'
 const MINECRAFT_TAB_KEYS = [
-	'overview',
 	'official',
 	'historical',
 	'all',
@@ -324,7 +336,6 @@ watch(
 )
 
 const tabItems = computed(() => [
-	{ key: 'overview' as const, label: t('minecraftAccounts.tabs.overview') },
 	{ key: 'official' as const, label: t('minecraftAccounts.tabs.official') },
 	{ key: 'historical' as const, label: t('minecraftAccounts.tabs.historical') },
 	{ key: 'all' as const, label: t('minecraftAccounts.tabs.all') },
@@ -376,6 +387,32 @@ const setActiveTab = async (nextTab: MinecraftTabKey): Promise<void> => {
 	}
 
 	await replaceTabQuery(nextTab)
+}
+
+const parseMinecraftViewQuery = (value: unknown): MinecraftViewMode =>
+	readTabQueryValue(value) === 'list' ? 'list' : DEFAULT_MINECRAFT_VIEW
+
+const viewMode = computed<MinecraftViewMode>(() =>
+	parseMinecraftViewQuery(route.query.view),
+)
+const isImmersiveView = computed(() => viewMode.value === 'immersive')
+
+const setViewMode = async (nextViewMode: MinecraftViewMode): Promise<void> => {
+	if (viewMode.value === nextViewMode) {
+		return
+	}
+
+	const nextQuery = {
+		...route.query,
+	} as Record<string, string | string[] | undefined>
+
+	if (nextViewMode === DEFAULT_MINECRAFT_VIEW) {
+		delete nextQuery.view
+	} else {
+		nextQuery.view = nextViewMode
+	}
+
+	await router.replace({ query: nextQuery })
 }
 
 watch(
@@ -476,21 +513,105 @@ const primaryAccount = computed<MinecraftAccountForm | null>(
 )
 const selectedAccount = computed<MinecraftAccountForm | null>(
 	() =>
-		accounts.value.find((account) => account.id === selectedAccountId.value) ??
-		primaryAccount.value,
+		accounts.value.find(
+			(account) => account.id === actionSelectedAccountId.value,
+		) ?? primaryAccount.value,
 )
 
 watch(
 	accounts,
 	(list) => {
-		const exists = selectedAccountId.value
-			? list.some((account) => account.id === selectedAccountId.value)
+		const actionAccountExists = actionSelectedAccountId.value
+			? list.some((account) => account.id === actionSelectedAccountId.value)
 			: false
 
-		if (!exists) {
-			selectedAccountId.value =
+		if (!actionAccountExists) {
+			actionSelectedAccountId.value =
 				list.find((account) => account.isPrimary)?.id ?? list[0]?.id ?? null
 		}
+	},
+	{ immediate: true },
+)
+
+watch(immersiveSelectedAccountId, (accountId) => {
+	if (accountId && accounts.value.some((account) => account.id === accountId)) {
+		actionSelectedAccountId.value = accountId
+	}
+})
+
+const allImmersiveAccounts = computed<MinecraftAccountForm[]>(() => {
+	const accountsById = new Map<string, MinecraftAccountForm>()
+
+	for (const account of accounts.value) {
+		accountsById.set(account.id, account)
+	}
+
+	for (const account of historicalAccounts.value) {
+		if (!accountsById.has(account.id)) {
+			accountsById.set(account.id, account)
+		}
+	}
+
+	return Array.from(accountsById.values())
+})
+
+const immersiveAccounts = computed<MinecraftAccountForm[]>(() => {
+	if (activeTab.value === 'official') {
+		return accounts.value
+	}
+
+	if (activeTab.value === 'historical') {
+		return historicalAccounts.value
+	}
+
+	return allImmersiveAccounts.value
+})
+
+const selectedImmersiveAccount = computed<MinecraftAccountForm | null>(
+	() =>
+		immersiveAccounts.value.find(
+			(account) => account.id === immersiveSelectedAccountId.value,
+		) ??
+		immersiveAccounts.value[0] ??
+		null,
+)
+
+const immersiveEmptyTitle = computed(() =>
+	activeTab.value === 'official'
+		? t('minecraftAccounts.tabs.officialEmptyTitle')
+		: t('minecraftAccounts.history.emptyTitle'),
+)
+const immersiveEmptyDescription = computed(() =>
+	activeTab.value === 'official'
+		? t('minecraftAccounts.tabs.officialEmptyDescription')
+		: t('minecraftAccounts.history.emptyDescription'),
+)
+const immersiveHistoryPending = computed(
+	() =>
+		activeTab.value !== 'official' &&
+		historyPending.value &&
+		!historyLoaded.value,
+)
+const immersiveHistoryFailed = computed(
+	() =>
+		activeTab.value !== 'official' &&
+		Boolean(historyError.value) &&
+		!historyLoaded.value,
+)
+
+watch(
+	immersiveAccounts,
+	(list) => {
+		const selectedAccountExists = immersiveSelectedAccountId.value
+			? list.some((account) => account.id === immersiveSelectedAccountId.value)
+			: false
+
+		if (selectedAccountExists) {
+			return
+		}
+
+		immersiveSelectedAccountId.value =
+			list.find((account) => account.isPrimary)?.id ?? list[0]?.id ?? null
 	},
 	{ immediate: true },
 )

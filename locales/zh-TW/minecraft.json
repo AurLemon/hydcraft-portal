@@ -65,18 +65,27 @@
 		},
 		"toolbar": {
 			"bindTip": "新增綁定",
-			"setPrimaryTip": "設定主檔案"
+			"setPrimaryTip": "設定主檔案",
+			"tabsLabel": "檔案範圍",
+			"viewModeLabel": "檔案檢視方式",
+			"immersiveView": "沉浸式",
+			"immersiveViewTip": "使用 BlueMap 沉浸式查看檔案",
+			"listView": "列表式",
+			"listViewTip": "使用列表卡片查看檔案"
 		},
 		"tabs": {
 			"overview": "概覽",
-			"official": "正式檔案",
-			"historical": "歷史檔案",
-			"all": "所有檔案",
+			"official": "正式",
+			"historical": "歷史",
+			"all": "全部",
 			"officialEmptyTitle": "還沒有正式檔案",
 			"officialEmptyDescription": "先完成一次正式 Minecraft 帳號綁定，正式檔案才會出現在這裡。"
 		},
 		"selector": {
-			"aggregate": "綜合資訊"
+			"aggregate": "綜合資訊",
+			"previousAccount": "上一個檔案",
+			"nextAccount": "下一個檔案",
+			"selectAccount": "選擇 Minecraft 檔案"
 		},
 		"history": {
 			"profileSectionTitle": "歷史檔案",

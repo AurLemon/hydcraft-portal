@@ -20,7 +20,8 @@
 			class="pointer-events-none absolute inset-x-0 top-0 z-10 h-64 bg-linear-to-b from-slate-950/45 to-transparent"
 		/>
 		<div
-			class="immersive-site-shell pointer-events-none relative z-30 flex h-dvh flex-col pt-28 pb-10 text-white lg:pt-44 lg:pb-14"
+			class="immersive-site-shell pointer-events-none relative z-30 flex h-dvh flex-col pt-28 text-white lg:pt-44"
+			:class="hasOverlayToolbar ? 'pb-20' : 'pb-10 lg:pb-14'"
 		>
 			<div
 				class="pointer-events-auto absolute top-40 right-[clamp(1.5rem,3.5vw,4rem)] hidden lg:block"
@@ -58,7 +59,10 @@
 				:bound-portal-user="boundPortalUser"
 				:bound-to-suffix="boundToSuffix"
 				:summary-items="summaryItems"
+				:accounts="switcherAccounts"
+				:selected-account-id="effectiveSelectedAccountId"
 				@select-server-view="selectServerView"
+				@select-account="emit('selectAccount', $event)"
 				@toggle-last-login-ip="ipAddressVisible = !ipAddressVisible"
 				@toggle-registration-ip="
 					registrationIpAddressVisible = !registrationIpAddressVisible
@@ -88,7 +92,11 @@
 				:registration-location-label="registrationLocationLabel"
 				:mobile-summary-items="mobileSummaryItems"
 				:auth-me-detail="mobileAuthMeDetail"
+				:has-overlay-toolbar="hasOverlayToolbar ?? false"
+				:accounts="switcherAccounts"
+				:selected-account-id="effectiveSelectedAccountId"
 				@select-server-view="selectServerView"
+				@select-account="emit('selectAccount', $event)"
 				@focus-player="presenceMapRef?.focusPlayer()"
 				@align-north="presenceMapRef?.alignNorth()"
 				@reset-view="presenceMapRef?.resetView()"
@@ -123,9 +131,16 @@ import type { BlueMapViewChangedEventPayload } from '~/utils/map'
 
 interface PlayerImmersiveHeroProps {
 	account: MinecraftAccountForm
+	accounts?: MinecraftAccountForm[]
+	selectedAccountId?: string | null
+	hasOverlayToolbar?: boolean
+	showBoundPortalUser?: boolean
 }
 
 const props = defineProps<PlayerImmersiveHeroProps>()
+const emit = defineEmits<{
+	selectAccount: [accountId: string]
+}>()
 const { locale, t } = useI18n()
 const selectedViewId = ref<string | null>(null)
 const serverMenuOpen = ref(false)
@@ -146,6 +161,11 @@ const mobileAuthMeDetailKind = ref<
 	PlayerImmersiveMobileAuthMeDetail['kind'] | null
 >(null)
 
+const switcherAccounts = computed(() => props.accounts ?? [])
+const effectiveSelectedAccountId = computed(
+	() => props.selectedAccountId ?? props.account.id,
+)
+
 const displayName = computed(
 	() =>
 		props.account.playerIdentity.playerId ??
@@ -155,7 +175,11 @@ const displayName = computed(
 const headRendererUrl = computed(() =>
 	getMinecraftHeadRendererUrl(displayName.value),
 )
-const boundPortalUser = computed(() => props.account.boundPortalUser ?? null)
+const boundPortalUser = computed(() =>
+	props.showBoundPortalUser === false
+		? null
+		: (props.account.boundPortalUser ?? null),
+)
 const boundToSuffix = computed(() => t('players.boundToSuffix').trim())
 const officialLastLogin = computed(() =>
 	props.account.identityKind === 'AUTHENTICATED'

@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { hasHeroVideoBackground } from '~/utils/layout/hero-video'
+import { resolveHeaderVariant } from '~/utils/layout/page-presentation'
 
 type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -31,7 +32,8 @@ export const useHeaderAppearance = (): HeaderAppearanceState => {
 	const colorMode = useNuxtApp().$colorMode
 
 	const usesHeroVideoHeaderChrome = computed(
-		() => route.meta.headerVariant === 'hero' || hasHeroVideoBackground(route),
+		() =>
+			resolveHeaderVariant(route) === 'hero' || hasHeroVideoBackground(route),
 	)
 
 	const selectedThemeMode = computed<ThemeMode>(() => {

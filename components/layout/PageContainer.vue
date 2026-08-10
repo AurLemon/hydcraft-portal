@@ -21,23 +21,31 @@
 import { onMounted, ref } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { normalizeScrollPath } from '~/utils/scroll'
+import { resolvePageContainerVariant } from '~/utils/layout/page-presentation'
 
 const route = useRoute()
 const pageContainerReady = ref(false)
 
-const resolvePageKey = (route: RouteLocationNormalizedLoaded): string =>
-	normalizeScrollPath(route.fullPath)
+const resolvePageKey = (route: RouteLocationNormalizedLoaded): string => {
+	if (route.meta.pageContainerVariant === 'minecraftAccounts') {
+		return normalizeScrollPath(route.path)
+	}
+
+	return normalizeScrollPath(route.fullPath)
+}
 
 const mainClass = computed(() => {
-	if (route.meta.pageContainerVariant === 'immersive') {
+	const pageContainerVariant = resolvePageContainerVariant(route)
+
+	if (pageContainerVariant === 'immersive') {
 		return 'max-w-full p-0'
 	}
 
-	if (route.meta.pageContainerVariant === 'fullBleed') {
+	if (pageContainerVariant === 'fullBleed') {
 		return 'max-w-full px-0 pt-12 pb-16 lg:pt-4'
 	}
 
-	if (route.meta.pageContainerVariant === 'auth') {
+	if (pageContainerVariant === 'auth') {
 		return 'site-shell px-6 pt-6 pb-16 lg:pt-4'
 	}
 

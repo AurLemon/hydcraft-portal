@@ -65,18 +65,27 @@
 		},
 		"toolbar": {
 			"bindTip": "新建绑定",
-			"setPrimaryTip": "设置主档案"
+			"setPrimaryTip": "设置主档案",
+			"tabsLabel": "档案范围",
+			"viewModeLabel": "档案视图",
+			"immersiveView": "沉浸式",
+			"immersiveViewTip": "使用 BlueMap 沉浸式查看档案",
+			"listView": "列表式",
+			"listViewTip": "使用列表卡片查看档案"
 		},
 		"tabs": {
 			"overview": "概览",
-			"official": "正式档案",
-			"historical": "历史档案",
-			"all": "所有档案",
+			"official": "正式",
+			"historical": "历史",
+			"all": "全部",
 			"officialEmptyTitle": "还没有正式档案",
 			"officialEmptyDescription": "先完成一次正式 Minecraft 账号绑定，正式档案才会出现在这里。"
 		},
 		"selector": {
-			"aggregate": "综合信息"
+			"aggregate": "综合信息",
+			"previousAccount": "上一个档案",
+			"nextAccount": "下一个档案",
+			"selectAccount": "选择 Minecraft 档案"
 		},
 		"history": {
 			"profileSectionTitle": "历史档案",

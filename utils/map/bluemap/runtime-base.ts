@@ -113,6 +113,10 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	abstract mount(options: BlueMapRuntimeMountOptions): Promise<void>
 
+	resize() {
+		this.viewer?.handleContainerResize()
+	}
+
 	setMode(
 		mode: BlueMapViewMode,
 		transitionMs: number = BLUE_MAP_RUNTIME.MODE_TRANSITION_MS,

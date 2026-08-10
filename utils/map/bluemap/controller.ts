@@ -127,6 +127,10 @@ export class BlueMapControllerImpl implements BlueMapController {
 		}
 	}
 
+	resize() {
+		this.runtime?.resize()
+	}
+
 	async focus(focus: BlueMapFocus) {
 		if (!this.runtime) return
 		await this.runtime.focus(focus)

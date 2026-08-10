@@ -91,6 +91,8 @@ const status = ref<'idle' | 'loading' | 'ready' | 'unavailable' | 'error'>(
 )
 const errorMessage = ref('')
 const controller = createBlueMapController()
+let resizeObserver: ResizeObserver | null = null
+let resizeAnimationFrame: number | null = null
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
 let unbindViewChanged: (() => void) | null = null
@@ -114,6 +116,17 @@ const clearListeners = () => {
 	unbindViewChanged = null
 }
 
+const scheduleMapResize = () => {
+	if (resizeAnimationFrame !== null) {
+		cancelAnimationFrame(resizeAnimationFrame)
+	}
+
+	resizeAnimationFrame = requestAnimationFrame(() => {
+		resizeAnimationFrame = null
+		controller.resize()
+	})
+}
+
 const mountMap = async () => {
 	await nextTick()
 	const container = containerRef.value
@@ -133,6 +146,7 @@ const mountMap = async () => {
 	unbindReady = controller.on('ready', (payload) => {
 		capabilities.value = payload.capabilities
 		status.value = 'ready'
+		scheduleMapResize()
 		emit('ready', { capabilities: payload.capabilities })
 	})
 	unbindError = controller.on('error', (payload) => {
@@ -253,6 +267,10 @@ onMounted(() => {
 	container.addEventListener('pointerdown', interruptFollow, { passive: true })
 	container.addEventListener('touchstart', interruptFollow, { passive: true })
 	container.addEventListener('keydown', interruptFollow)
+	if (typeof ResizeObserver !== 'undefined') {
+		resizeObserver = new ResizeObserver(scheduleMapResize)
+		resizeObserver.observe(container)
+	}
 })
 
 onBeforeUnmount(() => {
@@ -260,6 +278,12 @@ onBeforeUnmount(() => {
 	container?.removeEventListener('pointerdown', interruptFollow)
 	container?.removeEventListener('touchstart', interruptFollow)
 	container?.removeEventListener('keydown', interruptFollow)
+	resizeObserver?.disconnect()
+	resizeObserver = null
+	if (resizeAnimationFrame !== null) {
+		cancelAnimationFrame(resizeAnimationFrame)
+		resizeAnimationFrame = null
+	}
 	clearListeners()
 	controller.destroy()
 })

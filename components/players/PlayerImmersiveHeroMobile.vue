@@ -1,7 +1,7 @@
 <template>
-	<div class="flex min-h-0 flex-1 flex-col lg:hidden">
+	<div class="pt-3 lg:pt-0 flex min-h-0 flex-1 flex-col lg:hidden">
 		<div
-			class="pt-3 player-immersive-panel pointer-events-none [text-shadow:rgba(0,0,0,0.78)_0_1px_6px]"
+			class="player-immersive-panel pointer-events-none [text-shadow:rgba(0,0,0,0.78)_0_1px_6px]"
 		>
 			<div class="flex min-w-0 items-center gap-3">
 				<SkeletonImage
@@ -72,16 +72,11 @@
 					<div class="mt-1.5 flex min-w-0 flex-wrap gap-1.5">
 						<UBadge
 							class="gap-1 px-1.5 py-0.5 text-[10px] text-shadow-none"
-							:class="
-								isOnline
-									? '!bg-emerald-500 !text-white'
-									: '!bg-slate-500 !text-white'
-							"
-							variant="solid"
+							:color="isOnline ? 'success' : 'neutral'"
+							:variant="isOnline ? 'solid' : 'soft'"
 						>
 							<span
-								class="block size-1.5 rounded-full"
-								:class="isOnline ? 'bg-emerald-300' : 'bg-slate-300'"
+								class="block size-1.5 rounded-full bg-white ring-1 ring-black/20"
 							/>
 							{{
 								isOnline
@@ -91,7 +86,8 @@
 						</UBadge>
 						<UBadge
 							v-if="account.isPrimary"
-							class="!bg-sky-500 !text-white px-1.5 py-0.5 text-[10px] text-shadow-none"
+							class="px-1.5 py-0.5 text-[10px] text-shadow-none"
+							color="primary"
 							variant="solid"
 						>
 							{{ t('minecraftAccounts.badges.primary') }}
@@ -117,7 +113,7 @@
 
 			<Transition name="player-view-switch" mode="out-in">
 				<div
-					:key="`mobile-location-${selectedViewId ?? 'default'}`"
+					:key="`mobile-location-${account.id}-${selectedViewId ?? 'default'}`"
 					class="mt-4 grid w-fit gap-1.5 text-xs"
 				>
 					<div class="flex items-center gap-1.5">
@@ -146,11 +142,21 @@
 						</span>
 						<span class="text-sm font-medium">{{ playTimeHoursLabel }}</span>
 					</div>
+					<PlayerImmersiveAccountSwitcher
+						v-if="accounts.length > 1"
+						class="mt-1"
+						:accounts="accounts"
+						:selected-account-id="selectedAccountId"
+						@select-account="emit('selectAccount', $event)"
+					/>
 				</div>
 			</Transition>
 		</div>
 
-		<div class="pointer-events-auto absolute right-6 bottom-44">
+		<div
+			class="pointer-events-auto absolute right-6"
+			:class="hasOverlayToolbar ? 'bottom-54' : 'bottom-44'"
+		>
 			<BlueMapOrientationControl
 				:view="mapView"
 				@align-north="emit('alignNorth')"
@@ -158,90 +164,98 @@
 			/>
 		</div>
 
-		<div class="pointer-events-auto mt-auto -mx-6">
+		<Transition name="player-view-switch" mode="out-in">
 			<div
-				ref="mobileDataRailRef"
-				class="mobile-player-data-rail flex gap-2 overflow-x-auto px-6 pt-2 pb-1"
-				@scroll.passive="syncMobileDataScrollProgress"
+				:key="`mobile-data-${account.id}-${selectedViewId ?? 'default'}`"
+				class="pointer-events-auto mt-auto -mx-6"
 			>
-				<NuxtLink
-					v-if="boundPortalUser"
-					:to="localePath(`/u/${boundPortalUser.username}`)"
-					class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/58"
-				>
-					<UAvatar
-						:src="boundPortalUser.avatarUrl || undefined"
-						:alt="boundPortalUser.username"
-						size="sm"
-						:text="boundPortalUser.username.slice(0, 1).toUpperCase()"
-					/>
-					<span class="mt-1.5 text-[10px] text-white/64">
-						{{ t('minecraftAccounts.overlay.boundAccount') }}
-					</span>
-					<span class="mt-0.5 max-w-full truncate text-sm font-medium">
-						{{ boundPortalUser.username }}
-					</span>
-				</NuxtLink>
-
-				<button
-					v-if="officialLastLogin"
-					type="button"
-					class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
-					@click="emit('openAuthMeDetail', 'lastLogin')"
-				>
-					<UIcon name="i-lucide-log-in" class="size-5 text-white/82" />
-					<span class="mt-1 text-[10px] leading-tight text-white/64">
-						{{ t('minecraftAccounts.overlay.lastLogin') }}
-					</span>
-					<span class="mt-0.5 max-w-full truncate text-xs font-medium">
-						{{ lastLoginLocationLabel }}
-					</span>
-				</button>
-
-				<button
-					v-if="officialRegistration"
-					type="button"
-					class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
-					@click="emit('openAuthMeDetail', 'registration')"
-				>
-					<UIcon name="i-lucide-user-round-plus" class="size-5 text-white/82" />
-					<span class="mt-1 text-[10px] leading-tight text-white/64">
-						{{ t('minecraftAccounts.overlay.registration') }}
-					</span>
-					<span class="mt-0.5 max-w-full truncate text-xs font-medium">
-						{{ registrationLocationLabel }}
-					</span>
-				</button>
-
 				<div
-					v-for="item in mobileSummaryItems"
-					:key="item.key"
-					class="mobile-player-data-card flex size-28 shrink-0 flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm"
+					ref="mobileDataRailRef"
+					class="mobile-player-data-rail flex gap-2 overflow-x-auto px-6 pt-2 pb-1"
+					@scroll.passive="syncMobileDataScrollProgress"
 				>
-					<UIcon :name="item.icon" class="size-5 text-white/82" />
-					<span class="mt-1.5 text-[10px] leading-tight text-white/64">
-						{{ item.label }}
-					</span>
-					<span class="mt-1 text-sm leading-tight font-medium">
-						{{ item.value }}
-					</span>
+					<button
+						v-if="officialLastLogin"
+						type="button"
+						class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
+						@click="emit('openAuthMeDetail', 'lastLogin')"
+					>
+						<UIcon name="i-lucide-log-in" class="size-5 text-white/82" />
+						<span class="mt-1 text-[10px] leading-tight text-white/64">
+							{{ t('minecraftAccounts.overlay.lastLogin') }}
+						</span>
+						<span class="mt-0.5 max-w-full line-clamp-2 text-xs font-medium">
+							{{ lastLoginLocationLabel }}
+						</span>
+					</button>
+
+					<button
+						v-if="officialRegistration"
+						type="button"
+						class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-2.5 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/88"
+						@click="emit('openAuthMeDetail', 'registration')"
+					>
+						<UIcon
+							name="i-lucide-user-round-plus"
+							class="size-5 text-white/82"
+						/>
+						<span class="mt-1 text-[10px] leading-tight text-white/64">
+							{{ t('minecraftAccounts.overlay.registration') }}
+						</span>
+						<span class="mt-0.5 max-w-full line-clamp-2 text-xs font-medium">
+							{{ registrationLocationLabel }}
+						</span>
+					</button>
+
+					<NuxtLink
+						v-if="boundPortalUser"
+						:to="localePath(`/u/${boundPortalUser.username}`)"
+						class="mobile-player-data-card pointer-events-auto flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm transition-colors hover:bg-slate-900/58"
+					>
+						<UAvatar
+							:src="boundPortalUser.avatarUrl || undefined"
+							:alt="boundPortalUser.username"
+							size="sm"
+							:text="boundPortalUser.username.slice(0, 1).toUpperCase()"
+						/>
+						<span class="mt-1.5 text-[10px] text-white/64">
+							{{ t('minecraftAccounts.overlay.boundAccount') }}
+						</span>
+						<span class="mt-0.5 max-w-full truncate text-sm font-medium">
+							{{ boundPortalUser.username }}
+						</span>
+					</NuxtLink>
+
+					<div
+						v-for="item in mobileSummaryItems"
+						:key="item.key"
+						class="mobile-player-data-card flex size-28 shrink-0 flex-col items-center justify-center rounded-2xl border border-white/18 bg-slate-900/78 p-3 text-center backdrop-blur-sm"
+					>
+						<UIcon :name="item.icon" class="size-5 text-white/82" />
+						<span class="mt-1.5 text-[10px] leading-tight text-white/64">
+							{{ item.label }}
+						</span>
+						<span class="mt-1 text-sm leading-tight font-medium">
+							{{ item.value }}
+						</span>
+					</div>
+				</div>
+
+				<div class="flex justify-center px-6 pt-1">
+					<input
+						type="range"
+						min="0"
+						max="1000"
+						step="1"
+						:value="mobileDataScrollProgress"
+						class="mobile-player-data-scrubber h-4 w-20 cursor-ew-resize"
+						:aria-label="t('minecraftAccounts.overlay.scrollData')"
+						@input="handleMobileDataScrubberInput"
+						@change="snapMobileDataRailToNearestCard"
+					/>
 				</div>
 			</div>
-
-			<div class="flex justify-center px-6 pt-1">
-				<input
-					type="range"
-					min="0"
-					max="1000"
-					step="1"
-					:value="mobileDataScrollProgress"
-					class="mobile-player-data-scrubber h-4 w-20 cursor-ew-resize"
-					:aria-label="t('minecraftAccounts.overlay.scrollData')"
-					@input="handleMobileDataScrubberInput"
-					@change="snapMobileDataRailToNearestCard"
-				/>
-			</div>
-		</div>
+		</Transition>
 
 		<UModal
 			:open="authMeModalOpen"
@@ -254,10 +268,7 @@
 					<div
 						class="flex items-center gap-3 rounded-xl bg-slate-100 p-3 dark:bg-slate-900"
 					>
-						<UIcon
-							:name="authMeDetail.icon"
-							class="size-5 shrink-0 text-primary-500"
-						/>
+						<UIcon :name="authMeDetail.icon" class="size-5 shrink-0" />
 						<div class="min-w-0">
 							<div class="text-xs text-slate-500 dark:text-slate-400">
 								{{ t('minecraftAccounts.overlay.ipLocation') }}
@@ -336,6 +347,8 @@ import type {
 
 interface PlayerImmersiveHeroMobileProps {
 	account: MinecraftAccountForm
+	accounts: MinecraftAccountForm[]
+	selectedAccountId: string | null
 	selectedViewId: string | null
 	serverMenuOpen: boolean
 	serverViewItems: PlayerImmersiveServerViewItem[]
@@ -356,6 +369,7 @@ interface PlayerImmersiveHeroMobileProps {
 	mobileSummaryItems: PlayerImmersiveSummaryItem[]
 	authMeModalOpen: boolean
 	authMeDetail: PlayerImmersiveMobileAuthMeDetail | null
+	hasOverlayToolbar: boolean
 }
 
 const props = defineProps<PlayerImmersiveHeroMobileProps>()
@@ -369,6 +383,7 @@ const emit = defineEmits<{
 	resetView: []
 	openAuthMeDetail: [kind: PlayerImmersiveMobileAuthMeDetail['kind']]
 	toggleAuthMeIp: []
+	selectAccount: [accountId: string]
 }>()
 
 const { t } = useI18n()
@@ -426,7 +441,7 @@ const snapMobileDataRailToNearestCard = () => {
 }
 
 watch(
-	() => props.selectedViewId,
+	() => [props.account.id, props.selectedViewId] as const,
 	() => {
 		nextTick(() => {
 			mobileDataRailRef.value?.scrollTo({ left: 0, behavior: 'smooth' })

@@ -80,16 +80,11 @@
 			<div class="mt-4 flex flex-wrap gap-2">
 				<UBadge
 					class="gap-1.5 text-shadow-none"
-					:class="
-						isOnline
-							? '!bg-emerald-500 !text-white'
-							: '!bg-slate-500 !text-white'
-					"
-					variant="solid"
+					:color="isOnline ? 'success' : 'neutral'"
+					:variant="isOnline ? 'solid' : 'soft'"
 				>
 					<span
-						class="block size-2 rounded-full"
-						:class="isOnline ? 'bg-emerald-300' : 'bg-slate-300'"
+						class="block size-2 rounded-full bg-white ring-1 ring-black/20"
 					/>
 					{{
 						isOnline
@@ -99,7 +94,8 @@
 				</UBadge>
 				<UBadge
 					v-if="account.isPrimary"
-					class="!bg-sky-500 !text-white text-shadow-none"
+					class="text-shadow-none"
+					color="primary"
 					variant="solid"
 				>
 					{{ t('minecraftAccounts.badges.primary') }}
@@ -123,7 +119,7 @@
 
 			<Transition name="player-view-switch" mode="out-in">
 				<div
-					:key="selectedViewId ?? 'default'"
+					:key="`${account.id}-${selectedViewId ?? 'default'}`"
 					class="mt-6 grid w-fit gap-2.5 border-t border-white/25 pt-5 text-sm"
 				>
 					<div
@@ -237,6 +233,13 @@
 							{{ playTimeHoursLabel }}
 						</span>
 					</div>
+					<PlayerImmersiveAccountSwitcher
+						v-if="accounts.length > 1"
+						class="mt-1"
+						:accounts="accounts"
+						:selected-account-id="selectedAccountId"
+						@select-account="emit('selectAccount', $event)"
+					/>
 				</div>
 			</Transition>
 
@@ -267,7 +270,7 @@
 
 		<Transition name="player-view-switch" mode="out-in">
 			<div
-				:key="`summary-${selectedViewId ?? 'default'}`"
+				:key="`summary-${account.id}-${selectedViewId ?? 'default'}`"
 				class="player-immersive-panel mt-auto hidden shrink-0 self-end [text-shadow:rgba(0,0,0,0.78)_0_1px_6px] lg:block"
 			>
 				<div class="space-y-0.5 text-right text-[11px] text-white/90">
@@ -303,6 +306,8 @@ import type {
 
 interface PlayerImmersiveHeroDesktopProps {
 	account: MinecraftAccountForm
+	accounts: MinecraftAccountForm[]
+	selectedAccountId: string | null
 	selectedViewId: string | null
 	serverMenuOpen: boolean
 	serverViewItems: PlayerImmersiveServerViewItem[]
@@ -337,6 +342,7 @@ const emit = defineEmits<{
 	toggleLastLoginIp: []
 	toggleRegistrationIp: []
 	focusPlayer: []
+	selectAccount: [accountId: string]
 }>()
 
 const { t } = useI18n()

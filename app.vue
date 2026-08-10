@@ -14,6 +14,7 @@ import {
 	profileLanguageToLocaleCode,
 	type ProfileLanguage,
 } from '~/utils/profile/edit'
+import { resolvePageContainerVariant } from '~/utils/layout/page-presentation'
 
 type LocaleCode = 'zh-CN' | 'zh-TW' | 'ja-JP' | 'en-US'
 type LocaleNameKey = 'zhCN' | 'zhTW' | 'jaJP' | 'enUS'
@@ -27,7 +28,7 @@ const toast = useToast()
 const nuxtApp = useNuxtApp()
 const route = useRoute()
 const isImmersivePage = computed(
-	() => route.meta.pageContainerVariant === 'immersive',
+	() => resolvePageContainerVariant(route) === 'immersive',
 )
 const switchLocalePath = useSwitchLocalePath()
 const locale = (nuxtApp.$i18n as { locale: Ref<LocaleCode> }).locale

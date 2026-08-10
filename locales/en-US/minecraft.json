@@ -54,6 +54,10 @@
 			"viewerLoadFailed": "The BlueMap viewer is temporarily unavailable.",
 			"playerCoordinates": "Coordinates {coordinates}",
 			"playerDirection": "Facing {degrees}°",
+			"orientation": {
+				"alignNorth": "Align the map to north",
+				"hint": "Click to face north; double-click to reset to a north-up top view"
+			},
 			"viewMode": "Map view mode",
 			"flat": "Flat",
 			"perspective": "Perspective",
@@ -61,7 +65,13 @@
 		},
 		"toolbar": {
 			"bindTip": "Add binding",
-			"setPrimaryTip": "Set primary"
+			"setPrimaryTip": "Set primary",
+			"tabsLabel": "Profile scope",
+			"viewModeLabel": "Profile view",
+			"immersiveView": "Immersive",
+			"immersiveViewTip": "View profiles over the immersive BlueMap",
+			"listView": "List",
+			"listViewTip": "View profiles as a list of cards"
 		},
 		"tabs": {
 			"overview": "Overview",
@@ -72,7 +82,10 @@
 			"officialEmptyDescription": "Bind a regular Minecraft account first, then official profiles will appear here."
 		},
 		"selector": {
-			"aggregate": "Summary"
+			"aggregate": "Summary",
+			"previousAccount": "Previous profile",
+			"nextAccount": "Next profile",
+			"selectAccount": "Select Minecraft profile"
 		},
 		"history": {
 			"profileSectionTitle": "Historical Archives",
