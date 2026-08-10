@@ -333,6 +333,7 @@ export default defineNuxtConfig({
 				'dayjs/plugin/utc',
 				'hammerjs',
 				'lunar-typescript',
+				'skinview-utils',
 				'skinview3d',
 				'three',
 				'three/src/math/MathUtils',
