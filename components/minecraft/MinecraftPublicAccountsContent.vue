@@ -132,7 +132,7 @@
 									class="flex items-baseline gap-1"
 								>
 									<span class="text-xs text-slate-500 dark:text-white/80">
-										{{ t('minecraftAccounts.overlay.lastLogin') }}
+										{{ t('minecraftAccounts.overlay.lastLocation') }}
 									</span>
 									<span
 										class="text-slate-700 text-[17px] font-medium dark:text-white/90"
@@ -374,7 +374,12 @@ const coordsText = computed(() => {
 		return t('minecraftAccounts.fields.unknownCoords')
 	}
 
-	return `${Math.round(location.x)}, ${Math.round(location.z)}`
+	const y =
+		location.y != null && Number.isFinite(location.y)
+			? Math.round(location.y)
+			: '?'
+
+	return `${Math.round(location.x)}, ${y}, ${Math.round(location.z)}`
 })
 
 const displayFirstJoinedAt = computed(() =>
