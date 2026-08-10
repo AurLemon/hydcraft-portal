@@ -55,6 +55,13 @@ interface PlayerRenderMaterial extends Material {
 	map?: unknown
 }
 
+interface WorldLabelOptions {
+	textStyle?: string
+	height?: number
+	compact?: boolean
+	horizontalAnchor?: 0 | 0.5 | 1
+}
+
 export const createPlayerMarkerSupport = (
 	three: Pick<
 		ThreeModule,
@@ -108,11 +115,15 @@ export const createPlayerMarkerSupport = (
 		3,
 		Math.max(2, Math.ceil(window.devicePixelRatio || 1)),
 	)
+	const detailLabelInnerEdgeX = 6
 	const createWorldLabel = (
 		text: string,
-		textStyle = '#ffffff',
-		height = 3.2,
-		compact = false,
+		{
+			textStyle = '#ffffff',
+			height = 3.2,
+			compact = false,
+			horizontalAnchor = 0.5,
+		}: WorldLabelOptions = {},
 	) => {
 		const label = new NameTagObject(text || ' ', {
 			font: `${compact ? 500 : 600} ${42 * labelTextureScale}px ${portalFontFamily}`,
@@ -129,6 +140,7 @@ export const createPlayerMarkerSupport = (
 		label.material.map!.magFilter = LinearFilter
 		label.material.map!.minFilter = LinearFilter
 		label.material.map!.needsUpdate = true
+		label.center.set(horizontalAnchor, 0.5)
 		label.renderOrder = 1000
 		label.userData.labelText = text
 		return label
@@ -269,14 +281,18 @@ export const createPlayerMarkerSupport = (
 		const detailAnchor = new Group()
 		detailAnchor.position.y = 8
 		detailAnchor.visible = false
-		const coordinateLabel = createWorldLabel(' ')
-		setWorldLabelPosition(coordinateLabel, -18, 0, 0)
-		const playerIdLabel = createWorldLabel(' ')
-		setWorldLabelPosition(playerIdLabel, 18, 0, 0)
+		const coordinateLabel = createWorldLabel(' ', { horizontalAnchor: 1 })
+		setWorldLabelPosition(coordinateLabel, -detailLabelInnerEdgeX, 0, 0)
+		const playerIdLabel = createWorldLabel(' ', { horizontalAnchor: 0 })
+		setWorldLabelPosition(playerIdLabel, detailLabelInnerEdgeX, 0, 0)
 		detailAnchor.add(coordinateLabel, playerIdLabel)
 		root.add(detailAnchor)
 
-		const directionLabel = createWorldLabel(' ', '#bae6fd', 2.25, true)
+		const directionLabel = createWorldLabel(' ', {
+			textStyle: '#bae6fd',
+			height: 2.25,
+			compact: true,
+		})
 		setWorldLabelPosition(directionLabel, 0, -7.55, 9)
 		setWorldLabelVisible(directionLabel, false)
 		root.add(directionLabel)
@@ -297,38 +313,50 @@ export const createPlayerMarkerSupport = (
 				text: string,
 				parent: typeof root,
 				position: { x: number; y: number; z: number },
-				textStyle = '#ffffff',
-				height = 3.2,
-				compact = false,
+				options: WorldLabelOptions = {},
 			) => {
 				const current = marker.detailLabels[key]
 				if (current.userData.labelText === text) return
 				parent.remove(current)
 				disposeWorldLabel(current)
-				const next = createWorldLabel(text, textStyle, height, compact)
+				const next = createWorldLabel(text, options)
 				setWorldLabelPosition(next, position.x, position.y, position.z)
 				parent.add(next)
 				marker.detailLabels[key] = next
 			}
 
-			replaceLabel('coordinates', labels.coordinates, detailAnchor, {
-				x: -18,
-				y: 0,
-				z: 0,
-			})
-			replaceLabel('playerId', labels.playerId, detailAnchor, {
-				x: 18,
-				y: 0,
-				z: 0,
-			})
+			replaceLabel(
+				'coordinates',
+				labels.coordinates,
+				detailAnchor,
+				{
+					x: -detailLabelInnerEdgeX,
+					y: 0,
+					z: 0,
+				},
+				{ horizontalAnchor: 1 },
+			)
+			replaceLabel(
+				'playerId',
+				labels.playerId,
+				detailAnchor,
+				{
+					x: detailLabelInnerEdgeX,
+					y: 0,
+					z: 0,
+				},
+				{ horizontalAnchor: 0 },
+			)
 			replaceLabel(
 				'direction',
 				labels.direction,
 				root,
 				marker.detailLabels.direction.position,
-				'#bae6fd',
-				2.25,
-				true,
+				{
+					textStyle: '#bae6fd',
+					height: 2.25,
+					compact: true,
+				},
 			)
 		}
 		marker.setDirection = (yawRadians) => {
