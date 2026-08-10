@@ -137,7 +137,11 @@ interface PlayerImmersiveHeroProps {
 	showBoundPortalUser?: boolean
 }
 
-const props = defineProps<PlayerImmersiveHeroProps>()
+const props = withDefaults(defineProps<PlayerImmersiveHeroProps>(), {
+	accounts: () => [],
+	selectedAccountId: null,
+	showBoundPortalUser: true,
+})
 const emit = defineEmits<{
 	selectAccount: [accountId: string]
 }>()
