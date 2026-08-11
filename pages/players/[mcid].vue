@@ -1,5 +1,5 @@
 <template>
-	<div class="-mt-24 lg:-mt-36">
+	<div>
 		<div v-if="initialLoading" class="h-dvh bg-slate-950">
 			<USkeleton class="h-full w-full rounded-none" />
 		</div>
@@ -21,7 +21,7 @@ definePageMeta({
 	headerVariant: 'hero',
 	pageContainerVariant: 'immersive',
 	pageTransition: {
-		name: 'player-immersive',
+		name: 'immersive-page',
 		mode: 'out-in',
 	},
 })

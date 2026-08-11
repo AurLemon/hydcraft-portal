@@ -28,6 +28,8 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 
 		this.container = options.container
 		this.onViewChanged = options.onViewChanged ?? null
+		this.focusHeightOffset =
+			options.focusHeightOffset ?? BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 		try {
 			const [
 				,
@@ -60,6 +62,11 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 							angle?: number
 							tilt?: number
 							distance?: number
+							position?: {
+								x?: number
+								y?: number
+								z?: number
+							}
 						}
 					}>
 				).detail
@@ -72,6 +79,18 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				if (!this.onViewChanged) return
 
 				this.onViewChanged({
+					x: Number.isFinite(controls.position?.x)
+						? (controls.position?.x ?? 0)
+						: 0,
+					y: Number.isFinite(controls.position?.y)
+						? (controls.position?.y ?? 0)
+						: 0,
+					z: Number.isFinite(controls.position?.z)
+						? (controls.position?.z ?? 0)
+						: 0,
+					distance: Number.isFinite(controls.distance)
+						? (controls.distance ?? 0)
+						: 0,
 					rotation: Number.isFinite(controls.rotation)
 						? (controls.rotation ?? 0)
 						: 0,
@@ -147,6 +166,11 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				options.container,
 			)
 			const mapControls = this.mapControls
+			if (options.unrestrictedPerspectiveAngle) {
+				// The homepage presents architecture at a fixed wide view, so it opts
+				// out of BlueMap's distance-based right-drag perspective limit.
+				mapControls.getMaxPerspectiveAngleForDistance = () => Math.PI / 2
+			}
 			const nativeMapControlsUpdate = mapControls.update.bind(mapControls)
 			mapControls.update = (delta, loadedMap) => {
 				const release = this.followRelease
@@ -258,6 +282,16 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				controls.tilt = 0
 				viewer.data.loadedHiresViewDistance =
 					BLUE_MAP_RUNTIME.HIRES_VIEW_DISTANCE
+			}
+			const initialOrientation = options.initialOrientation
+			if (initialOrientation?.rotation !== undefined) {
+				controls.rotation = initialOrientation.rotation
+			}
+			if (initialOrientation?.angle !== undefined) {
+				controls.angle = initialOrientation.angle
+			}
+			if (initialOrientation?.tilt !== undefined) {
+				controls.tilt = initialOrientation.tilt
 			}
 			controls.controls =
 				options.mode === 'freeFlight'

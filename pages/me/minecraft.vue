@@ -1,5 +1,5 @@
 <template>
-	<div :class="isImmersiveView ? '-mt-24 lg:-mt-36' : ''">
+	<div>
 		<div
 			class="pointer-events-none fixed inset-x-0 bottom-3 z-90 flex justify-center px-3 sm:bottom-4"
 		>
@@ -237,7 +237,7 @@ definePageMeta({
 	pageContainerVariant: 'minecraftAccounts',
 	middleware: 'portal-auth',
 	pageTransition: {
-		name: 'player-immersive',
+		name: 'immersive-page',
 		mode: 'out-in',
 	},
 })

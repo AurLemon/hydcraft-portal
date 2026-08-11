@@ -11,6 +11,12 @@ export interface BlueMapFocus {
 	zoom?: number
 }
 
+export interface BlueMapViewOrientation {
+	rotation?: number
+	angle?: number
+	tilt?: number
+}
+
 export interface BlueMapPlayerMarker extends BlueMapFocus {
 	id: string
 	label?: string
@@ -67,6 +73,10 @@ export interface BlueMapFocusChangedEventPayload {
 }
 
 export interface BlueMapViewChangedEventPayload {
+	x: number
+	y: number
+	z: number
+	distance: number
 	rotation: number
 	angle: number
 	tilt: number
@@ -101,6 +111,9 @@ export interface BlueMapRuntimeMountOptions {
 	appendCacheBust?: boolean
 	initialDistance?: number
 	initialFocus?: BlueMapFocus
+	focusHeightOffset?: number
+	initialOrientation?: BlueMapViewOrientation
+	unrestrictedPerspectiveAngle?: boolean
 	player?: BlueMapPlayerMarker | null
 	onViewChanged?: (view: BlueMapViewChangedEventPayload) => void
 }
@@ -130,6 +143,9 @@ export interface BlueMapController {
 		appendCacheBust?: boolean
 		initialDistance?: number
 		focus?: BlueMapFocus
+		focusHeightOffset?: number
+		initialOrientation?: BlueMapViewOrientation
+		unrestrictedPerspectiveAngle?: boolean
 		player?: BlueMapPlayerMarker | null
 	}): Promise<void>
 	resize(): void

@@ -106,6 +106,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		from: { x: number; y: number; z: number }
 		desired: { x: number; y: number; z: number }
 	} | null = null
+	protected focusHeightOffset = BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 	protected cacheBustFreeAssetsBaseUrl: string | null = null
 	protected onViewChanged:
 		| ((view: BlueMapViewChangedEventPayload) => void)
@@ -460,6 +461,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		this.followingPlayer = false
 		this.preservedTargetY = null
 		this.followRelease = null
+		this.focusHeightOffset = BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 		this.onViewChanged = null
 	}
 
@@ -535,7 +537,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		}
 
 		const y = Number.isFinite(focus.y)
-			? (focus.y ?? 0) + BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
+			? (focus.y ?? 0) + this.focusHeightOffset
 			: 0
 
 		return { x: focus.x, y, z: focus.z, distance }

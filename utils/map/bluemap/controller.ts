@@ -18,6 +18,7 @@ import type {
 	BlueMapRuntime,
 	BlueMapRuntimeFactory,
 	BlueMapRuntimeMountOptions,
+	BlueMapViewOrientation,
 	BlueMapViewMode,
 } from './types'
 
@@ -60,6 +61,8 @@ export class BlueMapControllerImpl implements BlueMapController {
 		appendCacheBust?: boolean
 		initialDistance?: number
 		focus?: BlueMapFocus
+		initialOrientation?: BlueMapViewOrientation
+		unrestrictedPerspectiveAngle?: boolean
 		player?: BlueMapPlayerMarker | null
 	}) {
 		const mountGeneration = ++this.mountGeneration
@@ -87,6 +90,9 @@ export class BlueMapControllerImpl implements BlueMapController {
 				appendCacheBust: options.appendCacheBust ?? false,
 				initialDistance: options.initialDistance,
 				initialFocus: options.focus,
+				focusHeightOffset: options.focusHeightOffset,
+				initialOrientation: options.initialOrientation,
+				unrestrictedPerspectiveAngle: options.unrestrictedPerspectiveAngle,
 				player: options.player,
 				onViewChanged: (view) => this.emit('viewChanged', view),
 			}

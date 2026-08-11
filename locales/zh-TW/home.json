@@ -1,24 +1,17 @@
 {
 	"home": {
-		"notice": {
-			"descriptionLead": "本站仍在持續建設中。",
-			"description": "因為伺服器相關事情較多，網站正在跟隨伺服器內容逐步補充頁面與功能。站內部分功能尚未完成，預計在 2026 年 9 月前完成 MVP。"
-		},
-		"lead": "修樓、鋪軌、造城、養老。至於為什麼一個 MC 伺服器叫氫氣？我也不知道。",
-		"cards": {
-			"backgroundAlt": "{title} 背景",
-			"comingSoon": "開發中",
-			"oxygen": {
-				"description": "伺服器目前周目（1.21.1）"
+		"immersive": {
+			"mapUnavailable": "地圖暫時無法使用",
+			"serverUnavailable": "預設伺服器",
+			"credits": {
+				"builder": "建設者"
 			},
-			"railway": {
-				"description": "鐵路系統與交通網路"
-			},
-			"players": {
-				"description": "玩家目錄與公開展示"
-			},
-			"cities": {
-				"description": "城市規劃與建築群落"
+			"scenes": {
+				"owenIslands": {
+					"name": "歐文\n群島",
+					"title": "伺服器中最獨特的自治體。",
+					"description": "當建設者用 Axiom 和 WorldEdit 勾勒岸線與街區時，獨具風格的城市便漸漸浮現。"
+				}
 			}
 		}
 	}

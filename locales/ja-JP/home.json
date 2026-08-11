@@ -1,24 +1,17 @@
 {
 	"home": {
-		"notice": {
-			"descriptionLead": "このサイトは現在も整備中です。",
-			"description": "サーバー関連の対応が多いため、サーバーの内容に合わせてサイトのページと機能を少しずつ追加しています。一部の機能はまだ完成しておらず、MVP は 2026 年 9 月までに完成する予定です。"
-		},
-		"lead": "ビルを建てて、線路を敷いて、街をつくって、のんびり暮らす。じゃあ、どうして MC サーバーの名前が水素なのかって？ それは私にもわからない。",
-		"cards": {
-			"backgroundAlt": "{title} の背景",
-			"comingSoon": "開発中",
-			"oxygen": {
-				"description": "現在のサーバー周目（1.21.1）"
+		"immersive": {
+			"mapUnavailable": "マップは一時的に利用できません",
+			"serverUnavailable": "デフォルトサーバー",
+			"credits": {
+				"builder": "建設者"
 			},
-			"railway": {
-				"description": "鉄道システムと交通ネットワーク"
-			},
-			"players": {
-				"description": "プレイヤーディレクトリと公開表示"
-			},
-			"cities": {
-				"description": "都市計画と建築コミュニティ"
+			"scenes": {
+				"owenIslands": {
+					"name": "オーウェン\n諸島",
+					"title": "サーバーで最も個性的な自治体。",
+					"description": "建設者が Axiom と WorldEdit で海岸線と街区を描くとき、独自の個性を持つ都市が少しずつ姿を現す。"
+				}
 			}
 		}
 	}

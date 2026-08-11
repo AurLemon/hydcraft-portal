@@ -447,10 +447,6 @@ onBeforeUnmount(() =>
 </script>
 
 <style scoped>
-.player-immersive-panel {
-	animation: player-immersive-panel-in 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 .player-view-switch-enter-active,
 .player-view-switch-leave-active {
 	transition:
@@ -520,23 +516,7 @@ onBeforeUnmount(() =>
 	box-shadow: 0 0 10px rgb(125 211 252 / 0.34);
 }
 
-@keyframes player-immersive-panel-in {
-	from {
-		opacity: 0;
-		transform: translateY(14px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.player-immersive-panel {
-		animation: none;
-	}
-
 	.player-view-switch-enter-active,
 	.player-view-switch-leave-active {
 		transition: none;

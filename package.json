@@ -76,6 +76,7 @@
 	},
 	"devDependencies": {
 		"@iconify-json/lucide": "^1.2.101",
+		"@iconify-json/simple-icons": "^1.2.93",
 		"@nuxt/eslint": "1.15.2",
 		"@types/cloudflare-turnstile": "^0.2.2",
 		"@types/nodemailer": "^8.0.1",

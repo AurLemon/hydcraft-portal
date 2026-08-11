@@ -165,23 +165,14 @@ body {
 	transform: translateY(0);
 }
 
-.player-immersive-enter-active,
-.player-immersive-leave-active {
-	transition:
-		opacity 420ms ease,
-		transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+.immersive-page-enter-active,
+.immersive-page-leave-active {
+	transition: opacity 300ms ease;
 }
 
-.player-immersive-enter-from,
-.player-immersive-leave-to {
+.immersive-page-enter-from,
+.immersive-page-leave-to {
 	opacity: 0;
-	transform: scale(1.012);
-}
-
-.player-immersive-enter-to,
-.player-immersive-leave-from {
-	opacity: 1;
-	transform: scale(1);
 }
 
 .home-hero-video-enter-active,
@@ -238,16 +229,9 @@ body {
 		transform: none;
 	}
 
-	.player-immersive-enter-active,
-	.player-immersive-leave-active {
+	.immersive-page-enter-active,
+	.immersive-page-leave-active {
 		transition: none;
-	}
-
-	.player-immersive-enter-from,
-	.player-immersive-leave-to,
-	.player-immersive-enter-to,
-	.player-immersive-leave-from {
-		transform: none;
 	}
 
 	.home-hero-video-enter-active,

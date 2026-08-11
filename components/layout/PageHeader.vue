@@ -87,6 +87,7 @@ const isHeaderMenuHidden = computed(() => {
 const isImmersivePage = computed(
 	() => resolvePageContainerVariant(route) === 'immersive',
 )
+const usesOverlayHeader = computed(() => isImmersivePage.value)
 const usesWideHeaderShell = computed(
 	() =>
 		resolvePageContainerVariant(route) === 'immersive' ||
@@ -165,8 +166,11 @@ onMounted(() => {
 <template>
 	<header
 		data-page-header
-		class="pointer-events-none sticky top-0 z-100 pt-6 pb-8 lg:pt-10 lg:pb-16 lg:transition-[padding-left,padding-right] lg:duration-520 lg:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-		:class="usesWideHeaderShell ? 'px-0' : 'lg:px-8'"
+		class="pointer-events-none z-100 pt-6 pb-8 lg:pt-10 lg:pb-16 lg:transition-[padding-left,padding-right] lg:duration-520 lg:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+		:class="[
+			usesOverlayHeader ? 'fixed inset-x-0 top-0' : 'sticky top-0',
+			usesWideHeaderShell ? 'px-0' : 'lg:px-8',
+		]"
 	>
 		<div
 			class="pointer-events-none absolute top-0 right-0 -bottom-4/5 left-0 z-10 backdrop-blur-[48px] mask-[linear-gradient(to_bottom,black_0%,rgba(0,0,0,0.98)_30%,rgba(0,0,0,0.92)_45%,rgba(0,0,0,0.8)_55%,rgba(0,0,0,0.58)_65%,rgba(0,0,0,0.35)_75%,rgba(0,0,0,0.15)_85%,transparent_100%)] lg:-bottom-3/5"

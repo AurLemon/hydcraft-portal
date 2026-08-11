@@ -1,376 +1,137 @@
 <template>
-	<div
-		class="home-hero-shell immersive-site-shell flex flex-col justify-end pt-24"
+	<section
+		class="relative isolate h-dvh min-h-160 w-full overflow-hidden bg-slate-950"
 	>
-		<div class="flex flex-col">
-			<div class="relative z-10">
-				<div class="max-w-4xl [text-shadow:0_1px_2px_rgba(15,23,42,0.36)]">
+		<div class="absolute inset-0">
+			<HomeImmersiveBlueMap
+				:assets-base-url="mapAssetsProxyBaseUrl"
+				:camera="scene.camera"
+				:debug-enabled="developerControlsEnabled"
+				:class="developerControlsEnabled ? undefined : 'pointer-events-none'"
+			/>
+		</div>
+		<div
+			class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,transparent_0%,rgba(2,6,23,0.12)_42%,rgba(2,6,23,0.7)_100%)]"
+		/>
+		<div
+			class="pointer-events-none absolute inset-y-0 left-0 w-full bg-linear-to-r from-slate-950/82 via-slate-950/34 to-transparent lg:w-[72%]"
+		/>
+		<div
+			class="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-linear-to-t from-slate-950/80 via-slate-950/24 to-transparent"
+		/>
+
+		<div
+			class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white sm:px-10 lg:px-16 lg:pb-12"
+		>
+			<p
+				class="lg:-translate-x-2 pointer-events-none mt-auto inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] font-bold tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none"
+				aria-hidden="true"
+			>
+				{{ t(`home.immersive.scenes.${scene.presentation.copyKey}.name`) }}
+			</p>
+			<div
+				class="lg:-translate-x-2 mt-3 mx-4 inline-flex gap-1 w-fit items-center text-sm text-white/90 select-none"
+			>
+				<UIcon
+					:name="scene.presentation.credit.icon"
+					class="size-12 object-cover shrink-0 text-[#fd354f] leading-none"
+				/>
+				<a
+					:href="scene.presentation.credit.href"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-base font-medium transition-colors hover:bg-white/14 hover:text-white"
+				>
+					<span>{{ scene.presentation.credit.handle }}</span>
+					<UIcon name="i-lucide-external-link" class="size-3.5" />
+				</a>
+			</div>
+
+			<div
+				class="mt-2 max-w-full pb-2 [text-shadow:0_2px_16px_rgba(2,6,23,0.8)] lg:mt-auto lg:pb-12"
+			>
+				<div class="max-w-xl">
 					<h1
-						class="text-left text-5xl leading-none font-medium tracking-tight text-white sm:text-6xl lg:text-7xl"
+						class="uppercase whitespace-pre-line text-xl font-semibold tracking-[0.08em] sm:text-3xl"
 					>
-						<span class="block text-4xl sm:inline sm:text-7xl">This is </span>
-						<span class="block sm:inline">
-							<span class="font-semibold text-hydcraft-red">Hyd</span>
-							<span class="font-semibold text-hydcraft-blue">Craft</span>
-							<span>.</span>
-						</span>
+						{{ t(`home.immersive.scenes.${scene.presentation.copyKey}.title`) }}
 					</h1>
-					<p
-						class="mt-3 text-left text-xl leading-relaxed font-medium text-white sm:text-2xl"
-					>
-						{{ t('home.lead') }}
+					<p class="mt-2 whitespace-pre-line text-sm text-white/72 sm:text-lg">
+						{{
+							t(
+								`home.immersive.scenes.${scene.presentation.copyKey}.description`,
+							)
+						}}
 					</p>
 				</div>
+			</div>
 
-				<UAlert
-					class="relative z-10 mt-4 !bg-white !text-slate-900 dark:!bg-slate-950 dark:!text-slate-100"
-					color="neutral"
-					icon="i-lucide-info"
-				>
-					<template #description>
-						<strong>{{ t('home.notice.descriptionLead') }}</strong
-						>{{ t('home.notice.description') }}
-					</template>
-				</UAlert>
-
-				<section
-					class="relative z-60 mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
-				>
-					<div
-						v-for="card in homeCards"
-						:key="card.key"
-						:ref="setCardRef(card.index)"
-						class="home-card-magnet"
-						:style="cardMagnetStyle(card.index)"
-					>
-						<HomeInfoCard
-							:title="card.title"
-							:description="card.description"
-							:background-src="card.backgroundSrc"
-							:background-alt="
-								t('home.cards.backgroundAlt', { title: card.title })
-							"
-							:background-class="card.backgroundClass"
-							:to="card.to"
-							:tooltip="card.tooltip"
-						/>
-					</div>
-				</section>
+			<div
+				class="ml-auto flex items-center gap-2 text-base font-medium tracking-wide text-white/90 [text-shadow:0_2px_12px_rgba(2,6,23,0.8)]"
+			>
+				<span
+					class="h-2 w-2 rounded-full"
+					:class="online ? 'bg-emerald-400' : 'bg-slate-400'"
+				/>
+				<span>{{ serverName }}</span>
+				<span class="text-white/62">{{ onlineCount }}/{{ maxPlayers }}</span>
 			</div>
 		</div>
-	</div>
+	</section>
 </template>
 
 <script setup lang="ts">
-import HomeInfoCard from '~/components/cards/HomeInfoCard.vue'
-import cultureBackground from '~/assets/resources/homepage/culture_bg.webp'
-import oxygenBackground from '~/assets/resources/homepage/oxygen_bg.webp'
-import railwayBackground from '~/assets/resources/homepage/railway_bg.webp'
-import citiesBackground from '~/assets/resources/homepage/cities_bg.webp'
+import {
+	defaultHomeImmersiveScene,
+	HOME_IMMERSIVE_DEVELOPER_CONTROLS_ENABLED,
+	HOME_IMMERSIVE_MAP_ASSETS_PROXY_BASE_URL,
+} from '~/utils/home/immersive-scenes'
+import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
+import type { ServerOverviewLiveResponse } from '~/utils/server/overview'
 
 definePageMeta({
 	headerVariant: 'hero',
-	pageContainerVariant: 'fullBleed',
+	pageContainerVariant: 'immersive',
+	pageTransition: {
+		name: 'immersive-page',
+		mode: 'out-in',
+	},
 })
 
-type HomeCardKey = 'oxygen' | 'railway' | 'players' | 'cities'
+const { locale, t } = useI18n()
+const scene = defaultHomeImmersiveScene
+const mapAssetsProxyBaseUrl = HOME_IMMERSIVE_MAP_ASSETS_PROXY_BASE_URL
+const developerControlsEnabled = HOME_IMMERSIVE_DEVELOPER_CONTROLS_ENABLED
+const { data: liveOverview } = await useFetch<ServerOverviewLiveResponse>(
+	'/api/public/server/overview-live',
+)
 
-interface HomeCard {
-	index: number
-	key: HomeCardKey
-	title: string
-	description: string
-	backgroundSrc: string
-	backgroundClass?: string
-	to?: string
-	tooltip?: string
-}
+const defaultServer = computed(() => {
+	const overview = liveOverview.value
+	if (!overview) return null
 
-interface Vector2D {
-	x: number
-	y: number
-}
-
-const HOME_HERO_PARALLAX_MAX_OFFSET = 24
-const HOME_HERO_ROTATION_MAX_DEGREE = 1.4
-const CARD_MAGNET_MAX_OFFSET = 6
-const DESKTOP_POINTER_MIN_WIDTH = 1024
-const { t } = useI18n()
-const localePath = useLocalePath()
-
-const cardRefs = ref<HTMLElement[]>([])
-const cardOffsets = reactive<Vector2D[]>([
-	{ x: 0, y: 0 },
-	{ x: 0, y: 0 },
-	{ x: 0, y: 0 },
-	{ x: 0, y: 0 },
-])
-const pointer = reactive<Vector2D>({ x: 0, y: 0 })
-const pointerActive = ref(false)
-const pointerEffectsEnabled = ref(false)
-const pointerListenersBound = ref(false)
-const updateFrame = ref<number | null>(null)
-
-const homeCards = computed<HomeCard[]>(() => [
-	{
-		index: 0,
-		key: 'oxygen',
-		title: 'Oxygen',
-		description: t('home.cards.oxygen.description'),
-		backgroundSrc: oxygenBackground,
-		backgroundClass: 'object-center',
-		to: localePath('/server'),
-	},
-	{
-		index: 1,
-		key: 'railway',
-		title: 'Railway',
-		description: t('home.cards.railway.description'),
-		backgroundSrc: railwayBackground,
-		backgroundClass: 'object-left',
-		tooltip: t('home.cards.comingSoon'),
-	},
-	{
-		index: 2,
-		key: 'players',
-		title: 'Players',
-		description: t('home.cards.players.description'),
-		backgroundSrc: cultureBackground,
-		backgroundClass: 'object-center',
-		to: localePath('/server/players'),
-	},
-	{
-		index: 3,
-		key: 'cities',
-		title: 'Cities',
-		description: t('home.cards.cities.description'),
-		backgroundSrc: citiesBackground,
-		backgroundClass: 'object-center',
-		tooltip: t('home.cards.comingSoon'),
-	},
-])
-
-const setCardRef =
-	(index: number) => (element: Element | ComponentPublicInstance | null) => {
-		if (element instanceof HTMLElement) {
-			cardRefs.value[index] = element
-		}
-	}
-
-const resetCardOffsets = (): void => {
-	for (const offset of cardOffsets) {
-		offset.x = 0
-		offset.y = 0
-	}
-}
-
-const setHeroVideoTransform = (
-	x = 0,
-	y = 0,
-	rotateX = 0,
-	rotateY = 0,
-): void => {
-	if (!import.meta.client) {
-		return
-	}
-
-	document.documentElement.style.setProperty('--home-hero-video-x', `${x}px`)
-	document.documentElement.style.setProperty('--home-hero-video-y', `${y}px`)
-	document.documentElement.style.setProperty(
-		'--home-hero-video-rotate-x',
-		`${rotateX}deg`,
+	return (
+		overview.servers.find(
+			(server) => server.serverId === overview.defaultServerId,
+		) ?? null
 	)
-	document.documentElement.style.setProperty(
-		'--home-hero-video-rotate-y',
-		`${rotateY}deg`,
-	)
-}
-
-const bindPointerListeners = (): void => {
-	if (pointerListenersBound.value) {
-		return
-	}
-
-	window.addEventListener('mousemove', handleMouseMove, { passive: true })
-	window.addEventListener('mouseout', handleMouseOut, { passive: true })
-	pointerListenersBound.value = true
-}
-
-const unbindPointerListeners = (): void => {
-	if (!pointerListenersBound.value) {
-		return
-	}
-
-	window.removeEventListener('mousemove', handleMouseMove)
-	window.removeEventListener('mouseout', handleMouseOut)
-	pointerListenersBound.value = false
-}
-
-const updatePointerEffectsEnabled = (): void => {
-	pointerEffectsEnabled.value =
-		window.innerWidth >= DESKTOP_POINTER_MIN_WIDTH &&
-		window.matchMedia('(hover: hover) and (pointer: fine)').matches
-
-	if (!pointerEffectsEnabled.value) {
-		pointerActive.value = false
-		resetCardOffsets()
-		setHeroVideoTransform()
-		unbindPointerListeners()
-		return
-	}
-
-	bindPointerListeners()
-}
-
-const updateCardOffsets = (): void => {
-	if (!pointerActive.value || !pointerEffectsEnabled.value) {
-		resetCardOffsets()
-		return
-	}
-
-	cardRefs.value.forEach((element, index) => {
-		const offset = cardOffsets[index]
-
-		if (!offset) {
-			return
-		}
-
-		const rect = element.getBoundingClientRect()
-		const pointerInsideCard =
-			pointer.x >= rect.left &&
-			pointer.x <= rect.right &&
-			pointer.y >= rect.top &&
-			pointer.y <= rect.bottom
-
-		if (pointerInsideCard) {
-			offset.x = 0
-			offset.y = 0
-			return
-		}
-
-		const centerX = rect.left + rect.width / 2
-		const centerY = rect.top + rect.height / 2
-		const deltaX = centerX - pointer.x
-		const deltaY = centerY - pointer.y
-		const distance = Math.hypot(deltaX, deltaY)
-		const maxDistance = Math.max(rect.width, rect.height) * 1.1
-
-		if (distance >= maxDistance) {
-			offset.x = 0
-			offset.y = 0
-			return
-		}
-
-		const strength = 1 - distance / maxDistance
-		const directionX = distance === 0 ? 0 : deltaX / distance
-		const directionY = distance === 0 ? 0 : deltaY / distance
-
-		offset.x = directionX * CARD_MAGNET_MAX_OFFSET * strength
-		offset.y = directionY * CARD_MAGNET_MAX_OFFSET * strength
-	})
-}
-
-const updateHeroParallax = (): void => {
-	if (!pointerActive.value || !pointerEffectsEnabled.value) {
-		setHeroVideoTransform()
-		return
-	}
-
-	const viewportWidth = window.innerWidth || 1
-	const viewportHeight = window.innerHeight || 1
-	const relativeX = pointer.x / viewportWidth
-	const relativeY = pointer.y / viewportHeight
-	const offsetX = (relativeX - 0.5) * HOME_HERO_PARALLAX_MAX_OFFSET * -1
-	const offsetY = (relativeY - 0.5) * HOME_HERO_PARALLAX_MAX_OFFSET * -1
-	const rotateX = (relativeY - 0.5) * HOME_HERO_ROTATION_MAX_DEGREE
-	const rotateY = (relativeX - 0.5) * HOME_HERO_ROTATION_MAX_DEGREE * -1
-
-	setHeroVideoTransform(offsetX, offsetY, rotateX, rotateY)
-}
-
-const updatePointerEffects = (): void => {
-	updateFrame.value = null
-	updateCardOffsets()
-	updateHeroParallax()
-}
-
-const schedulePointerEffectsUpdate = (): void => {
-	if (updateFrame.value !== null) {
-		return
-	}
-
-	updateFrame.value = window.requestAnimationFrame(updatePointerEffects)
-}
-
-const handleMouseMove = (event: MouseEvent): void => {
-	if (!pointerEffectsEnabled.value) {
-		return
-	}
-
-	pointer.x = event.clientX
-	pointer.y = event.clientY
-	pointerActive.value = true
-	schedulePointerEffectsUpdate()
-}
-
-const handleMouseOut = (event: MouseEvent): void => {
-	if (event.relatedTarget) {
-		return
-	}
-
-	pointerActive.value = false
-	schedulePointerEffectsUpdate()
-}
-
-const handleResize = (): void => {
-	updatePointerEffectsEnabled()
-	schedulePointerEffectsUpdate()
-}
-
-const cardMagnetStyle = (index: number): Record<string, string> => ({
-	transform: `translate3d(${cardOffsets[index]?.x ?? 0}px, ${cardOffsets[index]?.y ?? 0}px, 0)`,
-	transition: 'transform 400ms ease-out',
-	willChange: 'transform',
 })
-
-onMounted(() => {
-	updatePointerEffectsEnabled()
-	window.addEventListener('resize', handleResize, { passive: true })
-	schedulePointerEffectsUpdate()
-})
-
-onBeforeUnmount(() => {
-	unbindPointerListeners()
-	window.removeEventListener('resize', handleResize)
-
-	if (updateFrame.value !== null) {
-		window.cancelAnimationFrame(updateFrame.value)
-		updateFrame.value = null
-	}
-
-	resetCardOffsets()
-	setHeroVideoTransform()
-})
+const serverName = computed(
+	() =>
+		(defaultServer.value &&
+			resolveMinecraftServerLocalizedName(
+				defaultServer.value.names,
+				locale.value,
+			)) ||
+		t('home.immersive.serverUnavailable'),
+)
+const onlineCount = computed(
+	() => defaultServer.value?.bridgeStatus.onlineCount ?? 0,
+)
+const maxPlayers = computed(
+	() => defaultServer.value?.bridgeStatus.maxPlayers ?? 0,
+)
+const online = computed(() =>
+	Boolean(defaultServer.value?.bridgeStatus.connected),
+)
 </script>
-
-<style scoped>
-.home-card-magnet {
-	will-change: transform;
-}
-
-.home-hero-shell {
-	min-height: 140vh;
-}
-
-@media (width >= 40rem) {
-	.home-hero-shell {
-		min-height: 110vh;
-	}
-}
-
-@media (width >= 80rem) {
-	.home-hero-shell {
-		min-height: 74vh;
-	}
-}
-</style>

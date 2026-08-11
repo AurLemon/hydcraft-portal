@@ -37,6 +37,10 @@ const { user, resolved } = usePortalAuth()
 const explicitRouteTitle = useExplicitRouteTitleState()
 const resolvedRouteTitleDefinition = useResolvedRouteTitleDefinition()
 const normalizedRoutePath = computed(() => normalizeHeaderMenuPath(route.path))
+const isHomePage = computed(() => normalizedRoutePath.value === '/')
+const isViewportLockedImmersivePage = computed(
+	() => isImmersivePage.value && !isHomePage.value,
+)
 const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const MANUAL_LOCALE_SWITCH_GRACE_MS = 1500
 const DEFAULT_LOCALE: LocaleCode = 'zh-CN'
@@ -349,14 +353,14 @@ useHead(() => ({
 			id="app"
 			class="relative flex flex-col"
 			:class="
-				isImmersivePage
+				isViewportLockedImmersivePage
 					? 'h-dvh min-h-0 overflow-hidden bg-slate-950'
 					: 'min-h-[105vh]'
 			"
 		>
 			<PageHeader />
 			<PageContainer />
-			<PageFooter v-if="!isImmersivePage" />
+			<PageFooter v-if="!isViewportLockedImmersivePage" />
 			<PageStatusBar />
 		</div>
 	</UApp>

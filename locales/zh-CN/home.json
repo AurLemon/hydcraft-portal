@@ -1,24 +1,17 @@
 {
 	"home": {
-		"notice": {
-			"descriptionLead": "本站仍在持续建设中。",
-			"description": "因为服务器事情多，网站正在跟随服务器内容逐步补充页面与功能。站内部分功能尚未完成，预计在 2026 年 9 月前完成 MVP。"
-		},
-		"lead": "修楼、铺轨、造城、养老。至于为什么一个 MC 服务器叫氢气？我也不知道。",
-		"cards": {
-			"backgroundAlt": "{title} 背景",
-			"comingSoon": "开发中",
-			"oxygen": {
-				"description": "服务器现行周目（1.21.1）"
+		"immersive": {
+			"mapUnavailable": "地图暂时不可用",
+			"serverUnavailable": "默认服务器",
+			"credits": {
+				"builder": "建设者"
 			},
-			"railway": {
-				"description": "铁路系统与交通网络"
-			},
-			"players": {
-				"description": "玩家目录与公开展示"
-			},
-			"cities": {
-				"description": "城市规划与建筑群落"
+			"scenes": {
+				"owenIslands": {
+					"name": "欧文\n群岛",
+					"title": "服务器中最独特的自治体。",
+					"description": "当建设者用 Axiom 和 WorldEdit 勾勒岸线与街区时，独具风格的城市便渐渐浮现。"
+				}
 			}
 		}
 	}

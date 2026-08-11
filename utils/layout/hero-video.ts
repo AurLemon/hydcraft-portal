@@ -1,7 +1,6 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 export const heroVideoBackgroundRouteNames = new Set([
-	'index',
 	'login',
 	'register',
 	'forgot-password',
@@ -9,7 +8,6 @@ export const heroVideoBackgroundRouteNames = new Set([
 ])
 
 export const heroVideoBackgroundPaths = new Set([
-	'/',
 	'/login',
 	'/register',
 	'/forgot-password',

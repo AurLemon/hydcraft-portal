@@ -1,24 +1,17 @@
 {
 	"home": {
-		"notice": {
-			"descriptionLead": "This site is still under construction. ",
-			"description": "There is a lot to handle on the server, so the site is gradually adding pages and features alongside its content. Some functions are not finished yet, and the MVP is expected to be completed before September 2026."
-		},
-		"lead": "Build towers, lay rails, shape cities, and settle down. Why name a Minecraft server after chemistry? I have no idea either.",
-		"cards": {
-			"backgroundAlt": "{title} background",
-			"comingSoon": "Under development",
-			"oxygen": {
-				"description": "Current server season (1.21.1)"
+		"immersive": {
+			"mapUnavailable": "The map is temporarily unavailable",
+			"serverUnavailable": "Default server",
+			"credits": {
+				"builder": "Builder"
 			},
-			"railway": {
-				"description": "Railway systems and transport networks"
-			},
-			"players": {
-				"description": "Player directory and public profiles"
-			},
-			"cities": {
-				"description": "City planning and building clusters"
+			"scenes": {
+				"owenIslands": {
+					"name": "Owen\nIslands",
+					"title": "The server's most distinctive autonomous city.",
+					"description": "As builders trace shorelines and districts with Axiom and WorldEdit, a city with a character of its own gradually emerges."
+				}
 			}
 		}
 	}

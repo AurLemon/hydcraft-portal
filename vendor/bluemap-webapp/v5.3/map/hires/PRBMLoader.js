@@ -33,7 +33,6 @@ import {
 	BufferAttribute,
 	FloatType,
 } from 'three'
-
 ;('use strict')
 
 let bigEndianPlatform = null
