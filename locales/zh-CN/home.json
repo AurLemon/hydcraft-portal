@@ -5,13 +5,6 @@
 			"serverUnavailable": "默认服务器",
 			"credits": {
 				"builder": "建设者"
-			},
-			"scenes": {
-				"owenIslands": {
-					"name": "欧文\n群岛",
-					"title": "服务器中最独特的自治体。",
-					"description": "当建设者用 Axiom 和 WorldEdit 勾勒岸线与街区时，独具风格的城市便渐渐浮现。"
-				}
 			}
 		}
 	}

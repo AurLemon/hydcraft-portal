@@ -44,6 +44,8 @@ const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
 const controller = createBlueMapController()
 let resizeObserver: ResizeObserver | null = null
 let resizeAnimationFrame: number | null = null
+let viewportMediaQuery: MediaQueryList | null = null
+let restoreSceneViewAfterResize = false
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
 
@@ -64,7 +66,27 @@ const resize = () => {
 	resizeAnimationFrame = requestAnimationFrame(() => {
 		resizeAnimationFrame = null
 		controller.resize()
+		if (restoreSceneViewAfterResize && status.value === 'ready') {
+			restoreSceneViewAfterResize = false
+			void restoreSceneView()
+		}
 	})
+}
+
+const restoreSceneView = () =>
+	controller.restoreView({
+		x: props.camera.x,
+		y: props.camera.y,
+		z: props.camera.z,
+		distance: props.camera.distance,
+		rotation: props.camera.rotation,
+		angle: props.camera.angle,
+		tilt: props.camera.tilt,
+	})
+
+const handleViewportProfileChange = () => {
+	restoreSceneViewAfterResize = status.value === 'ready'
+	resize()
 }
 
 const mountMap = async () => {
@@ -107,6 +129,8 @@ const mountMap = async () => {
 
 onMounted(() => {
 	void mountMap()
+	viewportMediaQuery = window.matchMedia('(max-width: 639px)')
+	viewportMediaQuery.addEventListener('change', handleViewportProfileChange)
 
 	const container = containerRef.value
 	if (container && typeof ResizeObserver !== 'undefined') {
@@ -116,12 +140,15 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+	viewportMediaQuery?.removeEventListener('change', handleViewportProfileChange)
+	viewportMediaQuery = null
 	resizeObserver?.disconnect()
 	resizeObserver = null
 	if (resizeAnimationFrame !== null) {
 		cancelAnimationFrame(resizeAnimationFrame)
 		resizeAnimationFrame = null
 	}
+	restoreSceneViewAfterResize = false
 	unbindReady?.()
 	unbindError?.()
 	controller.destroy()

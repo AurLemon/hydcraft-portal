@@ -35,6 +35,8 @@ export const createHomeImmersiveAtmosphereOptions = (
 	beamSpread: lighting.coneSpread,
 	desktopBeamWidth: lighting.desktopConeWidth,
 	mobileBeamWidth: lighting.mobileConeWidth,
+	scanXAmplitude: lighting.scanXAmplitude,
+	scanPeriodSeconds: lighting.scanPeriodSeconds,
 	water,
 	...HOME_IMMERSIVE_ATMOSPHERE_PRESET,
 })

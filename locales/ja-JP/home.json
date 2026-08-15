@@ -5,13 +5,6 @@
 			"serverUnavailable": "デフォルトサーバー",
 			"credits": {
 				"builder": "建設者"
-			},
-			"scenes": {
-				"owenIslands": {
-					"name": "オーウェン\n諸島",
-					"title": "サーバーで最も個性的な自治体。",
-					"description": "建設者が Axiom と WorldEdit で海岸線と街区を描くとき、独自の個性を持つ都市が少しずつ姿を現す。"
-				}
 			}
 		}
 	}

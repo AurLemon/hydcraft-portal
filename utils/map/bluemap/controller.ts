@@ -18,6 +18,7 @@ import type {
 	BlueMapRuntime,
 	BlueMapRuntimeFactory,
 	BlueMapRuntimeMountOptions,
+	BlueMapViewPreset,
 	BlueMapViewOrientation,
 	BlueMapViewMode,
 } from './types'
@@ -168,6 +169,10 @@ export class BlueMapControllerImpl implements BlueMapController {
 
 	async resetView() {
 		await this.runtime?.resetView()
+	}
+
+	async restoreView(view: BlueMapViewPreset) {
+		await this.runtime?.restoreView(view)
 	}
 
 	destroy() {

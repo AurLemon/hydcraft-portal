@@ -8,6 +8,7 @@ import type {
 	BlueMapRuntimeMountOptions,
 	BlueMapViewChangedEventPayload,
 	BlueMapViewMode,
+	BlueMapViewPreset,
 } from './types'
 
 interface BlueMapRuntimeKeyboardControl {
@@ -119,6 +120,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 	protected postProcessor: {
 		resize(): void
+		invalidateWorldAnchors(): void
 		dispose(): void
 	} | null = null
 	protected cacheBustFreeAssetsBaseUrl: string | null = null
@@ -434,6 +436,73 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	resetView() {
 		this.animateViewOrientation({ rotation: 0, angle: 0, tilt: 0 })
+	}
+
+	restoreView(target: BlueMapViewPreset) {
+		const viewer = this.viewer
+		const animate = this.animationScheduler
+		const easing = this.easing
+		if (!viewer || !animate || !easing) return
+
+		const controls = viewer.controlsManager
+		const start: BlueMapViewPreset = {
+			x: controls.position.x,
+			y: controls.position.y,
+			z: controls.position.z,
+			distance: controls.distance,
+			rotation: controls.rotation,
+			angle: controls.angle,
+			tilt: controls.tilt,
+		}
+
+		this.focusAnimation?.cancel()
+		this.focusAnimation = null
+		this.viewAnimation?.cancel()
+		controls.controls = null
+		viewer.loadMapArea(
+			target.x,
+			target.z,
+			BLUE_MAP_RUNTIME.HIRES_VIEW_DISTANCE,
+			viewer.data.loadedLowresViewDistance,
+		)
+		this.viewAnimation = animate(
+			(progress) => {
+				const eased = easing.easeInOutQuad(progress)
+				controls.position.set(
+					start.x + (target.x - start.x) * eased,
+					start.y + (target.y - start.y) * eased,
+					start.z + (target.z - start.z) * eased,
+				)
+				controls.distance =
+					start.distance + (target.distance - start.distance) * eased
+				controls.rotation =
+					start.rotation + (target.rotation - start.rotation) * eased
+				controls.angle = start.angle + (target.angle - start.angle) * eased
+				controls.tilt = start.tilt + (target.tilt - start.tilt) * eased
+				controls.updateCamera()
+			},
+			BLUE_MAP_RUNTIME.MODE_TRANSITION_MS,
+			(finished) => {
+				if (!finished) return
+				this.viewAnimation = null
+				controls.position.set(target.x, target.y, target.z)
+				controls.distance = target.distance
+				controls.rotation = target.rotation
+				controls.angle = target.angle
+				controls.tilt = target.tilt
+				this.mapControls?.reset?.()
+				controls.controls =
+					this.mode === 'freeFlight'
+						? this.freeFlightControls
+						: this.mapControls
+				controls.updateCamera()
+				// A breakpoint resize may have rebuilt the light anchors while this
+				// camera transition was still in progress. Force one final capture
+				// from the settled camera before the next post-processing pass.
+				this.postProcessor?.invalidateWorldAnchors()
+				this.updateLoadedMapArea()
+			},
+		)
 	}
 
 	destroy() {

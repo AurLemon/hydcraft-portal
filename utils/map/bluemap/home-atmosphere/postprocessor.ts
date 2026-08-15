@@ -43,15 +43,18 @@ class HomeAtmospherePostProcessor {
 	private readonly waterGlintMaterial: ShaderMaterial
 	private readonly bloomMaterial: ShaderMaterial
 	private readonly compositeMaterial: ShaderMaterial
-	private readonly qualityScale: number
+	private readonly options: BlueMapHomeAtmospherePostProcessing
+	private qualityScale: number
 	private readonly waterGlintSpeed: number
 	private readonly waterEffectsEnabled: boolean
-	private readonly waterEffectFrameInterval: number
-	private readonly interactionEnabled: boolean
-	private readonly interactionQualityScale: number
+	private waterEffectFrameInterval: number
+	private interactionEnabled = false
+	private interactionListenersBound = false
+	private interactionQualityScale: number
+	private readonly reducedMotion: boolean
 	private readonly initialSunPosition: Vector2
 	private readonly initialBeamDirection: Vector2
-	private readonly initialBeamWidth: number
+	private initialBeamWidth: number
 	private readonly raycaster = new Raycaster()
 	private readonly anchorPlane = new Plane(new Vector3(0, 1, 0))
 	private readonly worldSunAnchor = new Vector3()
@@ -146,10 +149,11 @@ class HomeAtmospherePostProcessor {
 	) {
 		this.viewer = viewer
 		this.renderer = viewer.renderer
+		this.options = options
 		this.originalRender = viewer.render
 		this.nativeRender = viewer.render.bind(viewer)
 		const isMobile = window.matchMedia('(max-width: 639px)').matches
-		const prefersReducedMotion = window.matchMedia(
+		this.reducedMotion = window.matchMedia(
 			'(prefers-reduced-motion: reduce)',
 		).matches
 		this.qualityScale = isMobile
@@ -157,9 +161,9 @@ class HomeAtmospherePostProcessor {
 			: options.desktopQualityScale
 		this.waterEffectsEnabled = Boolean(options.water)
 		this.waterEffectFrameInterval = 1 / (isMobile ? 24 : 30)
-		this.interactionEnabled = !isMobile && !prefersReducedMotion
+		this.interactionEnabled = !isMobile && !this.reducedMotion
 		this.interactionQualityScale = Math.min(this.qualityScale, 0.25)
-		this.waterGlintSpeed = prefersReducedMotion
+		this.waterGlintSpeed = this.reducedMotion
 			? 0
 			: (options.water?.glintSpeed ?? 0)
 
@@ -278,16 +282,6 @@ class HomeAtmospherePostProcessor {
 		)
 
 		this.resize()
-		if (this.interactionEnabled) {
-			window.addEventListener('pointermove', this.handlePointerMove, {
-				passive: true,
-			})
-			window.addEventListener('blur', this.handleWindowBlur)
-			document.documentElement.addEventListener(
-				'pointerleave',
-				this.handlePointerLeave,
-			)
-		}
 		viewer.render = (delta) => {
 			this.render(
 				delta,
@@ -299,6 +293,7 @@ class HomeAtmospherePostProcessor {
 
 	resize() {
 		if (this.disposed) return
+		this.syncViewportProfile()
 		this.renderer.getDrawingBufferSize(this.targetSize)
 		const width = Math.max(2, Math.floor(this.targetSize.x))
 		const height = Math.max(2, Math.floor(this.targetSize.y))
@@ -338,11 +333,15 @@ class HomeAtmospherePostProcessor {
 		)
 	}
 
+	invalidateWorldAnchors() {
+		this.worldAnchorsReady = false
+	}
+
 	dispose() {
 		if (this.disposed) return
 		this.disposed = true
 		this.viewer.render = this.originalRender
-		if (this.interactionEnabled) {
+		if (this.interactionListenersBound) {
 			window.removeEventListener('pointermove', this.handlePointerMove)
 			window.removeEventListener('blur', this.handleWindowBlur)
 			document.documentElement.removeEventListener(
@@ -350,6 +349,7 @@ class HomeAtmospherePostProcessor {
 				this.handlePointerLeave,
 			)
 		}
+		this.interactionListenersBound = false
 		this.sceneTarget.dispose()
 		this.blurTargetA.dispose()
 		this.blurTargetB.dispose()
@@ -479,6 +479,62 @@ class HomeAtmospherePostProcessor {
 		this.pointerBoundsHeight = bounds.height
 	}
 
+	private syncViewportProfile() {
+		const isMobile = window.matchMedia('(max-width: 639px)').matches
+		const prefersReducedMotion = window.matchMedia(
+			'(prefers-reduced-motion: reduce)',
+		).matches
+		const nextInteractionEnabled = !isMobile && !prefersReducedMotion
+		const nextBeamWidth = isMobile
+			? this.options.mobileBeamWidth
+			: this.options.desktopBeamWidth
+
+		this.qualityScale = isMobile
+			? this.options.mobileQualityScale
+			: this.options.desktopQualityScale
+		this.waterEffectFrameInterval = 1 / (isMobile ? 24 : 30)
+		this.interactionQualityScale = Math.min(this.qualityScale, 0.25)
+		this.interactionEnabled = nextInteractionEnabled
+		this.waterGlintMaterial.uniforms.glintDensity!.value =
+			(this.options.water?.glintDensity ?? 0) * (isMobile ? 0.72 : 1)
+		this.bloomMaterial.uniforms.radius!.value =
+			(this.options.water?.bloomRadius ?? 0) * (isMobile ? 0.86 : 1)
+		this.compositeMaterial.uniforms.waterGlintStrength!.value =
+			(this.options.water?.glintStrength ?? 0) * (isMobile ? 0.82 : 1)
+		this.compositeMaterial.uniforms.waterBloomStrength!.value =
+			(this.options.water?.bloomStrength ?? 0) * (isMobile ? 0.76 : 1)
+
+		if (this.initialBeamWidth !== nextBeamWidth) {
+			this.initialBeamWidth = nextBeamWidth
+			this.lightMaterial.uniforms.beamWidth!.value = nextBeamWidth
+			this.worldAnchorsReady = false
+		}
+		if (!nextInteractionEnabled) this.deactivatePointer()
+		this.syncInteractionListeners()
+	}
+
+	private syncInteractionListeners() {
+		if (this.interactionEnabled === this.interactionListenersBound) return
+		if (this.interactionEnabled) {
+			window.addEventListener('pointermove', this.handlePointerMove, {
+				passive: true,
+			})
+			window.addEventListener('blur', this.handleWindowBlur)
+			document.documentElement.addEventListener(
+				'pointerleave',
+				this.handlePointerLeave,
+			)
+		} else {
+			window.removeEventListener('pointermove', this.handlePointerMove)
+			window.removeEventListener('blur', this.handleWindowBlur)
+			document.documentElement.removeEventListener(
+				'pointerleave',
+				this.handlePointerLeave,
+			)
+		}
+		this.interactionListenersBound = this.interactionEnabled
+	}
+
 	private deactivatePointer() {
 		if (!this.pointerPresent && !this.pointerPositionReady) return
 		this.pointerPresent = false
@@ -513,12 +569,13 @@ class HomeAtmospherePostProcessor {
 		)
 
 		const aspect = this.lightMaterial.uniforms.viewportAspect!.value as number
+		const scanOffsetX = this.getLightScanOffsetX()
 		;(this.lightMaterial.uniforms.sunPosition!.value as Vector2).copy(
 			this.projectedSunUv,
-		)
+		).x += scanOffsetX
 		;(this.waterGlintMaterial.uniforms.sunPosition!.value as Vector2).copy(
 			this.projectedSunUv,
-		)
+		).x += scanOffsetX
 		;(this.lightMaterial.uniforms.beamForwardBasis!.value as Vector2).set(
 			(this.projectedForwardUv.x - this.projectedSunUv.x) * aspect,
 			this.projectedForwardUv.y - this.projectedSunUv.y,
@@ -535,6 +592,16 @@ class HomeAtmospherePostProcessor {
 		;(this.lightMaterial.uniforms.beamAcrossBasis!.value as Vector2).set(
 			(this.projectedAcrossUv.x - this.projectedSunUv.x) * aspect,
 			this.projectedAcrossUv.y - this.projectedSunUv.y,
+		)
+	}
+
+	private getLightScanOffsetX(): number {
+		if (this.reducedMotion || this.options.scanXAmplitude <= 0) return 0
+
+		const periodSeconds = Math.max(this.options.scanPeriodSeconds, 1)
+		return (
+			Math.sin((this.elapsedSeconds / periodSeconds) * Math.PI * 2) *
+			this.options.scanXAmplitude
 		)
 	}
 

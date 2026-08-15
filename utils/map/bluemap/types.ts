@@ -46,6 +46,8 @@ export interface BlueMapHomeAtmospherePostProcessing {
 	beamSpread: number
 	desktopBeamWidth: number
 	mobileBeamWidth: number
+	scanXAmplitude: number
+	scanPeriodSeconds: number
 	hazeStrength: number
 	animationSpeed: number
 	desktopQualityScale: number
@@ -120,6 +122,8 @@ export interface BlueMapViewChangedEventPayload {
 	tilt: number
 }
 
+export type BlueMapViewPreset = BlueMapViewChangedEventPayload
+
 export interface BlueMapErrorEventPayload {
 	code:
 		| 'INVALID_ASSETS_BASE_URL'
@@ -168,6 +172,7 @@ export interface BlueMapRuntime {
 	setPresence(player: BlueMapPlayerMarker | null): void
 	alignNorth(): void | Promise<void>
 	resetView(): void | Promise<void>
+	restoreView(view: BlueMapViewPreset): void | Promise<void>
 	destroy(): void
 }
 
@@ -198,6 +203,7 @@ export interface BlueMapController {
 	setPresence(player: BlueMapPlayerMarker | null): void
 	alignNorth(): Promise<void>
 	resetView(): Promise<void>
+	restoreView(view: BlueMapViewPreset): Promise<void>
 	destroy(): void
 	getSettings(): BlueMapMapSettings | null
 	getCapabilities(): BlueMapCapabilities
