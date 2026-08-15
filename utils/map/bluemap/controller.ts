@@ -61,8 +61,11 @@ export class BlueMapControllerImpl implements BlueMapController {
 		appendCacheBust?: boolean
 		initialDistance?: number
 		focus?: BlueMapFocus
+		focusHeightOffset?: number
 		initialOrientation?: BlueMapViewOrientation
 		unrestrictedPerspectiveAngle?: boolean
+		keyboardControls?: boolean
+		postProcessing?: BlueMapRuntimeMountOptions['postProcessing']
 		player?: BlueMapPlayerMarker | null
 	}) {
 		const mountGeneration = ++this.mountGeneration
@@ -93,6 +96,8 @@ export class BlueMapControllerImpl implements BlueMapController {
 				focusHeightOffset: options.focusHeightOffset,
 				initialOrientation: options.initialOrientation,
 				unrestrictedPerspectiveAngle: options.unrestrictedPerspectiveAngle,
+				keyboardControls: options.keyboardControls,
+				postProcessing: options.postProcessing,
 				player: options.player,
 				onViewChanged: (view) => this.emit('viewChanged', view),
 			}

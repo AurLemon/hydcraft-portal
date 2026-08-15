@@ -10,6 +10,11 @@ import type {
 	BlueMapViewMode,
 } from './types'
 
+interface BlueMapRuntimeKeyboardControl {
+	start(...args: unknown[]): void
+	reset?(): void
+}
+
 export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 	protected viewer: {
 		data: {
@@ -74,6 +79,10 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 			deltaZoom: number
 			reset(): void
 		}
+		keyMove: BlueMapRuntimeKeyboardControl
+		keyRotate: BlueMapRuntimeKeyboardControl
+		keyAngle: BlueMapRuntimeKeyboardControl
+		keyZoom: BlueMapRuntimeKeyboardControl
 		minDistance: number
 		maxDistance: number
 		update(delta: number, map: unknown): void
@@ -106,7 +115,12 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		from: { x: number; y: number; z: number }
 		desired: { x: number; y: number; z: number }
 	} | null = null
-	protected focusHeightOffset = BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
+	protected focusHeightOffset: number =
+		BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
+	protected postProcessor: {
+		resize(): void
+		dispose(): void
+	} | null = null
 	protected cacheBustFreeAssetsBaseUrl: string | null = null
 	protected onViewChanged:
 		| ((view: BlueMapViewChangedEventPayload) => void)
@@ -116,6 +130,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	resize() {
 		this.viewer?.handleContainerResize()
+		this.postProcessor?.resize()
 	}
 
 	setMode(
@@ -423,6 +438,8 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	destroy() {
 		const viewer = this.viewer
+		this.postProcessor?.dispose()
+		this.postProcessor = null
 		unregisterCacheBustFreeAssets(this.cacheBustFreeAssetsBaseUrl)
 		this.cacheBustFreeAssetsBaseUrl = null
 		this.viewAnimation?.cancel()

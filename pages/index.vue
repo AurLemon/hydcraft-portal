@@ -4,9 +4,11 @@
 	>
 		<div class="absolute inset-0">
 			<HomeImmersiveBlueMap
+				:key="scene.id"
 				:assets-base-url="mapAssetsProxyBaseUrl"
 				:camera="scene.camera"
-				:debug-enabled="developerControlsEnabled"
+				:lighting="scene.lighting"
+				:water="scene.water"
 				:class="developerControlsEnabled ? undefined : 'pointer-events-none'"
 			/>
 		</div>

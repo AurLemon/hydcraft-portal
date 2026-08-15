@@ -17,6 +17,44 @@ export interface BlueMapViewOrientation {
 	tilt?: number
 }
 
+export interface BlueMapHomeWaterPostProcessing {
+	rippleStrength: number
+	reflectionStrength: number
+	reflectionWidth: number
+	animationSpeed: number
+	waveSeed: number
+	irregularity: number
+	tintColor: [number, number, number]
+	tintStrength: number
+	transmissionStrength: number
+	glintStrength: number
+	glintDensity: number
+	glintSharpness: number
+	glintSpeed: number
+	bloomStrength: number
+	bloomRadius: number
+}
+
+export interface BlueMapHomeAtmospherePostProcessing {
+	profile: 'homeAtmosphere'
+	sunX: number
+	sunY: number
+	intensity: number
+	blurStrength: number
+	beamStrength: number
+	beamAngle: number
+	beamSpread: number
+	desktopBeamWidth: number
+	mobileBeamWidth: number
+	hazeStrength: number
+	animationSpeed: number
+	desktopQualityScale: number
+	mobileQualityScale: number
+	water?: BlueMapHomeWaterPostProcessing
+}
+
+export type BlueMapPostProcessingOptions = BlueMapHomeAtmospherePostProcessing
+
 export interface BlueMapPlayerMarker extends BlueMapFocus {
 	id: string
 	label?: string
@@ -114,6 +152,8 @@ export interface BlueMapRuntimeMountOptions {
 	focusHeightOffset?: number
 	initialOrientation?: BlueMapViewOrientation
 	unrestrictedPerspectiveAngle?: boolean
+	keyboardControls?: boolean
+	postProcessing?: BlueMapPostProcessingOptions
 	player?: BlueMapPlayerMarker | null
 	onViewChanged?: (view: BlueMapViewChangedEventPayload) => void
 }
@@ -146,6 +186,8 @@ export interface BlueMapController {
 		focusHeightOffset?: number
 		initialOrientation?: BlueMapViewOrientation
 		unrestrictedPerspectiveAngle?: boolean
+		keyboardControls?: boolean
+		postProcessing?: BlueMapPostProcessingOptions
 		player?: BlueMapPlayerMarker | null
 	}): Promise<void>
 	resize(): void

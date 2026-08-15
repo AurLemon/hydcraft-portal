@@ -22,23 +22,22 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import {
-	createBlueMapController,
-	type BlueMapFocus,
-	type BlueMapViewChangedEventPayload,
-} from '~/utils/map'
-import type { HomeImmersiveSceneCamera } from '~/utils/home/immersive-scenes'
+import { createBlueMapController, type BlueMapFocus } from '~/utils/map'
+import { createHomeImmersiveAtmosphereOptions } from '~/utils/home/immersive-atmosphere'
+import type {
+	HomeImmersiveSceneCamera,
+	HomeImmersiveSceneLighting,
+	HomeImmersiveSceneWater,
+} from '~/utils/home/immersive-scenes'
 
 interface HomeImmersiveBlueMapProps {
 	assetsBaseUrl: string
 	camera: HomeImmersiveSceneCamera
-	debugEnabled?: boolean
+	lighting: HomeImmersiveSceneLighting
+	water?: HomeImmersiveSceneWater
 }
 
 const props = defineProps<HomeImmersiveBlueMapProps>()
-const emit = defineEmits<{
-	cameraChanged: [camera: HomeImmersiveSceneCamera]
-}>()
 const { t } = useI18n()
 const containerRef = ref<HTMLElement | null>(null)
 const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
@@ -47,8 +46,6 @@ let resizeObserver: ResizeObserver | null = null
 let resizeAnimationFrame: number | null = null
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
-let unbindViewChanged: (() => void) | null = null
-let debugLogTimer: ReturnType<typeof setTimeout> | null = null
 
 const focus = (): BlueMapFocus => ({
 	x: props.camera.x,
@@ -58,30 +55,6 @@ const focus = (): BlueMapFocus => ({
 
 const resolveAssetsBaseUrl = (): string =>
 	new URL(props.assetsBaseUrl, window.location.origin).toString()
-
-const normalizeCamera = (
-	view: BlueMapViewChangedEventPayload,
-): HomeImmersiveSceneCamera => ({
-	x: Number(view.x.toFixed(2)),
-	y: Number(view.y.toFixed(2)),
-	z: Number(view.z.toFixed(2)),
-	distance: Number(view.distance.toFixed(2)),
-	rotation: Number(view.rotation.toFixed(4)),
-	angle: Number(view.angle.toFixed(4)),
-	tilt: Number(view.tilt.toFixed(4)),
-})
-
-const reportCameraChanged = (view: BlueMapViewChangedEventPayload) => {
-	const camera = normalizeCamera(view)
-	emit('cameraChanged', camera)
-	if (!props.debugEnabled) return
-
-	if (debugLogTimer) clearTimeout(debugLogTimer)
-	debugLogTimer = setTimeout(() => {
-		console.info('[debug] Home BlueMap camera', camera)
-		debugLogTimer = null
-	}, 220)
-}
 
 const resize = () => {
 	if (resizeAnimationFrame !== null) {
@@ -107,8 +80,6 @@ const mountMap = async () => {
 	unbindError = controller.on('error', () => {
 		status.value = 'error'
 	})
-	unbindViewChanged = controller.on('viewChanged', reportCameraChanged)
-
 	try {
 		await controller.mount({
 			container,
@@ -123,6 +94,11 @@ const mountMap = async () => {
 				tilt: props.camera.tilt,
 			},
 			unrestrictedPerspectiveAngle: true,
+			keyboardControls: false,
+			postProcessing: createHomeImmersiveAtmosphereOptions(
+				props.lighting,
+				props.water,
+			),
 		})
 	} catch {
 		// Controller emits the typed failure event used by this presentation.
@@ -148,8 +124,6 @@ onBeforeUnmount(() => {
 	}
 	unbindReady?.()
 	unbindError?.()
-	unbindViewChanged?.()
-	if (debugLogTimer) clearTimeout(debugLogTimer)
 	controller.destroy()
 })
 </script>

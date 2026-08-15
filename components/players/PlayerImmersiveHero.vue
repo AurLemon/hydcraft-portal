@@ -152,6 +152,10 @@ const mobileServerMenuOpen = ref(false)
 const ipAddressVisible = ref(false)
 const registrationIpAddressVisible = ref(false)
 const mapView = ref<BlueMapViewChangedEventPayload>({
+	x: 0,
+	y: 0,
+	z: 0,
+	distance: 0,
 	rotation: 0,
 	angle: 0,
 	tilt: 0,

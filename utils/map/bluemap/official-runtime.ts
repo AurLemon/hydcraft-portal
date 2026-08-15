@@ -161,11 +161,32 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 			)
 			this.viewer = viewer
 			this.map = map
+			if (options.postProcessing?.profile === 'homeAtmosphere') {
+				const { createHomeAtmospherePostProcessor } =
+					await import('./home-atmosphere-postprocessor')
+				this.postProcessor = createHomeAtmospherePostProcessor(
+					viewer as unknown as Parameters<
+						typeof createHomeAtmospherePostProcessor
+					>[0],
+					options.postProcessing,
+				)
+			}
 			this.mapControls = new MapControls(
 				viewer.renderer.domElement,
 				options.container,
 			)
 			const mapControls = this.mapControls
+			if (options.keyboardControls === false) {
+				for (const keyboardControl of [
+					mapControls.keyMove,
+					mapControls.keyRotate,
+					mapControls.keyAngle,
+					mapControls.keyZoom,
+				]) {
+					keyboardControl.start = () => undefined
+					keyboardControl.reset?.()
+				}
+			}
 			if (options.unrestrictedPerspectiveAngle) {
 				// The homepage presents architecture at a fixed wide view, so it opts
 				// out of BlueMap's distance-based right-drag perspective limit.

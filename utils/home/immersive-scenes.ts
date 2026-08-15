@@ -17,10 +17,39 @@ export interface HomeImmersiveSceneCamera {
 	tilt: number
 }
 
+export interface HomeImmersiveSceneLighting {
+	sourceXPercent: number
+	sourceYPercent: number
+	directionAngle: number
+	coneSpread: number
+	desktopConeWidth: number
+	mobileConeWidth: number
+}
+
+export interface HomeImmersiveSceneWater {
+	rippleStrength: number
+	reflectionStrength: number
+	reflectionWidth: number
+	animationSpeed: number
+	waveSeed: number
+	irregularity: number
+	tintColor: [number, number, number]
+	tintStrength: number
+	transmissionStrength: number
+	glintStrength: number
+	glintDensity: number
+	glintSharpness: number
+	glintSpeed: number
+	bloomStrength: number
+	bloomRadius: number
+}
+
 export interface HomeImmersiveScene {
 	id: string
 	mapAssetsBaseUrl: string
 	camera: HomeImmersiveSceneCamera
+	lighting: HomeImmersiveSceneLighting
+	water?: HomeImmersiveSceneWater
 	presentation: {
 		copyKey: string
 		skinUsername: string
@@ -55,6 +84,31 @@ export const homeImmersiveScenes: readonly HomeImmersiveScene[] = [
 			rotation: -0.5999,
 			angle: 0.5044,
 			tilt: 0,
+		},
+		lighting: {
+			sourceXPercent: 89,
+			sourceYPercent: 3,
+			directionAngle: -0.96,
+			coneSpread: 0.38,
+			desktopConeWidth: 0.24,
+			mobileConeWidth: 0.2,
+		},
+		water: {
+			rippleStrength: 1.12,
+			reflectionStrength: 1.16,
+			reflectionWidth: 0.086,
+			animationSpeed: 0.72,
+			waveSeed: 18.73,
+			irregularity: 0.86,
+			tintColor: [0.08, 0.48, 0.58],
+			tintStrength: 0.42,
+			transmissionStrength: 0.84,
+			glintStrength: 0.86,
+			glintDensity: 0.24,
+			glintSharpness: 0.68,
+			glintSpeed: 1.12,
+			bloomStrength: 0.3,
+			bloomRadius: 0.82,
 		},
 		presentation: {
 			copyKey: 'owenIslands',
