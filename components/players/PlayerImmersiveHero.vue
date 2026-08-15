@@ -231,12 +231,21 @@ const displayLastSeenAt = computed(() =>
 		? (selectedServerView.value?.lastSeenAt ?? props.account.lastSeenAt ?? null)
 		: (selectedServerView.value?.lastSeenAt ?? null),
 )
-const displayPrimaryGroup = computed(
-	() =>
+const formatLuckPermsPrimaryGroup = (
+	value: string | null | undefined,
+): string | null => {
+	const normalized = value?.trim()
+	if (!normalized) return null
+
+	return `${normalized.slice(0, 1).toUpperCase()}${normalized.slice(1).toLowerCase()}`
+}
+
+const displayPrimaryGroup = computed(() =>
+	formatLuckPermsPrimaryGroup(
 		selectedServerView.value?.luckPermsPrimaryGroup ??
-		selectedObservedPlayer.value?.luckPermsPrimaryGroup ??
-		props.account.luckPermsPrimaryGroup ??
-		null,
+			selectedObservedPlayer.value?.luckPermsPrimaryGroup ??
+			props.account.luckPermsPrimaryGroup,
+	),
 )
 const isOnline = computed(
 	() =>

@@ -354,9 +354,7 @@ onMounted(() => {
 							>
 								<span
 									class="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 text-sm font-semibold text-slate-700 ring ring-slate-200 transition-[color,background-color,box-shadow] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-slate-700 dark:text-slate-100 dark:ring-slate-700 motion-reduce:transition-none"
-									:class="
-										isImmersivePage ? 'header-user-avatar--immersive' : ''
-									"
+									:class="isImmersivePage ? '!ring-slate-500' : ''"
 								>
 									<Transition
 										mode="out-in"

@@ -7,6 +7,7 @@
 					color="neutral"
 					variant="ghost"
 					icon="i-lucide-plus"
+					:class="immersive ? immersiveNeutralActionClass : undefined"
 					:aria-label="t('minecraftAccounts.toolbar.bindTip')"
 					@click="emit('bind')"
 				/>
@@ -22,6 +23,7 @@
 					color="neutral"
 					variant="ghost"
 					icon="i-lucide-settings-2"
+					:class="immersive ? immersiveNeutralActionClass : undefined"
 					:aria-label="t('minecraftAccounts.toolbar.setPrimaryTip')"
 					@click="settingsOpen = true"
 				/>
@@ -37,6 +39,7 @@
 					color="error"
 					variant="ghost"
 					icon="i-lucide-unlink"
+					:class="immersive ? immersiveErrorActionClass : undefined"
 					:loading="
 						!!(
 							unbindingTargetAccount &&
@@ -160,6 +163,7 @@ interface MinecraftAccountsActionsProps {
 	savingId: string | null
 	unbindingId: string | null
 	unbindSuccessToken: number
+	immersive?: boolean
 }
 
 const props = defineProps<MinecraftAccountsActionsProps>()
@@ -176,6 +180,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const immersiveNeutralActionClass =
+	'!text-slate-400 hover:!bg-white/10 hover:!text-white active:!bg-white/15'
+const immersiveErrorActionClass =
+	'!text-danger-400 hover:!bg-danger-500/15 hover:!text-danger-300 active:!bg-danger-500/20'
 const settingsOpen = ref(false)
 const unbindConfirmOpen = ref(false)
 const unbindingTargetAccountId = ref<string | null>(null)

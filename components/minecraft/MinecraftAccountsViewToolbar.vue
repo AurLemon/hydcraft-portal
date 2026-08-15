@@ -32,6 +32,7 @@
 				:saving-id="savingId"
 				:unbinding-id="unbindingId"
 				:unbind-success-token="unbindSuccessToken"
+				:immersive="viewMode === 'immersive'"
 				@bind="emit('bind')"
 				@save="emit('save', $event)"
 				@unbind="emit('unbind', $event)"

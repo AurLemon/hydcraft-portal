@@ -60,10 +60,6 @@
 	}
 }
 
-.header-user-avatar--immersive {
-	box-shadow: 0 0 0 1px var(--color-slate-700) !important;
-}
-
 html[lang='ja-JP'],
 html:lang(ja-JP) {
 	--font-sans: var(--font-sans-ja);

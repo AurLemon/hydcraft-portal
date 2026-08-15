@@ -80,6 +80,11 @@
 			<div class="mt-4 flex flex-wrap gap-2">
 				<UBadge
 					class="gap-1.5 text-shadow-none"
+					:class="
+						isOnline
+							? '!bg-success-500 !text-primary-25'
+							: '!bg-slate-200 !text-slate-700'
+					"
 					:color="isOnline ? 'success' : 'neutral'"
 					:variant="isOnline ? 'solid' : 'soft'"
 				>
@@ -94,7 +99,7 @@
 				</UBadge>
 				<UBadge
 					v-if="account.isPrimary"
-					class="text-shadow-none"
+					class="!bg-primary-500 !text-primary-25 text-shadow-none"
 					color="primary"
 					variant="solid"
 				>
@@ -110,7 +115,7 @@
 				<UBadge
 					v-if="displayPrimaryGroup"
 					variant="solid"
-					class="uppercase text-shadow-none"
+					class="!bg-slate-700 !text-slate-100 text-shadow-none"
 					color="neutral"
 				>
 					{{ displayPrimaryGroup }}
@@ -168,7 +173,7 @@
 							type="button"
 							color="neutral"
 							variant="link"
-							class="pointer-events-auto cursor-pointer px-0"
+							class="pointer-events-auto cursor-pointer px-0 !text-slate-400 hover:!text-white"
 							size="xs"
 							:aria-label="t('minecraftAccounts.overlay.locatePlayer')"
 							@click="emit('focusPlayer')"

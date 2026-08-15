@@ -88,7 +88,7 @@
 					v-for="(image, imageIndex) in mobileSceneGallery"
 					:key="image.asset"
 					type="button"
-					class="home-scene-gallery-frame mobile-scene-gallery-frame relative w-full cursor-zoom-in overflow-hidden rounded-lg border border-white/30 bg-slate-950/55 shadow-[0_12px_28px_rgba(2,6,23,0.38)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-300"
+					class="home-scene-gallery-frame mobile-scene-gallery-frame group relative w-full cursor-zoom-in overflow-hidden rounded-lg border border-white/30 bg-slate-950/55 shadow-[0_12px_28px_rgba(2,6,23,0.38)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-300"
 					:style="{
 						animationDelay: `${(mobileSceneGallery.length - imageIndex - 1) * 120}ms`,
 					}"
@@ -101,6 +101,9 @@
 						class="aspect-[4/5] w-full"
 						image-class="block h-full w-full object-cover"
 						skeleton-class="rounded-none"
+					/>
+					<span
+						class="pointer-events-none absolute inset-0 bg-slate-950/0 transition-colors duration-300 ease-out group-hover:bg-slate-950/14"
 					/>
 					<span
 						class="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/88 via-slate-950/46 to-transparent px-2 pt-8 pb-2 text-left text-xs font-medium text-white [text-shadow:0_1px_6px_rgba(2,6,23,0.9)]"
@@ -135,7 +138,7 @@
 						v-for="(image, imageIndex) in sceneGallery"
 						:key="image.asset"
 						type="button"
-						class="home-scene-gallery-frame relative w-52 shrink-0 cursor-zoom-in overflow-hidden rounded-lg border border-white/30 bg-slate-950/55 shadow-[0_12px_28px_rgba(2,6,23,0.38)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-300"
+						class="home-scene-gallery-frame group relative w-52 shrink-0 cursor-zoom-in overflow-hidden rounded-lg border border-white/30 bg-slate-950/55 shadow-[0_12px_28px_rgba(2,6,23,0.38)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-300"
 						:style="{
 							animationDelay: `${(sceneGallery.length - imageIndex - 1) * 120}ms`,
 						}"
@@ -148,6 +151,9 @@
 							class="aspect-[4/3] w-full"
 							image-class="block h-full w-full object-cover"
 							skeleton-class="rounded-none"
+						/>
+						<span
+							class="pointer-events-none absolute inset-0 bg-slate-950/0 transition-colors duration-300 ease-out group-hover:bg-slate-950/14"
 						/>
 						<span
 							class="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/88 via-slate-950/46 to-transparent px-2 pt-7 pb-2 text-left text-sm text-white [text-shadow:0_1px_6px_rgba(2,6,23,0.9)]"
