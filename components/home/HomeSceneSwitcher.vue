@@ -62,6 +62,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const elapsedMs = ref(0)
 const documentVisible = ref(true)
+const atPageTop = ref(true)
 let animationFrame: number | null = null
 let lastTimestamp: number | null = null
 
@@ -90,7 +91,12 @@ const advanceScene = (): void => {
 }
 
 const tick = (timestamp: number): void => {
-	if (!props.active || !documentVisible.value || props.scenes.length <= 1) {
+	if (
+		!props.active ||
+		!documentVisible.value ||
+		!atPageTop.value ||
+		props.scenes.length <= 1
+	) {
 		stopClock()
 		return
 	}
@@ -112,6 +118,7 @@ const startClock = (): void => {
 		animationFrame !== null ||
 		!props.active ||
 		!documentVisible.value ||
+		!atPageTop.value ||
 		props.scenes.length <= 1
 	) {
 		return
@@ -123,6 +130,15 @@ const startClock = (): void => {
 const handleVisibilityChange = (): void => {
 	documentVisible.value = document.visibilityState === 'visible'
 	if (documentVisible.value) {
+		startClock()
+		return
+	}
+	stopClock()
+}
+
+const handleScroll = (): void => {
+	atPageTop.value = window.scrollY <= 1
+	if (atPageTop.value) {
 		startClock()
 		return
 	}
@@ -150,13 +166,16 @@ watch(
 
 onMounted(() => {
 	documentVisible.value = document.visibilityState === 'visible'
+	atPageTop.value = window.scrollY <= 1
 	document.addEventListener('visibilitychange', handleVisibilityChange)
+	window.addEventListener('scroll', handleScroll, { passive: true })
 	startClock()
 })
 
 onBeforeUnmount(() => {
 	stopClock()
 	document.removeEventListener('visibilitychange', handleVisibilityChange)
+	window.removeEventListener('scroll', handleScroll)
 })
 </script>
 

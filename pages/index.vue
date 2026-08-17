@@ -425,8 +425,9 @@ const heroProgressEnd = 0.14
 const scenePlayerEntryProgressEnd = 0.24
 const PLAYER_FIRST_FOCUS_DWELL_SHARE = 0.36
 const PLAYER_FOCUS_DWELL_SHARE = 0.13
-const communityScrollDvh = 30
-const outroScrollBufferDvh = 24
+const communityScrollDvh = 8
+const outroTransitionDvh = 32
+const outroScrollBufferDvh = 10
 const sceneStoryHeightDvh = computed(() => {
 	if (scenePlayerCount.value <= 1) return 300 + outroScrollBufferDvh
 	if (scenePlayerCount.value === 2) return 400 + outroScrollBufferDvh
@@ -448,7 +449,12 @@ const sceneCommunityProgressEnd = computed(() =>
 	),
 )
 const outroProgressStart = computed(() =>
-	Math.max(sceneCommunityProgressEnd.value, 0.7),
+	Math.max(
+		sceneCommunityProgressEnd.value,
+		1 -
+			(outroTransitionDvh + outroScrollBufferDvh) /
+				Math.max(sceneStoryHeightDvh.value - 100, 1),
+	),
 )
 const sceneOverviewPlayers = computed<HomeOverviewPerson[]>(() =>
 	[...scene.value.players]
@@ -554,6 +560,7 @@ let sceneLocationLoadGeneration = 0
 let overviewLocationLoadGeneration = 0
 let sceneLocationRefreshTimer: ReturnType<typeof setInterval> | null = null
 let sceneSwitchTimer: ReturnType<typeof setTimeout> | null = null
+let refreshScrollStory: (() => void) | null = null
 let latestStoryProgress = 0
 const SCENE_SWITCH_OUT_DURATION_MS = 500
 
@@ -851,6 +858,9 @@ onMounted(async () => {
 		sceneSwitching.value = true
 		sceneSwitchTimer = setTimeout(() => {
 			activeSceneIndex.value = nextSceneIndex
+			void nextTick(() => {
+				requestAnimationFrame(() => refreshScrollStory?.())
+			})
 			requestAnimationFrame(() => {
 				sceneSwitching.value = false
 			})
@@ -954,6 +964,7 @@ onMounted(async () => {
 			.to(firstBackdrop, { autoAlpha: 0, duration: 0.12, ease: 'none' }, 0.02)
 	}, scrollStory)
 	revertScrollStory = () => context.revert()
+	refreshScrollStory = () => ScrollTrigger.refresh()
 })
 
 onBeforeUnmount(() => {
@@ -975,6 +986,7 @@ onBeforeUnmount(() => {
 	stopSceneLocationWatch = null
 	revertScrollStory?.()
 	revertScrollStory = null
+	refreshScrollStory = null
 
 	if (!liveOverviewRefreshTimer) return
 	clearInterval(liveOverviewRefreshTimer)
