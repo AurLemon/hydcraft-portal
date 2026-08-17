@@ -15,9 +15,8 @@
 				:style="{ opacity: backgroundProgress }"
 			>
 				<SkeletonImage
-					v-if="screenshots[0]"
-					:src="screenshots[0].src"
-					:alt="screenshots[0].alt"
+					:src="backgroundSrc"
+					:alt="t('home.immersive.outro.screenshotAlt', { index: 1 })"
 					class="absolute inset-0 h-full w-full"
 					:style="imageStyle"
 					image-class="h-full w-full object-cover"
@@ -72,7 +71,10 @@
 						type="button"
 						color="neutral"
 						variant="solid"
-						class="pointer-events-auto mt-7 min-w-44 justify-center !bg-[#ffffff] !text-[#1e293b] hover:!bg-[#f1f5f9]"
+						class="mt-7 min-w-44 justify-center !bg-[#ffffff] !text-[#1e293b] hover:!bg-[#f1f5f9]"
+						:class="
+							outroInteractive ? 'pointer-events-auto' : 'pointer-events-none'
+						"
 						@click="copyQqGroup"
 					>
 						<QqLogo aria-hidden="true" class="size-5 shrink-0 fill-current" />
@@ -81,7 +83,10 @@
 				</div>
 
 				<div
-					class="pointer-events-auto order-1 grid grid-cols-3 gap-2 self-center lg:order-2 lg:mt-0 mt-20"
+					class="order-1 grid grid-cols-3 gap-2 self-center lg:order-2 lg:mt-0 mt-20"
+					:class="
+						outroInteractive ? 'pointer-events-auto' : 'pointer-events-none'
+					"
 				>
 					<div
 						v-for="(screenshot, index) in screenshots"
@@ -116,6 +121,7 @@ export interface HomeOverviewScreenshot {
 
 interface HomeOutroSectionProps {
 	screenshots: readonly HomeOverviewScreenshot[]
+	backgroundSrc: string
 	mode?: 'story' | 'section'
 	progress?: number
 }
@@ -126,6 +132,9 @@ const props = withDefaults(defineProps<HomeOutroSectionProps>(), {
 })
 const visualProgress = computed(() =>
 	props.mode === 'story' ? Math.min(Math.max(props.progress, 0), 1) : 1,
+)
+const outroInteractive = computed(
+	() => props.mode !== 'story' || visualProgress.value >= 0.35,
 )
 const backgroundProgress = computed(() =>
 	props.mode === 'story'

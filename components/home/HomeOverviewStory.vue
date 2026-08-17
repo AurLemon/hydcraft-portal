@@ -6,7 +6,7 @@
 					<div
 						v-if="phase === 'scene' || phase === 'players'"
 						:key="`scene-${sceneShortName}`"
-						class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif font-bold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif font-extrabold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
 					>
 						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
 							{{ sceneShortName }}
@@ -18,7 +18,7 @@
 					<div
 						v-else-if="phase === 'community'"
 						key="community"
-						class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif font-bold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif font-extrabold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
 					>
 						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
 							{{
@@ -70,10 +70,10 @@
 				:aria-label="t('home.immersive.overview.scenePlayers')"
 			>
 				<article
-				v-for="(player, index) in players"
-				:key="player.id"
-				class="pointer-events-auto absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[opacity,transform,filter] duration-300 ease-out will-change-[opacity,transform,filter]"
-				:style="playerCardStyle(index)"
+					v-for="(player, index) in players"
+					:key="player.id"
+					class="pointer-events-auto absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[opacity,transform,filter] duration-300 ease-out will-change-[opacity,transform,filter]"
+					:style="playerCardStyle(index)"
 				>
 					<div
 						class="relative hidden w-36 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
@@ -133,28 +133,32 @@
 		<Transition name="community-rail">
 			<aside
 				v-if="phase === 'community' && communityMembers.length && !detail"
-				class="community-member-rail pointer-events-auto absolute right-0 bottom-36 z-20 w-full sm:bottom-24 lg:top-24 lg:bottom-20 lg:w-[min(28rem,32vw)]"
+				class="community-member-rail !pointer-events-auto absolute right-0 bottom-36 z-20 w-full sm:bottom-24 lg:top-24 lg:bottom-20 lg:w-[min(28rem,32vw)]"
+				:data-hovered="communityRailHovered"
 				:aria-label="t('home.immersive.overview.communityMembers')"
+				@pointerenter="communityRailHovered = true"
+				@pointerleave="communityRailHovered = false"
 			>
 				<div class="grid gap-2 lg:hidden">
 					<UMarquee
 						v-for="(row, rowIndex) in communityMemberRows"
 						:key="`mobile-community-row-${rowIndex}`"
+						class="pointer-events-auto"
 						orientation="horizontal"
 						:reverse="rowIndex === 1"
 						pause-on-hover
 						:repeat="2"
 						:overlay="false"
 						:ui="{
-							root: 'h-14 min-w-0 [--gap:--spacing(2)] [--duration:120s]',
-							content: '!w-auto !min-w-0',
+							root: 'pointer-events-auto h-14 min-w-0 [--gap:--spacing(2)] [--duration:120s]',
+							content: 'pointer-events-auto !w-auto !min-w-0',
 						}"
 					>
 						<button
 							v-for="(member, index) in row"
 							:key="`${member.id}-${index}`"
 							type="button"
-							class="community-member-card group flex h-14 w-64 shrink-0 items-center gap-3 rounded-lg border border-white/14 bg-slate-950/76 px-3 py-2 text-left text-white backdrop-blur-xl transition-colors hover:bg-slate-900/88 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+							class="community-member-card pointer-events-auto group flex h-14 w-64 shrink-0 items-center gap-3 rounded-lg border border-white/14 bg-slate-950/76 px-3 py-2 text-left text-white backdrop-blur-xl transition-colors hover:bg-slate-900/88 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
 							:style="{ animationDelay: `${index * 55}ms` }"
 							@click="openCommunityDetail(member)"
 						>
@@ -186,22 +190,23 @@
 				</div>
 
 				<UMarquee
-					class="hidden h-full lg:block"
+					class="pointer-events-auto hidden h-full lg:block"
 					orientation="vertical"
 					reverse
 					pause-on-hover
 					:repeat="2"
 					:overlay="false"
 					:ui="{
-						root: 'h-full min-w-0 !gap-0 [--gap:0px] [--duration:150s]',
-						content: '!h-fit !w-full !min-w-0 !justify-start !gap-3 !pb-3',
+						root: 'pointer-events-auto h-full min-w-0 !gap-0 [--gap:0px] [--duration:150s]',
+						content:
+							'pointer-events-auto !h-fit !w-full !min-w-0 !justify-start !gap-3 !pb-3',
 					}"
 				>
 					<button
 						v-for="(member, index) in communityMembers"
 						:key="`${member.id}-${index}`"
 						type="button"
-						class="community-member-card group ml-3 box-border flex min-w-0 max-w-[calc(100%_-_0.75rem)] w-[calc(100%_-_0.75rem)] items-center gap-3 rounded-lg border border-white/14 bg-slate-950/76 px-4 py-3 text-left text-white backdrop-blur-xl transition-colors hover:bg-slate-900/88 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 lg:rounded-r-none lg:border-r-0 lg:pl-5"
+						class="community-member-card pointer-events-auto group ml-3 box-border flex min-w-0 max-w-[calc(100%_-_0.75rem)] w-[calc(100%_-_0.75rem)] items-center gap-3 rounded-lg border border-white/14 bg-slate-950/76 px-4 py-3 text-left text-white backdrop-blur-xl transition-colors hover:bg-slate-900/88 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 lg:rounded-r-none lg:border-r-0 lg:pl-5"
 						:style="{ animationDelay: `${index * 55}ms` }"
 						@click="openCommunityDetail(member)"
 					>
@@ -310,6 +315,7 @@ const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
 }>()
 const { t } = useI18n()
+const communityRailHovered = ref(false)
 const detail = computed(() => {
 	if (!props.detailPersonId) return null
 	const people =
@@ -336,16 +342,21 @@ const playerCardStyle = (index: number) => {
 		index === props.players.length - 1
 			? Math.max(0, Math.min(1, (1 - props.playerStackExitProgress) / 0.55))
 			: Math.max(0, 1 - props.playerStackExitProgress * 1.8)
+	const centeredIndex = Math.round(props.playerProgress)
+	const isVisibleSlot = Math.abs(index - centeredIndex) <= 1
 	const opacity =
 		(1 - Math.min(distance, 1) * 0.18) *
 		adjacentVisibility *
 		entryVisibility *
 		exitVisibility
-	const centeredIndex = Math.round(props.playerProgress)
+	const visibleOpacity =
+		isVisibleSlot && entryVisibility * exitVisibility > 0
+			? Math.max(0.8, opacity)
+			: 0
 
 	return {
 		filter: `blur(${Math.min(distance * 0.75, 1.2)}px)`,
-		opacity,
+		opacity: visibleOpacity,
 		transform: `translateX(${translate}%) scale(${scale})`,
 		zIndex: index === centeredIndex ? 30 : offset > 0 ? 20 : 10,
 	}
@@ -429,6 +440,16 @@ watch(
 		black 86%,
 		transparent 100%
 	);
+}
+
+.community-member-rail[data-hovered='true'] :deep([data-slot='content']) {
+	animation-play-state: paused !important;
+}
+
+.community-member-rail :deep([data-slot='root']),
+.community-member-rail :deep([data-slot='content']),
+.community-member-rail :deep(.community-member-card) {
+	pointer-events: auto !important;
 }
 
 @media (max-width: 1023px) {

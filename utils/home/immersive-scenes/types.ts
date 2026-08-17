@@ -23,12 +23,15 @@ export interface HomeImmersiveSceneGalleryItem {
 	caption: string
 }
 
+export interface HomeImmersiveSceneDesktopDisplayName {
+	layout: 'horizontal' | 'vertical'
+	prefix: string
+	name: string
+}
+
 export interface HomeImmersiveSceneLocalizedPresentation {
 	name: string
-	desktopVerticalName?: {
-		prefix: string
-		name: string
-	}
+	desktopDisplayName?: HomeImmersiveSceneDesktopDisplayName
 	title: string
 	description: string
 	credit: Pick<HomeImmersiveSceneCredit, 'handle' | 'href'> | null

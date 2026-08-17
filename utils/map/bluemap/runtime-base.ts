@@ -6,6 +6,7 @@ import type {
 	BlueMapPlayerMarker,
 	BlueMapRuntime,
 	BlueMapRuntimeMountOptions,
+	BlueMapScrollViewOptions,
 	BlueMapViewChangedEventPayload,
 	BlueMapViewMode,
 	BlueMapViewPreset,
@@ -176,6 +177,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		| ((view: BlueMapViewChangedEventPayload) => void)
 		| null = null
 	protected scrollViewTarget: BlueMapViewPreset | null = null
+	protected scrollViewSmoothing = 0.2
 
 	abstract mount(options: BlueMapRuntimeMountOptions): Promise<void>
 
@@ -730,16 +732,21 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		)
 	}
 
-	setView(target: BlueMapViewPreset) {
+	setView(target: BlueMapViewPreset, options?: BlueMapScrollViewOptions) {
 		this.focusAnimation?.cancel()
 		this.focusAnimation = null
 		this.viewAnimation?.cancel()
 		this.viewAnimation = null
 		this.scrollViewTarget = { ...target }
+		this.scrollViewSmoothing = Math.min(
+			1,
+			Math.max(0.01, options?.smoothing ?? 0.2),
+		)
 	}
 
 	clearScrollDrivenView() {
 		this.scrollViewTarget = null
+		this.scrollViewSmoothing = 0.2
 	}
 
 	protected updateScrollDrivenView(delta: number) {
@@ -749,7 +756,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 		const controls = viewer.controlsManager
 		const frameRatio = Math.min(Math.max(delta / 16.666, 0), 4)
-		const smoothing = 1 - Math.pow(0.8, frameRatio)
+		const smoothing = 1 - Math.pow(1 - this.scrollViewSmoothing, frameRatio)
 		controls.position.set(
 			controls.position.x + (target.x - controls.position.x) * smoothing,
 			controls.position.y + (target.y - controls.position.y) * smoothing,

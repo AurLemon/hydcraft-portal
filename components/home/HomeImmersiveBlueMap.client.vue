@@ -43,6 +43,10 @@ interface HomeImmersiveBlueMapProps {
 	camera: HomeImmersiveSceneCamera
 	overviewCamera: HomeImmersiveSceneCamera
 	mobileOverviewCamera: HomeImmersiveSceneCamera
+	outroCamera: HomeImmersiveSceneCamera
+	mobileOutroCamera: HomeImmersiveSceneCamera
+	outroTransitionStart: number
+	outroTransitionEnd: number
 	lighting: HomeImmersiveSceneLighting
 	water?: HomeImmersiveSceneWater
 	focusPositions: readonly HomeImmersiveMapPosition[]
@@ -55,6 +59,9 @@ interface HomeImmersiveBlueMapProps {
 
 const props = defineProps<HomeImmersiveBlueMapProps>()
 const emit = defineEmits<{
+	ready: []
+	error: []
+	'scene-camera-settled': []
 	'world-player-marker-click': [
 		payload: BlueMapWorldPlayerMarkerClickEventPayload,
 	]
@@ -73,6 +80,12 @@ let unbindWorldPlayerMarkerClick: (() => void) | null = null
 let unbindViewChanged: (() => void) | null = null
 let scrollProgress = 0
 let lastDeveloperViewLogAt = 0
+let sceneCameraTransitionPending = false
+let sceneCameraTransitionTarget: HomeImmersiveSceneCamera | null = null
+
+const SCENE_CAMERA_TRANSITION_SMOOTHING = 0.04
+const SCENE_CAMERA_POSITION_EPSILON = 1
+const SCENE_CAMERA_ORIENTATION_EPSILON = 0.001
 
 const formatCameraValue = (value: number, precision: number): string =>
 	Number(value.toFixed(precision)).toString()
@@ -87,6 +100,33 @@ const logDeveloperCamera = (view: BlueMapViewChangedEventPayload): void => {
 	console.info(
 		`[homeImmersiveScenes] camera: {\n  x: ${formatCameraValue(view.x, 2)},\n  y: ${formatCameraValue(view.y, 2)},\n  z: ${formatCameraValue(view.z, 2)},\n  distance: ${formatCameraValue(view.distance, 2)},\n  rotation: ${formatCameraValue(view.rotation, 4)},\n  angle: ${formatCameraValue(view.angle, 4)},\n  tilt: ${formatCameraValue(view.tilt, 4)},\n}`,
 	)
+}
+
+const handleViewChanged = (view: BlueMapViewChangedEventPayload): void => {
+	logDeveloperCamera(view)
+	const target = sceneCameraTransitionTarget
+	if (!target) return
+
+	const positionDistance = Math.hypot(
+		view.x - target.x,
+		view.y - target.y,
+		view.z - target.z,
+	)
+	const orientationDistance = Math.max(
+		Math.abs(view.rotation - target.rotation),
+		Math.abs(view.angle - target.angle),
+		Math.abs(view.tilt - target.tilt),
+	)
+	if (
+		positionDistance > SCENE_CAMERA_POSITION_EPSILON ||
+		Math.abs(view.distance - target.distance) > SCENE_CAMERA_POSITION_EPSILON ||
+		orientationDistance > SCENE_CAMERA_ORIENTATION_EPSILON
+	) {
+		return
+	}
+
+	sceneCameraTransitionTarget = null
+	emit('scene-camera-settled')
 }
 
 const interpolate = (start: number, end: number, progress: number): number =>
@@ -134,6 +174,9 @@ const applyScrollProgress = (progress: number): void => {
 	const overview = viewportMediaQuery?.matches
 		? props.mobileOverviewCamera
 		: props.overviewCamera
+	const outroCamera = viewportMediaQuery?.matches
+		? props.mobileOutroCamera
+		: props.outroCamera
 	const focusEnd = props.focusProgressEnd
 	const overviewEnd = Math.min(focusEnd + 0.04, 0.94)
 	let targetCamera = props.camera
@@ -171,11 +214,34 @@ const applyScrollProgress = (progress: number): void => {
 			overview,
 			smoothStep(focusEnd, overviewEnd, scrollProgress),
 		)
+	} else if (
+		scrollProgress >= props.outroTransitionStart &&
+		scrollProgress < props.outroTransitionEnd
+	) {
+		targetCamera = interpolateCamera(
+			overview,
+			outroCamera,
+			smoothStep(
+				props.outroTransitionStart,
+				props.outroTransitionEnd,
+				scrollProgress,
+			),
+		)
+	} else if (scrollProgress >= props.outroTransitionEnd) {
+		targetCamera = outroCamera
 	} else if (scrollProgress >= overviewEnd) {
 		targetCamera = overview
 	}
 
-	controller.setView(targetCamera)
+	controller.setView(targetCamera, {
+		smoothing: sceneCameraTransitionPending
+			? SCENE_CAMERA_TRANSITION_SMOOTHING
+			: undefined,
+	})
+	if (sceneCameraTransitionPending) {
+		sceneCameraTransitionTarget = { ...targetCamera }
+	}
+	sceneCameraTransitionPending = false
 	controller.setHomeAtmosphereProgress(smoothStep(0.02, 0.22, scrollProgress))
 }
 
@@ -187,6 +253,14 @@ watch(
 		if (status.value === 'ready') applyScrollProgress(scrollProgress)
 	},
 	{ deep: true },
+)
+
+watch(
+	() => props.camera,
+	() => {
+		sceneCameraTransitionPending = true
+		if (status.value === 'ready') applyScrollProgress(scrollProgress)
+	},
 )
 
 watch(
@@ -241,15 +315,17 @@ const mountMap = async () => {
 		status.value = 'ready'
 		applyScrollProgress(scrollProgress)
 		resize()
+		emit('ready')
 	})
 	unbindError = controller.on('error', () => {
 		status.value = 'error'
+		emit('error')
 	})
 	unbindWorldPlayerMarkerClick = controller.on(
 		'worldPlayerMarkerClick',
 		(payload) => emit('world-player-marker-click', payload),
 	)
-	unbindViewChanged = controller.on('viewChanged', logDeveloperCamera)
+	unbindViewChanged = controller.on('viewChanged', handleViewChanged)
 	try {
 		await controller.mount({
 			container,

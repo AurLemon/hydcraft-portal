@@ -53,7 +53,8 @@ export const owenIslandsScene: HomeImmersiveSceneDefinition = {
 		locales: {
 			'zh-CN': {
 				name: '这里是\n欧文群岛',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '这里是',
 					name: '欧文\n群岛',
 				},
@@ -78,9 +79,10 @@ export const owenIslandsScene: HomeImmersiveSceneDefinition = {
 				],
 			},
 			'zh-TW': {
-				name: '这里是\n歐文群島',
-				desktopVerticalName: {
-					prefix: '这里是',
+				name: '這裡是\n歐文群島',
+				desktopDisplayName: {
+					layout: 'horizontal',
+					prefix: '這裡是',
 					name: '歐文\n群島',
 				},
 				title: '伺服器中最獨特的自治體。',

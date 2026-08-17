@@ -18,6 +18,7 @@ import type {
 	BlueMapRuntime,
 	BlueMapRuntimeFactory,
 	BlueMapRuntimeMountOptions,
+	BlueMapScrollViewOptions,
 	BlueMapViewPreset,
 	BlueMapViewOrientation,
 	BlueMapViewMode,
@@ -195,8 +196,8 @@ export class BlueMapControllerImpl implements BlueMapController {
 		await this.runtime?.restoreView(view)
 	}
 
-	setView(view: BlueMapViewPreset) {
-		this.runtime?.setView(view)
+	setView(view: BlueMapViewPreset, options?: BlueMapScrollViewOptions) {
+		this.runtime?.setView(view, options)
 	}
 
 	clearScrollDrivenView() {

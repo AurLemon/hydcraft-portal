@@ -141,6 +141,10 @@ export interface BlueMapViewChangedEventPayload {
 
 export type BlueMapViewPreset = BlueMapViewChangedEventPayload
 
+export interface BlueMapScrollViewOptions {
+	smoothing?: number
+}
+
 export interface BlueMapErrorEventPayload {
 	code:
 		| 'INVALID_ASSETS_BASE_URL'
@@ -198,7 +202,7 @@ export interface BlueMapRuntime {
 	alignNorth(): void | Promise<void>
 	resetView(): void | Promise<void>
 	restoreView(view: BlueMapViewPreset): void | Promise<void>
-	setView(view: BlueMapViewPreset): void
+	setView(view: BlueMapViewPreset, options?: BlueMapScrollViewOptions): void
 	clearScrollDrivenView(): void
 	setHomeAtmosphereProgress(progress: number): void
 	destroy(): void
@@ -236,7 +240,7 @@ export interface BlueMapController {
 	alignNorth(): Promise<void>
 	resetView(): Promise<void>
 	restoreView(view: BlueMapViewPreset): Promise<void>
-	setView(view: BlueMapViewPreset): void
+	setView(view: BlueMapViewPreset, options?: BlueMapScrollViewOptions): void
 	clearScrollDrivenView(): void
 	setHomeAtmosphereProgress(progress: number): void
 	destroy(): void

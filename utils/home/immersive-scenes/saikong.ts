@@ -53,7 +53,8 @@ export const saikongScene: HomeImmersiveSceneDefinition = {
 		locales: {
 			'zh-CN': {
 				name: '这里是\n西港',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '这里是',
 					name: '西港',
 				},
@@ -71,7 +72,8 @@ export const saikongScene: HomeImmersiveSceneDefinition = {
 			},
 			'zh-TW': {
 				name: '這裡是\n西港',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '這裡是',
 					name: '西港',
 				},

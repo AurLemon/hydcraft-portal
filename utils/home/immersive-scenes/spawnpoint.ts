@@ -69,11 +69,12 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 		locales: {
 			'zh-CN': {
 				name: '这里是\n出生点',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '这里是',
 					name: '出生点',
 				},
-				title: '服务器的圆点、管委会的大本营。',
+				title: '服务器的原点、管委会的大本营。',
 				description:
 					'一直以来，服务器都会给出生点（暂定名）划分一个区域作为管委会的大本营。出生点全岛都被划为了管委会直管区，许多玩家给出生点贡献了许多建筑。目前出生点直管区主要由 Aurora_Lemon（柠檬）等管委会成员和部分元老院成员负责。',
 				credit: null,
@@ -87,11 +88,12 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 			},
 			'zh-TW': {
 				name: '這裡是\n出生點',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '這裡是',
 					name: '出生點',
 				},
-				title: '伺服器的圓點、管委會的大本營。',
+				title: '伺服器的原點、管委會的大本營。',
 				description:
 					'一直以來，伺服器都會為出生點（暫定名）劃出一個區域作為管委會的大本營。出生點全島皆劃為管委會直管區，許多玩家也為此貢獻了建築。目前出生點直管區主要由 Aurora_Lemon（檸檬）等管委會成員與部分元老院成員負責。',
 				credit: null,

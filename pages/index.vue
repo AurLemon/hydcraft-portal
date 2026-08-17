@@ -25,6 +25,10 @@
 						:camera="scene.camera"
 						:overview-camera="scene.overviewCamera"
 						:mobile-overview-camera="scene.mobileOverviewCamera"
+						:outro-camera="outroCamera"
+						:mobile-outro-camera="mobileOutroCamera"
+						:outro-transition-start="sceneCommunityProgressEnd"
+						:outro-transition-end="outroProgressStart"
 						:lighting="scene.lighting"
 						:water="homeImmersiveWater"
 						:focus-positions="scenePlayerFocusPositions"
@@ -34,6 +38,9 @@
 						:developer-controls-enabled="developerControlsEnabled"
 						:developer-controls-active="developerControlsEnabled && heroActive"
 						@world-player-marker-click="handleWorldPlayerMarkerClick"
+						@ready="handleSceneMapSettled"
+						@error="handleSceneMapSettled"
+						@scene-camera-settled="handleSceneMapSettled"
 					/>
 				</div>
 
@@ -41,6 +48,7 @@
 					v-model="selectedSceneIndex"
 					:scenes="sceneSwitcherItems"
 					:active="heroActive"
+					:counting="!sceneCountdownPaused"
 				/>
 				<div ref="firstBackdropRef" class="absolute inset-0">
 					<div
@@ -56,33 +64,45 @@
 
 				<div
 					ref="firstPanelRef"
-					class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
-					:class="sceneSwitching ? '!opacity-0 !blur-md translate-y-2' : ''"
+					class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,filter,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
+					:class="
+						sceneSwitching
+							? '!opacity-0 !blur-md translate-y-2 duration-500'
+							: 'duration-200'
+					"
 				>
 					<div class="mt-auto flex flex-col gap-3 lg:contents">
 						<p
 							data-home-exit="content"
-							class="lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] font-bold tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-all hyphens-auto"
+							class="lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] font-extrabold tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-all hyphens-auto"
 							aria-hidden="true"
 						>
-							{{ scenePresentation.name }}
+							<template v-if="mobileSceneNamePrefix">
+								<span
+									class="relative left-1.5 block text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.16] tracking-[0.08em]"
+								>
+									{{ mobileSceneNamePrefix }}
+								</span>
+								<span class="block">{{ mobileSceneName }}</span>
+							</template>
+							<template v-else>{{ scenePresentation.name }}</template>
 						</p>
 						<div
 							data-home-exit="content"
-							class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif font-bold text-transparent lg:flex"
+							class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif font-extrabold text-transparent lg:flex"
 							:class="
-								scenePresentation.desktopVerticalName
+								desktopDisplayName?.layout === 'vertical'
 									? 'items-start gap-4'
-									: 'lg:mt-16'
+									: 'lg:mt-16 flex-col items-start gap-1'
 							"
 							aria-hidden="true"
 						>
-							<template v-if="scenePresentation.desktopVerticalName">
-								<p
-									class="text-[clamp(2rem,3vw,4rem)] leading-[1.16] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright] mt-2"
+							<template v-if="desktopDisplayName?.layout === 'vertical'">
+								<div
+									class="relative mt-2 left-1.5 text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright]"
 								>
-									{{ scenePresentation.desktopVerticalName.prefix }}
-								</p>
+									{{ desktopDisplayName.prefix }}
+								</div>
 								<div class="flex items-start gap-4">
 									<p
 										v-for="column in desktopVerticalNameColumns"
@@ -93,9 +113,21 @@
 									</p>
 								</div>
 							</template>
+							<template v-else-if="desktopDisplayName">
+								<div
+									class="relative left-1.5 whitespace-pre-line text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em]"
+								>
+									{{ desktopDisplayName.prefix }}
+								</div>
+								<div
+									class="text-[clamp(4.5rem,11vw,11rem)] leading-[1.05] tracking-[0.08em] whitespace-pre-line"
+								>
+									{{ desktopDisplayName.name }}
+								</div>
+							</template>
 							<p
 								v-else
-								class="inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] font-bold tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-all hyphens-auto"
+								class="inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] font-extrabold tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-all hyphens-auto"
 							>
 								{{ scenePresentation.name }}
 							</p>
@@ -254,6 +286,7 @@
 					<HomeOutroSection
 						mode="story"
 						:progress="outroProgress"
+						:background-src="outroBackground"
 						:screenshots="outroScreenshots"
 					/>
 				</div>
@@ -265,7 +298,8 @@
 <script setup lang="ts">
 import owenCoastConcert1 from '~/assets/resources/minecraft-gallery/season_8/owen_coast_concert_1.webp'
 import owenWpgh1 from '~/assets/resources/minecraft-gallery/season_8/owen_wpgh_1.webp'
-import outroTerrain from '~/assets/resources/minecraft-gallery/season_8/owen_screenshots_1.webp'
+import outroBackground from '~/assets/resources/minecraft-gallery/season_8/owen_screenshots_1.webp'
+import outroTerrain from '~/assets/resources/minecraft-gallery/season_8/terrain_advance_screenshots.webp'
 import outroSpawn from '~/assets/resources/minecraft-gallery/season_8/spawnpoint_screenshots_1.webp'
 import guangyangScreenshots1 from '~/assets/resources/minecraft-gallery/season_8/guangyang_screenshots_1.webp'
 import guangyangScreenshots2 from '~/assets/resources/minecraft-gallery/season_8/guangyang_screenshots_2.webp'
@@ -291,6 +325,7 @@ import {
 	type HomeImmersiveLocalizedText,
 	type HomeImmersiveMapPosition,
 	type HomeImmersiveSceneGalleryAsset,
+	type HomeImmersiveSceneCamera,
 } from '~/utils/home/immersive-scenes'
 import type { MinecraftAccountSummary } from '~/utils/minecraft/accounts'
 import { getMinecraftAvatarRendererUrl } from '~/utils/minecraft/body-renderer'
@@ -335,6 +370,7 @@ const firstBackdropRef = ref<HTMLElement | null>(null)
 const firstPanelRef = ref<HTMLElement | null>(null)
 const heroActive = ref(true)
 const sceneSwitching = ref(false)
+const sceneCountdownPaused = ref(false)
 const overviewPhase = ref<HomeOverviewPhase>('hidden')
 const outroProgress = ref(0)
 const overviewDetailPersonId = ref<string | null>(null)
@@ -363,6 +399,18 @@ const scenePresentation = computed(
 	() =>
 		scene.value.presentation.locales[locale.value] ??
 		scene.value.presentation.locales['en-US']!,
+)
+const mobileSceneNameParts = computed(() =>
+	scenePresentation.value.name.split('\n'),
+)
+const mobileSceneNamePrefix = computed(() => {
+	const prefix = mobileSceneNameParts.value[0]
+	return prefix === '这里是' || prefix === '這裡是' ? prefix : null
+})
+const mobileSceneName = computed(() =>
+	mobileSceneNamePrefix.value
+		? mobileSceneNameParts.value.slice(1).join('\n')
+		: scenePresentation.value.name,
 )
 const sceneGallery = computed(() =>
 	scenePresentation.value.gallery.slice(0, 3).map((image) => ({
@@ -395,8 +443,15 @@ const activeSceneGalleryImage = ref<NormalizedContentImageItem | null>(null)
 const sceneGalleryLightboxOpen = computed(
 	() => activeSceneGalleryImage.value !== null,
 )
-const desktopVerticalNameColumns = computed(
-	() => scenePresentation.value.desktopVerticalName?.name.split('\n') ?? [],
+const desktopDisplayName = computed(() =>
+	locale.value.startsWith('zh')
+		? scenePresentation.value.desktopDisplayName
+		: undefined,
+)
+const desktopVerticalNameColumns = computed(() =>
+	desktopDisplayName.value?.layout === 'vertical'
+		? desktopDisplayName.value.name.split('\n')
+		: [],
 )
 const resolveLocalizedText = (text: HomeImmersiveLocalizedText): string =>
 	text[locale.value] ?? text['en-US'] ?? Object.values(text)[0] ?? ''
@@ -423,15 +478,14 @@ const scenePlayerFocusPositions = computed(() =>
 const scenePlayerCount = computed(() => scene.value.players.length)
 const heroProgressEnd = 0.14
 const scenePlayerEntryProgressEnd = 0.24
-const PLAYER_FIRST_FOCUS_DWELL_SHARE = 0.36
-const PLAYER_FOCUS_DWELL_SHARE = 0.13
-const communityScrollDvh = 8
+const PLAYER_FIRST_FOCUS_DWELL_SHARE = 0.42
+const PLAYER_FOCUS_DWELL_SHARE = 0.17
+const communityScrollDvh = 16
 const outroTransitionDvh = 32
-const outroScrollBufferDvh = 10
 const sceneStoryHeightDvh = computed(() => {
-	if (scenePlayerCount.value <= 1) return 300 + outroScrollBufferDvh
-	if (scenePlayerCount.value === 2) return 400 + outroScrollBufferDvh
-	return 450 + outroScrollBufferDvh
+	if (scenePlayerCount.value <= 1) return 300
+	if (scenePlayerCount.value === 2) return 400
+	return 450
 })
 const sceneFocusProgressEnd = computed(() => {
 	if (scenePlayerCount.value <= 1) return 0.34
@@ -451,11 +505,26 @@ const sceneCommunityProgressEnd = computed(() =>
 const outroProgressStart = computed(() =>
 	Math.max(
 		sceneCommunityProgressEnd.value,
-		1 -
-			(outroTransitionDvh + outroScrollBufferDvh) /
-				Math.max(sceneStoryHeightDvh.value - 100, 1),
+		1 - outroTransitionDvh / Math.max(sceneStoryHeightDvh.value - 100, 1),
 	),
 )
+const outroPresentationStart = computed(() => sceneCommunityProgressEnd.value)
+const outroCamera = computed<HomeImmersiveSceneCamera>(() => ({
+	...homeImmersiveOverview.map.camera,
+	x: homeImmersiveOverview.map.fallbackSpawn.x,
+	y: homeImmersiveOverview.map.fallbackSpawn.y,
+	z: homeImmersiveOverview.map.fallbackSpawn.z,
+	distance: 5200,
+	angle: 0.34,
+}))
+const mobileOutroCamera = computed<HomeImmersiveSceneCamera>(() => ({
+	...homeImmersiveOverview.map.mobileCamera,
+	x: homeImmersiveOverview.map.fallbackSpawn.x,
+	y: homeImmersiveOverview.map.fallbackSpawn.y,
+	z: homeImmersiveOverview.map.fallbackSpawn.z,
+	distance: 7600,
+	angle: 0.3,
+}))
 const sceneOverviewPlayers = computed<HomeOverviewPerson[]>(() =>
 	[...scene.value.players]
 		.sort((left, right) => left.focusOrder - right.focusOrder)
@@ -560,9 +629,28 @@ let sceneLocationLoadGeneration = 0
 let overviewLocationLoadGeneration = 0
 let sceneLocationRefreshTimer: ReturnType<typeof setInterval> | null = null
 let sceneSwitchTimer: ReturnType<typeof setTimeout> | null = null
+let sceneCountdownResumeTimer: ReturnType<typeof setTimeout> | null = null
+let sceneSwitchWatchdogTimer: ReturnType<typeof setTimeout> | null = null
 let refreshScrollStory: (() => void) | null = null
 let latestStoryProgress = 0
-const SCENE_SWITCH_OUT_DURATION_MS = 500
+const SCENE_SWITCH_OUT_DURATION_MS = 650
+const SCENE_SWITCH_IN_DURATION_MS = 200
+const SCENE_SWITCH_MAX_WAIT_MS = SCENE_SWITCH_IN_DURATION_MS
+
+const handleSceneMapSettled = (): void => {
+	if (!sceneSwitching.value) return
+
+	if (sceneSwitchWatchdogTimer) {
+		clearTimeout(sceneSwitchWatchdogTimer)
+		sceneSwitchWatchdogTimer = null
+	}
+	sceneSwitching.value = false
+	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+	sceneCountdownResumeTimer = setTimeout(() => {
+		sceneCountdownPaused.value = false
+		sceneCountdownResumeTimer = null
+	}, SCENE_SWITCH_IN_DURATION_MS)
+}
 
 interface HomePublicPlayerResponse {
 	account: MinecraftAccountSummary
@@ -760,20 +848,85 @@ const resolvePlayerCarouselProgress = (
 	return playerCount - 1
 }
 
+interface HomeStoryStop {
+	id: 'hero' | 'player' | 'community' | 'outro-start' | 'outro-end'
+	progress: number
+}
+
+const resolveOverviewStoryStops = (): HomeStoryStop[] => {
+	const playerCount = sceneOverviewPlayers.value.length
+	if (playerCount <= 0) return []
+
+	const focusStart = scenePlayerEntryProgressEnd
+	const focusSpan = Math.max(sceneFocusProgressEnd.value - focusStart, 0.01)
+	const totalDwellShare =
+		PLAYER_FIRST_FOCUS_DWELL_SHARE +
+		PLAYER_FOCUS_DWELL_SHARE * (playerCount - 1)
+	const transitionShare = (1 - totalDwellShare) / Math.max(playerCount - 1, 1)
+	let carouselProgress = 0
+
+	return Array.from({ length: playerCount }, (_, index) => {
+		const stop = {
+			id: 'player' as const,
+			progress: focusStart + carouselProgress * focusSpan,
+		}
+		const dwellShare =
+			index === 0 ? PLAYER_FIRST_FOCUS_DWELL_SHARE : PLAYER_FOCUS_DWELL_SHARE
+		carouselProgress += dwellShare
+		if (index < playerCount - 1) carouselProgress += transitionShare
+		return stop
+	})
+}
+
+const resolveStoryStops = (): HomeStoryStop[] => {
+	const stops: HomeStoryStop[] = [
+		{ id: 'hero', progress: 0 },
+		{ id: 'hero', progress: heroProgressEnd },
+		...resolveOverviewStoryStops(),
+		{ id: 'community', progress: sceneCommunityProgressStart.value },
+		{ id: 'community', progress: sceneCommunityProgressEnd.value },
+		{ id: 'outro-start', progress: outroProgressStart.value },
+		{ id: 'outro-end', progress: 1 },
+	]
+
+	return stops
+		.filter(
+			(stop, index, allStops) =>
+				Number.isFinite(stop.progress) &&
+				allStops.findIndex(
+					(candidate) => Math.abs(candidate.progress - stop.progress) < 0.0001,
+				) === index,
+		)
+		.sort((left, right) => left.progress - right.progress)
+}
+
+const resolveStorySnapProgress = (progress: number): number => {
+	const stops = resolveStoryStops()
+	const nearest = stops.reduce((closest, stop) =>
+		Math.abs(stop.progress - progress) < Math.abs(closest.progress - progress)
+			? stop
+			: closest,
+	)
+
+	return Math.abs(nearest.progress - progress) <= 0.035
+		? nearest.progress
+		: progress
+}
+
 const syncStoryProgress = (progress: number): void => {
 	const normalized = Math.min(Math.max(progress, 0), 1)
 	latestStoryProgress = normalized
 	heroActive.value = normalized < heroProgressEnd
 	outroProgress.value = Math.min(
 		Math.max(
-			(normalized - outroProgressStart.value) /
-				Math.max(1 - outroProgressStart.value, 0.01),
+			(normalized - outroPresentationStart.value) /
+				Math.max(1 - outroPresentationStart.value, 0.01),
 			0,
 		),
 		1,
 	)
 
-	if (normalized >= outroProgressStart.value) {
+	if (normalized >= outroPresentationStart.value) {
 		overviewPhase.value = 'outro'
 	} else if (normalized < heroProgressEnd) {
 		overviewPhase.value = 'hidden'
@@ -849,22 +1002,29 @@ onMounted(async () => {
 
 	watch(selectedSceneIndex, (nextSceneIndex) => {
 		if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
+		if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+		if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
 		if (nextSceneIndex === activeSceneIndex.value) {
 			sceneSwitchTimer = null
+			sceneCountdownResumeTimer = null
+			sceneSwitchWatchdogTimer = null
 			sceneSwitching.value = false
+			sceneCountdownPaused.value = false
 			return
 		}
 
 		sceneSwitching.value = true
+		sceneCountdownPaused.value = true
 		sceneSwitchTimer = setTimeout(() => {
 			activeSceneIndex.value = nextSceneIndex
 			void nextTick(() => {
 				requestAnimationFrame(() => refreshScrollStory?.())
 			})
-			requestAnimationFrame(() => {
-				sceneSwitching.value = false
-			})
 			sceneSwitchTimer = null
+			sceneSwitchWatchdogTimer = setTimeout(
+				handleSceneMapSettled,
+				SCENE_SWITCH_MAX_WAIT_MS,
+			)
 		}, SCENE_SWITCH_OUT_DURATION_MS)
 	})
 
@@ -909,6 +1069,14 @@ onMounted(async () => {
 				start: 'top top',
 				end: 'bottom bottom',
 				scrub: true,
+				snap: {
+					snapTo: resolveStorySnapProgress,
+					directional: true,
+					inertia: false,
+					delay: 0.12,
+					duration: { min: 0.12, max: 0.28 },
+					ease: 'power2.out',
+				},
 				onUpdate: (scrollTrigger) => {
 					syncMapProgress(scrollTrigger.progress)
 				},
@@ -981,7 +1149,14 @@ onBeforeUnmount(() => {
 		clearTimeout(sceneSwitchTimer)
 		sceneSwitchTimer = null
 	}
-
+	if (sceneCountdownResumeTimer) {
+		clearTimeout(sceneCountdownResumeTimer)
+		sceneCountdownResumeTimer = null
+	}
+	if (sceneSwitchWatchdogTimer) {
+		clearTimeout(sceneSwitchWatchdogTimer)
+		sceneSwitchWatchdogTimer = null
+	}
 	stopSceneLocationWatch?.()
 	stopSceneLocationWatch = null
 	revertScrollStory?.()

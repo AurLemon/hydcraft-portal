@@ -69,7 +69,8 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 		locales: {
 			'zh-CN': {
 				name: '这里是\n广阳\n都市圈',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '这里是',
 					name: '广阳\n都市圈',
 				},
@@ -92,7 +93,8 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 			},
 			'zh-TW': {
 				name: '這裡是\n廣陽\n都市圈',
-				desktopVerticalName: {
+				desktopDisplayName: {
+					layout: 'horizontal',
 					prefix: '這裡是',
 					name: '廣陽\n都市圈',
 				},
@@ -133,11 +135,7 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 				],
 			},
 			'ja-JP': {
-				name: 'ここは\n広陽\n都市圏',
-				desktopVerticalName: {
-					prefix: 'ここは',
-					name: '広陽\n都市圏',
-				},
+				name: '広陽\n都市圏',
 				title: 'サーバー最大規模の都市圏。',
 				description:
 					'広陽の市街地は北島のほぼ全域を占める、サーバー最大の都市圏です。qixuanjun233（七炫）、Dotkk、xxlm233（宵宵狸猫）の主導のもと、新中式建築を核として北島南岸にサーバー随一の美しいスカイラインを築き上げました。',

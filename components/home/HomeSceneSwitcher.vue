@@ -1,7 +1,12 @@
 <template>
 	<nav
-		v-if="scenes.length > 1 && active"
-		class="pointer-events-auto absolute top-24 left-1/2 z-[200] -translate-x-1/2 sm:top-28"
+		v-if="scenes.length > 1"
+		class="absolute top-24 left-1/2 z-[200] -translate-x-1/2 transition-[opacity,transform] duration-300 ease-out sm:top-28"
+		:class="
+			active
+				? 'pointer-events-auto opacity-100'
+				: 'pointer-events-none -translate-y-2 opacity-0'
+		"
 		:aria-label="t('home.immersive.sceneSwitcher.label')"
 	>
 		<div class="flex h-12 items-center gap-1.5 sm:gap-2">
@@ -28,6 +33,11 @@
 				>
 					<span
 						class="block h-full w-full rounded-full bg-white will-change-transform"
+						:class="
+							progressResetting
+								? 'transition-transform duration-300 ease-out'
+								: 'transition-none'
+						"
 						:style="{
 							transform: `translateX(${(progress - 1) * 100}%)`,
 						}"
@@ -48,10 +58,12 @@ interface HomeSceneSwitcherProps {
 	modelValue: number
 	scenes: readonly HomeSceneSwitcherItem[]
 	active: boolean
+	counting?: boolean
 	durationMs?: number
 }
 
 const props = withDefaults(defineProps<HomeSceneSwitcherProps>(), {
+	counting: true,
 	durationMs: 15_000,
 })
 
@@ -63,8 +75,11 @@ const { t } = useI18n()
 const elapsedMs = ref(0)
 const documentVisible = ref(true)
 const atPageTop = ref(true)
+const progressResetting = ref(false)
 let animationFrame: number | null = null
 let lastTimestamp: number | null = null
+let progressResetFrame: number | null = null
+let progressResetTimer: ReturnType<typeof setTimeout> | null = null
 
 const progress = computed(() =>
 	Math.min(Math.max(elapsedMs.value / props.durationMs, 0), 1),
@@ -76,6 +91,22 @@ const stopClock = (): void => {
 		animationFrame = null
 	}
 	lastTimestamp = null
+}
+
+const resetProgress = (): void => {
+	if (elapsedMs.value <= 0) return
+	if (progressResetFrame !== null) cancelAnimationFrame(progressResetFrame)
+	if (progressResetTimer) clearTimeout(progressResetTimer)
+
+	progressResetting.value = true
+	progressResetFrame = requestAnimationFrame(() => {
+		progressResetFrame = null
+		elapsedMs.value = 0
+		progressResetTimer = setTimeout(() => {
+			progressResetting.value = false
+			progressResetTimer = null
+		}, 300)
+	})
 }
 
 const selectScene = (index: number): void => {
@@ -93,6 +124,7 @@ const advanceScene = (): void => {
 const tick = (timestamp: number): void => {
 	if (
 		!props.active ||
+		!props.counting ||
 		!documentVisible.value ||
 		!atPageTop.value ||
 		props.scenes.length <= 1
@@ -117,6 +149,7 @@ const startClock = (): void => {
 	if (
 		animationFrame !== null ||
 		!props.active ||
+		!props.counting ||
 		!documentVisible.value ||
 		!atPageTop.value ||
 		props.scenes.length <= 1
@@ -142,11 +175,12 @@ const handleScroll = (): void => {
 		startClock()
 		return
 	}
+	resetProgress()
 	stopClock()
 }
 
 watch(
-	() => [props.active, props.scenes.length] as const,
+	() => [props.active, props.counting, props.scenes.length] as const,
 	() => {
 		if (props.active) {
 			startClock()
@@ -174,6 +208,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
 	stopClock()
+	if (progressResetFrame !== null) cancelAnimationFrame(progressResetFrame)
+	if (progressResetTimer) clearTimeout(progressResetTimer)
 	document.removeEventListener('visibilitychange', handleVisibilityChange)
 	window.removeEventListener('scroll', handleScroll)
 })
