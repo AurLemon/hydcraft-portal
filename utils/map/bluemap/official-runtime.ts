@@ -1,11 +1,17 @@
-import { registerCacheBustFreeAssets } from './loading-manager'
+import {
+	registerCacheBustFreeAssets,
+	type ThreeLoadingManager,
+} from './loading-manager'
 import { createPlayerMarkerSupport } from './player-marker'
 import { OfficialBlueMapRuntimeBase } from './runtime-base'
+import type { NativeBlueMapWorldPlayerMarker } from './runtime-base'
 import { BLUE_MAP_RUNTIME } from './runtime-constants'
 import { BlueMapRuntimeError } from './runtime-error'
 import { normalizeWebGlInfoLogs } from './webgl-compat'
 import type { BlueMapRuntimeMountOptions } from './types'
-import type { ThreeLoadingManager } from './loading-manager'
+
+const HOME_DEVELOPER_LOWRES_VIEW_DISTANCE = 2_000
+const HOME_DEVELOPER_CAMERA_FAR = 1_000_000
 
 /**
  * Thin adapter around the vendored BlueMap v5.3 rendering core. The official
@@ -28,6 +34,7 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 
 		this.container = options.container
 		this.onViewChanged = options.onViewChanged ?? null
+		this.onWorldPlayerMarkerClick = options.onWorldPlayerMarkerClick ?? null
 		this.focusHeightOffset =
 			options.focusHeightOffset ?? BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 		try {
@@ -41,6 +48,7 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				skinview3d,
 				skinviewUtils,
 				{ animate, EasingFunctions },
+				{ PlayerMarker: NativePlayerMarker },
 			] = await Promise.all([
 				import('./blue-map-bridge'),
 				import('../../../vendor/bluemap-webapp/v5.3/MapViewer.js'),
@@ -51,6 +59,7 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				import('skinview3d'),
 				import('skinview-utils'),
 				import('../../../vendor/bluemap-webapp/v5.3/util/Utils.js'),
+				import('../../../vendor/bluemap-webapp/v5.3/markers/PlayerMarker.js'),
 			])
 
 			const events = new EventTarget()
@@ -142,6 +151,15 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 			)
 			this.createPlayerMarker = playerMarkerSupport.createPlayerMarker
 			this.loadPlayerSkin = playerMarkerSupport.loadPlayerSkin
+			this.createWorldPlayerMarker = (definition) => {
+				const marker = new NativePlayerMarker(
+					`portal-world-player-${encodeURIComponent(definition.id)}`,
+					definition.playerId,
+					'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+				) as unknown as NativeBlueMapWorldPlayerMarker
+				marker.element.classList.add('home-world-player-marker')
+				return marker
+			}
 			if (options.appendCacheBust === false) {
 				this.cacheBustFreeAssetsBaseUrl = options.assetsBaseUrl.replace(
 					/\/$/,
@@ -153,6 +171,41 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				)
 			}
 			const viewer = new MapViewer(options.container, events)
+			const unrestrictedViewDistance = options.unrestrictedViewDistance === true
+			if (unrestrictedViewDistance) {
+				viewer.data.loadedLowresViewDistance =
+					HOME_DEVELOPER_LOWRES_VIEW_DISTANCE
+			}
+			if (options.markerClicksOnly) {
+				const markerLayer = (
+					viewer as typeof viewer & {
+						css2dRenderer?: { domElement?: HTMLElement }
+					}
+				).css2dRenderer?.domElement
+				if (markerLayer) {
+					markerLayer.style.pointerEvents = 'auto'
+					markerLayer.addEventListener(
+						'pointerdown',
+						(event) => {
+							if (
+								(event.target as Element | null)?.closest(
+									'.home-world-player-marker',
+								)
+							) {
+								return
+							}
+							event.stopPropagation()
+						},
+						true,
+					)
+					markerLayer.addEventListener(
+						'wheel',
+						(event) => event.stopPropagation(),
+						true,
+					)
+				}
+				this.enableWorldPlayerMarkerHitTesting()
+			}
 			const map = new BlueMapMap(
 				'portal-map',
 				`${options.assetsBaseUrl.replace(/\/$/, '')}/`,
@@ -203,6 +256,10 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 					)
 				}
 				nativeMapControlsUpdate(delta, loadedMap)
+				if (unrestrictedViewDistance) {
+					viewer.camera.far = HOME_DEVELOPER_CAMERA_FAR
+					viewer.camera.updateProjectionMatrix()
+				}
 				if (this.followingPlayer && this.playerMarker) {
 					viewer.controlsManager.position.y = this.playerMarker.position.y
 				} else if (
@@ -254,6 +311,7 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 						)
 					}
 				}
+				this.updateScrollDrivenView(delta)
 			}
 			this.freeFlightControls = new FreeFlightControls(
 				viewer.renderer.domElement,
@@ -320,9 +378,18 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 					: this.mapControls
 			controls.updateCamera()
 			await viewer.switchMap(map)
+			const voidFillColor =
+				options.postProcessing?.profile === 'homeAtmosphere'
+					? options.postProcessing.water?.voidFillColor
+					: undefined
+			if (voidFillColor) {
+				map.data.voidColor.setRGB(...voidFillColor)
+				viewer.data.uniforms.voidColor.value = map.data.voidColor
+			}
 			this.setCamera(initialFocus)
 			await this.setMode(options.mode, 0)
 			this.setPresence(options.player ?? null)
+			this.setWorldPlayerMarkers(options.worldPlayerMarkers ?? [])
 			if (options.player) this.beginFollowingPlayer()
 		} catch (error) {
 			this.destroy()

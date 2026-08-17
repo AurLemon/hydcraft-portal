@@ -21,6 +21,7 @@ import type {
 	BlueMapViewPreset,
 	BlueMapViewOrientation,
 	BlueMapViewMode,
+	BlueMapWorldPlayerMarker,
 } from './types'
 
 const defaultRuntimeFactory: BlueMapRuntimeFactory = {
@@ -38,6 +39,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 		freeFlight: false,
 	}
 	private assetsBaseUrl = ''
+	private worldPlayerMarkers: readonly BlueMapWorldPlayerMarker[] = []
 	private readonly listeners: {
 		[K in keyof BlueMapEventPayloadMap]: Set<
 			(payload: BlueMapEventPayloadMap[K]) => void
@@ -47,6 +49,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 		modeChanged: new Set(),
 		focusChanged: new Set(),
 		viewChanged: new Set(),
+		worldPlayerMarkerClick: new Set(),
 		error: new Set(),
 		destroy: new Set(),
 	}
@@ -65,13 +68,19 @@ export class BlueMapControllerImpl implements BlueMapController {
 		focusHeightOffset?: number
 		initialOrientation?: BlueMapViewOrientation
 		unrestrictedPerspectiveAngle?: boolean
+		unrestrictedViewDistance?: boolean
 		keyboardControls?: boolean
 		postProcessing?: BlueMapRuntimeMountOptions['postProcessing']
 		player?: BlueMapPlayerMarker | null
+		worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
+		markerClicksOnly?: boolean
 	}) {
 		const mountGeneration = ++this.mountGeneration
 		this.destroyRuntime()
 		try {
+			if (options.worldPlayerMarkers !== undefined) {
+				this.worldPlayerMarkers = [...options.worldPlayerMarkers]
+			}
 			const loaded = await loadBlueMapSettings(options.assets)
 			if (!this.isCurrentMount(mountGeneration)) return
 			this.assetsBaseUrl = loaded.assetsBaseUrl
@@ -97,10 +106,15 @@ export class BlueMapControllerImpl implements BlueMapController {
 				focusHeightOffset: options.focusHeightOffset,
 				initialOrientation: options.initialOrientation,
 				unrestrictedPerspectiveAngle: options.unrestrictedPerspectiveAngle,
+				unrestrictedViewDistance: options.unrestrictedViewDistance,
 				keyboardControls: options.keyboardControls,
 				postProcessing: options.postProcessing,
 				player: options.player,
+				worldPlayerMarkers: this.worldPlayerMarkers,
+				markerClicksOnly: options.markerClicksOnly,
 				onViewChanged: (view) => this.emit('viewChanged', view),
+				onWorldPlayerMarkerClick: (payload) =>
+					this.emit('worldPlayerMarkerClick', payload),
 			}
 			await runtime.mount(runtimeOptions)
 			if (!this.isCurrentMount(mountGeneration)) {
@@ -108,6 +122,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 				return
 			}
 			this.runtime = runtime
+			runtime.setWorldPlayerMarkers(this.worldPlayerMarkers)
 			this.emit('ready', {
 				assetsBaseUrl: this.assetsBaseUrl,
 				settings: loaded.settings,
@@ -163,6 +178,11 @@ export class BlueMapControllerImpl implements BlueMapController {
 		this.runtime?.setPresence(player)
 	}
 
+	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]) {
+		this.worldPlayerMarkers = [...markers]
+		this.runtime?.setWorldPlayerMarkers(this.worldPlayerMarkers)
+	}
+
 	async alignNorth() {
 		await this.runtime?.alignNorth()
 	}
@@ -175,9 +195,22 @@ export class BlueMapControllerImpl implements BlueMapController {
 		await this.runtime?.restoreView(view)
 	}
 
+	setView(view: BlueMapViewPreset) {
+		this.runtime?.setView(view)
+	}
+
+	clearScrollDrivenView() {
+		this.runtime?.clearScrollDrivenView()
+	}
+
+	setHomeAtmosphereProgress(progress: number) {
+		this.runtime?.setHomeAtmosphereProgress(progress)
+	}
+
 	destroy() {
 		this.mountGeneration++
 		this.destroyRuntime()
+		this.worldPlayerMarkers = []
 		this.emit('destroy', {})
 	}
 

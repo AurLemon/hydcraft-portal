@@ -24,6 +24,7 @@ export interface BlueMapHomeWaterPostProcessing {
 	animationSpeed: number
 	waveSeed: number
 	irregularity: number
+	voidFillColor: [number, number, number]
 	tintColor: [number, number, number]
 	tintStrength: number
 	transmissionStrength: number
@@ -68,6 +69,22 @@ export interface BlueMapPlayerMarker extends BlueMapFocus {
 		direction: string
 		playerId: string
 	}
+}
+
+export interface BlueMapWorldPlayerMarker {
+	id: string
+	playerId: string
+	label: string
+	avatarUrl: string
+	isAdministrator?: boolean
+	isFocused?: boolean
+	x: number
+	y: number
+	z: number
+}
+
+export interface BlueMapWorldPlayerMarkerClickEventPayload {
+	marker: BlueMapWorldPlayerMarker
 }
 
 export interface BlueMapMapSettings {
@@ -141,6 +158,7 @@ export interface BlueMapEventPayloadMap {
 	modeChanged: BlueMapModeChangedEventPayload
 	focusChanged: BlueMapFocusChangedEventPayload
 	viewChanged: BlueMapViewChangedEventPayload
+	worldPlayerMarkerClick: BlueMapWorldPlayerMarkerClickEventPayload
 	error: BlueMapErrorEventPayload
 	destroy: Record<string, never>
 }
@@ -156,10 +174,16 @@ export interface BlueMapRuntimeMountOptions {
 	focusHeightOffset?: number
 	initialOrientation?: BlueMapViewOrientation
 	unrestrictedPerspectiveAngle?: boolean
+	unrestrictedViewDistance?: boolean
 	keyboardControls?: boolean
 	postProcessing?: BlueMapPostProcessingOptions
 	player?: BlueMapPlayerMarker | null
+	worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
+	markerClicksOnly?: boolean
 	onViewChanged?: (view: BlueMapViewChangedEventPayload) => void
+	onWorldPlayerMarkerClick?: (
+		payload: BlueMapWorldPlayerMarkerClickEventPayload,
+	) => void
 }
 
 export interface BlueMapRuntime {
@@ -170,9 +194,13 @@ export interface BlueMapRuntime {
 	focusPlayer(focus: BlueMapFocus): void | Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
+	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]): void
 	alignNorth(): void | Promise<void>
 	resetView(): void | Promise<void>
 	restoreView(view: BlueMapViewPreset): void | Promise<void>
+	setView(view: BlueMapViewPreset): void
+	clearScrollDrivenView(): void
+	setHomeAtmosphereProgress(progress: number): void
 	destroy(): void
 }
 
@@ -191,9 +219,12 @@ export interface BlueMapController {
 		focusHeightOffset?: number
 		initialOrientation?: BlueMapViewOrientation
 		unrestrictedPerspectiveAngle?: boolean
+		unrestrictedViewDistance?: boolean
 		keyboardControls?: boolean
 		postProcessing?: BlueMapPostProcessingOptions
 		player?: BlueMapPlayerMarker | null
+		worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
+		markerClicksOnly?: boolean
 	}): Promise<void>
 	resize(): void
 	setMode(mode: BlueMapViewMode): Promise<void>
@@ -201,9 +232,13 @@ export interface BlueMapController {
 	focusPlayer(focus: BlueMapFocus): Promise<void>
 	cancelFocus(): void
 	setPresence(player: BlueMapPlayerMarker | null): void
+	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]): void
 	alignNorth(): Promise<void>
 	resetView(): Promise<void>
 	restoreView(view: BlueMapViewPreset): Promise<void>
+	setView(view: BlueMapViewPreset): void
+	clearScrollDrivenView(): void
+	setHomeAtmosphereProgress(progress: number): void
 	destroy(): void
 	getSettings(): BlueMapMapSettings | null
 	getCapabilities(): BlueMapCapabilities

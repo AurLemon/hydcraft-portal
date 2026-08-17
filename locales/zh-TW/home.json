@@ -3,6 +3,28 @@
 		"immersive": {
 			"mapUnavailable": "地圖暫時無法使用",
 			"serverUnavailable": "預設伺服器",
+			"sceneSwitcher": {
+				"label": "首頁場景",
+				"select": "切換至 {name}"
+			},
+			"overview": {
+				"responsibleBy": "是他們的傑出作品。",
+				"beyondScene": "除了{name}",
+				"communityHasThem": "社群還有他們。",
+				"communityMembers": "社群成員介紹",
+				"scenePlayers": "場景建設者",
+				"viewFullIntroduction": "查看完整簡介",
+				"establishedFor": "伺服器已成立",
+				"days": "天",
+				"memberCountPrefix": "管理成員與元老院成員共",
+				"people": "人",
+				"back": "返回"
+			},
+			"outro": {
+				"description": "蓋樓、鋪軌、造城、養老。至於為什麼一個 MC 伺服器叫氫氣？我也不知道。",
+				"copyQq": "加入 QQ 群",
+				"screenshotAlt": "HydCraft 八週目截圖 {index}"
+			},
 			"credits": {
 				"builder": "建設者"
 			}

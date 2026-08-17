@@ -3,6 +3,28 @@
 		"immersive": {
 			"mapUnavailable": "マップは一時的に利用できません",
 			"serverUnavailable": "デフォルトサーバー",
+			"sceneSwitcher": {
+				"label": "ホームページのシーン",
+				"select": "{name} に切り替える"
+			},
+			"overview": {
+				"responsibleBy": "彼らの傑作です。",
+				"beyondScene": "{name} のほかにも",
+				"communityHasThem": "コミュニティには彼らがいます。",
+				"communityMembers": "コミュニティメンバーの紹介",
+				"scenePlayers": "シーンの建築者",
+				"viewFullIntroduction": "紹介をすべて見る",
+				"establishedFor": "サーバー設立から",
+				"days": "日",
+				"memberCountPrefix": "管理委員会と元老院のメンバーは計",
+				"people": "人",
+				"back": "戻る"
+			},
+			"outro": {
+				"description": "建物を建て、線路を敷き、街を造り、のんびり暮らす。なぜ Minecraft サーバーなのに HydCraft という名前なのか？私にも分かりません。",
+				"copyQq": "QQ グループに参加",
+				"screenshotAlt": "HydCraft シーズン8のスクリーンショット {index}"
+			},
 			"credits": {
 				"builder": "建設者"
 			}

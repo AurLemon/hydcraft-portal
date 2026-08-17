@@ -3,6 +3,28 @@
 		"immersive": {
 			"mapUnavailable": "地图暂时不可用",
 			"serverUnavailable": "默认服务器",
+			"sceneSwitcher": {
+				"label": "首页场景",
+				"select": "切换到 {name}"
+			},
+			"overview": {
+				"responsibleBy": "是他们的杰出作品。",
+				"beyondScene": "除了{name}",
+				"communityHasThem": "社区还有他们。",
+				"communityMembers": "社区成员介绍",
+				"scenePlayers": "场景建设者",
+				"viewFullIntroduction": "查看全部简介",
+				"establishedFor": "服务器已成立",
+				"days": "天",
+				"memberCountPrefix": "管理成员与元老院成员共",
+				"people": "人",
+				"back": "返回"
+			},
+			"outro": {
+				"description": "修楼、铺轨、造城、养老。至于为什么一个 MC 服务器叫氢气？我也不知道。",
+				"copyQq": "加入 QQ 群",
+				"screenshotAlt": "HydCraft 八周目截图 {index}"
+			},
 			"credits": {
 				"builder": "建设者"
 			}

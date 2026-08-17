@@ -96,10 +96,7 @@ const initializeScrollSnapshotPersistence = (): void => {
 
 	window.addEventListener('pagehide', () => {
 		const currentPath = window.location.pathname + window.location.search
-
-		if (!isHomeScrollPath(currentPath)) {
-			scrollSnapshots.set(getScrollRouteKey(currentPath), readScrollSnapshot())
-		}
+		scrollSnapshots.set(getScrollRouteKey(currentPath), readScrollSnapshot())
 
 		persistScrollSnapshots()
 	})
@@ -133,7 +130,7 @@ export const readScrollSnapshot = (): ScrollSnapshot => {
 export const saveScrollSnapshot = (fullPath: string | undefined): void => {
 	initializeScrollSnapshotPersistence()
 
-	if (!import.meta.client || isHomeScrollPath(fullPath)) {
+	if (!import.meta.client) {
 		return
 	}
 

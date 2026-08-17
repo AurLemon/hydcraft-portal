@@ -1,5 +1,8 @@
 import { createError, getRouterParam } from 'h3'
-import { defaultHomeImmersiveScene } from '~/utils/home/immersive-scenes'
+import {
+	defaultHomeImmersiveScene,
+	homeImmersiveScenes,
+} from '~/utils/home/immersive-scenes'
 
 const forwardedHeaders = [
 	'cache-control',
@@ -24,8 +27,9 @@ const isSafeAssetPath = (assetPath: string): boolean =>
 
 /**
  * The public map host does not permit browser CORS requests. Keep the target
- * host fixed by the homepage scene config and proxy only its asset subtree so
- * the BlueMap WebApp can load settings, tiles and binary map data same-origin.
+ * host restricted to the homepage scene registry and proxy only its asset
+ * subtree so the BlueMap WebApp can load settings, tiles and binary map data
+ * same-origin.
  */
 export default defineEventHandler(async (event) => {
 	const assetPath = getRouterParam(event, 'assetPath') ?? ''
@@ -36,10 +40,24 @@ export default defineEventHandler(async (event) => {
 			statusMessage: 'Invalid map asset path',
 		})
 	}
+	const [firstSegment, ...remainingSegments] = assetPath.split('/')
+	const selectedScene = homeImmersiveScenes.find(
+		(scene) => scene.id === decodeURIComponent(firstSegment ?? ''),
+	)
+	const scene = selectedScene ?? defaultHomeImmersiveScene
+	const upstreamAssetPath = selectedScene
+		? remainingSegments.join('/')
+		: assetPath
+	if (!isSafeAssetPath(upstreamAssetPath)) {
+		throw createError({
+			statusCode: 400,
+			statusMessage: 'Invalid map asset path',
+		})
+	}
 
 	const upstreamUrl = new URL(
-		assetPath,
-		`${defaultHomeImmersiveScene.mapAssetsBaseUrl.replace(/\/$/, '')}/`,
+		upstreamAssetPath,
+		`${scene.mapAssetsBaseUrl.replace(/\/$/, '')}/`,
 	)
 	const response = await fetch(upstreamUrl)
 	const headers = new Headers()

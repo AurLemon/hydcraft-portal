@@ -3,6 +3,28 @@
 		"immersive": {
 			"mapUnavailable": "The map is temporarily unavailable",
 			"serverUnavailable": "Default server",
+			"sceneSwitcher": {
+				"label": "Homepage scenes",
+				"select": "Switch to {name}"
+			},
+			"overview": {
+				"responsibleBy": "Their outstanding work.",
+				"beyondScene": "Beyond {name}",
+				"communityHasThem": "Meet the rest of the community.",
+				"communityMembers": "Community member introductions",
+				"scenePlayers": "Scene builders",
+				"viewFullIntroduction": "Read full introduction",
+				"establishedFor": "The server has been here for",
+				"days": "days",
+				"memberCountPrefix": "Committee and council members",
+				"people": "people",
+				"back": "Back"
+			},
+			"outro": {
+				"description": "Build buildings, lay tracks, shape cities, and settle in. Why is a Minecraft server called HydCraft? I have no idea either.",
+				"copyQq": "Join the QQ Group",
+				"screenshotAlt": "HydCraft Season 8 screenshot {index}"
+			},
 			"credits": {
 				"builder": "Builder"
 			}

@@ -1,6 +1,7 @@
 <template>
 	<div
 		class="relative h-full w-full overflow-hidden bg-slate-950"
+		:class="developerControlsActive ? 'cursor-grab active:cursor-grabbing' : ''"
 		:data-home-map-status="status"
 	>
 		<div ref="containerRef" class="h-full w-full" />
@@ -21,10 +22,17 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { createBlueMapController, type BlueMapFocus } from '~/utils/map'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import {
+	createBlueMapController,
+	type BlueMapFocus,
+	type BlueMapViewChangedEventPayload,
+	type BlueMapWorldPlayerMarker,
+	type BlueMapWorldPlayerMarkerClickEventPayload,
+} from '~/utils/map'
 import { createHomeImmersiveAtmosphereOptions } from '~/utils/home/immersive-atmosphere'
 import type {
+	HomeImmersiveMapPosition,
 	HomeImmersiveSceneCamera,
 	HomeImmersiveSceneLighting,
 	HomeImmersiveSceneWater,
@@ -33,11 +41,24 @@ import type {
 interface HomeImmersiveBlueMapProps {
 	assetsBaseUrl: string
 	camera: HomeImmersiveSceneCamera
+	overviewCamera: HomeImmersiveSceneCamera
+	mobileOverviewCamera: HomeImmersiveSceneCamera
 	lighting: HomeImmersiveSceneLighting
 	water?: HomeImmersiveSceneWater
+	focusPositions: readonly HomeImmersiveMapPosition[]
+	focusProgressEnd: number
+	worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
+	markerClicksOnly?: boolean
+	developerControlsEnabled?: boolean
+	developerControlsActive?: boolean
 }
 
 const props = defineProps<HomeImmersiveBlueMapProps>()
+const emit = defineEmits<{
+	'world-player-marker-click': [
+		payload: BlueMapWorldPlayerMarkerClickEventPayload,
+	]
+}>()
 const { t } = useI18n()
 const containerRef = ref<HTMLElement | null>(null)
 const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
@@ -45,9 +66,141 @@ const controller = createBlueMapController()
 let resizeObserver: ResizeObserver | null = null
 let resizeAnimationFrame: number | null = null
 let viewportMediaQuery: MediaQueryList | null = null
-let restoreSceneViewAfterResize = false
+let reapplyScrollViewAfterResize = false
 let unbindReady: (() => void) | null = null
 let unbindError: (() => void) | null = null
+let unbindWorldPlayerMarkerClick: (() => void) | null = null
+let unbindViewChanged: (() => void) | null = null
+let scrollProgress = 0
+let lastDeveloperViewLogAt = 0
+
+const formatCameraValue = (value: number, precision: number): string =>
+	Number(value.toFixed(precision)).toString()
+
+const logDeveloperCamera = (view: BlueMapViewChangedEventPayload): void => {
+	if (!props.developerControlsActive) return
+
+	const now = window.performance.now()
+	if (now - lastDeveloperViewLogAt < 120) return
+	lastDeveloperViewLogAt = now
+
+	console.info(
+		`[homeImmersiveScenes] camera: {\n  x: ${formatCameraValue(view.x, 2)},\n  y: ${formatCameraValue(view.y, 2)},\n  z: ${formatCameraValue(view.z, 2)},\n  distance: ${formatCameraValue(view.distance, 2)},\n  rotation: ${formatCameraValue(view.rotation, 4)},\n  angle: ${formatCameraValue(view.angle, 4)},\n  tilt: ${formatCameraValue(view.tilt, 4)},\n}`,
+	)
+}
+
+const interpolate = (start: number, end: number, progress: number): number =>
+	start + (end - start) * progress
+
+const smoothStep = (start: number, end: number, value: number): number => {
+	const progress = Math.min(Math.max((value - start) / (end - start), 0), 1)
+	return progress * progress * (3 - 2 * progress)
+}
+
+const interpolateCamera = (
+	start: HomeImmersiveSceneCamera,
+	end: HomeImmersiveSceneCamera,
+	progress: number,
+): HomeImmersiveSceneCamera => ({
+	x: interpolate(start.x, end.x, progress),
+	y: interpolate(start.y, end.y, progress),
+	z: interpolate(start.z, end.z, progress),
+	distance: start.distance * Math.pow(end.distance / start.distance, progress),
+	rotation: interpolate(start.rotation, end.rotation, progress),
+	angle: interpolate(start.angle, end.angle, progress),
+	tilt: interpolate(start.tilt, end.tilt, progress),
+})
+
+const focusCamera = (
+	position: HomeImmersiveMapPosition,
+	overview: HomeImmersiveSceneCamera,
+): HomeImmersiveSceneCamera => ({
+	x: position.x,
+	y: position.y,
+	z: position.z,
+	distance: Math.min(7200, Math.max(4200, overview.distance * 0.24)),
+	rotation: overview.rotation,
+	angle: overview.angle,
+	tilt: overview.tilt,
+})
+
+const applyScrollProgress = (progress: number): void => {
+	scrollProgress = Math.min(Math.max(progress, 0), 1)
+	if (props.developerControlsActive) {
+		controller.clearScrollDrivenView()
+		controller.setHomeAtmosphereProgress(smoothStep(0.02, 0.22, scrollProgress))
+		return
+	}
+	const overview = viewportMediaQuery?.matches
+		? props.mobileOverviewCamera
+		: props.overviewCamera
+	const focusEnd = props.focusProgressEnd
+	const overviewEnd = Math.min(focusEnd + 0.04, 0.94)
+	let targetCamera = props.camera
+
+	if (
+		scrollProgress >= 0.02 &&
+		scrollProgress < focusEnd &&
+		props.focusPositions.length
+	) {
+		const focusProgress =
+			(scrollProgress - 0.02) / Math.max(focusEnd - 0.02, 0.01)
+		const segmentLength = 1 / props.focusPositions.length
+		const segmentIndex = Math.min(
+			props.focusPositions.length - 1,
+			Math.floor(focusProgress / segmentLength),
+		)
+		const segmentProgress =
+			(focusProgress - segmentIndex * segmentLength) / segmentLength
+		const currentPosition = props.focusPositions[segmentIndex]!
+		const previousPosition = props.focusPositions[segmentIndex - 1]
+		const previousCamera = previousPosition
+			? focusCamera(previousPosition, overview)
+			: props.camera
+		targetCamera = interpolateCamera(
+			previousCamera,
+			focusCamera(currentPosition, overview),
+			smoothStep(0, 0.34, segmentProgress),
+		)
+	} else if (scrollProgress >= focusEnd && scrollProgress < overviewEnd) {
+		const departureCamera = props.focusPositions.length
+			? focusCamera(props.focusPositions.at(-1)!, overview)
+			: props.camera
+		targetCamera = interpolateCamera(
+			departureCamera,
+			overview,
+			smoothStep(focusEnd, overviewEnd, scrollProgress),
+		)
+	} else if (scrollProgress >= overviewEnd) {
+		targetCamera = overview
+	}
+
+	controller.setView(targetCamera)
+	controller.setHomeAtmosphereProgress(smoothStep(0.02, 0.22, scrollProgress))
+}
+
+defineExpose({ setScrollProgress: applyScrollProgress })
+
+watch(
+	() => props.focusPositions,
+	() => {
+		if (status.value === 'ready') applyScrollProgress(scrollProgress)
+	},
+	{ deep: true },
+)
+
+watch(
+	() => props.worldPlayerMarkers,
+	(markers) => controller.setWorldPlayerMarkers(markers ?? []),
+	{ deep: true },
+)
+
+watch(
+	() => props.developerControlsActive,
+	() => {
+		if (status.value === 'ready') applyScrollProgress(scrollProgress)
+	},
+)
 
 const focus = (): BlueMapFocus => ({
 	x: props.camera.x,
@@ -66,26 +219,15 @@ const resize = () => {
 	resizeAnimationFrame = requestAnimationFrame(() => {
 		resizeAnimationFrame = null
 		controller.resize()
-		if (restoreSceneViewAfterResize && status.value === 'ready') {
-			restoreSceneViewAfterResize = false
-			void restoreSceneView()
+		if (reapplyScrollViewAfterResize && status.value === 'ready') {
+			reapplyScrollViewAfterResize = false
+			applyScrollProgress(scrollProgress)
 		}
 	})
 }
 
-const restoreSceneView = () =>
-	controller.restoreView({
-		x: props.camera.x,
-		y: props.camera.y,
-		z: props.camera.z,
-		distance: props.camera.distance,
-		rotation: props.camera.rotation,
-		angle: props.camera.angle,
-		tilt: props.camera.tilt,
-	})
-
 const handleViewportProfileChange = () => {
-	restoreSceneViewAfterResize = status.value === 'ready'
+	reapplyScrollViewAfterResize = status.value === 'ready'
 	resize()
 }
 
@@ -97,11 +239,17 @@ const mountMap = async () => {
 	status.value = 'loading'
 	unbindReady = controller.on('ready', () => {
 		status.value = 'ready'
+		applyScrollProgress(scrollProgress)
 		resize()
 	})
 	unbindError = controller.on('error', () => {
 		status.value = 'error'
 	})
+	unbindWorldPlayerMarkerClick = controller.on(
+		'worldPlayerMarkerClick',
+		(payload) => emit('world-player-marker-click', payload),
+	)
+	unbindViewChanged = controller.on('viewChanged', logDeveloperCamera)
 	try {
 		await controller.mount({
 			container,
@@ -116,11 +264,14 @@ const mountMap = async () => {
 				tilt: props.camera.tilt,
 			},
 			unrestrictedPerspectiveAngle: true,
+			unrestrictedViewDistance: props.developerControlsEnabled,
 			keyboardControls: false,
 			postProcessing: createHomeImmersiveAtmosphereOptions(
 				props.lighting,
 				props.water,
 			),
+			worldPlayerMarkers: props.worldPlayerMarkers ?? [],
+			markerClicksOnly: props.markerClicksOnly,
 		})
 	} catch {
 		// Controller emits the typed failure event used by this presentation.
@@ -148,9 +299,112 @@ onBeforeUnmount(() => {
 		cancelAnimationFrame(resizeAnimationFrame)
 		resizeAnimationFrame = null
 	}
-	restoreSceneViewAfterResize = false
+	reapplyScrollViewAfterResize = false
 	unbindReady?.()
 	unbindError?.()
+	unbindWorldPlayerMarkerClick?.()
+	unbindViewChanged?.()
 	controller.destroy()
 })
 </script>
+
+<style scoped>
+:deep(.home-world-player-marker) {
+	position: relative;
+	display: flex;
+	min-width: 1.5rem;
+	transform: translate(-50%, -100%);
+	cursor: pointer;
+	pointer-events: auto;
+	user-select: none;
+	flex-direction: column;
+	align-items: center;
+	transition:
+		opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+		filter 320ms cubic-bezier(0.22, 1, 0.36, 1),
+		transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:deep(.home-world-player-marker:hover),
+:deep(.home-world-player-marker:focus-visible),
+:deep(.home-world-player-marker[data-home-marker-hovered='true']) {
+	filter: brightness(1.08);
+}
+
+:deep(.home-world-player-marker:focus-visible) {
+	outline: 2px solid rgb(125 211 252);
+	outline-offset: 4px;
+}
+
+:deep(.home-world-player-marker img) {
+	display: block;
+	width: 1.5rem;
+	height: 1.5rem;
+	border: 1px solid rgb(255 255 255 / 0.9);
+	border-radius: 0.25rem;
+	background: rgb(15 23 42 / 0.84);
+	box-shadow: 0 4px 12px rgb(2 6 23 / 0.42);
+	image-rendering: pixelated;
+}
+
+:deep(.home-world-player-marker[data-home-administrator='true'] img) {
+	border-color: rgb(252 211 77);
+	box-shadow:
+		0 4px 12px rgb(2 6 23 / 0.42),
+		0 0 0 1px rgb(245 158 11 / 0.48);
+}
+
+:deep(.home-world-player-marker .bm-player-name) {
+	position: absolute;
+	bottom: calc(100% + 0.375rem);
+	left: 50%;
+	z-index: 1;
+	max-width: 8rem;
+	overflow: hidden;
+	transform: translate(-50%, 0.25rem);
+	border: 1px solid rgb(255 255 255 / 0.14);
+	border-radius: 0.375rem;
+	background: rgb(2 6 23 / 0.9);
+	padding: 0.2rem 0.45rem;
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1rem;
+	opacity: 0;
+	pointer-events: none;
+	text-align: center;
+	text-overflow: ellipsis;
+	text-shadow:
+		0 1px 3px rgb(2 6 23 / 0.95),
+		0 0 10px rgb(2 6 23 / 0.72);
+	transition:
+		opacity 160ms ease,
+		transform 160ms ease;
+	white-space: nowrap;
+}
+
+:deep(.home-world-player-marker:hover .bm-player-name),
+:deep(.home-world-player-marker:focus-visible .bm-player-name),
+:deep(
+	.home-world-player-marker[data-home-marker-hovered='true'] .bm-player-name
+) {
+	transform: translate(-50%, 0);
+	opacity: 1;
+}
+
+@media (max-width: 639px) {
+	:deep(.home-world-player-marker) {
+		min-width: 1.25rem;
+	}
+
+	:deep(.home-world-player-marker img) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	:deep(.home-world-player-marker .bm-player-name) {
+		max-width: 6rem;
+		font-size: 0.6875rem;
+	}
+}
+</style>

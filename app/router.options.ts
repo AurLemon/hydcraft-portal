@@ -68,11 +68,6 @@ export default <RouterConfig>{
 
 		saveScrollSnapshot(from.fullPath)
 
-		if (isHomeScrollPath(to.fullPath)) {
-			clearPendingScrollRestore()
-			return { left: 0, top: 0 }
-		}
-
 		const fromNormalizedPath = normalizeScrollPath(from.fullPath)
 		const toNormalizedPath = normalizeScrollPath(to.fullPath)
 		const isLocaleSwitchWithinSamePage =
@@ -86,6 +81,11 @@ export default <RouterConfig>{
 				queueProgressScrollRestore(to.fullPath, fromSnapshot.progress)
 				return { left: 0, top: fromSnapshot.top }
 			}
+		}
+
+		if (isHomeScrollPath(to.fullPath)) {
+			clearPendingScrollRestore()
+			return { left: 0, top: 0 }
 		}
 
 		const savedSnapshot = getScrollSnapshot(to.fullPath)

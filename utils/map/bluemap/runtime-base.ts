@@ -9,11 +9,39 @@ import type {
 	BlueMapViewChangedEventPayload,
 	BlueMapViewMode,
 	BlueMapViewPreset,
+	BlueMapWorldPlayerMarker,
+	BlueMapWorldPlayerMarkerClickEventPayload,
 } from './types'
 
 interface BlueMapRuntimeKeyboardControl {
 	start(...args: unknown[]): void
 	reset?(): void
+}
+
+export interface NativeBlueMapWorldPlayerMarker {
+	position: {
+		x: number
+		y: number
+		z: number
+	}
+	visible: boolean
+	element: HTMLElement
+	playerHeadElement: HTMLImageElement
+	playerNameElement: HTMLElement
+	updateFromData(data: {
+		uuid: string
+		name: string
+		foreign: boolean
+		position: { x: number; y: number; z: number }
+		rotation: { yaw: number; pitch: number; roll: number }
+	}): void
+	dispose(): void
+}
+
+interface WorldPlayerMarkerEntry {
+	definition: BlueMapWorldPlayerMarker
+	marker: NativeBlueMapWorldPlayerMarker
+	unbind: () => void
 }
 
 export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
@@ -41,7 +69,11 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 			tilt: number
 			updateCamera(): void
 		}
-		camera: { quaternion: unknown }
+		camera: {
+			quaternion: unknown
+			far: number
+			updateProjectionMatrix(): void
+		}
 		renderer: {
 			debug: {
 				checkShaderErrors: boolean
@@ -65,6 +97,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 			add(marker: unknown): void
 			remove(marker: unknown): void
 		}
+		redraw(): void
 	} | null = null
 	protected map: {
 		data: { startPos: { x: number; z: number } }
@@ -109,6 +142,20 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		| null = null
 	protected playerMarker: PlayerPresenceMarker | null = null
 	protected playerPresence: BlueMapPlayerMarker | null = null
+	protected createWorldPlayerMarker:
+		| ((definition: BlueMapWorldPlayerMarker) => NativeBlueMapWorldPlayerMarker)
+		| null = null
+	protected worldPlayerMarkerDefinitions: readonly BlueMapWorldPlayerMarker[] =
+		[]
+	protected readonly worldPlayerMarkerEntries = new Map<
+		string,
+		WorldPlayerMarkerEntry
+	>()
+	protected readonly worldPlayerMarkerExitTimers = new Map<string, number>()
+	protected onWorldPlayerMarkerClick:
+		| ((payload: BlueMapWorldPlayerMarkerClickEventPayload) => void)
+		| null = null
+	protected worldPlayerMarkerHitTestCleanup: (() => void) | null = null
 	protected followingPlayer = false
 	protected preservedTargetY: number | null = null
 	protected followRelease: {
@@ -121,18 +168,24 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 	protected postProcessor: {
 		resize(): void
 		invalidateWorldAnchors(): void
+		setAtmosphereProgress(progress: number): void
 		dispose(): void
 	} | null = null
 	protected cacheBustFreeAssetsBaseUrl: string | null = null
 	protected onViewChanged:
 		| ((view: BlueMapViewChangedEventPayload) => void)
 		| null = null
+	protected scrollViewTarget: BlueMapViewPreset | null = null
 
 	abstract mount(options: BlueMapRuntimeMountOptions): Promise<void>
 
 	resize() {
 		this.viewer?.handleContainerResize()
 		this.postProcessor?.resize()
+	}
+
+	setHomeAtmosphereProgress(progress: number) {
+		this.postProcessor?.setAtmosphereProgress(progress)
 	}
 
 	setMode(
@@ -388,6 +441,177 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		)
 	}
 
+	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]) {
+		this.worldPlayerMarkerDefinitions = [...markers]
+		const viewer = this.viewer
+		const createMarker = this.createWorldPlayerMarker
+		if (!viewer || !createMarker) return
+
+		const nextMarkerIds = new Set(markers.map((marker) => marker.id))
+		for (const [markerId, entry] of this.worldPlayerMarkerEntries) {
+			const exitTimer = this.worldPlayerMarkerExitTimers.get(markerId)
+			if (nextMarkerIds.has(markerId)) {
+				if (exitTimer !== undefined) {
+					window.clearTimeout(exitTimer)
+					this.worldPlayerMarkerExitTimers.delete(markerId)
+				}
+				entry.marker.visible = true
+				continue
+			}
+			if (exitTimer !== undefined) continue
+
+			entry.marker.element.style.opacity = '0'
+			this.worldPlayerMarkerExitTimers.set(
+				markerId,
+				window.setTimeout(() => {
+					const exitingEntry = this.worldPlayerMarkerEntries.get(markerId)
+					if (!exitingEntry || nextMarkerIds.has(markerId)) return
+					exitingEntry.unbind()
+					viewer.markers.remove(exitingEntry.marker)
+					this.worldPlayerMarkerEntries.delete(markerId)
+					this.worldPlayerMarkerExitTimers.delete(markerId)
+				}, 180),
+			)
+		}
+
+		for (const definition of markers) {
+			let entry = this.worldPlayerMarkerEntries.get(definition.id)
+			if (entry && entry.definition.playerId !== definition.playerId) {
+				entry.unbind()
+				viewer.markers.remove(entry.marker)
+				this.worldPlayerMarkerEntries.delete(definition.id)
+				entry = undefined
+			}
+
+			if (!entry) {
+				const marker = createMarker(definition)
+				marker.element.style.opacity = '0'
+				const activate = (event: Event) => {
+					event.preventDefault()
+					event.stopPropagation()
+					const current = this.worldPlayerMarkerEntries.get(definition.id)
+					if (!current) return
+					this.onWorldPlayerMarkerClick?.({ marker: current.definition })
+				}
+				const handleKeydown = (event: KeyboardEvent) => {
+					if (event.key !== 'Enter' && event.key !== ' ') return
+					activate(event)
+				}
+				marker.element.addEventListener('click', activate)
+				marker.element.addEventListener('keydown', handleKeydown)
+				entry = {
+					definition,
+					marker,
+					unbind: () => {
+						marker.element.removeEventListener('click', activate)
+						marker.element.removeEventListener('keydown', handleKeydown)
+					},
+				}
+				this.worldPlayerMarkerEntries.set(definition.id, entry)
+				viewer.markers.add(marker)
+				requestAnimationFrame(() => {
+					if (
+						this.worldPlayerMarkerEntries.get(definition.id) === entry &&
+						!this.worldPlayerMarkerExitTimers.has(definition.id)
+					) {
+						entry.marker.element.style.opacity =
+							entry.definition.isFocused === false ? '0.34' : '1'
+					}
+				})
+			}
+
+			entry.definition = definition
+			const marker = entry.marker
+			marker.visible = true
+			marker.element.style.pointerEvents = 'auto'
+			marker.element.dataset.worldPlayerMarkerId = definition.id
+			marker.element.dataset.homeAdministrator = String(
+				definition.isAdministrator === true,
+			)
+			marker.element.dataset.homeFocused = String(
+				definition.isFocused !== false,
+			)
+			marker.element.style.opacity =
+				definition.isFocused === false ? '0.34' : '1'
+			marker.element.style.transform =
+				definition.isFocused === false
+					? 'translate(-50%, -100%) scale(0.72)'
+					: 'translate(-50%, -100%) scale(1)'
+			marker.element.setAttribute('role', 'button')
+			marker.element.setAttribute('aria-label', definition.label)
+			marker.element.tabIndex = 0
+			marker.playerHeadElement.src = definition.avatarUrl
+			marker.playerHeadElement.alt = definition.label
+			marker.updateFromData({
+				uuid: definition.playerId,
+				name: ' ',
+				foreign: false,
+				position: {
+					x: definition.x,
+					y: definition.y,
+					z: definition.z,
+				},
+				rotation: { yaw: 0, pitch: 0, roll: 0 },
+			})
+			marker.playerNameElement.textContent = definition.label
+		}
+
+		viewer.redraw()
+	}
+
+	protected enableWorldPlayerMarkerHitTesting() {
+		if (this.worldPlayerMarkerHitTestCleanup || !this.container) return
+
+		const resolveMarkerAt = (x: number, y: number) => {
+			for (const entry of this.worldPlayerMarkerEntries.values()) {
+				const bounds = entry.marker.element.getBoundingClientRect()
+				if (
+					x >= bounds.left &&
+					x <= bounds.right &&
+					y >= bounds.top &&
+					y <= bounds.bottom
+				) {
+					return entry
+				}
+			}
+
+			return null
+		}
+		const clearHoveredMarker = () => {
+			for (const entry of this.worldPlayerMarkerEntries.values()) {
+				delete entry.marker.element.dataset.homeMarkerHovered
+			}
+		}
+		const updateHoveredMarker = (event: PointerEvent) => {
+			const hoveredMarker = resolveMarkerAt(event.clientX, event.clientY)
+			for (const entry of this.worldPlayerMarkerEntries.values()) {
+				if (entry === hoveredMarker) {
+					entry.marker.element.dataset.homeMarkerHovered = 'true'
+				} else {
+					delete entry.marker.element.dataset.homeMarkerHovered
+				}
+			}
+			document.documentElement.style.cursor = hoveredMarker ? 'pointer' : ''
+		}
+		const activateMarker = (event: MouseEvent) => {
+			const marker = resolveMarkerAt(event.clientX, event.clientY)
+			if (!marker) return
+
+			event.preventDefault()
+			event.stopImmediatePropagation()
+			this.onWorldPlayerMarkerClick?.({ marker: marker.definition })
+		}
+
+		window.addEventListener('pointermove', updateHoveredMarker, true)
+		window.addEventListener('click', activateMarker, true)
+		this.worldPlayerMarkerHitTestCleanup = () => {
+			window.removeEventListener('pointermove', updateHoveredMarker, true)
+			window.removeEventListener('click', activateMarker, true)
+			document.documentElement.style.cursor = ''
+			clearHoveredMarker()
+		}
+	}
+
 	protected updatePlayerMarkerAppearance(distance?: number) {
 		const marker = this.playerMarker
 		const cameraDistance = distance ?? this.viewer?.controlsManager.distance
@@ -505,8 +729,53 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		)
 	}
 
-	destroy() {
+	setView(target: BlueMapViewPreset) {
+		this.focusAnimation?.cancel()
+		this.focusAnimation = null
+		this.viewAnimation?.cancel()
+		this.viewAnimation = null
+		this.scrollViewTarget = { ...target }
+	}
+
+	clearScrollDrivenView() {
+		this.scrollViewTarget = null
+	}
+
+	protected updateScrollDrivenView(delta: number) {
 		const viewer = this.viewer
+		const target = this.scrollViewTarget
+		if (!viewer || !target) return
+
+		const controls = viewer.controlsManager
+		const frameRatio = Math.min(Math.max(delta / 16.666, 0), 4)
+		const smoothing = 1 - Math.pow(0.8, frameRatio)
+		controls.position.set(
+			controls.position.x + (target.x - controls.position.x) * smoothing,
+			controls.position.y + (target.y - controls.position.y) * smoothing,
+			controls.position.z + (target.z - controls.position.z) * smoothing,
+		)
+		controls.distance += (target.distance - controls.distance) * smoothing
+		controls.rotation += (target.rotation - controls.rotation) * smoothing
+		controls.angle += (target.angle - controls.angle) * smoothing
+		controls.tilt += (target.tilt - controls.tilt) * smoothing
+		controls.updateCamera()
+		this.postProcessor?.invalidateWorldAnchors()
+	}
+
+	destroy() {
+		this.worldPlayerMarkerHitTestCleanup?.()
+		this.worldPlayerMarkerHitTestCleanup = null
+		const viewer = this.viewer
+		for (const entry of this.worldPlayerMarkerEntries.values()) {
+			entry.unbind()
+			if (viewer) viewer.markers.remove(entry.marker)
+			else entry.marker.dispose()
+		}
+		for (const exitTimer of this.worldPlayerMarkerExitTimers.values()) {
+			window.clearTimeout(exitTimer)
+		}
+		this.worldPlayerMarkerExitTimers.clear()
+		this.worldPlayerMarkerEntries.clear()
 		this.postProcessor?.dispose()
 		this.postProcessor = null
 		unregisterCacheBustFreeAssets(this.cacheBustFreeAssetsBaseUrl)
@@ -541,6 +810,9 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		this.easing = null
 		this.createPlayerMarker = null
 		this.loadPlayerSkin = null
+		this.createWorldPlayerMarker = null
+		this.worldPlayerMarkerDefinitions = []
+		this.onWorldPlayerMarkerClick = null
 		this.playerMarker?.dispose()
 		this.playerMarker = null
 		this.playerPresence = null
@@ -549,6 +821,7 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		this.followRelease = null
 		this.focusHeightOffset = BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 		this.onViewChanged = null
+		this.scrollViewTarget = null
 	}
 
 	protected animateViewOrientation(target: {

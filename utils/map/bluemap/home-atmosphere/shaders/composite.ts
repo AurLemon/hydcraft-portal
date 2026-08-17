@@ -87,14 +87,20 @@ export const compositeFragmentShader = /* glsl */ `
 		vec2 interactionFlow = (interaction.rg * 2.0 - 1.0) * interaction.a;
 		float waterMask = waterMaskForColor(sceneColor);
 
-		if (waterRippleStrength > 0.0 && waterMask > 0.001) {
+		if (waterMask > 0.001) {
+			float rippleEnabled = smoothstep(
+				0.0,
+				1.0,
+				clamp(waterRippleStrength, 0.0, 1.0)
+			);
 			vec2 waterCoordinate = vUv * vec2(viewportAspect, 1.0)
-				+ interactionFlow * vec2(viewportAspect, 1.0) * 0.1;
+				+ interactionFlow * vec2(viewportAspect, 1.0) * 0.1 * rippleEnabled;
 			vec3 waveField = waterWaveField(waterCoordinate);
-			vec2 surfaceSlope = waveField.yz * waterIrregularity
-				+ interactionFlow * 0.56;
+			vec2 surfaceSlope = (
+				waveField.yz * waterIrregularity + interactionFlow * 0.56
+			) * rippleEnabled;
 			vec2 refractionOffset = surfaceSlope * waterRippleStrength * 0.00205
-				+ interactionFlow * 0.00125;
+				+ interactionFlow * 0.00125 * rippleEnabled;
 			vec3 refractedColor = texture2D(tScene, vUv + refractionOffset).rgb;
 			vec3 transmittedBlur = texture2D(
 				tBlurred,
@@ -104,11 +110,15 @@ export const compositeFragmentShader = /* glsl */ `
 				refractedColor,
 				vec3(0.2126, 0.7152, 0.0722)
 			);
-			float surfacePulse = 0.96 + waveField.x * 0.12;
+			float surfacePulse = mix(
+				1.0,
+				0.96 + waveField.x * 0.12,
+				rippleEnabled
+			);
 			vec3 transmissionColor = mix(
 				refractedColor,
 				transmittedBlur,
-				waterTransmissionStrength * 0.2
+				waterTransmissionStrength * 0.2 * rippleEnabled
 			);
 			vec3 absorptionColor = waterTintColor
 				* mix(0.72, 1.2, smoothstep(0.04, 0.42, sourceLuminance));
@@ -140,7 +150,7 @@ export const compositeFragmentShader = /* glsl */ `
 				* waterTransmissionStrength;
 			sceneColor += waterTintColor
 				* shallowShine
-				* (0.16 + max(waveField.x, 0.0) * 0.06);
+				* (0.16 + max(waveField.x, 0.0) * 0.06 * rippleEnabled);
 
 			vec2 reflectionDirection = normalize(
 				waterLightDirection + vec2(0.0001)

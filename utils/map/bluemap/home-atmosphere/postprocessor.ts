@@ -47,8 +47,11 @@ class HomeAtmospherePostProcessor {
 	private qualityScale: number
 	private readonly waterGlintSpeed: number
 	private readonly waterEffectsEnabled: boolean
+	private waterEffectsActive = true
+	private atmosphereEffectsActive = true
 	private waterEffectFrameInterval: number
 	private interactionEnabled = false
+	private presentationProgress = 0
 	private interactionListenersBound = false
 	private interactionQualityScale: number
 	private readonly reducedMotion: boolean
@@ -327,10 +330,44 @@ class HomeAtmospherePostProcessor {
 		this.waterGlintMaterial.uniforms.viewportAspect!.value = width / height
 		this.compositeMaterial.uniforms.viewportAspect!.value = width / height
 		this.updatePointerBounds()
+		this.deactivatePointer()
 		;(this.compositeMaterial.uniforms.sceneTexelSize!.value as Vector2).set(
 			1 / width,
 			1 / height,
 		)
+	}
+
+	setAtmosphereProgress(progress: number) {
+		const clampedProgress = Math.min(Math.max(progress, 0), 1)
+		this.presentationProgress = clampedProgress
+		const effectStrength = 1 - clampedProgress
+		const isMobile = window.matchMedia('(max-width: 639px)').matches
+		this.compositeMaterial.uniforms.hazeStrength!.value =
+			this.options.hazeStrength * effectStrength
+		this.compositeMaterial.uniforms.blurStrength!.value =
+			this.options.blurStrength * effectStrength
+		this.compositeMaterial.uniforms.beamStrength!.value =
+			this.options.beamStrength * effectStrength
+		this.compositeMaterial.uniforms.waterRippleStrength!.value =
+			(this.options.water?.rippleStrength ?? 0) * effectStrength
+		this.compositeMaterial.uniforms.waterReflectionStrength!.value =
+			(this.options.water?.reflectionStrength ?? 0) * effectStrength
+		this.compositeMaterial.uniforms.waterGlintStrength!.value =
+			(this.options.water?.glintStrength ?? 0) *
+			(isMobile ? 0.82 : 1) *
+			effectStrength
+		this.compositeMaterial.uniforms.waterBloomStrength!.value =
+			(this.options.water?.bloomStrength ?? 0) *
+			(isMobile ? 0.76 : 1) *
+			effectStrength
+		this.waterGlintMaterial.uniforms.enabled!.value =
+			this.options.water && effectStrength > 0.001 ? 1 : 0
+		this.waterEffectsActive = effectStrength > 0.001
+		this.atmosphereEffectsActive = effectStrength > 0.001
+
+		const nextInteractionEnabled =
+			!isMobile && !this.reducedMotion && clampedProgress < 0.98
+		this.setInteractionEnabled(nextInteractionEnabled)
 	}
 
 	invalidateWorldAnchors() {
@@ -376,30 +413,32 @@ class HomeAtmospherePostProcessor {
 		this.elapsedSeconds += deltaSeconds
 		this.renderer.setRenderTarget(this.sceneTarget)
 		this.nativeRender(delta)
-		this.updateWorldProjection()
-		this.updateInteraction(deltaSeconds)
-
-		this.passRenderer.renderPass(
-			this.sceneTarget.texture,
-			this.blurMaterial,
-			this.blurTargetA,
-			1,
-			0,
-		)
-		this.passRenderer.renderPass(
-			this.blurTargetA.texture,
-			this.blurMaterial,
-			this.blurTargetB,
-			0,
-			1,
-		)
-		this.lightMaterial.uniforms.time!.value =
-			this.elapsedSeconds * animationSpeed
+		if (this.atmosphereEffectsActive) {
+			this.updateWorldProjection()
+			this.updateInteraction(deltaSeconds)
+			this.passRenderer.renderPass(
+				this.sceneTarget.texture,
+				this.blurMaterial,
+				this.blurTargetA,
+				1,
+				0,
+			)
+			this.passRenderer.renderPass(
+				this.blurTargetA.texture,
+				this.blurMaterial,
+				this.blurTargetB,
+				0,
+				1,
+			)
+			this.lightMaterial.uniforms.time!.value =
+				this.elapsedSeconds * animationSpeed
+			this.passRenderer.renderMaterial(this.lightMaterial, this.lightTarget)
+		}
 		this.compositeMaterial.uniforms.time!.value =
 			this.elapsedSeconds * waterAnimationSpeed
-		this.passRenderer.renderMaterial(this.lightMaterial, this.lightTarget)
 		if (
 			this.waterEffectsEnabled &&
+			this.waterEffectsActive &&
 			this.elapsedSeconds - this.lastWaterEffectRenderSeconds >=
 				this.waterEffectFrameInterval
 		) {
@@ -484,7 +523,8 @@ class HomeAtmospherePostProcessor {
 		const prefersReducedMotion = window.matchMedia(
 			'(prefers-reduced-motion: reduce)',
 		).matches
-		const nextInteractionEnabled = !isMobile && !prefersReducedMotion
+		const nextInteractionEnabled =
+			!isMobile && !prefersReducedMotion && this.presentationProgress < 0.98
 		const nextBeamWidth = isMobile
 			? this.options.mobileBeamWidth
 			: this.options.desktopBeamWidth
@@ -494,22 +534,36 @@ class HomeAtmospherePostProcessor {
 			: this.options.desktopQualityScale
 		this.waterEffectFrameInterval = 1 / (isMobile ? 24 : 30)
 		this.interactionQualityScale = Math.min(this.qualityScale, 0.25)
-		this.interactionEnabled = nextInteractionEnabled
+		this.setInteractionEnabled(nextInteractionEnabled)
 		this.waterGlintMaterial.uniforms.glintDensity!.value =
 			(this.options.water?.glintDensity ?? 0) * (isMobile ? 0.72 : 1)
 		this.bloomMaterial.uniforms.radius!.value =
 			(this.options.water?.bloomRadius ?? 0) * (isMobile ? 0.86 : 1)
 		this.compositeMaterial.uniforms.waterGlintStrength!.value =
-			(this.options.water?.glintStrength ?? 0) * (isMobile ? 0.82 : 1)
+			(this.options.water?.glintStrength ?? 0) *
+			(isMobile ? 0.82 : 1) *
+			(1 - this.presentationProgress)
 		this.compositeMaterial.uniforms.waterBloomStrength!.value =
-			(this.options.water?.bloomStrength ?? 0) * (isMobile ? 0.76 : 1)
+			(this.options.water?.bloomStrength ?? 0) *
+			(isMobile ? 0.76 : 1) *
+			(1 - this.presentationProgress)
 
 		if (this.initialBeamWidth !== nextBeamWidth) {
 			this.initialBeamWidth = nextBeamWidth
 			this.lightMaterial.uniforms.beamWidth!.value = nextBeamWidth
 			this.worldAnchorsReady = false
 		}
-		if (!nextInteractionEnabled) this.deactivatePointer()
+	}
+
+	private setInteractionEnabled(enabled: boolean) {
+		const changed = this.interactionEnabled !== enabled
+		this.interactionEnabled = enabled
+		if (changed) {
+			this.interactionNeedsReset = true
+			this.lastInteractionRenderSeconds = Number.NEGATIVE_INFINITY
+			if (!enabled) this.deactivatePointer()
+			this.viewer.redraw()
+		}
 		this.syncInteractionListeners()
 	}
 
@@ -539,6 +593,7 @@ class HomeAtmospherePostProcessor {
 		if (!this.pointerPresent && !this.pointerPositionReady) return
 		this.pointerPresent = false
 		this.pointerPositionReady = false
+		this.pointerVelocity.set(0, 0)
 		this.pendingPointerStrength = 0
 		this.viewer.redraw()
 	}
