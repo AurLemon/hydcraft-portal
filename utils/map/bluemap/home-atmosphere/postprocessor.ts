@@ -1,23 +1,17 @@
-import {
-	type Camera,
-	Plane,
-	Raycaster,
-	type ShaderMaterial,
-	Vector2,
-	Vector3,
-	type WebGLRenderer,
-} from 'three'
+import { Vector2, Vector3 } from 'three'
+import type { ShaderMaterial, WebGLRenderer } from 'three'
 import type { BlueMapHomeAtmospherePostProcessing } from '../types'
 import { FullscreenPassRenderer } from './fullscreen-pass-renderer'
+import { HomeAtmosphereInteractionField } from './interaction-field'
 import { createMaterial, createRenderTarget } from './render-utils'
 import {
 	blurFragmentShader,
 	bloomFragmentShader,
 	compositeFragmentShader,
-	interactionFragmentShader,
 	lightFragmentShader,
 	waterGlintFragmentShader,
 } from './shaders'
+import { HomeAtmosphereWorldLightProjector } from './world-light-projector'
 import type { BlueMapPostProcessingViewer } from './types'
 
 class HomeAtmospherePostProcessor {
@@ -31,120 +25,29 @@ class HomeAtmospherePostProcessor {
 	private readonly lightTarget = createRenderTarget(false)
 	private readonly waterGlintTarget = createRenderTarget(false)
 	private readonly waterBloomTarget = createRenderTarget(false)
-	private readonly interactionTargetA = createRenderTarget(false)
-	private readonly interactionTargetB = createRenderTarget(false)
-	private interactionReadTarget = this.interactionTargetA
-	private interactionWriteTarget = this.interactionTargetB
 	private readonly passRenderer: FullscreenPassRenderer
 	private readonly targetSize = new Vector2()
 	private readonly blurMaterial: ShaderMaterial
-	private readonly interactionMaterial: ShaderMaterial
 	private readonly lightMaterial: ShaderMaterial
 	private readonly waterGlintMaterial: ShaderMaterial
 	private readonly bloomMaterial: ShaderMaterial
 	private readonly compositeMaterial: ShaderMaterial
-	private readonly options: BlueMapHomeAtmospherePostProcessing
+	private readonly interactionField: HomeAtmosphereInteractionField
+	private readonly worldLightProjector: HomeAtmosphereWorldLightProjector
+	private options: BlueMapHomeAtmospherePostProcessing
 	private qualityScale: number
-	private readonly waterGlintSpeed: number
-	private readonly waterEffectsEnabled: boolean
+	private waterGlintSpeed: number
+	private waterEffectsEnabled: boolean
 	private waterEffectsActive = true
+	private waterCompositeActive = true
 	private atmosphereEffectsActive = true
 	private waterEffectFrameInterval: number
-	private interactionEnabled = false
 	private presentationProgress = 0
-	private interactionListenersBound = false
-	private interactionQualityScale: number
 	private readonly reducedMotion: boolean
-	private readonly initialSunPosition: Vector2
-	private readonly initialBeamDirection: Vector2
-	private initialBeamWidth: number
-	private readonly raycaster = new Raycaster()
-	private readonly anchorPlane = new Plane(new Vector3(0, 1, 0))
-	private readonly worldSunAnchor = new Vector3()
-	private readonly worldForwardAnchor = new Vector3()
-	private readonly worldAcrossAnchor = new Vector3()
-	private readonly projectedSun = new Vector3()
-	private readonly projectedForward = new Vector3()
-	private readonly projectedAcross = new Vector3()
-	private readonly projectedSunUv = new Vector2()
-	private readonly projectedForwardUv = new Vector2()
-	private readonly projectedAcrossUv = new Vector2()
-	private readonly latestPointerUv = new Vector2()
-	private readonly renderedPointerUv = new Vector2()
-	private readonly pointerVelocity = new Vector2()
-	private readonly pointerSampleUv = new Vector2()
-	private readonly pointerMovement = new Vector2()
-	private pointerBoundsLeft = 0
-	private pointerBoundsTop = 0
-	private pointerBoundsWidth = 0
-	private pointerBoundsHeight = 0
 	private elapsedSeconds = 0
 	private lastWaterEffectRenderSeconds = Number.NEGATIVE_INFINITY
-	private lastInteractionRenderSeconds = Number.NEGATIVE_INFINITY
-	private lastPointerEventMilliseconds = 0
-	private pendingPointerStrength = 0
-	private pointerPositionReady = false
-	private pointerPresent = false
-	private interactionNeedsReset = true
-	private worldAnchorsReady = false
+	private renderActive = true
 	private disposed = false
-	private readonly handlePointerMove = (event: PointerEvent) => {
-		if (!this.interactionEnabled || event.pointerType !== 'mouse') return
-		if (this.pointerBoundsWidth <= 0 || this.pointerBoundsHeight <= 0) {
-			this.updatePointerBounds()
-		}
-		if (this.pointerBoundsWidth <= 0 || this.pointerBoundsHeight <= 0) return
-		if (
-			event.clientX < this.pointerBoundsLeft ||
-			event.clientX > this.pointerBoundsLeft + this.pointerBoundsWidth ||
-			event.clientY < this.pointerBoundsTop ||
-			event.clientY > this.pointerBoundsTop + this.pointerBoundsHeight
-		) {
-			this.deactivatePointer()
-			return
-		}
-
-		this.pointerSampleUv.set(
-			(event.clientX - this.pointerBoundsLeft) / this.pointerBoundsWidth,
-			1 - (event.clientY - this.pointerBoundsTop) / this.pointerBoundsHeight,
-		)
-		const now = performance.now()
-		this.pointerPresent = true
-		this.viewer.redraw()
-		if (!this.pointerPositionReady) {
-			this.latestPointerUv.copy(this.pointerSampleUv)
-			this.renderedPointerUv.copy(this.pointerSampleUv)
-			this.lastPointerEventMilliseconds = now
-			this.pointerPositionReady = true
-			return
-		}
-
-		this.pointerMovement.copy(this.pointerSampleUv).sub(this.latestPointerUv)
-		const elapsedMilliseconds = Math.max(
-			now - this.lastPointerEventMilliseconds,
-			1,
-		)
-		const speedPixelsPerMillisecond =
-			Math.hypot(
-				this.pointerMovement.x * this.pointerBoundsWidth,
-				this.pointerMovement.y * this.pointerBoundsHeight,
-			) / elapsedMilliseconds
-		const normalizedSpeed = Math.min(
-			Math.max((speedPixelsPerMillisecond - 0.025) / 1.2, 0),
-			1,
-		)
-		if (this.pointerMovement.lengthSq() > 0.0000001 && normalizedSpeed > 0) {
-			this.pointerVelocity.copy(this.pointerMovement).normalize()
-			this.pendingPointerStrength = Math.max(
-				this.pendingPointerStrength,
-				0.2 + normalizedSpeed * 0.8,
-			)
-		}
-		this.latestPointerUv.copy(this.pointerSampleUv)
-		this.lastPointerEventMilliseconds = now
-	}
-	private readonly handlePointerLeave = () => this.deactivatePointer()
-	private readonly handleWindowBlur = () => this.deactivatePointer()
 
 	constructor(
 		viewer: BlueMapPostProcessingViewer,
@@ -152,9 +55,9 @@ class HomeAtmospherePostProcessor {
 	) {
 		this.viewer = viewer
 		this.renderer = viewer.renderer
-		this.options = options
 		this.originalRender = viewer.render
 		this.nativeRender = viewer.render.bind(viewer)
+		this.options = options
 		const isMobile = window.matchMedia('(max-width: 639px)').matches
 		this.reducedMotion = window.matchMedia(
 			'(prefers-reduced-motion: reduce)',
@@ -164,65 +67,49 @@ class HomeAtmospherePostProcessor {
 			: options.desktopQualityScale
 		this.waterEffectsEnabled = Boolean(options.water)
 		this.waterEffectFrameInterval = 1 / (isMobile ? 24 : 30)
-		this.interactionEnabled = !isMobile && !this.reducedMotion
-		this.interactionQualityScale = Math.min(this.qualityScale, 0.25)
 		this.waterGlintSpeed = this.reducedMotion
 			? 0
 			: (options.water?.glintSpeed ?? 0)
 
-		this.initialSunPosition = new Vector2(options.sunX, options.sunY)
-		this.initialBeamDirection = new Vector2(
+		const initialSunPosition = new Vector2(options.sunX, options.sunY)
+		const initialBeamDirection = new Vector2(
 			Math.sin(options.beamAngle),
 			-Math.cos(options.beamAngle),
 		).normalize()
-		this.initialBeamWidth = isMobile
+		const initialBeamWidth = isMobile
 			? options.mobileBeamWidth
 			: options.desktopBeamWidth
+		const waterLightDirection = initialBeamDirection.clone().multiplyScalar(-1)
 		this.blurMaterial = createMaterial(blurFragmentShader, {
 			tDiffuse: { value: null },
 			texelSize: { value: new Vector2(0.5, 0.5) },
 			direction: { value: new Vector2(1, 0) },
 		})
-		this.interactionMaterial = createMaterial(interactionFragmentShader, {
-			tPrevious: { value: this.interactionReadTarget.texture },
-			pointerFrom: { value: new Vector2() },
-			pointerTo: { value: new Vector2() },
-			pointerVelocity: { value: new Vector2() },
-			pointerPosition: { value: new Vector2() },
-			pointerStrength: { value: 0 },
-			pointerPresence: { value: 0 },
-			viewportAspect: { value: 1 },
-			decay: { value: 0 },
-			reset: { value: 1 },
-		})
 		this.lightMaterial = createMaterial(lightFragmentShader, {
 			tDiffuse: { value: this.blurTargetB.texture },
-			tInteraction: { value: this.interactionReadTarget.texture },
-			sunPosition: { value: this.initialSunPosition.clone() },
-			beamDirection: { value: this.initialBeamDirection.clone() },
+			tInteraction: { value: null },
+			sunPosition: { value: initialSunPosition.clone() },
+			beamDirection: { value: initialBeamDirection.clone() },
 			beamForwardBasis: {
-				value: this.initialBeamDirection.clone().multiplyScalar(0.5),
+				value: initialBeamDirection.clone().multiplyScalar(0.5),
 			},
 			beamAcrossBasis: {
 				value: new Vector2(
-					-this.initialBeamDirection.y,
-					this.initialBeamDirection.x,
-				).multiplyScalar(this.initialBeamWidth),
+					-initialBeamDirection.y,
+					initialBeamDirection.x,
+				).multiplyScalar(initialBeamWidth),
 			},
-			beamWidth: { value: this.initialBeamWidth },
+			beamWidth: { value: initialBeamWidth },
 			beamSpread: { value: options.beamSpread },
 			viewportAspect: { value: 1 },
 			time: { value: 0 },
 			intensity: { value: options.intensity },
 		})
-		const waterLightDirection = this.initialBeamDirection
-			.clone()
-			.multiplyScalar(-1)
 		this.waterGlintMaterial = createMaterial(waterGlintFragmentShader, {
 			tScene: { value: this.sceneTarget.texture },
 			tLight: { value: this.lightTarget.texture },
-			tInteraction: { value: this.interactionReadTarget.texture },
-			sunPosition: { value: this.initialSunPosition.clone() },
+			tInteraction: { value: null },
+			sunPosition: { value: initialSunPosition.clone() },
 			waterLightDirection: { value: waterLightDirection.clone() },
 			viewportAspect: { value: 1 },
 			time: { value: 0 },
@@ -246,7 +133,7 @@ class HomeAtmospherePostProcessor {
 			tScene: { value: this.sceneTarget.texture },
 			tBlurred: { value: this.blurTargetB.texture },
 			tLight: { value: this.lightTarget.texture },
-			tInteraction: { value: this.interactionReadTarget.texture },
+			tInteraction: { value: null },
 			tWaterGlint: { value: this.waterGlintTarget.texture },
 			tWaterBloom: { value: this.waterBloomTarget.texture },
 			blurStrength: { value: options.blurStrength },
@@ -258,9 +145,7 @@ class HomeAtmospherePostProcessor {
 			waterReflectionStrength: {
 				value: options.water?.reflectionStrength ?? 0,
 			},
-			waterReflectionWidth: {
-				value: options.water?.reflectionWidth ?? 0,
-			},
+			waterReflectionWidth: { value: options.water?.reflectionWidth ?? 0 },
 			waterWaveSeed: { value: options.water?.waveSeed ?? 0 },
 			waterIrregularity: { value: options.water?.irregularity ?? 0 },
 			waterLightDirection: { value: waterLightDirection.clone() },
@@ -283,19 +168,27 @@ class HomeAtmospherePostProcessor {
 			this.renderer,
 			this.blurMaterial,
 		)
-
+		this.interactionField = new HomeAtmosphereInteractionField(
+			viewer,
+			this.passRenderer,
+		)
+		this.worldLightProjector = new HomeAtmosphereWorldLightProjector({
+			viewer,
+			lightMaterial: this.lightMaterial,
+			waterGlintMaterial: this.waterGlintMaterial,
+			compositeMaterial: this.compositeMaterial,
+			reducedMotion: this.reducedMotion,
+		})
+		this.worldLightProjector.setOptions(options, isMobile)
+		this.syncInteractionTexture()
 		this.resize()
-		viewer.render = (delta) => {
-			this.render(
-				delta,
-				options.animationSpeed,
-				options.water?.animationSpeed ?? 0,
-			)
-		}
+		this.setAtmosphereProgress(0)
+		viewer.render = (delta) => this.render(delta)
 	}
 
-	resize() {
+	resize(): void {
 		if (this.disposed) return
+		const previousQualityScale = this.qualityScale
 		this.syncViewportProfile()
 		this.renderer.getDrawingBufferSize(this.targetSize)
 		const width = Math.max(2, Math.floor(this.targetSize.x))
@@ -308,15 +201,11 @@ class HomeAtmospherePostProcessor {
 		this.lightTarget.setSize(effectWidth, effectHeight)
 		this.waterGlintTarget.setSize(effectWidth, effectHeight)
 		this.waterBloomTarget.setSize(effectWidth, effectHeight)
-		const interactionWidth = this.interactionEnabled
-			? Math.max(2, Math.floor(width * this.interactionQualityScale))
-			: 2
-		const interactionHeight = this.interactionEnabled
-			? Math.max(2, Math.floor(height * this.interactionQualityScale))
-			: 2
-		this.interactionTargetA.setSize(interactionWidth, interactionHeight)
-		this.interactionTargetB.setSize(interactionWidth, interactionHeight)
-		this.interactionNeedsReset = true
+		this.interactionField.resize(
+			width,
+			height,
+			Math.min(this.qualityScale, 0.25),
+		)
 		;(this.blurMaterial.uniforms.texelSize!.value as Vector2).set(
 			1 / effectWidth,
 			1 / effectHeight,
@@ -325,19 +214,17 @@ class HomeAtmospherePostProcessor {
 			1 / effectWidth,
 			1 / effectHeight,
 		)
-		this.lightMaterial.uniforms.viewportAspect!.value = width / height
-		this.interactionMaterial.uniforms.viewportAspect!.value = width / height
-		this.waterGlintMaterial.uniforms.viewportAspect!.value = width / height
-		this.compositeMaterial.uniforms.viewportAspect!.value = width / height
-		this.updatePointerBounds()
-		this.deactivatePointer()
+		this.setViewportAspect(width / height)
 		;(this.compositeMaterial.uniforms.sceneTexelSize!.value as Vector2).set(
 			1 / width,
 			1 / height,
 		)
+		if (previousQualityScale !== this.qualityScale) {
+			this.worldLightProjector.invalidate()
+		}
 	}
 
-	setAtmosphereProgress(progress: number) {
+	setAtmosphereProgress(progress: number): void {
 		const clampedProgress = Math.min(Math.max(progress, 0), 1)
 		this.presentationProgress = clampedProgress
 		const effectStrength = 1 - clampedProgress
@@ -363,40 +250,75 @@ class HomeAtmospherePostProcessor {
 		this.waterGlintMaterial.uniforms.enabled!.value =
 			this.options.water && effectStrength > 0.001 ? 1 : 0
 		this.waterEffectsActive = effectStrength > 0.001
+		this.waterCompositeActive = Boolean(this.options.water)
 		this.atmosphereEffectsActive = effectStrength > 0.001
-
-		const nextInteractionEnabled =
-			!isMobile && !this.reducedMotion && clampedProgress < 0.98
-		this.setInteractionEnabled(nextInteractionEnabled)
+		this.interactionField.setEnabled(
+			!isMobile && !this.reducedMotion && clampedProgress < 0.98,
+		)
 	}
 
-	invalidateWorldAnchors() {
-		this.worldAnchorsReady = false
+	setOptions(options: BlueMapHomeAtmospherePostProcessing): void {
+		const previousQualityScale = this.qualityScale
+		this.options = options
+		this.waterEffectsEnabled = Boolean(options.water)
+		this.waterGlintSpeed = this.reducedMotion
+			? 0
+			: (options.water?.glintSpeed ?? 0)
+		const isMobile = window.matchMedia('(max-width: 639px)').matches
+		this.worldLightProjector.setOptions(options, isMobile)
+		this.lightMaterial.uniforms.intensity!.value = options.intensity
+		this.compositeMaterial.uniforms.waterReflectionWidth!.value =
+			options.water?.reflectionWidth ?? 0
+		this.waterGlintMaterial.uniforms.waveSeed!.value =
+			options.water?.waveSeed ?? 0
+		this.waterGlintMaterial.uniforms.irregularity!.value =
+			options.water?.irregularity ?? 0
+		this.waterGlintMaterial.uniforms.reflectionWidth!.value =
+			options.water?.reflectionWidth ?? 0
+		this.waterGlintMaterial.uniforms.glintSharpness!.value =
+			options.water?.glintSharpness ?? 0
+		this.bloomMaterial.uniforms.radius!.value = options.water?.bloomRadius ?? 0
+		this.compositeMaterial.uniforms.waterWaveSeed!.value =
+			options.water?.waveSeed ?? 0
+		this.compositeMaterial.uniforms.waterIrregularity!.value =
+			options.water?.irregularity ?? 0
+		this.compositeMaterial.uniforms.waterTintColor!.value = new Vector3(
+			...(options.water?.tintColor ?? [0, 0, 0]),
+		)
+		this.compositeMaterial.uniforms.waterTintStrength!.value =
+			options.water?.tintStrength ?? 0
+		this.compositeMaterial.uniforms.waterTransmissionStrength!.value =
+			options.water?.transmissionStrength ?? 0
+		this.resize()
+		this.setAtmosphereProgress(this.presentationProgress)
+		if (previousQualityScale === this.qualityScale) {
+			this.worldLightProjector.invalidate()
+		}
+		this.viewer.redraw()
 	}
 
-	dispose() {
+	setRenderActive(active: boolean): void {
+		if (this.renderActive === active) return
+		this.renderActive = active
+		if (active) this.viewer.redraw()
+	}
+
+	invalidateWorldAnchors(): void {
+		this.worldLightProjector.invalidate()
+	}
+
+	dispose(): void {
 		if (this.disposed) return
 		this.disposed = true
 		this.viewer.render = this.originalRender
-		if (this.interactionListenersBound) {
-			window.removeEventListener('pointermove', this.handlePointerMove)
-			window.removeEventListener('blur', this.handleWindowBlur)
-			document.documentElement.removeEventListener(
-				'pointerleave',
-				this.handlePointerLeave,
-			)
-		}
-		this.interactionListenersBound = false
+		this.interactionField.dispose()
 		this.sceneTarget.dispose()
 		this.blurTargetA.dispose()
 		this.blurTargetB.dispose()
 		this.lightTarget.dispose()
 		this.waterGlintTarget.dispose()
 		this.waterBloomTarget.dispose()
-		this.interactionTargetA.dispose()
-		this.interactionTargetB.dispose()
 		this.blurMaterial.dispose()
-		this.interactionMaterial.dispose()
 		this.lightMaterial.dispose()
 		this.waterGlintMaterial.dispose()
 		this.bloomMaterial.dispose()
@@ -404,18 +326,22 @@ class HomeAtmospherePostProcessor {
 		this.passRenderer.dispose()
 	}
 
-	private render(
-		delta: number,
-		animationSpeed: number,
-		waterAnimationSpeed: number,
-	) {
+	private render(delta: number): void {
+		if (!this.renderActive || this.disposed) return
 		const deltaSeconds = Math.min(Math.max(delta, 0), 100) / 1000
 		this.elapsedSeconds += deltaSeconds
+		if (!this.atmosphereEffectsActive && !this.waterCompositeActive) {
+			this.renderer.setRenderTarget(null)
+			this.nativeRender(delta)
+			return
+		}
+
 		this.renderer.setRenderTarget(this.sceneTarget)
 		this.nativeRender(delta)
 		if (this.atmosphereEffectsActive) {
-			this.updateWorldProjection()
-			this.updateInteraction(deltaSeconds)
+			this.worldLightProjector.update(this.elapsedSeconds)
+			this.interactionField.update(deltaSeconds, this.elapsedSeconds)
+			this.syncInteractionTexture()
 			this.passRenderer.renderPass(
 				this.sceneTarget.texture,
 				this.blurMaterial,
@@ -431,11 +357,15 @@ class HomeAtmospherePostProcessor {
 				1,
 			)
 			this.lightMaterial.uniforms.time!.value =
-				this.elapsedSeconds * animationSpeed
+				this.elapsedSeconds * this.options.animationSpeed
 			this.passRenderer.renderMaterial(this.lightMaterial, this.lightTarget)
 		}
+		this.compositeMaterial.uniforms.tBlurred!.value = this
+			.atmosphereEffectsActive
+			? this.blurTargetB.texture
+			: this.sceneTarget.texture
 		this.compositeMaterial.uniforms.time!.value =
-			this.elapsedSeconds * waterAnimationSpeed
+			this.elapsedSeconds * (this.options.water?.animationSpeed ?? 0)
 		if (
 			this.waterEffectsEnabled &&
 			this.waterEffectsActive &&
@@ -457,84 +387,25 @@ class HomeAtmospherePostProcessor {
 		this.passRenderer.renderMaterial(this.compositeMaterial, null)
 	}
 
-	private updateInteraction(deltaSeconds: number) {
-		if (!this.interactionEnabled && !this.interactionNeedsReset) return
-
-		const interactionDelta = Number.isFinite(this.lastInteractionRenderSeconds)
-			? this.elapsedSeconds - this.lastInteractionRenderSeconds
-			: deltaSeconds
-		this.interactionMaterial.uniforms.tPrevious!.value =
-			this.interactionReadTarget.texture
-		;(this.interactionMaterial.uniforms.pointerFrom!.value as Vector2).copy(
-			this.renderedPointerUv,
-		)
-		;(this.interactionMaterial.uniforms.pointerTo!.value as Vector2).copy(
-			this.latestPointerUv,
-		)
-		;(this.interactionMaterial.uniforms.pointerVelocity!.value as Vector2).copy(
-			this.pointerVelocity,
-		)
-		;(this.interactionMaterial.uniforms.pointerPosition!.value as Vector2).copy(
-			this.latestPointerUv,
-		)
-		this.interactionMaterial.uniforms.pointerStrength!.value = this
-			.interactionEnabled
-			? this.pendingPointerStrength
-			: 0
-		this.interactionMaterial.uniforms.pointerPresence!.value =
-			this.interactionEnabled && this.pointerPresent ? 1 : 0
-		this.interactionMaterial.uniforms.decay!.value = Math.exp(
-			-interactionDelta * 1.9,
-		)
-		this.interactionMaterial.uniforms.reset!.value = this.interactionNeedsReset
-			? 1
-			: 0
-		this.passRenderer.renderMaterial(
-			this.interactionMaterial,
-			this.interactionWriteTarget,
-		)
-
-		const completedTarget = this.interactionWriteTarget
-		this.interactionWriteTarget = this.interactionReadTarget
-		this.interactionReadTarget = completedTarget
-		const interactionTexture = this.interactionReadTarget.texture
+	private syncInteractionTexture(): void {
+		const interactionTexture = this.interactionField.texture
 		this.lightMaterial.uniforms.tInteraction!.value = interactionTexture
 		this.waterGlintMaterial.uniforms.tInteraction!.value = interactionTexture
 		this.compositeMaterial.uniforms.tInteraction!.value = interactionTexture
-
-		if (this.pendingPointerStrength > 0) {
-			this.renderedPointerUv.copy(this.latestPointerUv)
-		}
-		this.pendingPointerStrength = 0
-		this.interactionNeedsReset = false
-		this.lastInteractionRenderSeconds = this.elapsedSeconds
 	}
 
-	private updatePointerBounds() {
-		const bounds = this.renderer.domElement.getBoundingClientRect()
-		this.pointerBoundsLeft = bounds.left
-		this.pointerBoundsTop = bounds.top
-		this.pointerBoundsWidth = bounds.width
-		this.pointerBoundsHeight = bounds.height
+	private setViewportAspect(aspect: number): void {
+		this.lightMaterial.uniforms.viewportAspect!.value = aspect
+		this.waterGlintMaterial.uniforms.viewportAspect!.value = aspect
+		this.compositeMaterial.uniforms.viewportAspect!.value = aspect
 	}
 
-	private syncViewportProfile() {
+	private syncViewportProfile(): void {
 		const isMobile = window.matchMedia('(max-width: 639px)').matches
-		const prefersReducedMotion = window.matchMedia(
-			'(prefers-reduced-motion: reduce)',
-		).matches
-		const nextInteractionEnabled =
-			!isMobile && !prefersReducedMotion && this.presentationProgress < 0.98
-		const nextBeamWidth = isMobile
-			? this.options.mobileBeamWidth
-			: this.options.desktopBeamWidth
-
 		this.qualityScale = isMobile
 			? this.options.mobileQualityScale
 			: this.options.desktopQualityScale
 		this.waterEffectFrameInterval = 1 / (isMobile ? 24 : 30)
-		this.interactionQualityScale = Math.min(this.qualityScale, 0.25)
-		this.setInteractionEnabled(nextInteractionEnabled)
 		this.waterGlintMaterial.uniforms.glintDensity!.value =
 			(this.options.water?.glintDensity ?? 0) * (isMobile ? 0.72 : 1)
 		this.bloomMaterial.uniforms.radius!.value =
@@ -547,178 +418,10 @@ class HomeAtmospherePostProcessor {
 			(this.options.water?.bloomStrength ?? 0) *
 			(isMobile ? 0.76 : 1) *
 			(1 - this.presentationProgress)
-
-		if (this.initialBeamWidth !== nextBeamWidth) {
-			this.initialBeamWidth = nextBeamWidth
-			this.lightMaterial.uniforms.beamWidth!.value = nextBeamWidth
-			this.worldAnchorsReady = false
-		}
-	}
-
-	private setInteractionEnabled(enabled: boolean) {
-		const changed = this.interactionEnabled !== enabled
-		this.interactionEnabled = enabled
-		if (changed) {
-			this.interactionNeedsReset = true
-			this.lastInteractionRenderSeconds = Number.NEGATIVE_INFINITY
-			if (!enabled) this.deactivatePointer()
-			this.viewer.redraw()
-		}
-		this.syncInteractionListeners()
-	}
-
-	private syncInteractionListeners() {
-		if (this.interactionEnabled === this.interactionListenersBound) return
-		if (this.interactionEnabled) {
-			window.addEventListener('pointermove', this.handlePointerMove, {
-				passive: true,
-			})
-			window.addEventListener('blur', this.handleWindowBlur)
-			document.documentElement.addEventListener(
-				'pointerleave',
-				this.handlePointerLeave,
-			)
-		} else {
-			window.removeEventListener('pointermove', this.handlePointerMove)
-			window.removeEventListener('blur', this.handleWindowBlur)
-			document.documentElement.removeEventListener(
-				'pointerleave',
-				this.handlePointerLeave,
-			)
-		}
-		this.interactionListenersBound = this.interactionEnabled
-	}
-
-	private deactivatePointer() {
-		if (!this.pointerPresent && !this.pointerPositionReady) return
-		this.pointerPresent = false
-		this.pointerPositionReady = false
-		this.pointerVelocity.set(0, 0)
-		this.pendingPointerStrength = 0
-		this.viewer.redraw()
-	}
-
-	private updateWorldProjection() {
-		const camera = this.viewer.camera
-		camera.updateMatrixWorld()
-
-		if (!this.worldAnchorsReady && !this.captureWorldAnchors(camera)) return
-
-		this.projectWorldAnchor(
-			this.worldSunAnchor,
-			camera,
-			this.projectedSun,
-			this.projectedSunUv,
+		this.interactionField.setEnabled(
+			!isMobile && !this.reducedMotion && this.presentationProgress < 0.98,
 		)
-		this.projectWorldAnchor(
-			this.worldForwardAnchor,
-			camera,
-			this.projectedForward,
-			this.projectedForwardUv,
-		)
-		this.projectWorldAnchor(
-			this.worldAcrossAnchor,
-			camera,
-			this.projectedAcross,
-			this.projectedAcrossUv,
-		)
-
-		const aspect = this.lightMaterial.uniforms.viewportAspect!.value as number
-		const scanOffsetX = this.getLightScanOffsetX()
-		;(this.lightMaterial.uniforms.sunPosition!.value as Vector2).copy(
-			this.projectedSunUv,
-		).x += scanOffsetX
-		;(this.waterGlintMaterial.uniforms.sunPosition!.value as Vector2).copy(
-			this.projectedSunUv,
-		).x += scanOffsetX
-		;(this.lightMaterial.uniforms.beamForwardBasis!.value as Vector2).set(
-			(this.projectedForwardUv.x - this.projectedSunUv.x) * aspect,
-			this.projectedForwardUv.y - this.projectedSunUv.y,
-		)
-		;(this.compositeMaterial.uniforms.waterLightDirection!.value as Vector2)
-			.copy(this.lightMaterial.uniforms.beamForwardBasis!.value as Vector2)
-			.multiplyScalar(-1)
-			.normalize()
-		;(
-			this.waterGlintMaterial.uniforms.waterLightDirection!.value as Vector2
-		).copy(
-			this.compositeMaterial.uniforms.waterLightDirection!.value as Vector2,
-		)
-		;(this.lightMaterial.uniforms.beamAcrossBasis!.value as Vector2).set(
-			(this.projectedAcrossUv.x - this.projectedSunUv.x) * aspect,
-			this.projectedAcrossUv.y - this.projectedSunUv.y,
-		)
-	}
-
-	private getLightScanOffsetX(): number {
-		if (this.reducedMotion || this.options.scanXAmplitude <= 0) return 0
-
-		const periodSeconds = Math.max(this.options.scanPeriodSeconds, 1)
-		return (
-			Math.sin((this.elapsedSeconds / periodSeconds) * Math.PI * 2) *
-			this.options.scanXAmplitude
-		)
-	}
-
-	private captureWorldAnchors(camera: Camera): boolean {
-		const targetY = this.viewer.controlsManager.position.y
-		if (!Number.isFinite(targetY)) return false
-
-		const aspect = this.lightMaterial.uniforms.viewportAspect!.value as number
-		const beamNormal = new Vector2(
-			-this.initialBeamDirection.y,
-			this.initialBeamDirection.x,
-		)
-		const forwardUv = this.initialSunPosition
-			.clone()
-			.add(
-				new Vector2(
-					(this.initialBeamDirection.x * 0.5) / aspect,
-					this.initialBeamDirection.y * 0.5,
-				),
-			)
-		const acrossUv = this.initialSunPosition
-			.clone()
-			.add(
-				new Vector2(
-					(beamNormal.x * this.initialBeamWidth) / aspect,
-					beamNormal.y * this.initialBeamWidth,
-				),
-			)
-
-		this.anchorPlane.constant = -targetY
-		const captured =
-			this.screenUvToWorld(
-				this.initialSunPosition,
-				camera,
-				this.worldSunAnchor,
-			) &&
-			this.screenUvToWorld(forwardUv, camera, this.worldForwardAnchor) &&
-			this.screenUvToWorld(acrossUv, camera, this.worldAcrossAnchor)
-		this.worldAnchorsReady = captured
-		return captured
-	}
-
-	private screenUvToWorld(
-		uv: Vector2,
-		camera: Camera,
-		target: Vector3,
-	): boolean {
-		this.raycaster.setFromCamera(
-			new Vector2(uv.x * 2 - 1, uv.y * 2 - 1),
-			camera,
-		)
-		return this.raycaster.ray.intersectPlane(this.anchorPlane, target) !== null
-	}
-
-	private projectWorldAnchor(
-		worldAnchor: Vector3,
-		camera: Camera,
-		projected: Vector3,
-		targetUv: Vector2,
-	) {
-		projected.copy(worldAnchor).project(camera)
-		targetUv.set((projected.x + 1) * 0.5, (projected.y + 1) * 0.5)
+		this.worldLightProjector.setOptions(this.options, isMobile)
 	}
 }
 

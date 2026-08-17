@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { HomeStoryLayout } from '~/composables/home/useHomeStoryProgress'
 import {
 	createBlueMapController,
 	type BlueMapFocus,
@@ -45,12 +46,11 @@ interface HomeImmersiveBlueMapProps {
 	mobileOverviewCamera: HomeImmersiveSceneCamera
 	outroCamera: HomeImmersiveSceneCamera
 	mobileOutroCamera: HomeImmersiveSceneCamera
-	outroTransitionStart: number
-	outroTransitionEnd: number
+	storyLayout: HomeStoryLayout
 	lighting: HomeImmersiveSceneLighting
 	water?: HomeImmersiveSceneWater
 	focusPositions: readonly HomeImmersiveMapPosition[]
-	focusProgressEnd: number
+	renderActive?: boolean
 	worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
 	markerClicksOnly?: boolean
 	developerControlsEnabled?: boolean
@@ -79,7 +79,6 @@ let unbindError: (() => void) | null = null
 let unbindWorldPlayerMarkerClick: (() => void) | null = null
 let unbindViewChanged: (() => void) | null = null
 let scrollProgress = 0
-let lastDeveloperViewLogAt = 0
 let sceneCameraTransitionPending = false
 let sceneCameraTransitionTarget: HomeImmersiveSceneCamera | null = null
 
@@ -87,23 +86,7 @@ const SCENE_CAMERA_TRANSITION_SMOOTHING = 0.04
 const SCENE_CAMERA_POSITION_EPSILON = 1
 const SCENE_CAMERA_ORIENTATION_EPSILON = 0.001
 
-const formatCameraValue = (value: number, precision: number): string =>
-	Number(value.toFixed(precision)).toString()
-
-const logDeveloperCamera = (view: BlueMapViewChangedEventPayload): void => {
-	if (!props.developerControlsActive) return
-
-	const now = window.performance.now()
-	if (now - lastDeveloperViewLogAt < 120) return
-	lastDeveloperViewLogAt = now
-
-	console.info(
-		`[homeImmersiveScenes] camera: {\n  x: ${formatCameraValue(view.x, 2)},\n  y: ${formatCameraValue(view.y, 2)},\n  z: ${formatCameraValue(view.z, 2)},\n  distance: ${formatCameraValue(view.distance, 2)},\n  rotation: ${formatCameraValue(view.rotation, 4)},\n  angle: ${formatCameraValue(view.angle, 4)},\n  tilt: ${formatCameraValue(view.tilt, 4)},\n}`,
-	)
-}
-
 const handleViewChanged = (view: BlueMapViewChangedEventPayload): void => {
-	logDeveloperCamera(view)
 	const target = sceneCameraTransitionTarget
 	if (!target) return
 
@@ -168,7 +151,13 @@ const applyScrollProgress = (progress: number): void => {
 	scrollProgress = Math.min(Math.max(progress, 0), 1)
 	if (props.developerControlsActive) {
 		controller.clearScrollDrivenView()
-		controller.setHomeAtmosphereProgress(smoothStep(0.02, 0.22, scrollProgress))
+		controller.setHomeAtmosphereProgress(
+			smoothStep(
+				props.storyLayout.heroExitStart,
+				props.storyLayout.atmosphereProgressEnd,
+				scrollProgress,
+			),
+		)
 		return
 	}
 	const overview = viewportMediaQuery?.matches
@@ -177,17 +166,21 @@ const applyScrollProgress = (progress: number): void => {
 	const outroCamera = viewportMediaQuery?.matches
 		? props.mobileOutroCamera
 		: props.outroCamera
-	const focusEnd = props.focusProgressEnd
-	const overviewEnd = Math.min(focusEnd + 0.04, 0.94)
+	const focusEnd = props.storyLayout.focusProgressEnd
+	const overviewEnd = Math.min(
+		focusEnd + props.storyLayout.overviewTransitionSpan,
+		0.94,
+	)
 	let targetCamera = props.camera
 
 	if (
-		scrollProgress >= 0.02 &&
+		scrollProgress >= props.storyLayout.heroExitStart &&
 		scrollProgress < focusEnd &&
 		props.focusPositions.length
 	) {
 		const focusProgress =
-			(scrollProgress - 0.02) / Math.max(focusEnd - 0.02, 0.01)
+			(scrollProgress - props.storyLayout.heroExitStart) /
+			Math.max(focusEnd - props.storyLayout.heroExitStart, 0.01)
 		const segmentLength = 1 / props.focusPositions.length
 		const segmentIndex = Math.min(
 			props.focusPositions.length - 1,
@@ -215,19 +208,19 @@ const applyScrollProgress = (progress: number): void => {
 			smoothStep(focusEnd, overviewEnd, scrollProgress),
 		)
 	} else if (
-		scrollProgress >= props.outroTransitionStart &&
-		scrollProgress < props.outroTransitionEnd
+		scrollProgress >= props.storyLayout.communityProgressEnd &&
+		scrollProgress < props.storyLayout.outroProgressStart
 	) {
 		targetCamera = interpolateCamera(
 			overview,
 			outroCamera,
 			smoothStep(
-				props.outroTransitionStart,
-				props.outroTransitionEnd,
+				props.storyLayout.communityProgressEnd,
+				props.storyLayout.outroProgressStart,
 				scrollProgress,
 			),
 		)
-	} else if (scrollProgress >= props.outroTransitionEnd) {
+	} else if (scrollProgress >= props.storyLayout.outroProgressStart) {
 		targetCamera = outroCamera
 	} else if (scrollProgress >= overviewEnd) {
 		targetCamera = overview
@@ -242,7 +235,13 @@ const applyScrollProgress = (progress: number): void => {
 		sceneCameraTransitionTarget = { ...targetCamera }
 	}
 	sceneCameraTransitionPending = false
-	controller.setHomeAtmosphereProgress(smoothStep(0.02, 0.22, scrollProgress))
+	controller.setHomeAtmosphereProgress(
+		smoothStep(
+			props.storyLayout.heroExitStart,
+			props.storyLayout.atmosphereProgressEnd,
+			scrollProgress,
+		),
+	)
 }
 
 defineExpose({ setScrollProgress: applyScrollProgress })
@@ -261,6 +260,21 @@ watch(
 		sceneCameraTransitionPending = true
 		if (status.value === 'ready') applyScrollProgress(scrollProgress)
 	},
+)
+
+watch(
+	[() => props.lighting, () => props.water],
+	() =>
+		controller.setHomeAtmosphereOptions(
+			createHomeImmersiveAtmosphereOptions(props.lighting, props.water),
+		),
+	{ deep: true },
+)
+
+watch(
+	() => props.renderActive,
+	(active) => controller.setRenderActive(active !== false),
+	{ immediate: true },
 )
 
 watch(
@@ -349,6 +363,7 @@ const mountMap = async () => {
 			worldPlayerMarkers: props.worldPlayerMarkers ?? [],
 			markerClicksOnly: props.markerClicksOnly,
 		})
+		controller.setRenderActive(props.renderActive !== false)
 	} catch {
 		// Controller emits the typed failure event used by this presentation.
 	}

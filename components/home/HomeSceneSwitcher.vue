@@ -74,7 +74,6 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const elapsedMs = ref(0)
 const documentVisible = ref(true)
-const atPageTop = ref(true)
 const progressResetting = ref(false)
 let animationFrame: number | null = null
 let lastTimestamp: number | null = null
@@ -126,7 +125,6 @@ const tick = (timestamp: number): void => {
 		!props.active ||
 		!props.counting ||
 		!documentVisible.value ||
-		!atPageTop.value ||
 		props.scenes.length <= 1
 	) {
 		stopClock()
@@ -151,7 +149,6 @@ const startClock = (): void => {
 		!props.active ||
 		!props.counting ||
 		!documentVisible.value ||
-		!atPageTop.value ||
 		props.scenes.length <= 1
 	) {
 		return
@@ -169,16 +166,6 @@ const handleVisibilityChange = (): void => {
 	stopClock()
 }
 
-const handleScroll = (): void => {
-	atPageTop.value = window.scrollY <= 1
-	if (atPageTop.value) {
-		startClock()
-		return
-	}
-	resetProgress()
-	stopClock()
-}
-
 watch(
 	() => [props.active, props.counting, props.scenes.length] as const,
 	() => {
@@ -186,6 +173,7 @@ watch(
 			startClock()
 			return
 		}
+		resetProgress()
 		stopClock()
 	},
 )
@@ -200,9 +188,7 @@ watch(
 
 onMounted(() => {
 	documentVisible.value = document.visibilityState === 'visible'
-	atPageTop.value = window.scrollY <= 1
 	document.addEventListener('visibilitychange', handleVisibilityChange)
-	window.addEventListener('scroll', handleScroll, { passive: true })
 	startClock()
 })
 
@@ -211,7 +197,6 @@ onBeforeUnmount(() => {
 	if (progressResetFrame !== null) cancelAnimationFrame(progressResetFrame)
 	if (progressResetTimer) clearTimeout(progressResetTimer)
 	document.removeEventListener('visibilitychange', handleVisibilityChange)
-	window.removeEventListener('scroll', handleScroll)
 })
 </script>
 

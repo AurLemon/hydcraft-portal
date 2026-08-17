@@ -4,7 +4,7 @@ import {
 } from './loading-manager'
 import { createPlayerMarkerSupport } from './player-marker'
 import { OfficialBlueMapRuntimeBase } from './runtime-base'
-import type { NativeBlueMapWorldPlayerMarker } from './runtime-base'
+import type { NativeBlueMapWorldPlayerMarker } from './runtime-types'
 import { BLUE_MAP_RUNTIME } from './runtime-constants'
 import { BlueMapRuntimeError } from './runtime-error'
 import { normalizeWebGlInfoLogs } from './webgl-compat'

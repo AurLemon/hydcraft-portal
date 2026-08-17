@@ -13,6 +13,7 @@ import type {
 	BlueMapErrorEventPayload,
 	BlueMapEventPayloadMap,
 	BlueMapFocus,
+	BlueMapHomeAtmospherePostProcessing,
 	BlueMapMapSettings,
 	BlueMapPlayerMarker,
 	BlueMapRuntime,
@@ -206,6 +207,14 @@ export class BlueMapControllerImpl implements BlueMapController {
 
 	setHomeAtmosphereProgress(progress: number) {
 		this.runtime?.setHomeAtmosphereProgress(progress)
+	}
+
+	setHomeAtmosphereOptions(options: BlueMapHomeAtmospherePostProcessing) {
+		this.runtime?.setHomeAtmosphereOptions(options)
+	}
+
+	setRenderActive(active: boolean) {
+		this.runtime?.setRenderActive(active)
 	}
 
 	destroy() {

@@ -205,6 +205,8 @@ export interface BlueMapRuntime {
 	setView(view: BlueMapViewPreset, options?: BlueMapScrollViewOptions): void
 	clearScrollDrivenView(): void
 	setHomeAtmosphereProgress(progress: number): void
+	setHomeAtmosphereOptions(options: BlueMapHomeAtmospherePostProcessing): void
+	setRenderActive(active: boolean): void
 	destroy(): void
 }
 
@@ -243,6 +245,8 @@ export interface BlueMapController {
 	setView(view: BlueMapViewPreset, options?: BlueMapScrollViewOptions): void
 	clearScrollDrivenView(): void
 	setHomeAtmosphereProgress(progress: number): void
+	setHomeAtmosphereOptions(options: BlueMapHomeAtmospherePostProcessing): void
+	setRenderActive(active: boolean): void
 	destroy(): void
 	getSettings(): BlueMapMapSettings | null
 	getCapabilities(): BlueMapCapabilities
