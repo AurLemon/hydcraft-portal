@@ -507,15 +507,16 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 						marker.element.removeEventListener('keydown', handleKeydown)
 					},
 				}
-				this.worldPlayerMarkerEntries.set(definition.id, entry)
+				const createdEntry = entry
+				this.worldPlayerMarkerEntries.set(definition.id, createdEntry)
 				viewer.markers.add(marker)
 				requestAnimationFrame(() => {
 					if (
-						this.worldPlayerMarkerEntries.get(definition.id) === entry &&
+						this.worldPlayerMarkerEntries.get(definition.id) === createdEntry &&
 						!this.worldPlayerMarkerExitTimers.has(definition.id)
 					) {
-						entry.marker.element.style.opacity =
-							entry.definition.isFocused === false ? '0.34' : '1'
+						createdEntry.marker.element.style.opacity =
+							createdEntry.definition.isFocused === false ? '0.34' : '1'
 					}
 				})
 			}
