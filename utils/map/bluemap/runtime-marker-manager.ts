@@ -253,6 +253,7 @@ export class BlueMapRuntimeMarkerManager {
 			marker.element.setAttribute('role', 'button')
 			marker.element.setAttribute('aria-label', definition.label)
 			marker.element.tabIndex = 0
+			marker.playerHeadElement.style.display = ''
 			marker.playerHeadElement.src = definition.avatarUrl
 			marker.playerHeadElement.alt = definition.label
 			marker.updateFromData({

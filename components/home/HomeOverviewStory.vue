@@ -6,7 +6,8 @@
 					<div
 						v-if="phase === 'scene' || phase === 'players'"
 						:key="`scene-${sceneShortName}`"
-						class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif font-extrabold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
 					>
 						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
 							{{ sceneShortName }}
@@ -18,7 +19,8 @@
 					<div
 						v-else-if="phase === 'community'"
 						key="community"
-						class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif font-extrabold [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+						:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
 					>
 						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
 							{{
@@ -110,7 +112,9 @@
 							</p>
 							<p class="mt-1 truncate text-sm text-white/60">{{ player.id }}</p>
 						</div>
-						<p class="mt-4 line-clamp-4 text-sm leading-6 text-white/78">
+						<p
+							class="mt-4 line-clamp-4 font-serif text-lg leading-7 text-white/78"
+						>
 							{{ player.description }}
 						</p>
 						<UButton
@@ -267,7 +271,9 @@
 						</div>
 					</div>
 					<div class="mt-8 min-h-0 overflow-y-auto pr-2">
-						<p class="whitespace-pre-line text-base leading-8 text-white/80">
+						<p
+							class="whitespace-pre-line font-serif text-lg leading-8 text-white/80"
+						>
 							{{ detail.description }}
 						</p>
 					</div>
@@ -314,7 +320,8 @@ const props = defineProps<HomeOverviewStoryProps>()
 const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
 }>()
-const { t } = useI18n()
+const { locale, t } = useI18n()
+const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
 const detail = computed(() => {
 	if (!props.detailPersonId) return null
@@ -421,8 +428,11 @@ watch(
 .community-rail-enter-from,
 .community-rail-leave-to {
 	filter: blur(10px);
-	opacity: 0;
 	transform: translateX(3rem);
+}
+
+.community-rail-leave-to {
+	opacity: 0;
 }
 
 .community-member-rail {
@@ -483,13 +493,11 @@ watch(
 @keyframes community-member-card-in {
 	from {
 		filter: blur(10px);
-		opacity: 0;
 		transform: translateX(2rem);
 	}
 
 	to {
 		filter: blur(0);
-		opacity: 1;
 		transform: translateX(0);
 	}
 }

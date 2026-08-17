@@ -138,7 +138,7 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 				name: '広陽\n都市圏',
 				title: 'サーバー最大規模の都市圏。',
 				description:
-					'広陽の市街地は北島のほぼ全域を占める、サーバー最大の都市圏です。qixuanjun233（七炫）、Dotkk、xxlm233（宵宵狸猫）の主導のもと、新中式建築を核として北島南岸にサーバー随一の美しいスカイラインを築き上げました。',
+					'広陽の市街地は北島のほぼ全域を占める、サーバー最大の都市圏です。qixuanjun233、Dotkk、xxlm233の主導のもと、新中式建築を核として北島南岸にサーバー随一の美しいスカイラインを築き上げました。',
 				credit: null,
 				gallery: [
 					{

@@ -11,7 +11,10 @@
 		<div class="mt-auto flex flex-col gap-3 lg:contents">
 			<p
 				data-home-exit="content"
-				class="lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] font-extrabold tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-all hyphens-auto"
+				class="lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-words hyphens-auto"
+				:class="
+					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold'
+				"
 				aria-hidden="true"
 			>
 				<template v-if="mobileSceneNamePrefix">
@@ -26,12 +29,13 @@
 			</p>
 			<div
 				data-home-exit="content"
-				class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif font-extrabold text-transparent lg:flex"
-				:class="
+				class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-transparent lg:flex"
+				:class="[
+					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold',
 					desktopDisplayName?.layout === 'vertical'
 						? 'items-start gap-4'
-						: 'lg:mt-16 flex-col items-start gap-1'
-				"
+						: 'lg:mt-16 flex-col items-start gap-1',
+				]"
 				aria-hidden="true"
 			>
 				<template v-if="desktopDisplayName?.layout === 'vertical'">
@@ -64,7 +68,10 @@
 				</template>
 				<p
 					v-else
-					class="inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] font-extrabold tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-all hyphens-auto"
+					class="inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-words hyphens-auto"
+					:class="
+						props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold'
+					"
 				>
 					{{ scenePresentation.name }}
 				</p>
@@ -134,12 +141,12 @@
 		>
 			<div class="max-w-xl">
 				<h1
-					class="uppercase whitespace-pre-line break-all hyphens-auto text-xl font-semibold tracking-[0.08em] sm:text-3xl"
+					class="uppercase whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-xl font-semibold tracking-[0.08em] sm:text-3xl"
 				>
 					{{ scenePresentation.title }}
 				</h1>
 				<p
-					class="mt-2 whitespace-pre-line break-all hyphens-auto text-sm text-white/72 sm:text-lg"
+					class="mt-2 whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-sm text-white/72 sm:text-lg"
 				>
 					{{ scenePresentation.description }}
 				</p>

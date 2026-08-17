@@ -157,6 +157,15 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 					definition.playerId,
 					'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
 				) as unknown as NativeBlueMapWorldPlayerMarker
+				marker.playerHeadElement.addEventListener(
+					'error',
+					(event) => {
+						event.stopImmediatePropagation()
+						marker.playerHeadElement.removeAttribute('src')
+						marker.playerHeadElement.style.display = 'none'
+					},
+					{ capture: true },
+				)
 				marker.element.classList.add('home-world-player-marker')
 				return marker
 			}
