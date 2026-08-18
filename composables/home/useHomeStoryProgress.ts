@@ -44,6 +44,11 @@ interface ScrollTriggerTweenOptions {
 	onInterrupt: () => void
 }
 
+interface HomeStoryScrollTrigger {
+	tweenTo(position: number, options: ScrollTriggerTweenOptions): void
+	scrubDuration(seconds: number): void
+}
+
 const HERO_EXIT_START = 0.02
 const HERO_PROGRESS_END = 0.14
 const ATMOSPHERE_PROGRESS_END = 0.22
@@ -440,14 +445,12 @@ export const useHomeStoryProgress = (options: {
 				)
 
 			seekScrollStory = (target): void => {
-				const scrollTrigger = timeline.scrollTrigger
+				const scrollTrigger = timeline.scrollTrigger as
+					| HomeStoryScrollTrigger
+					| undefined
 				if (!scrollTrigger) return
 
-				const tweenTo = scrollTrigger.tweenTo as unknown as (
-					position: number,
-					options: ScrollTriggerTweenOptions,
-				) => ReturnType<typeof scrollTrigger.tweenTo>
-				tweenTo(target.scrollTop, {
+				scrollTrigger.tweenTo(target.scrollTop, {
 					duration: CLICK_FOCUS_SCROLL_SECONDS,
 					ease: 'sine.inOut',
 					onComplete: () => scrollTrigger.scrubDuration(STORY_SCRUB_SECONDS),
