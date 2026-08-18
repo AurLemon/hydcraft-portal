@@ -60,22 +60,22 @@ xwTeng は K-POP が好きで、会話ではかなり気さくで親しみやす
 	qixuanjun233: {
 		'zh-CN': `廊坊人，2020 年 8 月 20 日加入氢气工艺，管委会常务委员兼服务器副服主、服务器资深建筑师、八周目广阳自治体负责人，沈阳师范大学 2026 级（计算机科学）本科生。七炫擅长新中式和现代简约风格的建筑，但同时他也有着无与伦比的地铁设施复原能力。他会在意道路、车站、线路和城区之间的关系，而不是等城市建完以后再直接把地铁塞进去。七炫作为管理成员，除了参与广阳的建设以外，还负责服务器的运维。氢气工艺的 Minecraft 服务端就运行在七炫的 Xenonera 云服务上。
 
-作为项目早熟型的计算机专业学生，他在高中时期就已经接触了 C#、JavaScript 等多种技术栈，PVE 运维也是他在 2025 年开始接触的。七炫喜欢玩 Turing Complete 这一类与计算机密切相关的游戏。实际上，作为本科新生的他，已经有了一些工程师的样子。在与物理机打交道的过程中，他对很多问题的理解已经不只停留在「怎么用」，而是到了「为什么会这样」和「如何解决问题」上。
+作为项目早熟型的计算机专业学生，他在高中时期就已经接触了 C#、JavaScript 等多种技术栈，PVE 运维也是他在 2025 年开始接触的。七炫喜欢 PC DIY，也喜欢玩 Turing Complete 这一类与计算机密切相关的游戏。实际上，作为本科新生的他，已经有了一些工程师的样子。在与物理机打交道的过程中，他对很多问题的理解已经不只停留在「怎么用」，而是到了「为什么会这样」和「如何解决问题」上。
 
 在计算机以外，他也喜欢地铁、航空、人文地理和城市规划方面的内容。如果你和他一起旅行，他会开心地拉着你在地铁车厢与车站内穿梭、在城市道路中漫游，同时讨论规划和对面那栋楼的建筑风格。平时的七炫其实很开朗、乐观，他很愿意表达自己的兴趣和情绪，碰到真正重视的事情时又会非常认真。技术、建筑和地铁看起来是不同方向，但这背后其实都是他不同侧面的体现。如果你刚好在服务器里碰到他，他可能会和你讨论鸣潮或是原神的某个新剧情或新人物，又或是复盘刚才那一局瓦罗兰特（或是 CS）。他还建了一个服务器电竞社团 HLG，已经有 10 余名电竞玩家加入其中，虽然服主柠檬大概率不知道这事。`,
 		'zh-TW': `廊坊人，2020 年 8 月 20 日加入氫氣工藝，管理委員會常務委員兼伺服器副服主、伺服器資深建築師、八週目廣陽自治體負責人，瀋陽師範大學 2026 級（計算機科學）本科生。七炫擅長新中式和現代簡約風格的建築，但同時他也有著無與倫比的地鐵設施復原能力。他會在意道路、車站、線路和城區之間的關係，而不是等城市建完以後再直接把地鐵塞進去。七炫作為管理成員，除了參與廣陽的建設以外，還負責伺服器的運維。氫氣工藝的 Minecraft 服務端就運行在七炫的 Xenonera 雲服務上。
 
-作為專案早熟型的計算機專業學生，他在高中時期就已經接觸了 C#、JavaScript 等多種技術棧，PVE 運維也是他在 2025 年開始接觸的。七炫喜歡玩 Turing Complete 這一類與計算機密切相關的遊戲。實際上，作為本科新生的他，已經有了一些工程師的樣子。在與物理機打交道的過程中，他對很多問題的理解已經不只停留在「怎麼用」，而是到了「為什麼會這樣」和「如何解決問題」上。
+作為專案早熟型的計算機專業學生，他在高中時期就已經接觸了 C#、JavaScript 等多種技術棧，PVE 運維也是他在 2025 年開始接觸的。七炫喜歡 PC DIY，也喜歡玩 Turing Complete 這一類與計算機密切相關的遊戲。實際上，作為本科新生的他，已經有了一些工程師的樣子。在與物理機打交道的過程中，他對很多問題的理解已經不只停留在「怎麼用」，而是到了「為什麼會這樣」和「如何解決問題」上。
 
 在計算機以外，他也喜歡地鐵、航空、人文地理和城市規劃方面的內容。如果你和他一起旅行，他會開心地拉著你在地鐵車廂與車站內穿梭、在城市道路中漫遊，同時討論規劃和對面那棟樓的建築風格。平時的七炫其實很開朗、樂觀，他很願意表達自己的興趣和情緒，碰到真正重視的事情時又會非常認真。技術、建築和地鐵看起來是不同方向，但這背後其實都是他不同側面的體現。如果你剛好在伺服器裡碰到他，他可能會和你討論鳴潮或是原神的某個新劇情或新人物，又或是複盤剛才那一局瓦羅蘭特（或是 CS）。他還建了一個伺服器電競社團 HLG，已經有 10 餘名電競玩家加入其中，雖然服主檸檬大概率不知道這事。`,
 		'en-US': `A Langfang native, qixuanjun233 joined HydCraft on August 20, 2020. He is a Standing Member of the Management Committee and Deputy Server Owner, a Senior Architect of the server, the leader of the Guangyang autonomous community in Season 8, and a computer science undergraduate in Shenyang Normal University's class of 2026. qixuanjun233 excels at New Chinese and modern minimalist architecture, while also possessing an unparalleled ability to recreate metro facilities. He pays attention to the relationships among roads, stations, lines, and urban districts instead of waiting until a city is finished and then simply cramming a metro into it. As a member of management, qixuanjun233 is responsible for server operations and maintenance in addition to taking part in Guangyang's construction. HydCraft's Minecraft server runs on qixuanjun233's Xenonera cloud service.
 
-As a computer science student who matured early through projects, he had already encountered multiple technology stacks including C# and JavaScript in high school, and began working with PVE operations in 2025. qixuanjun233 likes games closely connected to computing, such as Turing Complete. In fact, although he is a first-year undergraduate, he already shows some of the qualities of an engineer. Through working with physical servers, his understanding of many problems has moved beyond "how to use it" to "why does this happen" and "how can the problem be solved."
+As a computer science student who matured early through projects, he had already encountered multiple technology stacks including C# and JavaScript in high school, and began working with PVE operations in 2025. qixuanjun233 enjoys PC DIY and games closely connected to computing, such as Turing Complete. In fact, although he is a first-year undergraduate, he already shows some of the qualities of an engineer. Through working with physical servers, his understanding of many problems has moved beyond "how to use it" to "why does this happen" and "how can the problem be solved."
 
 Outside computing, he is also interested in metros, aviation, human geography, and urban planning. If you travel with him, he will happily pull you through metro carriages and stations and along city streets, all while discussing planning and the architectural style of the building across the road. In everyday life, qixuanjun233 is actually cheerful and optimistic. He readily expresses his interests and emotions, yet becomes very serious when something truly matters to him. Technology, architecture, and metros may look like different directions, but each reflects a different side of him. If you happen to meet him on the server, he may discuss a new story or character from Wuthering Waves or Genshin Impact, or review the Valorant match he just played, perhaps a CS match instead. He also founded HLG, a server esports club that has attracted more than ten esports players, although the Server Owner Aurora_Lemon probably has no idea it exists.`,
 		'ja-JP': `廊坊出身。2020 年 8 月 20 日に HydCraft へ参加し、管理委員会常務委員兼副サーバーオーナー、サーバーのシニアアーキテクト、第 8 シーズンの広陽自治体責任者を務めています。瀋陽師範大学の 2026 年度入学、コンピューターサイエンス専攻の学部生です。qixuanjun233 は新中華風とモダンミニマルの建築を得意とする一方、地下鉄施設を再現する比類のない能力も備えています。都市が完成してから地下鉄をそのまま押し込むのではなく、道路、駅、路線、市街地の関係を大切にします。管理メンバーとして、qixuanjun233 は広陽の建設に参加するほか、サーバーの運用保守も担当しています。HydCraft の Minecraft サーバーは、qixuanjun233 の Xenonera クラウドサービス上で稼働しています。
 
-プロジェクトを通して早くから成長してきたコンピューター専攻の学生として、高校時代にはすでに C# や JavaScript など複数の技術スタックに触れており、2025 年には PVE の運用にも取り組み始めました。qixuanjun233 は Turing Complete のような、コンピューターと密接に関わるゲームを好みます。実際、大学に入ったばかりでありながら、すでにエンジニアらしさを備えています。物理サーバーと向き合う中で、多くの問題への理解は「どう使うか」にとどまらず、「なぜこうなるのか」「どう問題を解決するか」という段階に達しています。
+プロジェクトを通して早くから成長してきたコンピューター専攻の学生として、高校時代にはすでに C# や JavaScript など複数の技術スタックに触れており、2025 年には PVE の運用にも取り組み始めました。qixuanjun233 は PC DIY や、Turing Complete のようなコンピューターと密接に関わるゲームを好みます。実際、大学に入ったばかりでありながら、すでにエンジニアらしさを備えています。物理サーバーと向き合う中で、多くの問題への理解は「どう使うか」にとどまらず、「なぜこうなるのか」「どう問題を解決するか」という段階に達しています。
 
 コンピューター以外にも、地下鉄、航空、人文地理、都市計画に関するものが好きです。一緒に旅行すれば、彼はうれしそうにあなたを連れて地下鉄の車内や駅を巡り、街路を歩きながら、都市計画や向かいの建物の建築様式について話すでしょう。普段の qixuanjun233 は明るく楽観的で、自分の興味や感情を進んで表現しますが、本当に大切なことに出会うと非常に真剣になります。技術、建築、地下鉄は別々の方向に見えますが、実はそのどれもが彼の異なる一面を表しています。サーバー内で偶然会えば、『鳴潮』や『原神』の新しいストーリーやキャラクターについて話したり、さっきの Valorant、あるいは CS の一戦を振り返ったりするかもしれません。また彼は、すでに 10 人以上の e スポーツプレイヤーが参加するサーバー内 e スポーツクラブ HLG も設立しました。もっとも、サーバーオーナーの Aurora_Lemon はおそらくその存在を知りません。`,
 	},
@@ -102,10 +102,150 @@ Dotkk の本業は AI のデプロイと計算資源に関わるもので、大�
 Dotkk は純粋な意味で建築分野の達人というわけではありませんが、Agent ワークフローへの深い理解と数年の職務経験から、極めて厳密なプロセスを築き上げました。それは広陽の建設に十分表れています。反復作業に長い時間を費やすことはほとんどなく、まず目標を分解して手順を定め、使い慣れたツールで素早く前進させることを好みます。この習慣はやがて、彼のプレイスタイルにも溶け込みました。広陽にはスカイラインが必要ですが、建築速度、全体計画、そして本当に実現できるかどうかも同じように重要です。Dotkk にとって建築は、一人が時間をかけて極限まで磨き上げるものだけではありません。計画、協力、ツール、プロセスを組み合わせて完成させる工程にもなり得ます。速く、しかも安定していることが彼の核心です。`,
 	},
 	xxlm233: {
-		'zh-CN': `廊坊人，2020 年 8 月 27 日加入氢气工艺，服务器资深建筑师、八周目广阳自治体参与者，2026 级本科生。他与广阳负责人七炫是发小，也是同窗好友。与广阳的另一位参与者 Dotkk 不同，宵宵狸猫更倾向于构建日式铁路和小比例的日式风格建筑，七周目的北安正是宵宵狸猫的成果之一。在建筑和游戏以外，宵宵狸猫在铁路、人文地理、电竞等方面也颇有建树。此外，宵宵狸猫也是整个服务器最了解机圈的人之一。刷什么模块、用什么调度、怎么解 BL，都是他最好奇也最爱折腾的事情。`,
-		'zh-TW': `廊坊人，2020 年 8 月 27 日加入氫氣工藝，伺服器資深建築師、八週目廣陽自治體參與者，2026 級本科生。他與廣陽負責人七炫是發小，也是同窗好友。與廣陽的另一位參與者 Dotkk 不同，宵宵狸貓更傾向於構建日式鐵路和小比例的日式風格建築，七週目的北安正是宵宵狸貓的成果之一。在建築和遊戲以外，宵宵狸貓在鐵路、人文地理、電競等方面也頗有建樹。此外，宵宵狸貓也是整個伺服器最瞭解機圈的人之一。刷什麼模組、用什麼調度、怎麼解 BL，都是他最好奇也最愛折騰的事情。`,
-		'en-US': `A Langfang native, xxlm233 joined HydCraft on August 27, 2020. He is a Senior Architect of the server, a participant in the Guangyang autonomous community in Season 8, and an undergraduate in the class of 2026. He and Guangyang's leader qixuanjun233 are childhood friends as well as former classmates. Unlike Dotkk, another participant in Guangyang, xxlm233 is more inclined to build Japanese-style railways and small-scale Japanese-style architecture; Bei'an in Season 7 is one of xxlm233's creations. Beyond building and gaming, xxlm233 has also accomplished a great deal in railways, human geography, and esports. In addition, xxlm233 is one of the people who know the most about smartphones on the entire server. Which module to flash, which scheduler to use, and how to unlock the bootloader are among the things he is most curious about and most loves to tinker with.`,
-		'ja-JP': `廊坊出身。2020 年 8 月 27 日に HydCraft へ参加し、サーバーのシニアアーキテクト、第 8 シーズンの広陽自治体参加者を務める、2026 年度入学の学部生です。広陽の責任者 qixuanjun233 とは幼なじみで、同級生でもあります。広陽のもう一人の参加者 Dotkk とは異なり、xxlm233 は日本風の鉄道や小規模な日本風建築を作る傾向があり、第 7 シーズンの北安も xxlm233 の成果の一つです。建築とゲーム以外でも、xxlm233 は鉄道、人文地理、e スポーツなどの分野で多くの実績を持っています。さらに、xxlm233 はサーバー全体でもスマートフォン界隈に最も詳しい一人です。どのモジュールを導入するか、どのスケジューラーを使うか、どうブートローダーをアンロックするかは、彼が最も興味を持ち、最も試行錯誤を楽しむことです。`,
+		'zh-CN': `廊坊人，2020 年 8 月 27 日加入氢气工艺，服务器资深建筑师、八周目广阳自治体参与者，2026 级本科生。他与广阳负责人七炫是发小，也是同窗好友。与广阳的另一位参与者 Dotkk 不同，宵宵狸猫更倾向于构建日式铁路和小比例的日式风格建筑，七周目的北安正是宵宵狸猫的成果之一。在建筑和游戏以外，宵宵狸猫在铁路、人文地理、电竞等方面也颇有建树。他也是 HLG 电竞社团成员。此外，宵宵狸猫也是整个服务器最了解机圈的人之一。刷什么模块、用什么调度、怎么解 BL，都是他最好奇也最爱折腾的事情。`,
+		'zh-TW': `廊坊人，2020 年 8 月 27 日加入氫氣工藝，伺服器資深建築師、八週目廣陽自治體參與者，2026 級本科生。他與廣陽負責人七炫是發小，也是同窗好友。與廣陽的另一位參與者 Dotkk 不同，宵宵狸貓更傾向於構建日式鐵路和小比例的日式風格建築，七週目的北安正是宵宵狸貓的成果之一。在建築和遊戲以外，宵宵狸貓在鐵路、人文地理、電競等方面也頗有建樹。他也是 HLG 電競社團成員。此外，宵宵狸貓也是整個伺服器最瞭解機圈的人之一。刷什麼模組、用什麼調度、怎麼解 BL，都是他最好奇也最愛折騰的事情。`,
+		'en-US': `A Langfang native, xxlm233 joined HydCraft on August 27, 2020. He is a Senior Architect of the server, a participant in the Guangyang autonomous community in Season 8, and an undergraduate in the class of 2026. He and Guangyang's leader qixuanjun233 are childhood friends as well as former classmates. Unlike Dotkk, another participant in Guangyang, xxlm233 is more inclined to build Japanese-style railways and small-scale Japanese-style architecture; Bei'an in Season 7 is one of xxlm233's creations. Beyond building and gaming, xxlm233 has also accomplished a great deal in railways, human geography, and esports. He is also a member of HLG, the server's esports club. In addition, xxlm233 is one of the people who know the most about smartphones on the entire server. Which module to flash, which scheduler to use, and how to unlock the bootloader are among the things he is most curious about and most loves to tinker with.`,
+		'ja-JP': `廊坊出身。2020 年 8 月 27 日に HydCraft へ参加し、サーバーのシニアアーキテクト、第 8 シーズンの広陽自治体参加者を務める、2026 年度入学の学部生です。広陽の責任者 qixuanjun233 とは幼なじみで、同級生でもあります。広陽のもう一人の参加者 Dotkk とは異なり、xxlm233 は日本風の鉄道や小規模な日本風建築を作る傾向があり、第 7 シーズンの北安も xxlm233 の成果の一つです。建築とゲーム以外でも、xxlm233 は鉄道、人文地理、e スポーツなどの分野で多くの実績を持っています。また、サーバー内 e スポーツクラブ HLG のメンバーでもあります。さらに、xxlm233 はサーバー全体でもスマートフォン界隈に最も詳しい一人です。どのモジュールを導入するか、どのスケジューラーを使うか、どうブートローダーをアンロックするかは、彼が最も興味を持ち、最も試行錯誤を楽しむことです。`,
+	},
+	QiShui233: {
+		'zh-CN': `广州人，2022 年 8 月 22 日加入氢气工艺，服务器资深建筑师、八周目白鹭片区负责人。汽水的建筑风格并不固定，主要以现代风格为主。除了建筑，他最常建设的就是铁路设施，车站、线路以及与城市相连的各种交通设施，都是他相当拿手的内容。
+
+在游戏之外，汽水还经营着一家网店。除了偶尔捣鼓自己的相纸，他也从事数码商品回收等生意。某种意义上，他大概也是服务器里业务范围最广的人。如果你在群里看见汽水，除了篮球、PC DIY、汽车和衣服这些日常话题，还可能看到别的群友找他卖二手、买手机、买演唱会门票、买流量卡返佣、买数据线、某个手机降价了，甚至只是叫他去抖音续个火。好像无论需要什么，最后多少都能和他扯上一点关系。
+
+这种对数码、交易和各种生活信息的敏感也让汽水显得更亲民。比起把自己定在某一个圈里，汽水更像是什么都愿意了解一点，也总能从现实中找到新的话题。他很重视民生，或者说他就是。当然，在游戏这一边，他同时也是 HLG 电竞社团的一员。当汽水和服主柠檬第一次见面的时候，汽水请了柠檬吃了一顿漂亮饭。如果你照顾他生意，他也会请你。`,
+		'zh-TW': `廣州人，2022 年 8 月 22 日加入氫氣工藝，伺服器資深建築師、八週目白鷺片區負責人。汽水的建築風格並不固定，主要以現代風格為主。除了建築，他最常建設的就是鐵路設施，車站、線路以及與城市相連的各種交通設施，都是他相當拿手的內容。
+
+在遊戲之外，汽水還經營著一家網店。除了偶爾搗鼓自己的相紙，他也從事數碼商品回收等生意。某種意義上，他大概也是伺服器裡業務範圍最廣的人。如果你在群裡看見汽水，除了籃球、PC DIY、汽車和衣服這些日常話題，還可能看到其他群友找他賣二手、買手機、買演唱會門票、買流量卡返佣、買數據線、某個手機降價了，甚至只是叫他去抖音續個火。好像無論需要什麼，最後多少都能和他扯上一點關係。
+
+這種對數碼、交易和各種生活資訊的敏感也讓汽水顯得更親民。比起把自己定在某一個圈子裡，汽水更像是什麼都願意了解一點，也總能從現實中找到新的話題。他很重視民生，或者說他就是。當然，在遊戲這一邊，他同時也是 HLG 電競社團的一員。當汽水和服主檸檬第一次見面的時候，汽水請了檸檬吃了一頓漂亮飯。如果你照顧他的生意，他也會請你。`,
+		'en-US': `A Guangzhou native, QiShui233 joined HydCraft on August 22, 2022. He is a Senior Architect of the server and the leader of the Bailu district in Season 8. QiShui233 does not have a fixed architectural style, though modern styles are his main focus. Besides buildings, he most often constructs railway infrastructure. Stations, lines, and all kinds of transport facilities connecting cities are among his greatest strengths.
+
+Outside the game, QiShui233 also runs an online shop. In addition to occasionally tinkering with his own photographic paper, he is involved in businesses such as recycling digital products. In a sense, he may have the broadest range of business activities on the server. If you see QiShui233 in the group, besides everyday topics such as basketball, PC DIY, cars, and clothes, you may also see other members asking him to sell second-hand goods, buy phones, purchase concert tickets, buy data cards for commission, get charging cables, check whether a phone has become cheaper, or even simply go to Douyin and keep a streak alive. Whatever someone needs, it somehow ends up being related to him.
+
+This sensitivity to digital products, trade, and all kinds of everyday information also makes QiShui233 feel approachable. Rather than confining himself to one circle, he seems willing to learn a little about everything and can always find a new topic in real life. He cares deeply about people's everyday needs, or perhaps he embodies them. In the game, of course, he is also a member of HLG, the server's esports club. When QiShui233 first met the Server Owner Aurora_Lemon, he treated Lemon to a wonderful meal. If you support his business, he will treat you too.`,
+		'ja-JP': `広州出身。2022 年 8 月 22 日に HydCraft へ参加し、サーバーのシニアアーキテクト、第 8 シーズンの白鷺地区責任者を務めています。QiShui233 の建築スタイルは固定されておらず、主にモダンなスタイルを得意としています。建築のほかに彼が最もよく手がけるのは鉄道施設です。駅、路線、そして都市を結ぶさまざまな交通施設は、いずれも彼の得意分野です。
+
+ゲーム以外では、QiShui233 はオンラインショップも経営しています。自分の印画紙を時々いじるほか、デジタル商品の回収などの商売にも携わっています。ある意味では、サーバー内で最も事業の幅が広い人かもしれません。グループで QiShui233 を見かけると、バスケットボール、PC DIY、自動車、服といった日常の話題だけでなく、他のメンバーが中古品の販売、スマートフォンやコンサートチケットの購入、データカードの代理販売、ケーブルの購入、スマートフォンの値下げ情報などを相談していることもあります。あるいは、ただ Douyin の連続視聴を続けてほしいと頼まれているだけかもしれません。何か必要なことがあれば、最後には少し彼と関係してくるようです。
+
+デジタル製品、取引、そして生活に関するさまざまな情報への敏感さが、QiShui233 をより親しみやすくしています。一つの界隈に自分を限定するより、何でも少しずつ知ろうとし、現実の中からいつも新しい話題を見つけてきます。彼は人々の暮らしをとても大切にしています。というより、彼自身がそのものなのかもしれません。もちろんゲームの中では、サーバーの e スポーツクラブ HLG のメンバーでもあります。QiShui233 がサーバーオーナーの Aurora_Lemon と初めて会ったとき、彼は Lemon に素敵な食事をごちそうしました。あなたが彼の商売を応援すれば、彼はあなたにもごちそうしてくれるでしょう。`,
+	},
+	Chuxia_SF: {
+		'zh-CN': `天津人，2019 年 10 月 13 日加入氢气工艺，服务器资深建筑师、八周目旧巷片区参与者。和擅长高楼、城市规划与整体街景的玩家相比，初夏反而是一股清流。他不擅长造城，也不喜欢去处理复杂的城市衔接，但在中式住宅、室内设计和各种细小装饰上却很有自己的想法。相比远远看过去是否足够壮观，他更在意走进一栋房子以后，里面究竟像不像一个真正有人生活的地方。
+
+初夏喜欢欧美音乐，也关注社会新闻。作为服务器里个子最高的人之一（一米九），如果你去天津找他，他大概会像当初招待副服主七炫一样，随手给你拿一瓶酸奶。平时在群里，你也经常能看见他和欧文、卡温自治体的负责人仓鼠与小万讨论今天刚刷到的抖音，或是某个 B 站视频，又或许是和群友讨论他的 Dream House。话题可以很日常，也可以突然转向一些认真得多的东西。若是你愿意，在服务器里和他来一场 Deep Talk 也并不奇怪。
+
+现实中的初夏是班长，性格外向，却又有着相当细腻的一面。他愿意和很多人聊天、社交，也很容易注意到别人情绪和表达里的细节。这也和初夏的建筑很像，他不一定负责宏大的结构设计，但那些真正需要靠近以后才能注意到的微观细节，反而是他最擅长处理的。`,
+		'zh-TW': `天津人，2019 年 10 月 13 日加入氫氣工藝，伺服器資深建築師、八週目舊巷片區參與者。和擅長高樓、城市規劃與整體街景的玩家相比，初夏反而是一股清流。他不擅長造城，也不喜歡去處理複雜的城市銜接，但在中式住宅、室內設計和各種細小裝飾上卻很有自己的想法。相比遠遠看過去是否足夠壯觀，他更在意走進一棟房子以後，裡面究竟像不像一個真正有人生活的地方。
+
+初夏喜歡歐美音樂，也關注社會新聞。作為伺服器裡個子最高的人之一（一米九），如果你去天津找他，他大概會像當初招待副服主七炫一樣，隨手給你拿一瓶酸奶。平時在群裡，你也經常能看見他和歐文、卡溫自治體的負責人倉鼠與小萬討論今天剛刷到的抖音，或是某個 B 站影片，又或許是和群友討論他的 Dream House。話題可以很日常，也可以突然轉向一些認真得多的東西。若是你願意，在伺服器裡和他來一場 Deep Talk 也並不奇怪。
+
+現實中的初夏是班長，性格外向，卻又有著相當細膩的一面。他願意和很多人聊天、社交，也很容易注意到別人情緒和表達裡的細節。這也和初夏的建築很像，他不一定負責宏大的結構設計，但那些真正需要靠近以後才能注意到的微觀細節，反而是他最擅長處理的。`,
+		'en-US': `A Tianjin native, Chuxia_SF joined HydCraft on October 13, 2019. He is a Senior Architect of the server and a participant in the Old Lane district in Season 8. Compared with players who excel at high-rises, urban planning, and complete streetscapes, Chuxia_SF is a refreshing exception. He is not good at building cities and does not enjoy handling complicated connections between urban areas, but he has strong ideas about traditional Chinese residences, interior design, and all kinds of small decorations. Rather than worrying about whether something looks spectacular from far away, he cares more about whether, once you walk into a house, it feels like a real person could live there.
+
+Chuxia_SF likes Western music and follows social news. As one of the tallest people on the server at 1.9 meters, if you visit him in Tianjin, he might casually bring you a bottle of yogurt, just as he once did when hosting Deputy Server Owner qixuanjun233. In the group, you can often see him discussing a TikTok video he just found, a Bilibili video, or his Dream House with CatPillager and xwTeng, the leaders of Owen and Calwyn. The topic may be completely ordinary, or it may suddenly turn into something much more serious. If you are willing, having a Deep Talk with him on the server would not be unusual.
+
+In real life, Chuxia_SF is a class monitor. He is outgoing, yet has a remarkably delicate side. He is willing to talk and socialize with many people, and easily notices the details in their emotions and expressions. This is also much like his architecture: he may not be responsible for grand structural design, but the microscopic details that only become visible when you move closer are precisely what he handles best.`,
+		'ja-JP': `天津出身。2019 年 10 月 13 日に HydCraft へ参加し、サーバーのシニアアーキテクト、第 8 シーズンの旧巷地区参加者を務めています。高層建築や都市計画、街並み全体を得意とするプレイヤーたちと比べると、Chuxia_SF はむしろ異色の存在です。都市を作ることも複雑な都市間の接続を処理することも得意ではありませんが、中国風住宅、インテリアデザイン、細かな装飾には独自の考えを持っています。遠くから見て十分に壮大かどうかよりも、家の中へ入ったとき、本当に誰かが暮らしているように感じられるかを大切にしています。
+
+Chuxia_SF は欧米の音楽が好きで、社会ニュースにも関心があります。身長 1.9 メートルでサーバーでも最も背の高い人の一人です。天津へ会いに行けば、かつて副サーバーオーナーの qixuanjun233 をもてなしたときのように、何気なくヨーグルトを一本渡してくれるかもしれません。グループでは、オーウェンとカルウィンの責任者である CatPillager や xwTeng と、見つけたばかりの Douyin の動画、Bilibili の動画、あるいは自分の Dream House について話している姿をよく見かけます。話題はごく日常的なものにもなれば、突然ずっと真剣な方向へ向かうこともあります。望むなら、サーバーで彼と Deep Talk をするのも決して不思議ではありません。
+
+現実の Chuxia_SF はクラス委員長で、社交的な性格でありながら、とても繊細な一面も持っています。多くの人と話したり交流したりすることを好み、他人の感情や表現に含まれる細かな変化にも気づきやすい人です。それは彼の建築にも似ています。壮大な構造設計を担当するとは限りませんが、近づいて初めて見えるような微細なディテールこそ、彼が最も得意とするものです。`,
+	},
+	Complex_Colors: {
+		'zh-CN': `上海人，2018 年 9 月 20 日加入氢气工艺，服务器管委会常务委员，东京大学 2026 级硕士生。作为氢气工艺最早一批加入的老玩家，杂色是一名相当老道的日本通。当初，他正是被一周目时期服务器里的 JR 列车吸引而来，从此一路留到了现在。如今的杂色已经很少参与服务器的日常建设事务，但依然活跃在交流群里，偶尔也会从老玩家和管理成员的角度给出一些建议。过去的他擅长日式小建筑和日式铁道建设，这也恰好与他长期以来对日本文化和城市生活的兴趣相连。
+
+相比 Minecraft，ACGN 和 Vocaloid 亚文化或许更容易让现在的杂色突然出现。Miku、Teto、某个二次元展，或是某所大学里藏着的地下社团，你几乎可以在群里所有与 ACGN 有关的话题下面看到他的身影。他对这些东西的兴趣并不只停留在作品本身，而是一路延伸到了语言、社会和日本当地的生活文化。本科数学专业出身的杂色，也很乐于在群里和人讨论数学与外语知识。他很早便开始学习日语，初中时期就已经有了相当不错的水平，英语能力则更加出众。对杂色而言语言不只是考试和交流的工具，也是理解另一套文化和社会环境的入口。
+
+如果你有机会在线下和他见面，除了吃饭、逛街和体验城市风情，他或许更愿意和你坐下来讨论一些逻辑性很强的问题。从语言、教育到社会议题，一个原本很普通的话题经常会被他一路拆下去。杂色并不是服务器里最喧闹的那类人，但从一周目的 JR 列车到如今东京的生活，他与氢气工艺之间的联系，也早已不只剩下游戏本身。杂色也曾在服务器的报刊上投稿过很多次，可惜报刊因为服主太懒早就不更新了。`,
+		'zh-TW': `上海人，2018 年 9 月 20 日加入氫氣工藝，伺服器管理委員會常務委員，東京大學 2026 級碩士生。作為氫氣工藝最早一批加入的老玩家，雜色是一名相當老道的日本通。當初，他正是被一週目時期伺服器裡的 JR 列車吸引而來，從此一路留到了現在。如今的雜色已經很少參與伺服器的日常建設事務，但依然活躍在交流群組裡，偶爾也會從老玩家和管理成員的角度給出一些建議。過去的他擅長日式小建築和日式鐵道建設，這也恰好與他長期以來對日本文化和城市生活的興趣相連。
+
+相比 Minecraft，ACGN 和 Vocaloid 亞文化或許更容易讓現在的雜色突然出現。Miku、Teto、某個二次元展，或是某所大學裡藏著的地下社團，你幾乎可以在群裡所有與 ACGN 有關的話題下面看到他的身影。他對這些東西的興趣並不只停留在作品本身，而是一路延伸到了語言、社會和日本當地的生活文化。本科數學專業出身的雜色，也很樂於在群裡和人討論數學與外語知識。他很早便開始學習日語，初中時期就已經有了相當不錯的水平，英語能力則更加出眾。對雜色而言語言不只是考試和交流的工具，也是理解另一套文化和社會環境的入口。
+
+如果你有機會在線下和他見面，除了吃飯、逛街和體驗城市風情，他或許更願意和你坐下來討論一些邏輯性很強的問題。從語言、教育到社會議題，一個原本很普通的話題經常會被他一路拆解下去。雜色並不是伺服器裡最喧鬧的那類人，但從一週目的 JR 列車到如今東京的生活，他與氫氣工藝之間的聯繫，也早已不只剩下遊戲本身。雜色也曾在伺服器的報刊上投稿過很多次，可惜報刊因為服主太懶早就不更新了。`,
+		'en-US': `A Shanghai native, Complex_Colors joined HydCraft on September 20, 2018. He is a Standing Member of the Management Committee and a master's student at the University of Tokyo in the class of 2026. As one of the earliest players to join HydCraft, Complex_Colors is a highly experienced Japan enthusiast. He was originally drawn in by the JR trains on the server during Season 1 and has stayed ever since. These days, Complex_Colors rarely takes part in the server's daily construction, but he remains active in the group and occasionally offers advice from the perspective of a veteran player and management member. In the past, he excelled at small Japanese-style buildings and Japanese railway construction, which connects naturally with his long-standing interest in Japanese culture and urban life.
+
+Compared with Minecraft, ACGN and Vocaloid subcultures may be more likely to make the present-day Complex_Colors suddenly appear. Miku, Teto, an anime convention, or an underground society hidden at a university: you can find him beneath almost every ACGN-related topic in the group. His interest goes beyond the works themselves and extends into language, society, and everyday life in Japan. A mathematics graduate, Complex_Colors also enjoys discussing mathematics and foreign languages with people in the group. He began learning Japanese very early and already had a strong level in middle school; his English is even more impressive. To Complex_Colors, language is not merely a tool for exams and communication, but also an entrance into understanding another culture and social environment.
+
+If you meet him in person, besides eating, walking around, and experiencing a city's atmosphere, he may prefer to sit down with you and discuss questions with strong logical structure. From language and education to social issues, an ordinary topic is often taken apart step by step. Complex_Colors is not the loudest person on the server, but from the JR trains of Season 1 to his life in Tokyo today, his connection with HydCraft has long been about more than the game itself. He also submitted many pieces to the server newspaper, but unfortunately it stopped updating long ago because the Server Owner was too lazy.`,
+		'ja-JP': `上海出身。2018 年 9 月 20 日に HydCraft へ参加し、サーバーの管理委員会常務委員、東京大学の 2026 年度入学の修士課程学生を務めています。HydCraft に最初期から参加した古参プレイヤーの一人として、Complex_Colors は日本に精通した人物です。彼は第 1 シーズンのサーバーに走っていた JR 列車に惹かれて参加し、それ以来ずっとここに残っています。現在の Complex_Colors はサーバーの日常的な建設に関わることは少なくなりましたが、交流グループでは変わらず活発で、時々古参プレイヤーや管理メンバーの視点から意見を出します。以前は日本風の小建築や日本の鉄道建設を得意としており、それは長年の日本文化と都市生活への関心とも自然につながっています。
+
+Minecraft よりも、ACGN や Vocaloid のサブカルチャーのほうが、今の Complex_Colors を突然登場させやすいかもしれません。Miku、Teto、どこかの二次元イベント、あるいは大学に隠れた地下サークル。ACGN に関する話題なら、ほとんどどこでも彼の姿を見つけられるでしょう。そうしたものへの関心は作品そのものにとどまらず、言語、社会、日本での暮らしの文化へと広がっています。数学を専攻して卒業した Complex_Colors は、グループで数学や外国語の知識について話すことも好みます。彼は早くから日本語を学び始め、中学生の頃にはすでにかなり高い水準に達していました。英語の能力はさらに優れています。Complex_Colors にとって言語は、試験や交流のための道具であるだけでなく、別の文化や社会環境を理解する入口でもあります。
+
+実際に会う機会があれば、食事や街歩き、都市の雰囲気を味わうことに加えて、論理性の高い問題について腰を据えて話すことを好むかもしれません。言語、教育、社会問題に至るまで、ごく普通の話題を何段階にも分解していくことがあります。Complex_Colors はサーバーで最もにぎやかなタイプではありません。しかし第 1 シーズンの JR 列車から現在の東京での生活まで、彼と HydCraft のつながりは、もはやゲームだけにとどまりません。サーバーの新聞にも何度も投稿していましたが、残念ながら服主が怠けすぎたため、新聞はずっと更新されていません。`,
+	},
+	larker_package: {
+		'zh-CN': `百色人，2018 年 12 月 1 日加入氢气工艺，管委会常务委员兼服务器副服主、八周目颐恒片区负责人，山东理工大学 2026 级本科生，别名橘子。拉克擅长大比例 CR 车站建筑和带有地域特色的花雕车站设计。他并不擅长城市规划和整体建设，但在模仿和还原 CR 铁路设施上有着十足的经验。作为交通文化爱好者，他也对人文地理、铁路建设规划和计算机有着浓厚的兴趣。
+
+拉克是一名项目早熟型玩家。小学时期，他就已经接触过易语言；到了初高中，又积累了不少客户端开发经验。长期在各种政务 APP 和复杂流程之间辗转，也让他对这些 OA 流程熟记于心。作为副服主，他与服主柠檬、副服主七炫一起，为服务器的玩法和维护尝试了许多新的方向。拉克的技术栈主要集中在 UniApp、Flutter 和 Web 开发，这些经历也让他在服务器里承担的不只是建设工作。
+
+高中时期，拉克还负责过校内新媒体运营，并由此积累了一些内容和运营经验。后来，他又进入无线电 HAM 圈，有了自己的呼号，也认识了不少 HAMer。进入大学以后，他开始把视野投向更广阔的具身智能领域，各种竞赛和新的机会也逐渐出现在他的生活中。不过，这也意味着拉克在服务器里的建设进度并不是长期稳定的，而更像是周期性的。忙的时候，他可能很长一段时间都不会出现。等到重新有空，又会突然回来推进一大片内容。如果你在群里看见拉克，除了铁路、城市和建设，更多时候看到的可能是技术、Agent、GitHub，或是他最近又在折腾什么新的东西。`,
+		'zh-TW': `百色人，2018 年 12 月 1 日加入氫氣工藝，管理委員會常務委員兼伺服器副服主、八週目頤恆片區負責人，山東理工大學 2026 級本科生，別名橘子。拉克擅長大比例 CR 車站建築和帶有地域特色的花雕車站設計。他並不擅長城市規劃和整體建設，但在模仿和還原 CR 鐵路設施上有著十足的經驗。作為交通文化愛好者，他也對人文地理、鐵路建設規劃和計算機有著濃厚的興趣。
+
+拉克是一名專案早熟型玩家。小學時期，他就已經接觸過易語言；到了初高中，又積累了不少客戶端開發經驗。長期在各種政務 APP 和複雜流程之間輾轉，也讓他對這些 OA 流程熟記於心。作為副服主，他與服主檸檬、副服主七炫一起，為伺服器的玩法和維護嘗試了許多新的方向。拉克的技術棧主要集中在 UniApp、Flutter 和 Web 開發，這些經歷也讓他在伺服器裡承擔的不只是建設工作。
+
+高中時期，拉克還負責過校內新媒體營運，並由此積累了一些內容和營運經驗。後來，他又進入無線電 HAM 圈，有了自己的呼號，也認識了不少 HAMer。進入大學以後，他開始把視野投向更廣闊的具身智能領域，各種競賽和新的機會也逐漸出現在他的生活中。不過，這也意味著拉克在伺服器裡的建設進度並不是長期穩定的，而更像是週期性的。忙的時候，他可能很長一段時間都不會出現。等到重新有空，又會突然回來推進一大片內容。如果你在群裡看見拉克，除了鐵路、城市和建設，更多時候看到的可能是技術、Agent、GitHub，或是他最近又在折騰什麼新的東西。`,
+		'en-US': `A Baise native, larker_package joined HydCraft on December 1, 2018. He is a Standing Member of the Management Committee and Deputy Server Owner, the leader of the Yiheng district in Season 8, and an undergraduate at Shandong University of Technology in the class of 2026. He is also known as Orange. larker_package excels at large-scale CR station architecture and Huadiao station designs with strong regional character. He is not particularly good at urban planning or comprehensive construction, but has extensive experience imitating and recreating CR railway facilities. As an enthusiast of transport culture, he is also deeply interested in human geography, railway planning, and computer science.
+
+larker_package is a project-mature player. He encountered Easy Language as early as primary school, and accumulated substantial client-development experience in middle and high school. Spending years moving among government apps and complex procedures also made him thoroughly familiar with OA workflows. As Deputy Server Owner, he has explored many new directions for the server's gameplay and maintenance together with Server Owner Aurora_Lemon and Deputy Server Owner qixuanjun233. His technical stack is mainly focused on UniApp, Flutter, and Web development, and these experiences mean that his responsibilities on the server go beyond construction.
+
+In high school, larker_package was also responsible for his school's new-media operations, gaining experience in content and operations along the way. Later, he entered the amateur-radio HAM community, obtained his own callsign, and met many other HAM operators. After entering university, he began looking toward the much broader field of embodied intelligence, while competitions and new opportunities gradually appeared in his life. This also means that his construction progress on the server is not stable over the long term, but more cyclical. When busy, he may disappear for a long time; when he becomes available again, he may suddenly return and push forward a large amount of content. If you see larker_package in the group, besides railways, cities, and construction, you are more likely to find him discussing technology, Agents, GitHub, or whatever new thing he is tinkering with.`,
+		'ja-JP': `百色出身。2018 年 12 月 1 日に HydCraft へ参加し、管理委員会常務委員兼副サーバーオーナー、第 8 シーズンの頤恒地区責任者を務めています。山東理工大学の 2026 年度入学の学部生で、別名は Orange です。larker_package は大規模な CR 駅舎建築と、地域性のある花彫駅のデザインを得意としています。都市計画や全体建設はあまり得意ではありませんが、CR の鉄道施設を模倣・再現することには豊富な経験があります。交通文化の愛好家として、人文地理、鉄道建設計画、コンピューターにも強い関心を持っています。
+
+larker_package はプロジェクトを通じて早くから成熟したプレイヤーです。小学生の頃にはすでに易言語に触れ、中学・高校時代にはクライアント開発の経験を積みました。さまざまな行政アプリや複雑な手続きの間を長く行き来したことで、OA の業務フローにも精通しています。副サーバーオーナーとして、サーバーオーナーの Aurora_Lemon、副サーバーオーナーの qixuanjun233 と共に、サーバーの遊び方や保守について多くの新しい方向を試してきました。技術スタックは主に UniApp、Flutter、Web 開発に集中しており、これらの経験によってサーバーでは建設以外の仕事も担っています。
+
+高校時代には校内の新メディア運営も担当し、コンテンツ制作と運営の経験を積みました。その後アマチュア無線の HAM 界隈にも入り、自分のコールサインを持ち、多くの HAMer と知り合いました。大学に入ってからは、より広い身体性知能の分野へ視野を向け始め、さまざまなコンテストや新しい機会も生活の中に現れています。その一方で、サーバーでの建設の進み方は長期的に安定しているというより、周期的なものになっています。忙しいときには長い間姿を見せないかもしれませんが、時間ができると突然戻ってきて、大きな範囲の内容を一気に進めることがあります。グループで larker_package を見かけたら、鉄道、都市、建設の話以外では、技術、Agent、GitHub、あるいは最近また何をいじっているのかについて話している可能性が高いでしょう。`,
+	},
+	TochoShizuku: {
+		'zh-CN': `莆田人，2022 年 8 月 7 日加入氢气工艺，服务器资深建筑师、八周目新蒲岛片区负责人，福建师范大学协和学院 2026 级（通信工程）本科生。远绪十分擅长日式小比例建筑，无论是建筑本身还是室内设计，都有着相当鲜明的个人风格。相比单独关注一栋建筑，他更在意建筑、道路、城市，甚至服务器、客户端和材质包之间的关系。他有一种把事情不断向细节推进直到整套体系逐渐自洽的能力。
+
+真正让人惊诧的也不只是他的建筑能力，而是背后那一整套能够自洽的美学。一栋建筑应该朝向哪里、道路应该怎样经过、周围应该出现什么样的设施，乃至玩家最终通过怎样的客户端和材质看到它，这些看起来处于不同层级的问题，在远绪这里往往属于同一件事情。如果你在服务器里看到他，他大概率正在用 Axiom 调整某个方块的朝向，又或是和人讨论一栋建筑究竟应该怎样摆、放在什么位置。
+
+作为电子类专业的学生，远绪并不完全属于典型的项目早熟型玩家，但他确实在高中科技社和 Minecraft 中积累了不少整合不同技术与工具的能力。高中时期，他曾担任科技社社长，从代码到硬件都接触过不少内容，也因此认识了一群有着相似兴趣的人。他所在高中科技社的前任社长冰可乐，后来也成为了他的挚友，同时也是氢气工艺元老院成员。
+
+进入大学以后，远绪与服务器里的人际关系也逐渐从线上延伸到了现实。福建师范大学协和学院与服主柠檬所在的福建理工大学相距不远，因此远绪、柠檬和冰可乐偶尔也会在线下聚一聚、聊聊天。从高中科技社到 Minecraft，再到如今现实中的朋友，有些原本因为技术和游戏建立起来的联系，也就这样一点点延续了下来。`,
+		'zh-TW': `莆田人，2022 年 8 月 7 日加入氫氣工藝，伺服器資深建築師、八週目新蒲島片區負責人，福建師範大學協和學院 2026 級（通信工程）本科生。遠緒十分擅長日式小比例建築，無論是建築本身還是室內設計，都有著相當鮮明的個人風格。相比單獨關注一棟建築，他更在意建築、道路、城市，甚至伺服器、客戶端和材質包之間的關係。他有一種把事情不斷向細節推進直到整套體系逐漸自洽的能力。
+
+真正讓人驚詫的也不只是他的建築能力，而是背後那一整套能夠自洽的美學。一棟建築應該朝向哪裡、道路應該怎樣經過、周圍應該出現什麼樣的設施，乃至玩家最終通過怎樣的客戶端和材質看到它，這些看起來處於不同層級的問題，在遠緒這裡往往屬於同一件事情。如果你在伺服器裡看到他，他大概率正在用 Axiom 調整某個方塊的朝向，又或是和人討論一棟建築究竟應該怎樣擺、放在什麼位置。
+
+作為電子類專業的學生，遠緒並不完全屬於典型的專案早熟型玩家，但他確實在高中科技社和 Minecraft 中積累了不少整合不同技術與工具的能力。高中時期，他曾擔任科技社社長，從程式碼到硬體都接觸過不少內容，也因此認識了一群有著相似興趣的人。他所在高中科技社的前任社長冰可樂，後來也成為了他的摯友，同時也是氫氣工藝元老院成員。
+
+進入大學以後，遠緒與伺服器裡的人際關係也逐漸從線上延伸到了現實。福建師範大學協和學院與服主檸檬所在的福建理工大學相距不遠，因此遠緒、檸檬和冰可樂偶爾也會在線下聚一聚、聊聊天。從高中科技社到 Minecraft，再到如今現實中的朋友，有些原本因為技術和遊戲建立起來的聯繫，也就這樣一點點延續了下來。`,
+		'en-US': `A Putian native, TochoShizuku joined HydCraft on August 7, 2022. He is a Senior Architect of the server, the leader of the Xinpu Island district in Season 8, and a communications engineering undergraduate at the Concord College of Fujian Normal University in the class of 2026. TochoShizuku is highly skilled at small-scale Japanese architecture, with a distinctive personal style in both buildings and interior design. Rather than focusing on a single building in isolation, he cares more about the relationships among buildings, roads, cities, and even the server, client, and resource pack. He has the ability to keep pushing a project toward greater detail until the whole system gradually becomes coherent.
+
+What is truly astonishing is not only his architectural ability, but the self-consistent aesthetic behind it. Which way should a building face? How should a road pass through? What facilities should appear nearby? Even the client and resource pack through which players will eventually see it: questions that seem to belong to different levels are often one and the same thing to TochoShizuku. If you see him on the server, he is probably using Axiom to adjust the orientation of a block, or discussing exactly how a building should be placed and where it should stand.
+
+As a student of electronics-related subjects, TochoShizuku is not entirely a typical project-mature player, but he has accumulated considerable ability to integrate different technologies and tools through his high-school technology club and Minecraft. In high school, he served as the club president and encountered everything from code to hardware, which also introduced him to a group of people with similar interests. The previous president of his high-school technology club, Mr_Z0406, later became his close friend and is also a member of HydCraft's Council of Elders.
+
+After entering university, TochoShizuku's relationships with people on the server gradually extended from online life into reality. Concord College of Fujian Normal University is not far from Fujian University of Technology, where Server Owner Aurora_Lemon studies, so TochoShizuku, Lemon, and Mr_Z0406 occasionally meet offline and talk. From a high-school technology club to Minecraft and now to real-life friendship, some connections originally established through technology and games have continued little by little.`,
+		'ja-JP': `莆田出身。2022 年 8 月 7 日に HydCraft へ参加し、サーバーのシニアアーキテクト、第 8 シーズンの新蒲島地区責任者を務めています。福建師範大学協和学院の 2026 年度入学、通信工学専攻の学部生です。TochoShizuku は小規模な日本風建築を非常に得意としており、建物そのものにもインテリアデザインにも、はっきりした個人のスタイルがあります。一つの建物だけを切り離して見るより、建築、道路、都市、さらにはサーバー、クライアント、リソースパックの関係を重視します。物事を細部へ向けて推し進め、システム全体が少しずつ整合していくまで取り組む力を持っています。
+
+本当に驚かされるのは、建築の能力だけでなく、その背後にある一貫した美学です。建物はどちらを向くべきか、道路はどう通るべきか、周囲にはどのような施設があるべきか、そしてプレイヤーは最終的にどのクライアントとリソースパックを通じてそれを見るのか。異なる階層にあるように見える問いも、TochoShizuku にとってはしばしば一つの問題です。サーバーで彼を見かけたなら、Axiom でブロックの向きを調整しているか、建物をどのように、どこへ配置すべきかを誰かと話している可能性が高いでしょう。
+
+電子系の専攻を学ぶ学生として、TochoShizuku は典型的な早熟型プロジェクトプレイヤーに完全に当てはまるわけではありません。しかし高校の技術部と Minecraft を通して、異なる技術やツールを統合する力を確かに身につけました。高校時代には技術部の部長を務め、コードからハードウェアまで幅広く触れ、同じような興味を持つ仲間とも出会いました。彼の高校の技術部で前任の部長を務めていた Mr_Z0406 は、後に親友となり、HydCraft の元老院メンバーにもなりました。
+
+大学に入ってから、TochoShizuku とサーバーの人々との関係は、オンラインから現実へ少しずつ広がりました。福建師範大学協和学院と、サーバーオーナーの Aurora_Lemon が通う福建理工大学は遠くないため、TochoShizuku、Lemon、Mr_Z0406 は時々オフラインで集まって話をします。高校の技術部から Minecraft、そして現在の現実の友人関係へ。技術とゲームによって生まれたつながりのいくつかは、このように少しずつ続いています。`,
+	},
+	ColaFrog: {
+		'zh-CN': `重庆人，2019 年 7 月 10 日加入氢气工艺，八周目旧巷片区负责人。作为早期加入氢气工艺的老玩家，可蛙在建筑领域并不属于特别擅长的那一类，但他有着很强的城市整合能力。他能把原本分散的建筑和区域连接起来，修路、补街区、整理城市结构，最终拼成一座完整的城市，总得有人把它们真正连在一起。
+
+出生在重庆万州的可蛙操着一口很有辨识度的家乡口音。他与氢气工艺的相遇，则来自 2019 年一次偶然到不能再偶然的巧合。一次偶然的加入，后来却一路延续到了现在，也让他成为服务器里相当熟悉的一张面孔。相比建筑，可蛙更多的兴趣集中在电竞、放送和活动策划上。他是 HLG 电竞社团成员，也是氢气电视台台长，同时参与 OMEC 的赛事策划。OMEC 是与氢气工艺关系较为密切的工作室所组织的 Minecraft PVP 赛事，而从赛事组织到内容放送，这些事情恰好都落在可蛙擅长的范围里。
+
+如果说有些玩家负责把一栋建筑做漂亮，那么可蛙更像是在负责把一座城市和一次活动组织起来。他没有站在最显眼的位置，他是活动背后的幕后的总策划。如果你有机会见到可蛙，见到他的第一眼你或许会以为他是某个帅帅的电竞选手。`,
+		'zh-TW': `重慶人，2019 年 7 月 10 日加入氫氣工藝，八週目舊巷片區負責人。作為早期加入氫氣工藝的老玩家，可蛙在建築領域並不屬於特別擅長的那一類，但他有著很強的城市整合能力。他能把原本分散的建築和區域連接起來，修路、補街區、整理城市結構，最終拼成一座完整的城市，總得有人把它們真正連在一起。
+
+出生在重慶萬州的可蛙操著一口很有辨識度的家鄉口音。他與氫氣工藝的相遇，則來自 2019 年一次偶然到不能再偶然的巧合。一次偶然的加入，後來卻一路延續到了現在，也讓他成為伺服器裡相當熟悉的一張面孔。相比建築，可蛙更多的興趣集中在電競、放送和活動策劃上。他是 HLG 電競社團成員，也是氫氣電視台台長，同時參與 OMEC 的賽事策劃。OMEC 是與氫氣工藝關係較為密切的工作室所組織的 Minecraft PVP 賽事，而從賽事組織到內容放送，這些事情恰好都落在可蛙擅長的範圍裡。
+
+如果說有些玩家負責把一棟建築做漂亮，那麼可蛙更像是在負責把一座城市和一次活動組織起來。他沒有站在最顯眼的位置，他是活動背後的幕後總策劃。如果你有機會見到可蛙，見到他的第一眼你或許會以為他是某個帥帥的電競選手。`,
+		'en-US': `A Chongqing native from Wanzhou, ColaFrog joined HydCraft on July 10, 2019. He is the leader of the Old Lane district in Season 8. As an early HydCraft player, ColaFrog is not among the especially skilled builders, but he has a powerful ability to integrate cities. He can connect buildings and areas that were originally scattered, build roads, fill in neighborhoods, and organize urban structures until they become a complete city. Someone has to truly connect everything together.
+
+ColaFrog was born in Wanzhou, Chongqing, and speaks with a highly recognizable hometown accent. His encounter with HydCraft came from an almost impossibly accidental coincidence in 2019. An accidental join nevertheless continued all the way to the present, making him a familiar face on the server. Compared with architecture, ColaFrog is more interested in esports, broadcasting, and event planning. He is a member of HLG, the server's esports club, the director of HydCraft Television, and a participant in OMEC event planning. OMEC is a Minecraft PVP competition organized by a studio closely connected with HydCraft; from event organization to content broadcasting, these responsibilities happen to fit ColaFrog's strengths perfectly.
+
+If some players are responsible for making a single building beautiful, ColaFrog is more like the person responsible for organizing an entire city and an entire event. He does not stand in the most conspicuous position; he is the chief planner working behind the scenes. If you meet ColaFrog, your first impression might be that he is some handsome esports player.`,
+		'ja-JP': `重慶市万州出身。2019 年 7 月 10 日に HydCraft へ参加し、第 8 シーズンの旧巷地区責任者を務めています。HydCraft に早期から参加した古参プレイヤーですが、建築分野で特に優れたタイプというわけではありません。その一方で、都市を統合する能力は非常に高いです。もともと分散していた建物や地域をつなぎ、道路を整備し、街区を補い、都市構造を整理して、最終的に一つの都市へ仕上げます。すべてを本当につなぐ人が必要なのです。
+
+重慶市万州に生まれた ColaFrog は、聞けばすぐ分かる故郷の訛りで話します。彼と HydCraft の出会いは、2019 年の偶然に偶然が重なった出来事から始まりました。偶然の加入はその後も現在まで続き、彼をサーバーでとてもよく知られた顔にしました。建築よりも、ColaFrog の関心は e スポーツ、放送、イベント企画に集中しています。サーバーの e スポーツクラブ HLG のメンバーであり、HydCraft TV の局長でもあります。また OMEC の大会企画にも参加しています。OMEC は HydCraft と関係の深いスタジオが主催する Minecraft PVP 大会で、イベント運営からコンテンツ配信まで、こうした仕事はまさに ColaFrog の得意分野です。
+
+一部のプレイヤーが一つの建物を美しく仕上げる役割を担うなら、ColaFrog は一つの都市と一つのイベントを組織する役割を担っているような人です。最も目立つ場所に立つことはありません。彼はイベントの裏側にいる総合プランナーです。ColaFrog に会う機会があれば、第一印象では、どこかのイケメン e スポーツ選手だと思うかもしれません。`,
 	},
 	Aurora_Lemon: {
 		'zh-CN': `福州人，2018 年 9 月 7 日加入氢气工艺，管委会主席兼服务器服主、八周目出生点直管区负责人，福建理工大学 2026 级本科生（专升本）。作为服主，柠檬主要负责服务器的运维和方向制定，而不是建筑。相反，建筑其实是他最不擅长的内容。作为 TypeScript 全栈开发者，他为服务器构建了多个网站，如 HydCraft Portal、HydCraft Console 等。在八周目初期，他与副服主仓鼠、七炫和元老院成员 Dotkk 协力，加速推进了八周目的上线。在出生点，柠檬主要负责卑微地求人送建筑凑地方。如果你在服务器看见柠檬，他大概率不是在建东西，而是在服务器里面乱逛、转圈圈和想事情。要不然，就是用机械动力手杖拿着物理化的方块乱飞。`,

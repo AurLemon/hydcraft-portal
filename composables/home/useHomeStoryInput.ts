@@ -11,19 +11,21 @@ interface HomeStoryObserverVars {
 	type: string
 	capture: boolean
 	passive: boolean
+	preventDefault: boolean
 	debounce: boolean
 	lockAxis: boolean
 	dragMinimum: number
 	tolerance: number
 	onStopDelay: number
 	ignoreCheck: (event: Event) => boolean
-	onPress: () => void
+	onPress: (observer: GsapObserver) => void
+	onRelease: () => void
 	onChangeY: (observer: GsapObserver) => void
 	onStop: () => void
 }
 
 export interface HomeStoryInputRuntime {
-	resetGesture(): void
+	handleNavigationSettled(): void
 	destroy(): void
 }
 
@@ -34,6 +36,7 @@ const KEYBOARD_SCROLL_KEYS = new Set([
 	'PageUp',
 	' ',
 ])
+const WHEEL_SETTLE_GUARD_MS = 400
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
 	if (!(target instanceof HTMLElement)) return false
@@ -88,10 +91,42 @@ export const createHomeStoryInput = async (
 ): Promise<HomeStoryInputRuntime> => {
 	const { Observer } = await import('gsap/Observer')
 	let gestureCaptured = false
+	let pointerCommitted = false
+	let wheelBlockedUntil = 0
+	let pointerStartY: number | null = null
 
-	const resetGesture = (): void => {
+	const eventClientY = (event: Event): number | null => {
+		if (event instanceof TouchEvent) {
+			return (
+				event.changedTouches[0]?.clientY ?? event.touches[0]?.clientY ?? null
+			)
+		}
+		if (event instanceof PointerEvent || event instanceof MouseEvent) {
+			return event.clientY
+		}
+		return null
+	}
+
+	const shouldIgnoreObserverEvent = (event: Event): boolean => {
+		if (callbacks.isIgnoredTarget(event.target)) return true
+		const snapshot = callbacks.getSnapshot()
+		if (!snapshot.storyViewportActive) return true
+
+		if (event instanceof WheelEvent) {
+			const direction = resolveDocumentDirection(event, event.deltaY)
+			return direction ? !canCaptureStoryInput(snapshot, direction) : true
+		}
+
+		const clientY = eventClientY(event)
+		if (pointerStartY === null || clientY === null) return false
+		const deltaY = clientY - pointerStartY
+		if (Math.abs(deltaY) < 2) return false
+		return false
+	}
+
+	const handleNavigationSettled = (): void => {
 		gestureCaptured = false
-		callbacks.setInputEnded(true)
+		wheelBlockedUntil = performance.now() + WHEEL_SETTLE_GUARD_MS
 	}
 
 	const tryCommit = (
@@ -102,20 +137,24 @@ export const createHomeStoryInput = async (
 		if (callbacks.isIgnoredTarget(event.target)) return
 		const snapshot = callbacks.getSnapshot()
 		if (
-			gestureCaptured &&
-			snapshot.inputEnded &&
-			snapshot.navigationStatus === 'idle'
+			(source === 'wheel'
+				? performance.now() < wheelBlockedUntil
+				: pointerCommitted) ||
+			snapshot.navigationStatus === 'transitioning'
 		) {
-			gestureCaptured = false
-		}
-		if (gestureCaptured || snapshot.navigationStatus === 'transitioning') {
 			preventCapturedInput(event)
 			return
 		}
-		if (!canCaptureStoryInput(snapshot, direction)) return
+		if (!canCaptureStoryInput(snapshot, direction)) {
+			if (source === 'touch') {
+				callbacks.releaseBoundary(direction)
+				preventCapturedInput(event)
+			}
+			return
+		}
 
 		if (!callbacks.commit(direction, source)) return
-		gestureCaptured = true
+		if (source === 'touch') pointerCommitted = true
 		preventCapturedInput(event)
 	}
 
@@ -124,18 +163,26 @@ export const createHomeStoryInput = async (
 		type: 'wheel,touch',
 		capture: true,
 		passive: false,
+		preventDefault: true,
 		debounce: false,
 		lockAxis: true,
 		dragMinimum: 6,
 		tolerance: 12,
 		onStopDelay: 0.28,
-		ignoreCheck: (event) => callbacks.isIgnoredTarget(event.target),
-		onPress: () => {
+		ignoreCheck: shouldIgnoreObserverEvent,
+		onPress: (observer) => {
 			const snapshot = callbacks.getSnapshot()
-			if (snapshot.inputEnded && snapshot.navigationStatus === 'idle') {
+			const event = observer.event
+			pointerStartY = event ? eventClientY(event) : null
+			pointerCommitted = false
+			if (snapshot.navigationStatus === 'idle') {
 				gestureCaptured = false
 			}
-			callbacks.setInputEnded(false)
+		},
+		onRelease: () => {
+			pointerStartY = null
+			pointerCommitted = false
+			callbacks.setInputEnded(true)
 		},
 		onChangeY: (observer) => {
 			const event = observer.event
@@ -208,7 +255,7 @@ export const createHomeStoryInput = async (
 	window.addEventListener('keyup', handleKeyup, { capture: true })
 
 	return {
-		resetGesture,
+		handleNavigationSettled,
 		destroy: () => {
 			observer.kill()
 			window.removeEventListener('keydown', handleKeydown, { capture: true })

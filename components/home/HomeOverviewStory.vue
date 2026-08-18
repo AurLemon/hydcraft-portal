@@ -84,21 +84,18 @@
 					aria-hidden="true"
 				/>
 				<div
-					class="relative hidden w-36 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
+					class="home-overview-player-avatar opacity-65 relative hidden w-48 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
 				>
 					<SkeletonImage
 						:src="player.avatarUrl"
 						:alt="player.id"
 						class="h-full w-full"
-						image-class="h-full w-full scale-110 object-cover [image-rendering:pixelated]"
+						image-class="h-full w-full scale-110 object-cover grayscale-[5%] [image-rendering:pixelated]"
 						skeleton-class="rounded-none"
-					/>
-					<div
-						class="absolute inset-0 bg-linear-to-r from-transparent via-transparent to-slate-950/72"
 					/>
 				</div>
 				<div
-					class="home-overview-player-content flex min-w-0 flex-1 flex-col p-5 sm:p-6"
+					class="home-overview-player-content relative z-10 flex min-w-0 flex-1 flex-col p-5 sm:-ml-12 sm:p-6"
 				>
 					<div class="flex min-w-0 items-center gap-3 sm:hidden">
 						<SkeletonImage
@@ -143,7 +140,6 @@
 		<Transition name="community-rail">
 			<aside
 				v-if="phase === 'community' && communityMembers.length && !detail"
-				:key="`community-rail-${communityEntryKey}`"
 				class="community-member-rail !pointer-events-auto absolute right-0 bottom-36 z-20 w-full sm:bottom-24 lg:top-24 lg:bottom-20 lg:w-[min(28rem,32vw)]"
 				:data-hovered="communityRailHovered"
 				:aria-label="t('home.immersive.overview.communityMembers')"
@@ -351,7 +347,7 @@
 											}}</span>
 											<NuxtLink
 												:to="localePath(`/u/${detail.portalAccount.username}`)"
-												class="pointer-events-auto inline-flex items-center gap-1 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
+												class="pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
 											>
 												<UAvatar
 													:src="detail.portalAccount.avatarUrl || undefined"
@@ -429,7 +425,6 @@ interface HomeOverviewStoryProps {
 	playerStackEntryProgress: number
 	playerStackExitProgress: number
 	communityMembers: readonly HomeOverviewPerson[]
-	communityEntryKey: number
 	foundedDays: number
 	memberCount: number
 	outroProgress: number
@@ -699,6 +694,38 @@ onBeforeUnmount(() => {
 	transform: translateY(0.4rem);
 }
 
+.home-overview-player-avatar {
+	mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(0, 0, 0, 0.98) 10%,
+		rgba(0, 0, 0, 0.93) 20%,
+		rgba(0, 0, 0, 0.85) 30%,
+		rgba(0, 0, 0, 0.75) 40%,
+		rgba(0, 0, 0, 0.63) 50%,
+		rgba(0, 0, 0, 0.49) 60%,
+		rgba(0, 0, 0, 0.35) 70%,
+		rgba(0, 0, 0, 0.22) 80%,
+		rgba(0, 0, 0, 0.1) 90%,
+		transparent 100%
+	);
+
+	-webkit-mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(0, 0, 0, 0.98) 10%,
+		rgba(0, 0, 0, 0.93) 20%,
+		rgba(0, 0, 0, 0.85) 30%,
+		rgba(0, 0, 0, 0.75) 40%,
+		rgba(0, 0, 0, 0.63) 50%,
+		rgba(0, 0, 0, 0.49) 60%,
+		rgba(0, 0, 0, 0.35) 70%,
+		rgba(0, 0, 0, 0.22) 80%,
+		rgba(0, 0, 0, 0.1) 90%,
+		transparent 100%
+	);
+}
+
 .community-member-rail {
 	-webkit-mask-image: linear-gradient(
 		to bottom,
@@ -888,6 +915,10 @@ onBeforeUnmount(() => {
 
 .community-member-card {
 	animation: community-member-card-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.community-rail-leave-active .community-member-card {
+	animation: none;
 }
 
 @keyframes community-member-card-in {

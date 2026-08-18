@@ -76,7 +76,6 @@ export interface HomeStoryRenderState {
 	mapOpacity: number
 	navigationStatus: HomeStoryNavigationStatus
 	playerActionVisible: boolean
-	communityEntryKey: number
 }
 
 export interface HomeStoryInputSnapshot {
@@ -94,6 +93,7 @@ export interface HomeStoryInputSnapshot {
 export interface HomeStoryInputCallbacks {
 	getSnapshot(): HomeStoryInputSnapshot
 	commit(direction: HomeStoryDirection, source: HomeStoryInputSource): boolean
+	releaseBoundary(direction: HomeStoryDirection): void
 	isIgnoredTarget(target: EventTarget | null): boolean
 	setInputEnded(inputEnded: boolean): void
 }

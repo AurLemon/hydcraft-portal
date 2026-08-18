@@ -55,7 +55,14 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 		},
 		introStaffBios.Xiao_awa_,
 	),
-	createStaffMember({ id: 'Complex_Colors', nickname: '杂色' }, null),
+	createStaffMember(
+		{
+			id: 'Complex_Colors',
+			nickname: '杂色',
+			portalUsername: 'Zoushiki',
+		},
+		introStaffBios.Complex_Colors,
+	),
 	createStaffMember(
 		{
 			id: 'CatPillager',
@@ -72,7 +79,14 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 		},
 		introStaffBios.qixuanjun233,
 	),
-	createStaffMember({ id: 'larker_package', nickname: '拉克' }, null),
+	createStaffMember(
+		{
+			id: 'larker_package',
+			nickname: '拉克',
+			portalUsername: 'larker_package',
+		},
+		introStaffBios.larker_package,
+	),
 	createStaffMember(
 		{
 			id: 'FisheyeArtist59',
@@ -106,7 +120,14 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 		introStaffBios.xxlm233,
 	),
 	createStaffMember({ id: 'CN_DaJiChi', nickname: '鸡翅' }, null),
-	createStaffMember({ id: 'Chuxia_SF', nickname: '初夏' }, null),
+	createStaffMember(
+		{
+			id: 'Chuxia_SF',
+			nickname: '初夏',
+			portalUsername: 'Chuxia_SF',
+		},
+		introStaffBios.Chuxia_SF,
+	),
 	createStaffMember(
 		{
 			id: 'Dotkk',
@@ -115,9 +136,30 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 		},
 		introStaffBios.Dotkk,
 	),
-	createStaffMember({ id: 'ColaFrog', nickname: '可蛙' }, null),
-	createStaffMember({ id: 'QiShui233', nickname: '汽水' }, null),
-	createStaffMember({ id: 'TochoShizuku', nickname: '远绪' }, null),
+	createStaffMember(
+		{
+			id: 'ColaFrog',
+			nickname: '可蛙',
+			portalUsername: 'ColaFrog',
+		},
+		introStaffBios.ColaFrog,
+	),
+	createStaffMember(
+		{
+			id: 'QiShui233',
+			nickname: '汽水',
+			portalUsername: 'PanL',
+		},
+		introStaffBios.QiShui233,
+	),
+	createStaffMember(
+		{
+			id: 'TochoShizuku',
+			nickname: '远绪',
+			portalUsername: 'TochoShizuku',
+		},
+		introStaffBios.TochoShizuku,
+	),
 	createStaffMember({ id: 'LanYue_CN', nickname: '蓝月' }, null),
 	createStaffMember({ id: 'Mobike', nickname: '摩拜' }, null),
 	createStaffMember({ id: 'Hei_awa_', nickname: '小黑' }, null),

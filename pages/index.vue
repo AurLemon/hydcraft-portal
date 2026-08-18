@@ -7,6 +7,7 @@
 		>
 			<section
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
+				:class="overviewDetailPersonId ? 'touch-auto' : 'touch-none'"
 			>
 				<div
 					class="absolute inset-0 transition-[opacity,filter,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -85,7 +86,6 @@
 						:player-stack-entry-progress="playerStackEntryProgress"
 						:player-stack-exit-progress="playerStackExitProgress"
 						:community-members="overviewCommunityMembers"
-						:community-entry-key="communityEntryKey"
 						:founded-days="foundedDays"
 						:member-count="homeImmersiveOverview.stats.memberCount"
 						:outro-progress="outroProgress"
@@ -94,7 +94,10 @@
 					/>
 				</div>
 
-				<div class="pointer-events-none absolute inset-0 z-40">
+				<div
+					class="pointer-events-none absolute inset-0"
+					:class="outroProgress > 0.18 ? 'z-40' : 'z-20'"
+				>
 					<HomeOutroSection
 						mode="story"
 						:progress="outroProgress"
@@ -178,7 +181,6 @@ const {
 	playerStackExitProgress,
 	mapOpacity,
 	playerActionVisible,
-	communityEntryKey,
 	scrollToPlayerFocus,
 	refreshScrollStory,
 	reapplyMapProgress,

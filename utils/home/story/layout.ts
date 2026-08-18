@@ -14,6 +14,7 @@ export interface HomeStoryMetrics {
 const DEFAULT_VIEWPORT_HEIGHT_PX = 800
 const HERO_EXIT_LOCAL_PROGRESS = 0.08
 const ATMOSPHERE_LOCAL_PROGRESS = 0.72
+const COMMUNITY_HOLD_VIEWPORTS = 1.5
 
 const clamp = (value: number, minimum = 0, maximum = 1): number =>
 	Math.min(Math.max(value, minimum), maximum)
@@ -51,7 +52,8 @@ export const resolveHomeStoryMetrics = (
 ): HomeStoryMetrics => {
 	const viewport = Math.max(viewportHeightPx || DEFAULT_VIEWPORT_HEIGHT_PX, 1)
 	const stopCount = Math.max(playerCount, 0) + 3
-	const storyScrollDistancePx = Math.max(stopCount - 1, 1) * viewport
+	const storyScrollDistancePx =
+		Math.max(stopCount - 1 + COMMUNITY_HOLD_VIEWPORTS - 1, 1) * viewport
 
 	return {
 		viewportHeightPx: viewport,
@@ -66,8 +68,8 @@ export const resolveHomeStoryLayout = (
 ): HomeStoryLayout => {
 	const safePlayerCount = Math.max(playerCount, 0)
 	const stopCount = safePlayerCount + 3
-	const toProgress = (index: number): number =>
-		clamp(index / Math.max(stopCount - 1, 1))
+	const progressSpan = Math.max(stopCount - 1 + COMMUNITY_HOLD_VIEWPORTS - 1, 1)
+	const toProgress = (index: number): number => clamp(index / progressSpan)
 
 	const hero: HomeStoryStop = { id: 'hero', index: 0, progress: 0 }
 	const playerStops: HomeStoryStop[] = Array.from(

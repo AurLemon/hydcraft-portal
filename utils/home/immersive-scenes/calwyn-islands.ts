@@ -71,7 +71,7 @@ export const calwynIslandsScene: HomeImmersiveSceneDefinition = {
 		},
 		locales: {
 			'zh-CN': {
-				name: '这里是\n卡温\n群岛',
+				name: '这里是\n卡温群岛',
 				desktopDisplayName: {
 					layout: 'horizontal',
 					prefix: '这里是',
@@ -95,7 +95,7 @@ export const calwynIslandsScene: HomeImmersiveSceneDefinition = {
 				],
 			},
 			'zh-TW': {
-				name: '這裡是\n卡溫\n群島',
+				name: '這裡是\n卡溫群島',
 				desktopDisplayName: {
 					layout: 'horizontal',
 					prefix: '這裡是',
