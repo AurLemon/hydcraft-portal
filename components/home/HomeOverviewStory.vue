@@ -263,6 +263,7 @@
 				<div
 					ref="detailScrollRef"
 					class="detail-scroll h-full overflow-y-auto overscroll-contain"
+					data-home-detail-scroll
 					@scroll.passive="handleDetailScroll"
 				>
 					<div

@@ -3,7 +3,7 @@
 		<div
 			ref="scrollStoryRef"
 			class="relative w-full bg-[var(--color-surface-0)]"
-			:style="{ height: `${sceneStoryHeightDvh}dvh` }"
+			:style="{ height: sceneStoryHeightStyle }"
 		>
 			<section
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
@@ -165,7 +165,7 @@ const scenePlayerCount = computed(() => scene.value.players.length)
 const {
 	scrollStoryRef,
 	storyLayout,
-	sceneStoryHeightDvh,
+	sceneStoryHeightStyle,
 	heroActive,
 	overviewPhase,
 	outroProgress,

@@ -333,6 +333,7 @@ export default defineNuxtConfig({
 				'dayjs',
 				'dayjs/plugin/utc',
 				'gsap',
+				'gsap/Observer',
 				'gsap/ScrollTrigger',
 				'hammerjs',
 				'lunar-typescript',
