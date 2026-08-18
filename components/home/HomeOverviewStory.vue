@@ -63,14 +63,14 @@
 
 		<section
 			v-if="(phase === 'scene' || phase === 'players') && players.length"
-			class="absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
+			class="home-overview-player-rail absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
 			:aria-label="t('home.immersive.overview.scenePlayers')"
 		>
 			<article
 				v-for="(player, index) in players"
 				:key="player.id"
 				role="button"
-				class="pointer-events-auto group absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] cursor-pointer overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[background-color,border-color,box-shadow] duration-200 ease-out will-change-[opacity,transform,filter] hover:border-white/32 hover:bg-slate-900 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 active:border-white/40"
+				class="home-overview-player-card pointer-events-auto group absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] cursor-pointer overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[background-color,border-color,box-shadow] duration-200 ease-out will-change-[opacity,transform,filter] hover:border-white/32 hover:bg-slate-900 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 active:border-white/40"
 				:style="playerCardStyle(index)"
 				:tabindex="playerCardIsInteractive(index) ? 0 : -1"
 				:aria-hidden="playerCardIsInteractive(index) ? undefined : 'true'"
@@ -96,7 +96,9 @@
 						class="absolute inset-0 bg-linear-to-r from-transparent via-transparent to-slate-950/72"
 					/>
 				</div>
-				<div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+				<div
+					class="home-overview-player-content flex min-w-0 flex-1 flex-col p-5 sm:p-6"
+				>
 					<div class="flex min-w-0 items-center gap-3 sm:hidden">
 						<SkeletonImage
 							:src="player.avatarUrl"
@@ -119,7 +121,7 @@
 					</div>
 					<p
 						v-if="player.description"
-						class="mt-4 line-clamp-3 font-serif text-lg leading-7 text-white/78"
+						class="home-overview-player-description mt-4 line-clamp-3 font-serif text-lg leading-7 text-white/78"
 					>
 						{{ player.description }}
 					</p>
@@ -667,6 +669,30 @@ onBeforeUnmount(() => {
 
 .community-member-rail[data-hovered='true'] :deep([data-slot='content']) {
 	animation-play-state: paused !important;
+}
+
+@media (min-width: 1024px) and (max-height: 850px) {
+	.home-overview-player-rail {
+		height: 13.5rem;
+	}
+
+	.home-overview-player-card {
+		height: 12rem;
+	}
+
+	.home-overview-player-content {
+		padding: 1rem 1.25rem;
+	}
+
+	.home-overview-player-description {
+		margin-top: 0.5rem;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+		font-size: 1rem;
+		line-height: 1.5;
+	}
 }
 
 .community-member-rail :deep([data-slot='root']),

@@ -405,7 +405,7 @@ const handleSceneGalleryLightboxOpenChange = (open: boolean): void => {
 	}
 }
 
-@media (min-width: 1024px) and (max-height: 700px) {
+@media (min-width: 1024px) and (max-height: 850px) {
 	.home-hero-display-prefix {
 		font-size: clamp(1.25rem, 4dvh, 2.25rem);
 		line-height: 1.08;
@@ -428,7 +428,7 @@ const handleSceneGalleryLightboxOpenChange = (open: boolean): void => {
 	}
 }
 
-@media (max-height: 700px) {
+@media (max-height: 850px) {
 	.mobile-scene-gallery-frame:nth-child(n + 2) {
 		display: none;
 	}
