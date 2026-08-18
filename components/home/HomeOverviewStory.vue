@@ -1,5 +1,8 @@
 <template>
-	<div class="pointer-events-none absolute inset-0 z-30 text-white">
+	<div
+		class="pointer-events-none absolute inset-0 z-30 text-white"
+		:style="{ opacity: overviewOpacity }"
+	>
 		<div class="immersive-site-shell absolute inset-0">
 			<div class="relative h-full">
 				<Transition name="overview-label">
@@ -417,6 +420,7 @@ interface HomeOverviewStoryProps {
 	communityMembers: readonly HomeOverviewPerson[]
 	foundedDays: number
 	memberCount: number
+	outroProgress: number
 	detailPersonId: string | null
 }
 
@@ -434,6 +438,11 @@ const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
+const overviewOpacity = computed(() =>
+	props.phase === 'community'
+		? 1 - smoothStep(0.02, 0.42, props.outroProgress)
+		: 1,
+)
 const detailScrollRef = ref<HTMLDivElement | null>(null)
 const detailScrollContentRef = ref<HTMLDivElement | null>(null)
 const detailScrollState = reactive<DetailScrollState>({

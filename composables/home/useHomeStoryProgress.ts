@@ -271,7 +271,12 @@ export const useHomeStoryProgress = (options: {
 
 		// Player cards must remain directly scroll-controlled. Snapping them to
 		// a focus stop makes a short pause force a fast, fixed-duration switch.
-		if (nearest.id === 'player') return progress
+		if (
+			nearest.id === 'player' ||
+			nearest.id === 'outro-start' ||
+			nearest.id === 'outro-end'
+		)
+			return progress
 
 		return Math.abs(nearest.progress - progress) <= 0.02
 			? nearest.progress
@@ -291,9 +296,7 @@ export const useHomeStoryProgress = (options: {
 				),
 		)
 
-		if (normalized >= layout.outroPresentationStart) {
-			overviewPhase.value = 'outro'
-		} else if (normalized < layout.heroProgressEnd) {
+		if (normalized < layout.heroProgressEnd) {
 			overviewPhase.value = 'hidden'
 		} else if (normalized < layout.playerEntryProgressEnd) {
 			overviewPhase.value = 'scene'
@@ -378,7 +381,7 @@ export const useHomeStoryProgress = (options: {
 					trigger: scrollStory,
 					start: 'top top',
 					end: 'bottom bottom',
-					scrub: STORY_SCRUB_SECONDS,
+					scrub: true,
 					snap: {
 						snapTo: resolveStorySnapProgress,
 						directional: true,

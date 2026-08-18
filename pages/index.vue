@@ -85,6 +85,7 @@
 						:community-members="overviewCommunityMembers"
 						:founded-days="foundedDays"
 						:member-count="homeImmersiveOverview.stats.memberCount"
+						:outro-progress="outroProgress"
 						v-model:detail-person-id="overviewDetailPersonId"
 						@focus-player="handleOverviewPlayerFocus"
 					/>

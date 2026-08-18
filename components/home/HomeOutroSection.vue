@@ -11,7 +11,7 @@
 			class="home-outro-section relative h-full min-h-[96dvh] w-full overflow-hidden"
 		>
 			<div
-				class="home-outro-surface pointer-events-none absolute inset-0 z-0 bg-slate-950/72 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+				class="home-outro-surface pointer-events-none absolute inset-0 z-0 bg-slate-950/72"
 				:style="{ opacity: backgroundProgress }"
 			>
 				<SkeletonImage
@@ -25,7 +25,7 @@
 			</div>
 
 			<div
-				class="immersive-site-shell relative z-10 grid min-h-[96dvh] items-center gap-10 py-18 transition-[opacity,filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,filter,transform] lg:grid-cols-[minmax(0,0.86fr)_minmax(24rem,1.14fr)] lg:gap-16 lg:py-22"
+				class="immersive-site-shell relative z-10 grid min-h-[96dvh] items-center gap-10 py-18 will-change-[opacity,filter,transform] lg:grid-cols-[minmax(0,0.86fr)_minmax(24rem,1.14fr)] lg:gap-16 lg:py-22"
 				:style="contentStyle"
 			>
 				<div class="order-2 max-w-2xl lg:order-1">
@@ -137,9 +137,7 @@ const outroInteractive = computed(
 	() => props.mode !== 'story' || visualProgress.value >= 0.35,
 )
 const backgroundProgress = computed(() =>
-	props.mode === 'story'
-		? Math.min(Math.max(visualProgress.value / 0.2, 0), 1)
-		: 1,
+	props.mode === 'story' ? visualProgress.value : 1,
 )
 const imageStyle = computed(() => ({
 	filter: 'grayscale(0.42) saturate(0.72) brightness(0.84)',
@@ -147,10 +145,7 @@ const imageStyle = computed(() => ({
 	transform: `translate3d(0, ${(1 - backgroundProgress.value) * 12}px, 0) scale(${1.02 - backgroundProgress.value * 0.02})`,
 }))
 const contentStyle = computed(() => {
-	const progress =
-		props.mode === 'story'
-			? Math.min(Math.max((visualProgress.value - 0.06) / 0.22, 0), 1)
-			: 1
+	const progress = props.mode === 'story' ? visualProgress.value : 1
 
 	return {
 		opacity: progress,
