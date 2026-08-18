@@ -9,7 +9,7 @@
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
 			>
 				<div
-					class="absolute inset-0 transition-[opacity,filter,transform] duration-500"
+					class="absolute inset-0 transition-[opacity,filter,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
 					:class="[
 						sceneSwitching ? 'scale-[1.01] opacity-40 blur-[2px]' : '',
 						developerControlsEnabled && heroActive ? 'z-50' : '',
@@ -31,6 +31,7 @@
 						:lighting="scene.lighting"
 						:water="homeImmersiveWater"
 						:focus-positions="scenePlayerFocusPositions"
+						:community-focus-position="communityFocusPosition"
 						:world-player-markers="worldPlayerMarkers"
 						:render-active="mapOpacity > 0"
 						:marker-clicks-only="!developerControlsEnabled"
@@ -80,9 +81,11 @@
 						:players="sceneOverviewPlayers"
 						:active-player-index="activePlayerIndex"
 						:player-progress="playerCarouselProgress"
+						:player-action-visible="playerActionVisible"
 						:player-stack-entry-progress="playerStackEntryProgress"
 						:player-stack-exit-progress="playerStackExitProgress"
 						:community-members="overviewCommunityMembers"
+						:community-entry-key="communityEntryKey"
 						:founded-days="foundedDays"
 						:member-count="homeImmersiveOverview.stats.memberCount"
 						:outro-progress="outroProgress"
@@ -174,6 +177,8 @@ const {
 	playerStackEntryProgress,
 	playerStackExitProgress,
 	mapOpacity,
+	playerActionVisible,
+	communityEntryKey,
 	scrollToPlayerFocus,
 	refreshScrollStory,
 	reapplyMapProgress,
@@ -202,8 +207,9 @@ let sceneSwitchTimer: ReturnType<typeof setTimeout> | null = null
 let sceneCountdownResumeTimer: ReturnType<typeof setTimeout> | null = null
 let sceneSwitchWatchdogTimer: ReturnType<typeof setTimeout> | null = null
 
-const SCENE_SWITCH_OUT_DURATION_MS = 650
-const SCENE_SWITCH_IN_DURATION_MS = 200
+const HERO_TO_PLAYER_DURATION_MS = 1250
+const SCENE_SWITCH_OUT_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
+const SCENE_SWITCH_IN_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
 const SCENE_SWITCH_MAX_WAIT_MS = SCENE_SWITCH_IN_DURATION_MS
 
 const resolveLocalizedText = (text: HomeImmersiveLocalizedText): string =>
@@ -294,6 +300,17 @@ const overviewCommunityMembers = computed<HomeOverviewPerson[]>(() =>
 			position: overviewMemberPositions.value[member.id],
 		})),
 )
+const communityFocusPosition = computed(() => {
+	if (overviewPhase.value !== 'community' || !overviewDetailPersonId.value) {
+		return null
+	}
+
+	return (
+		overviewCommunityMembers.value.find(
+			(member) => member.id === overviewDetailPersonId.value,
+		)?.position ?? null
+	)
+})
 const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 	const people =
 		overviewPhase.value === 'community'
@@ -307,6 +324,8 @@ const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 		markerGroup === 'scene'
 			? sceneOverviewPlayers.value[activePlayerIndex.value]?.id
 			: undefined
+	const focusedCommunityMemberId =
+		markerGroup === 'community' ? overviewDetailPersonId.value : undefined
 
 	return people.flatMap((person) =>
 		person.position
@@ -320,7 +339,9 @@ const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 						isFocused:
 							markerGroup === 'scene'
 								? person.id === focusedScenePlayerId
-								: undefined,
+								: person.id === focusedCommunityMemberId
+									? true
+									: undefined,
 						x: person.position.x,
 						y: person.position.y,
 						z: person.position.z,

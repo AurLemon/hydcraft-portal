@@ -27,16 +27,13 @@ export interface HomeStoryInputRuntime {
 	destroy(): void
 }
 
-const KEYBOARD_SCROLL_DISTANCE_PX: Readonly<Record<string, number>> = {
-	ArrowDown: 48,
-	ArrowUp: 48,
-	PageDown: 0.86,
-	PageUp: 0.86,
-	' ': 0.86,
-}
-
-const clampProgress = (progress: number): number =>
-	Math.min(Math.max(progress, 0), 1)
+const KEYBOARD_SCROLL_KEYS = new Set([
+	'ArrowDown',
+	'ArrowUp',
+	'PageDown',
+	'PageUp',
+	' ',
+])
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
 	if (!(target instanceof HTMLElement)) return false
@@ -59,37 +56,26 @@ const resolveDocumentDirection = (
 	return event.type === 'wheel' ? deltaDirection : deltaDirection === 1 ? -1 : 1
 }
 
-const intersectsPlayerCorridor = (
+const canCaptureStoryInput = (
 	snapshot: HomeStoryInputSnapshot,
 	direction: HomeStoryDirection,
-	deltaPx: number,
 ): boolean => {
-	if (!snapshot.playerCount) return false
-	const { progress, playerCorridorStart, playerCorridorEnd } = snapshot
+	if (!snapshot.storyViewportActive) return false
 	const epsilon = 0.0005
-	if (
-		(direction === -1 && progress <= playerCorridorStart + epsilon) ||
-		(direction === 1 && progress >= playerCorridorEnd - epsilon)
-	) {
+	if (direction === -1 && snapshot.progress <= snapshot.storyStart + epsilon) {
+		return false
+	}
+	if (direction === 1 && snapshot.progress >= snapshot.storyEnd - epsilon) {
 		return false
 	}
 	if (
-		progress >= playerCorridorStart - epsilon &&
-		progress <= playerCorridorEnd + epsilon
+		snapshot.progress > snapshot.storyStart + epsilon &&
+		snapshot.progress < snapshot.storyEnd - epsilon
 	) {
 		return true
 	}
 
-	const projectedProgress = clampProgress(
-		progress +
-			direction *
-				(Math.max(Math.abs(deltaPx), 1) /
-					Math.max(snapshot.storyScrollDistancePx, 1)),
-	)
-
-	return direction === 1
-		? progress < playerCorridorStart && projectedProgress >= playerCorridorStart
-		: progress > playerCorridorEnd && projectedProgress <= playerCorridorEnd
+	return true
 }
 
 const preventCapturedInput = (event: Event): void => {
@@ -102,31 +88,34 @@ export const createHomeStoryInput = async (
 ): Promise<HomeStoryInputRuntime> => {
 	const { Observer } = await import('gsap/Observer')
 	let gestureCaptured = false
-	let keyboardGestureCaptured = false
 
 	const resetGesture = (): void => {
 		gestureCaptured = false
-		keyboardGestureCaptured = false
+		callbacks.setInputEnded(true)
 	}
 
 	const tryCommit = (
 		direction: HomeStoryDirection,
 		source: HomeStoryInputSource,
 		event: Event,
-		deltaPx: number,
 	): void => {
 		if (callbacks.isIgnoredTarget(event.target)) return
 		const snapshot = callbacks.getSnapshot()
+		if (
+			gestureCaptured &&
+			snapshot.inputEnded &&
+			snapshot.navigationStatus === 'idle'
+		) {
+			gestureCaptured = false
+		}
 		if (gestureCaptured || snapshot.navigationStatus === 'transitioning') {
 			preventCapturedInput(event)
 			return
 		}
-		const shouldCapture = intersectsPlayerCorridor(snapshot, direction, deltaPx)
-		if (!shouldCapture) return
+		if (!canCaptureStoryInput(snapshot, direction)) return
 
 		if (!callbacks.commit(direction, source)) return
 		gestureCaptured = true
-		keyboardGestureCaptured = source === 'keyboard'
 		preventCapturedInput(event)
 	}
 
@@ -142,20 +131,21 @@ export const createHomeStoryInput = async (
 		onStopDelay: 0.28,
 		ignoreCheck: (event) => callbacks.isIgnoredTarget(event.target),
 		onPress: () => {
-			if (callbacks.getSnapshot().navigationStatus === 'idle') resetGesture()
+			const snapshot = callbacks.getSnapshot()
+			if (snapshot.inputEnded && snapshot.navigationStatus === 'idle') {
+				gestureCaptured = false
+			}
+			callbacks.setInputEnded(false)
 		},
 		onChangeY: (observer) => {
 			const event = observer.event
 			const direction = resolveDocumentDirection(event, observer.deltaY)
 			if (!direction) return
-			tryCommit(
-				direction,
-				event.type === 'wheel' ? 'wheel' : 'touch',
-				event,
-				observer.deltaY,
-			)
+			tryCommit(direction, event.type === 'wheel' ? 'wheel' : 'touch', event)
 		},
-		onStop: resetGesture,
+		onStop: () => {
+			callbacks.setInputEnded(true)
+		},
 	}
 	const observer = Observer.create(observerVars)
 
@@ -166,31 +156,49 @@ export const createHomeStoryInput = async (
 			event.ctrlKey ||
 			event.altKey ||
 			isEditableTarget(event.target) ||
-			callbacks.isIgnoredTarget(event.target)
+			callbacks.isIgnoredTarget(event.target) ||
+			!KEYBOARD_SCROLL_KEYS.has(event.key)
 		) {
 			return
 		}
-		const configuredDistance = KEYBOARD_SCROLL_DISTANCE_PX[event.key]
-		if (configuredDistance === undefined) return
+		if (event.repeat && gestureCaptured) {
+			preventCapturedInput(event)
+			return
+		}
+
 		const direction: HomeStoryDirection =
 			event.key === 'ArrowUp' || event.key === 'PageUp' || event.shiftKey
 				? -1
 				: 1
-		const deltaPx =
-			configuredDistance <= 1
-				? window.innerHeight * configuredDistance
-				: configuredDistance
-
-		if (keyboardGestureCaptured) {
-			preventCapturedInput(event)
+		const snapshot = callbacks.getSnapshot()
+		if (
+			gestureCaptured &&
+			snapshot.inputEnded &&
+			snapshot.navigationStatus === 'idle'
+		) {
+			gestureCaptured = false
+		}
+		callbacks.setInputEnded(false)
+		if (
+			gestureCaptured ||
+			snapshot.navigationStatus === 'transitioning' ||
+			!canCaptureStoryInput(snapshot, direction)
+		) {
+			if (snapshot.navigationStatus === 'transitioning' || gestureCaptured) {
+				preventCapturedInput(event)
+			}
 			return
 		}
-		tryCommit(direction, 'keyboard', event, deltaPx)
+
+		if (callbacks.commit(direction, 'keyboard')) {
+			gestureCaptured = true
+			preventCapturedInput(event)
+		}
 	}
 
 	const handleKeyup = (event: KeyboardEvent): void => {
-		if (KEYBOARD_SCROLL_DISTANCE_PX[event.key] === undefined) return
-		keyboardGestureCaptured = false
+		if (!KEYBOARD_SCROLL_KEYS.has(event.key)) return
+		callbacks.setInputEnded(true)
 		if (callbacks.getSnapshot().navigationStatus === 'idle') {
 			gestureCaptured = false
 		}

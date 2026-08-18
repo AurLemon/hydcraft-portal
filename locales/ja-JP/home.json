@@ -20,7 +20,8 @@
 				"days": "日",
 				"memberCountPrefix": "管理委員会と元老院のメンバーは計",
 				"people": "人",
-				"back": "戻る"
+				"back": "戻る",
+				"collapse": "閉じる"
 			},
 			"outro": {
 				"description": "建物を建て、線路を敷き、街を造り、のんびり暮らす。なぜ Minecraft サーバーなのに HydCraft という名前なのか？私にも分かりません。",

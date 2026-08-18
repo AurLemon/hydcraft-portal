@@ -5,8 +5,8 @@
 		class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,filter,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
 		:class="
 			sceneSwitching
-				? '!opacity-0 !blur-md translate-y-2 duration-500'
-				: 'duration-200'
+				? '!opacity-0 !blur-md translate-y-2 duration-[625ms]'
+				: 'duration-[625ms]'
 		"
 	>
 		<div class="mt-auto flex flex-col gap-3 lg:contents">

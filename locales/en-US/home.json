@@ -20,7 +20,8 @@
 				"days": "days",
 				"memberCountPrefix": "Committee and council members",
 				"people": "people",
-				"back": "Back"
+				"back": "Back",
+				"collapse": "Collapse"
 			},
 			"outro": {
 				"description": "Build buildings, lay tracks, shape cities, and settle in. Why is a Minecraft server called HydCraft? I have no idea either.",

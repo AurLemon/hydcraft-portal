@@ -11,6 +11,24 @@ export type HomeStoryPhase =
 
 export type HomeStoryNavigationStatus = 'idle' | 'transitioning'
 
+export type HomeStoryStopId = 'hero' | 'player' | 'community' | 'outro'
+
+export interface HomeStoryStop {
+	id: HomeStoryStopId
+	index: number
+	progress: number
+	playerIndex?: number
+}
+
+export interface HomeStoryTransitionConfig {
+	from: HomeStoryStop
+	to: HomeStoryStop
+	startProgress: number
+	endProgress: number
+	duration: number
+	ease: string
+}
+
 export interface HomeStoryPlayerSegment {
 	index: number
 	transitionStart: number
@@ -19,11 +37,13 @@ export interface HomeStoryPlayerSegment {
 }
 
 export interface HomeStoryLayout {
+	stops: readonly HomeStoryStop[]
+	transitions: readonly HomeStoryTransitionConfig[]
+	playerSegments: readonly HomeStoryPlayerSegment[]
 	heroExitStart: number
 	heroProgressEnd: number
 	atmosphereProgressEnd: number
 	playerEntryProgressEnd: number
-	playerSegments: readonly HomeStoryPlayerSegment[]
 	focusProgressEnd: number
 	overviewTransitionSpan: number
 	communityProgressStart: number
@@ -31,10 +51,17 @@ export interface HomeStoryLayout {
 	outroProgressStart: number
 	outroPresentationStart: number
 	outroPresentationEnd: number
-	playerCorridorStart: number
-	playerCorridorEnd: number
 	storyScrollDistancePx: number
 	storyHeightPx: number
+	viewportHeightPx: number
+}
+
+export interface HomeStoryNavigatorState {
+	status: HomeStoryNavigationStatus
+	settledStopIndex: number
+	targetStopIndex: number | null
+	inputEnded: boolean
+	transitionSettled: boolean
 }
 
 export interface HomeStoryRenderState {
@@ -48,22 +75,27 @@ export interface HomeStoryRenderState {
 	outroProgress: number
 	mapOpacity: number
 	navigationStatus: HomeStoryNavigationStatus
+	playerActionVisible: boolean
+	communityEntryKey: number
 }
 
 export interface HomeStoryInputSnapshot {
 	progress: number
-	playerCorridorStart: number
-	playerCorridorEnd: number
+	storyStart: number
+	storyEnd: number
+	storyViewportActive: boolean
 	storyScrollDistancePx: number
-	playerCount: number
-	activePlayerIndex: number
+	stopProgresses: readonly number[]
+	settledStopIndex: number
 	navigationStatus: HomeStoryNavigationStatus
+	inputEnded: boolean
 }
 
 export interface HomeStoryInputCallbacks {
 	getSnapshot(): HomeStoryInputSnapshot
 	commit(direction: HomeStoryDirection, source: HomeStoryInputSource): boolean
 	isIgnoredTarget(target: EventTarget | null): boolean
+	setInputEnded(inputEnded: boolean): void
 }
 
 export interface HomeStoryMapHandle {

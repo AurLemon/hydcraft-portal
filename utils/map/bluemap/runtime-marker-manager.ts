@@ -17,6 +17,8 @@ import type {
 	BlueMapWorldPlayerMarkerClickEventPayload,
 } from './types'
 
+const WORLD_PLAYER_MARKER_TRANSITION_MS = 320
+
 interface RuntimeMarkerManagerDependencies {
 	getViewer: () => BlueMapRuntimeViewer | null
 	getContainer: () => HTMLElement | null
@@ -182,12 +184,13 @@ export class BlueMapRuntimeMarkerManager {
 					viewer.markers.remove(exitingEntry.marker)
 					this.worldPlayerMarkerEntries.delete(markerId)
 					this.worldPlayerMarkerExitTimers.delete(markerId)
-				}, 180),
+				}, WORLD_PLAYER_MARKER_TRANSITION_MS),
 			)
 		}
 
 		for (const definition of markers) {
 			let entry = this.worldPlayerMarkerEntries.get(definition.id)
+			let createdEntry = false
 			if (entry && entry.definition.playerId !== definition.playerId) {
 				entry.unbind()
 				viewer.markers.remove(entry.marker)
@@ -219,16 +222,21 @@ export class BlueMapRuntimeMarkerManager {
 						marker.element.removeEventListener('keydown', handleKeydown)
 					},
 				}
-				const createdEntry = entry
-				this.worldPlayerMarkerEntries.set(definition.id, createdEntry)
+				const newEntry = entry
+				createdEntry = true
+				this.worldPlayerMarkerEntries.set(definition.id, newEntry)
 				viewer.markers.add(marker)
 				requestAnimationFrame(() => {
 					if (
-						this.worldPlayerMarkerEntries.get(definition.id) === createdEntry &&
+						this.worldPlayerMarkerEntries.get(definition.id) === newEntry &&
 						!this.worldPlayerMarkerExitTimers.has(definition.id)
 					) {
-						createdEntry.marker.element.style.opacity =
-							createdEntry.definition.isFocused === false ? '0.34' : '1'
+						newEntry.marker.element.style.opacity =
+							newEntry.definition.isFocused === false
+								? '0.34'
+								: newEntry.definition.isFocused === true
+									? '0.8'
+									: '1'
 					}
 				})
 			}
@@ -244,8 +252,14 @@ export class BlueMapRuntimeMarkerManager {
 			marker.element.dataset.homeFocused = String(
 				definition.isFocused !== false,
 			)
-			marker.element.style.opacity =
-				definition.isFocused === false ? '0.34' : '1'
+			if (!createdEntry) {
+				marker.element.style.opacity =
+					definition.isFocused === false
+						? '0.34'
+						: definition.isFocused === true
+							? '0.8'
+							: '1'
+			}
 			marker.element.style.transform =
 				definition.isFocused === false
 					? 'translate(-50%, -100%) scale(0.72)'

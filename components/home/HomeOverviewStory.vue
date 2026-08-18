@@ -5,38 +5,36 @@
 	>
 		<div class="immersive-site-shell absolute inset-0">
 			<div class="relative h-full">
-				<Transition name="overview-label">
-					<div
-						v-if="phase === 'scene' || phase === 'players'"
-						:key="`scene-${sceneShortName}`"
-						class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
-						:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
-					>
-						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
-							{{ sceneShortName }}
-						</p>
-						<p class="mt-1 text-lg uppercase sm:text-7xl">
-							{{ t('home.immersive.overview.responsibleBy') }}
-						</p>
-					</div>
-					<div
-						v-else-if="phase === 'community'"
-						key="community"
-						class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
-						:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
-					>
-						<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
-							{{
-								t('home.immersive.overview.beyondScene', {
-									name: sceneShortName,
-								})
-							}}
-						</p>
-						<p class="mt-1 text-lg uppercase sm:text-7xl">
-							{{ t('home.immersive.overview.communityHasThem') }}
-						</p>
-					</div>
-				</Transition>
+				<div
+					class="absolute top-28 left-0 max-w-[min(42rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+					:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
+					:style="sceneLabelStyle"
+					:aria-hidden="sceneLabelOpacity <= 0.01"
+				>
+					<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
+						{{ sceneShortName }}
+					</p>
+					<p class="mt-1 text-lg uppercase sm:text-7xl">
+						{{ t('home.immersive.overview.responsibleBy') }}
+					</p>
+				</div>
+				<div
+					class="absolute top-28 left-0 max-w-[min(48rem,calc(100vw-3rem))] font-serif [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:top-36"
+					:class="isEnglish ? 'font-semibold' : 'font-extrabold'"
+					:style="communityLabelStyle"
+					:aria-hidden="communityLabelOpacity <= 0.01"
+				>
+					<p class="mt-4 text-4xl uppercase leading-tight sm:text-7xl">
+						{{
+							t('home.immersive.overview.beyondScene', {
+								name: sceneShortName,
+							})
+						}}
+					</p>
+					<p class="mt-1 text-lg uppercase sm:text-7xl">
+						{{ t('home.immersive.overview.communityHasThem') }}
+					</p>
+				</div>
 
 				<Transition name="overview-panel">
 					<div
@@ -124,17 +122,20 @@
 					</div>
 					<p
 						v-if="player.description"
-						class="home-overview-player-description mt-4 line-clamp-3 font-serif text-lg leading-7 text-white/78"
+						class="home-overview-player-description mt-4 line-clamp-3 font-serif text-lg leading-7 text-white"
 					>
 						{{ player.description }}
 					</p>
-					<span
-						v-if="index === activePlayerIndex"
-						class="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-medium text-white/78 transition-colors group-hover:text-white"
-					>
-						{{ t('home.immersive.overview.viewFullIntroduction') }}
-						<UIcon name="i-lucide-arrow-right" class="size-4" />
-					</span>
+					<Transition name="player-action" mode="out-in">
+						<span
+							v-if="playerActionVisible && index === activePlayerIndex"
+							:key="`player-action-${activePlayerIndex}`"
+							class="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-medium text-white/78 transition-colors group-hover:text-white"
+						>
+							{{ t('home.immersive.overview.viewFullIntroduction') }}
+							<UIcon name="i-lucide-arrow-right" class="size-4" />
+						</span>
+					</Transition>
 				</div>
 			</article>
 		</section>
@@ -142,6 +143,7 @@
 		<Transition name="community-rail">
 			<aside
 				v-if="phase === 'community' && communityMembers.length && !detail"
+				:key="`community-rail-${communityEntryKey}`"
 				class="community-member-rail !pointer-events-auto absolute right-0 bottom-36 z-20 w-full sm:bottom-24 lg:top-24 lg:bottom-20 lg:w-[min(28rem,32vw)]"
 				:data-hovered="communityRailHovered"
 				:aria-label="t('home.immersive.overview.communityMembers')"
@@ -270,16 +272,16 @@
 						ref="detailScrollContentRef"
 						class="flex min-h-full flex-col p-5 sm:p-8 lg:p-10 lg:pt-36"
 					>
-						<UButton
+						<button
 							type="button"
-							color="neutral"
-							variant="ghost"
-							icon="i-lucide-arrow-left"
-							class="w-fit text-white hover:bg-white/12 hover:text-white"
+							class="inline-flex w-fit items-center gap-1.5 py-1 text-sm font-medium text-white/72 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
 							@click="closeDetail"
 						>
-							{{ t('home.immersive.overview.back') }}
-						</UButton>
+							<UIcon name="i-lucide-chevrons-right" class="size-4" />
+							<span class="leading-[normal]">{{
+								t('home.immersive.overview.collapse')
+							}}</span>
+						</button>
 						<div class="mt-8 flex items-center gap-4">
 							<div class="grid size-20 shrink-0">
 								<Transition name="detail-avatar">
@@ -311,7 +313,14 @@
 						<div class="mt-8 flex flex-1 flex-col">
 							<Transition name="detail-biography" mode="out-in">
 								<div :key="`${detail.id}-${locale}`" class="overflow-hidden">
-									<div class="font-serif text-lg leading-8 text-white/80">
+									<div
+										class="detail-biography-content font-serif text-lg leading-8"
+										:class="
+											detailHasDescription
+												? 'text-white'
+												: 'flex flex-1 items-center justify-center text-center text-white/45'
+										"
+									>
 										<p
 											v-for="(paragraph, index) in detailParagraphs"
 											:key="`${detail.id}-paragraph-${index}`"
@@ -416,9 +425,11 @@ interface HomeOverviewStoryProps {
 	players: readonly HomeOverviewPerson[]
 	activePlayerIndex: number
 	playerProgress: number
+	playerActionVisible: boolean
 	playerStackEntryProgress: number
 	playerStackExitProgress: number
 	communityMembers: readonly HomeOverviewPerson[]
+	communityEntryKey: number
 	foundedDays: number
 	memberCount: number
 	outroProgress: number
@@ -439,10 +450,8 @@ const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
-const overviewOpacity = computed(() =>
-	props.phase === 'community'
-		? 1 - smoothStep(0.02, 0.42, props.outroProgress)
-		: 1,
+const overviewOpacity = computed(
+	() => 1 - smoothStep(0.02, 0.42, props.outroProgress),
 )
 const detailScrollRef = ref<HTMLDivElement | null>(null)
 const detailScrollContentRef = ref<HTMLDivElement | null>(null)
@@ -467,6 +476,7 @@ const detailParagraphs = computed(() => {
 		.map((paragraph) => paragraph.trim())
 		.filter(Boolean)
 })
+const detailHasDescription = computed(() => Boolean(detail.value?.description))
 const detailParagraphLang = computed(() => {
 	if (locale.value.startsWith('en')) return 'en'
 	if (locale.value.startsWith('ja')) return 'ja'
@@ -475,7 +485,7 @@ const detailParagraphLang = computed(() => {
 })
 const detailParagraphClass = computed(() => {
 	const baseClass =
-		'my-1.5 w-full text-pretty text-justify first:mt-0 last:mb-0 [text-align-last:left]'
+		'my-2 w-full text-pretty text-justify first:mt-0 last:mb-0 [text-align-last:left]'
 	return detailParagraphLang.value === 'en'
 		? `${baseClass} break-words hyphens-auto [text-justify:inter-word]`
 		: `${baseClass} break-normal [line-break:loose] [text-justify:inter-character]`
@@ -490,13 +500,32 @@ const smoothStep = (start: number, end: number, value: number): number => {
 	return progress * progress * (3 - 2 * progress)
 }
 
+const sceneLabelOpacity = computed(() => {
+	const entry = smoothStep(0.12, 0.48, props.playerStackEntryProgress)
+	const exit = 1 - smoothStep(0.06, 0.42, props.playerStackExitProgress)
+	return entry * exit
+})
+const communityLabelOpacity = computed(() =>
+	smoothStep(0.08, 0.44, props.playerStackExitProgress),
+)
+const labelStyle = (opacity: number) => ({
+	opacity,
+	filter: `blur(${(1 - opacity) * 8}px)`,
+	transform: `translate3d(0, ${(1 - opacity) * -16}px, 0)`,
+})
+const sceneLabelStyle = computed(() => labelStyle(sceneLabelOpacity.value))
+const communityLabelStyle = computed(() =>
+	labelStyle(communityLabelOpacity.value),
+)
+
 const playerCardStyle = (index: number) => {
 	const offset = index - props.playerProgress
 	const distance = Math.abs(offset)
 	const translate = Math.max(-78, Math.min(78, offset * 52))
 	const scale = Math.max(0.9, 1 - Math.min(distance, 1) * 0.06)
 	const adjacentVisibility = 1 - smoothStep(0.45, 1.35, distance)
-	const sideAttenuation = 1 - smoothStep(0.45, 1.35, distance) * 0.2
+	const sideFocusProgress = smoothStep(0.2, 1.15, distance)
+	const sideAttenuation = 1 - sideFocusProgress * 0.32
 	const entryVisibility =
 		index === 0
 			? smoothStep(0, 1, props.playerStackEntryProgress)
@@ -513,11 +542,15 @@ const playerCardStyle = (index: number) => {
 		exitVisibility
 	const disappearanceProgress =
 		1 - adjacentVisibility * entryVisibility * exitVisibility
-	const blurAmount = smoothStep(0.65, 1, disappearanceProgress) * 8
+	const blurAmount = Math.max(
+		smoothStep(0.65, 1, disappearanceProgress) * 6,
+		sideFocusProgress * 2.25,
+	)
+	const verticalOffset = disappearanceProgress * 28
 
 	return {
 		opacity,
-		transform: `translate3d(${translate}%, 0, 0) scale(${scale})`,
+		transform: `translate3d(${translate}%, ${verticalOffset}px, 0) scale(${scale})`,
 		filter: `blur(${blurAmount}px)`,
 		zIndex: Math.round(10 + (1 - Math.min(distance, 1)) * 20),
 		pointerEvents: playerCardIsInteractive(index)
@@ -615,8 +648,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.overview-label-enter-active,
-.overview-label-leave-active,
 .overview-panel-enter-active,
 .overview-panel-leave-active,
 .detail-panel-enter-active,
@@ -627,13 +658,6 @@ onBeforeUnmount(() => {
 		opacity 220ms ease,
 		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
 		filter 360ms ease;
-}
-
-.overview-label-enter-from,
-.overview-label-leave-to {
-	opacity: 0;
-	filter: blur(8px);
-	transform: translateY(-1rem);
 }
 
 .overview-panel-enter-from,
@@ -658,6 +682,21 @@ onBeforeUnmount(() => {
 
 .community-rail-leave-to {
 	opacity: 0;
+}
+
+.player-action-enter-active,
+.player-action-leave-active {
+	transition:
+		opacity 220ms ease,
+		transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+		filter 260ms ease;
+}
+
+.player-action-enter-from,
+.player-action-leave-to {
+	opacity: 0;
+	filter: blur(5px);
+	transform: translateY(0.4rem);
 }
 
 .community-member-rail {
@@ -723,8 +762,8 @@ onBeforeUnmount(() => {
 .detail-avatar-enter-active,
 .detail-avatar-leave-active {
 	transition:
-		clip-path 260ms cubic-bezier(0.22, 1, 0.36, 1),
-		transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+		opacity 240ms ease,
+		filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .detail-avatar-enter-active {
@@ -732,20 +771,20 @@ onBeforeUnmount(() => {
 }
 
 .detail-avatar-enter-from {
-	clip-path: inset(100% 0 0 0);
-	transform: translateY(0.5rem) scale(0.9);
+	filter: blur(6px);
+	opacity: 0;
 }
 
 .detail-avatar-leave-to {
-	clip-path: inset(0 0 100% 0);
-	transform: translateY(-0.5rem) scale(0.95);
+	filter: blur(5px);
+	opacity: 0;
 }
 
 .detail-identity-enter-active,
 .detail-identity-leave-active {
 	transition:
-		clip-path 280ms cubic-bezier(0.22, 1, 0.36, 1),
-		transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+		opacity 240ms ease,
+		filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .detail-identity-enter-active {
@@ -753,13 +792,13 @@ onBeforeUnmount(() => {
 }
 
 .detail-identity-enter-from {
-	clip-path: inset(0 100% 0 0);
-	transform: translateX(0.75rem);
+	filter: blur(6px);
+	opacity: 0;
 }
 
 .detail-identity-leave-to {
-	clip-path: inset(0 0 0 100%);
-	transform: translateX(-0.75rem);
+	filter: blur(5px);
+	opacity: 0;
 }
 
 .detail-biography-enter-active,
@@ -790,6 +829,24 @@ onBeforeUnmount(() => {
 .detail-account-enter-to,
 .detail-account-leave-from {
 	grid-template-rows: 1fr;
+}
+
+.detail-biography-enter-active .detail-biography-content {
+	animation: detail-biography-reveal 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes detail-biography-reveal {
+	from {
+		clip-path: inset(0 0 100% 0);
+		filter: blur(7px);
+		opacity: 0;
+	}
+
+	to {
+		clip-path: inset(0 0 0 0);
+		filter: blur(0);
+		opacity: 1;
+	}
 }
 
 .detail-scroll-hint-enter-active,
@@ -846,14 +903,14 @@ onBeforeUnmount(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.overview-label-enter-active,
-	.overview-label-leave-active,
 	.overview-panel-enter-active,
 	.overview-panel-leave-active,
 	.detail-panel-enter-active,
 	.detail-panel-leave-active,
 	.community-rail-enter-active,
 	.community-rail-leave-active,
+	.player-action-enter-active,
+	.player-action-leave-active,
 	.detail-avatar-enter-active,
 	.detail-avatar-leave-active,
 	.detail-identity-enter-active,
@@ -870,6 +927,10 @@ onBeforeUnmount(() => {
 	}
 
 	.community-member-card {
+		animation: none;
+	}
+
+	.detail-biography-enter-active .detail-biography-content {
 		animation: none;
 	}
 }

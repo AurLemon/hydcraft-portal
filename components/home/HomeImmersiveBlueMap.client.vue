@@ -50,6 +50,7 @@ interface HomeImmersiveBlueMapProps {
 	lighting: HomeImmersiveSceneLighting
 	water?: HomeImmersiveSceneWater
 	focusPositions: readonly HomeImmersiveMapPosition[]
+	communityFocusPosition?: HomeImmersiveMapPosition | null
 	renderActive?: boolean
 	worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
 	markerClicksOnly?: boolean
@@ -147,6 +148,19 @@ const focusCamera = (
 	tilt: overview.tilt,
 })
 
+const communityFocusCamera = (
+	position: HomeImmersiveMapPosition,
+	overview: HomeImmersiveSceneCamera,
+): HomeImmersiveSceneCamera => ({
+	x: position.x,
+	y: position.y,
+	z: position.z,
+	distance: Math.min(15000, Math.max(6400, overview.distance * 0.5)),
+	rotation: overview.rotation + 0.1,
+	angle: overview.angle,
+	tilt: overview.tilt,
+})
+
 const applyScrollProgress = (progress: number): void => {
 	scrollProgress = Math.min(Math.max(progress, 0), 1)
 	if (props.developerControlsActive) {
@@ -212,6 +226,12 @@ const applyScrollProgress = (progress: number): void => {
 			smoothStep(focusEnd, overviewEnd, scrollProgress),
 		)
 	} else if (
+		props.communityFocusPosition &&
+		scrollProgress >= overviewEnd &&
+		scrollProgress < props.storyLayout.outroProgressStart
+	) {
+		targetCamera = communityFocusCamera(props.communityFocusPosition, overview)
+	} else if (
 		scrollProgress >= props.storyLayout.communityProgressEnd &&
 		scrollProgress < props.storyLayout.outroProgressStart
 	) {
@@ -252,6 +272,14 @@ defineExpose({ setScrollProgress: applyScrollProgress })
 
 watch(
 	() => props.focusPositions,
+	() => {
+		if (status.value === 'ready') applyScrollProgress(scrollProgress)
+	},
+	{ deep: true },
+)
+
+watch(
+	() => props.communityFocusPosition,
 	() => {
 		if (status.value === 'ready') applyScrollProgress(scrollProgress)
 	},

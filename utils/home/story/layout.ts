@@ -1,187 +1,132 @@
-import type { HomeStoryLayout, HomeStoryPlayerSegment } from './types'
+import type {
+	HomeStoryLayout,
+	HomeStoryPlayerSegment,
+	HomeStoryStop,
+	HomeStoryTransitionConfig,
+} from './types'
 
 export interface HomeStoryMetrics {
 	viewportHeightPx: number
 	storyScrollDistancePx: number
 	storyHeightPx: number
-	heroScrollPx: number
-	playerEntryTransitionPx: number
-	playerTransitionPx: number
-	playerFocusDwellPx: number
-	overviewTransitionPx: number
-	communityScrollPx: number
-	outroTransitionPx: number
-	outroScrollBufferPx: number
 }
 
-const HERO_EXIT_START = 0.02
-const ATMOSPHERE_PROGRESS_END = 0.22
-const HERO_SCROLL_RATIO = 0.45
-const PLAYER_ENTRY_TRANSITION_RATIO = 0.12
-const PLAYER_TRANSITION_RATIO = 0.6
-const PLAYER_FOCUS_DWELL_RATIO = 0.26
-const OVERVIEW_TRANSITION_RATIO = 0.1
-const COMMUNITY_SCROLL_RATIO = 0.72
-const OUTRO_TRANSITION_RATIO = 0.36
-const OUTRO_SCROLL_BUFFER_RATIO = 0.06
+const DEFAULT_VIEWPORT_HEIGHT_PX = 800
+const HERO_EXIT_LOCAL_PROGRESS = 0.08
+const ATMOSPHERE_LOCAL_PROGRESS = 0.72
 
-const clamp = (value: number, minimum: number, maximum: number): number =>
+const clamp = (value: number, minimum = 0, maximum = 1): number =>
 	Math.min(Math.max(value, minimum), maximum)
 
-const viewportBudget = (
-	viewportHeightPx: number,
-	ratio: number,
-	minimum: number,
-	maximum: number,
-): number => clamp(viewportHeightPx * ratio, minimum, maximum)
+export const STORY_TRANSITION_DURATION = {
+	heroToPlayer: 1.25,
+	playerToPlayer: 0.95,
+	playerToCommunity: 1.25,
+	communityToOutro: 1.45,
+} as const
+
+const resolveTransition = (
+	from: HomeStoryStop,
+	to: HomeStoryStop,
+): HomeStoryTransitionConfig => ({
+	from,
+	to,
+	startProgress: from.progress,
+	endProgress: to.progress,
+	duration:
+		from.id === 'hero'
+			? STORY_TRANSITION_DURATION.heroToPlayer
+			: to.id === 'community'
+				? STORY_TRANSITION_DURATION.playerToCommunity
+				: to.id === 'outro'
+					? STORY_TRANSITION_DURATION.communityToOutro
+					: STORY_TRANSITION_DURATION.playerToPlayer,
+	ease:
+		from.id === 'hero' || to.id === 'outro' ? 'power3.inOut' : 'power2.inOut',
+})
 
 export const resolveHomeStoryMetrics = (
 	viewportHeightPx: number,
 	playerCount: number,
 ): HomeStoryMetrics => {
-	const viewport = Math.max(viewportHeightPx, 1)
-	const heroScrollPx = viewportBudget(viewport, HERO_SCROLL_RATIO, 320, 520)
-	const playerEntryTransitionPx = viewportBudget(
-		viewport,
-		PLAYER_ENTRY_TRANSITION_RATIO,
-		120,
-		220,
-	)
-	const playerTransitionPx = viewportBudget(
-		viewport,
-		PLAYER_TRANSITION_RATIO,
-		520,
-		760,
-	)
-	const playerFocusDwellPx = viewportBudget(
-		viewport,
-		PLAYER_FOCUS_DWELL_RATIO,
-		220,
-		360,
-	)
-	const overviewTransitionPx = viewportBudget(
-		viewport,
-		OVERVIEW_TRANSITION_RATIO,
-		120,
-		220,
-	)
-	const communityScrollPx = viewportBudget(
-		viewport,
-		COMMUNITY_SCROLL_RATIO,
-		520,
-		760,
-	)
-	const outroTransitionPx = viewportBudget(
-		viewport,
-		OUTRO_TRANSITION_RATIO,
-		300,
-		520,
-	)
-	const outroScrollBufferPx = viewportBudget(
-		viewport,
-		OUTRO_SCROLL_BUFFER_RATIO,
-		64,
-		112,
-	)
-	const playerSequencePx = playerCount
-		? playerEntryTransitionPx +
-			Math.max(playerCount - 1, 0) * playerTransitionPx +
-			playerCount * playerFocusDwellPx
-		: 0
-	const storyScrollDistancePx =
-		heroScrollPx +
-		playerSequencePx +
-		overviewTransitionPx +
-		communityScrollPx +
-		outroTransitionPx +
-		outroScrollBufferPx
+	const viewport = Math.max(viewportHeightPx || DEFAULT_VIEWPORT_HEIGHT_PX, 1)
+	const stopCount = Math.max(playerCount, 0) + 3
+	const storyScrollDistancePx = Math.max(stopCount - 1, 1) * viewport
 
 	return {
 		viewportHeightPx: viewport,
 		storyScrollDistancePx,
 		storyHeightPx: storyScrollDistancePx + viewport,
-		heroScrollPx,
-		playerEntryTransitionPx,
-		playerTransitionPx,
-		playerFocusDwellPx,
-		overviewTransitionPx,
-		communityScrollPx,
-		outroTransitionPx,
-		outroScrollBufferPx,
 	}
 }
-
-const toProgress = (pixels: number, total: number): number =>
-	clamp(pixels / Math.max(total, 1), 0, 1)
 
 export const resolveHomeStoryLayout = (
 	metrics: HomeStoryMetrics,
 	playerCount: number,
 ): HomeStoryLayout => {
-	const toStoryProgress = (pixels: number): number =>
-		toProgress(pixels, metrics.storyScrollDistancePx)
-	let playerCursorPx = metrics.heroScrollPx
-	const playerSegments = Array.from(
-		{ length: playerCount },
-		(_, index): HomeStoryPlayerSegment => {
-			const transitionStartPx = playerCursorPx
-			const transitionPx =
-				index === 0
-					? metrics.playerEntryTransitionPx
-					: metrics.playerTransitionPx
-			const focusStartPx = transitionStartPx + transitionPx
-			const dwellEndPx = focusStartPx + metrics.playerFocusDwellPx
-			playerCursorPx = dwellEndPx
+	const safePlayerCount = Math.max(playerCount, 0)
+	const stopCount = safePlayerCount + 3
+	const toProgress = (index: number): number =>
+		clamp(index / Math.max(stopCount - 1, 1))
 
-			return {
-				index,
-				transitionStart: toStoryProgress(transitionStartPx),
-				focusStart: toStoryProgress(focusStartPx),
-				dwellEnd: toStoryProgress(dwellEndPx),
-			}
-		},
+	const hero: HomeStoryStop = { id: 'hero', index: 0, progress: 0 }
+	const playerStops: HomeStoryStop[] = Array.from(
+		{ length: safePlayerCount },
+		(_, playerIndex) => ({
+			id: 'player',
+			index: playerIndex + 1,
+			progress: toProgress(playerIndex + 1),
+			playerIndex,
+		}),
 	)
-	const focusProgressEnd = toStoryProgress(playerCursorPx)
-	const communityProgressStart = toStoryProgress(
-		playerCursorPx + metrics.overviewTransitionPx,
+	const community: HomeStoryStop = {
+		id: 'community',
+		index: safePlayerCount + 1,
+		progress: toProgress(safePlayerCount + 1),
+	}
+	const outro: HomeStoryStop = {
+		id: 'outro',
+		index: safePlayerCount + 2,
+		progress: 1,
+	}
+	const stops = [hero, ...playerStops, community, outro]
+	const transitions = stops
+		.slice(1)
+		.map((stop, index) => resolveTransition(stops[index]!, stop))
+	const playerSegments: HomeStoryPlayerSegment[] = playerStops.map(
+		(stop, index) => ({
+			index,
+			transitionStart: stops[index]!.progress,
+			focusStart: stop.progress,
+			dwellEnd: stop.progress,
+		}),
 	)
-	const communityProgressEnd = toStoryProgress(
-		playerCursorPx + metrics.overviewTransitionPx + metrics.communityScrollPx,
-	)
-	const outroProgressStart = Math.max(
-		communityProgressEnd,
-		toStoryProgress(
-			metrics.storyScrollDistancePx -
-				metrics.outroTransitionPx -
-				metrics.outroScrollBufferPx,
-		),
-	)
-	const outroPresentationEnd = toStoryProgress(
-		metrics.storyScrollDistancePx - metrics.outroScrollBufferPx,
-	)
-
+	const playerZero = playerStops[0]?.progress ?? community.progress
+	const lastPlayer = playerStops.at(-1)?.progress ?? hero.progress
+	const communityTransition = transitions.find(
+		(transition) => transition.to.id === 'community',
+	)!
 	return {
-		heroExitStart: HERO_EXIT_START,
-		heroProgressEnd: toStoryProgress(metrics.heroScrollPx),
-		atmosphereProgressEnd: ATMOSPHERE_PROGRESS_END,
-		playerEntryProgressEnd:
-			playerSegments[0]?.focusStart ?? toStoryProgress(metrics.heroScrollPx),
+		stops,
+		transitions,
 		playerSegments,
-		focusProgressEnd,
-		overviewTransitionSpan: toProgress(
-			metrics.overviewTransitionPx,
-			metrics.storyScrollDistancePx,
+		heroExitStart: clamp(
+			communityTransition.startProgress === hero.progress
+				? playerZero * HERO_EXIT_LOCAL_PROGRESS
+				: hero.progress,
 		),
-		communityProgressStart,
-		communityProgressEnd,
-		outroProgressStart,
-		outroPresentationStart: outroProgressStart,
-		outroPresentationEnd: Math.max(outroProgressStart, outroPresentationEnd),
-		playerCorridorStart:
-			playerSegments[0]?.transitionStart ??
-			toStoryProgress(metrics.heroScrollPx),
-		playerCorridorEnd: communityProgressStart,
+		heroProgressEnd: playerZero,
+		atmosphereProgressEnd: clamp(playerZero * ATMOSPHERE_LOCAL_PROGRESS),
+		playerEntryProgressEnd: playerZero,
+		focusProgressEnd: lastPlayer,
+		overviewTransitionSpan: Math.max(community.progress - lastPlayer, 0.0001),
+		communityProgressStart: lastPlayer,
+		communityProgressEnd: community.progress,
+		outroProgressStart: outro.progress,
+		outroPresentationStart: community.progress,
+		outroPresentationEnd: outro.progress,
 		storyScrollDistancePx: metrics.storyScrollDistancePx,
 		storyHeightPx: metrics.storyHeightPx,
+		viewportHeightPx: metrics.viewportHeightPx,
 	}
 }
