@@ -43,6 +43,7 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: auroraLemon.nickname,
 			bio: auroraLemon.bio,
+			portalUsername: auroraLemon.portalUsername,
 			focusOrder: 0,
 		},
 		{
@@ -50,6 +51,7 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: xiaoAwa.nickname,
 			bio: xiaoAwa.bio,
+			portalUsername: xiaoAwa.portalUsername,
 			focusOrder: 1,
 		},
 		{
@@ -57,6 +59,7 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: ninaNaganohara.nickname,
 			bio: ninaNaganohara.bio,
+			portalUsername: ninaNaganohara.portalUsername,
 			focusOrder: 2,
 		},
 	],

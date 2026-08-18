@@ -41,6 +41,7 @@ export const owenIslandsScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: catPillager.nickname,
 			bio: catPillager.bio,
+			portalUsername: catPillager.portalUsername,
 			focusOrder: 0,
 		},
 	],

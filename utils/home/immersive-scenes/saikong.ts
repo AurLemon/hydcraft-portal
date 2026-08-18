@@ -41,6 +41,7 @@ export const saikongScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: fisheyeArtist59.nickname,
 			bio: fisheyeArtist59.bio,
+			portalUsername: fisheyeArtist59.portalUsername,
 			focusOrder: 0,
 		},
 	],

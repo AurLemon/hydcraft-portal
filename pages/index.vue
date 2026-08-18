@@ -124,6 +124,10 @@ import {
 	type HomeImmersiveSceneCamera,
 } from '~/utils/home/immersive-scenes'
 import type {
+	HomePortalAccountSummary,
+	HomePortalAccountsResponse,
+} from '~/utils/home/portal-accounts'
+import type {
 	BlueMapWorldPlayerMarker,
 	BlueMapWorldPlayerMarkerClickEventPayload,
 } from '~/utils/map'
@@ -177,8 +181,12 @@ const overviewMemberOrder = useState<string[]>(
 			.map((member) => member.id)
 			.sort(() => Math.random() - 0.5),
 )
-const { data: liveOverview, refresh: refreshLiveOverview } =
-	await useFetch<ServerOverviewLiveResponse>('/api/public/server/overview-live')
+const [liveOverviewRequest, portalAccountsRequest] = await Promise.all([
+	useFetch<ServerOverviewLiveResponse>('/api/public/server/overview-live'),
+	useFetch<HomePortalAccountsResponse>('/api/public/home-portal-accounts'),
+])
+const { data: liveOverview, refresh: refreshLiveOverview } = liveOverviewRequest
+const { data: homePortalAccounts } = portalAccountsRequest
 const sceneSwitching = ref(false)
 const sceneCountdownPaused = ref(false)
 const overviewDetailPersonId = ref<string | null>(null)
@@ -194,6 +202,23 @@ const SCENE_SWITCH_MAX_WAIT_MS = SCENE_SWITCH_IN_DURATION_MS
 
 const resolveLocalizedText = (text: HomeImmersiveLocalizedText): string =>
 	text[locale.value] ?? text['en-US'] ?? Object.values(text)[0] ?? ''
+const resolveLocalizedBio = (
+	bio: HomeImmersiveLocalizedText | null,
+): string | null => (bio ? resolveLocalizedText(bio) : null)
+const portalAccountByUsername = computed(
+	() =>
+		new Map(
+			(homePortalAccounts.value?.accounts ?? []).map(
+				(account) => [account.username.toLowerCase(), account] as const,
+			),
+		),
+)
+const resolvePortalAccount = (
+	username: string | undefined,
+): HomePortalAccountSummary | null =>
+	username
+		? (portalAccountByUsername.value.get(username.toLowerCase()) ?? null)
+		: null
 const sceneShortName = computed(() =>
 	resolveLocalizedText(scene.value.shortName),
 )
@@ -236,7 +261,8 @@ const sceneOverviewPlayers = computed<HomeOverviewPerson[]>(() =>
 		.map((player) => ({
 			id: player.id,
 			nickname: player.nickname,
-			description: resolveLocalizedText(player.bio),
+			description: resolveLocalizedBio(player.bio),
+			portalAccount: resolvePortalAccount(player.portalUsername),
 			avatarUrl: getMinecraftAvatarRendererUrl(player.id),
 			isAdministrator: false,
 			position: scenePlayerPositions.value[player.id],
@@ -254,7 +280,8 @@ const overviewCommunityMembers = computed<HomeOverviewPerson[]>(() =>
 		.map((member) => ({
 			id: member.id,
 			nickname: member.nickname,
-			description: resolveLocalizedText(member.bio),
+			description: resolveLocalizedBio(member.bio),
+			portalAccount: resolvePortalAccount(member.portalUsername),
 			avatarUrl: getMinecraftAvatarRendererUrl(member.id),
 			isAdministrator:
 				member.roles.includes('owner') || member.roles.includes('committee'),

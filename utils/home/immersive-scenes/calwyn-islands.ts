@@ -43,6 +43,7 @@ export const calwynIslandsScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: xwTeng.nickname,
 			bio: xwTeng.bio,
+			portalUsername: xwTeng.portalUsername,
 			focusOrder: 0,
 		},
 		{
@@ -50,6 +51,7 @@ export const calwynIslandsScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: rush.nickname,
 			bio: rush.bio,
+			portalUsername: rush.portalUsername,
 			focusOrder: 1,
 		},
 		{
@@ -57,6 +59,7 @@ export const calwynIslandsScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: kezzyblue.nickname,
 			bio: kezzyblue.bio,
+			portalUsername: kezzyblue.portalUsername,
 			focusOrder: 2,
 		},
 	],

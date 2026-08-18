@@ -91,7 +91,8 @@ export interface HomeImmersiveScenePlayer {
 	id: string
 	serverId: string
 	nickname: string
-	bio: HomeImmersiveLocalizedText
+	bio: HomeImmersiveLocalizedText | null
+	portalUsername?: string
 	focusOrder: number
 }
 
@@ -135,7 +136,8 @@ export interface HomeImmersiveOverviewMember {
 	nickname: string
 	serverId: string
 	roles: readonly HomeImmersiveOverviewMemberRole[]
-	bio: HomeImmersiveLocalizedText
+	bio: HomeImmersiveLocalizedText | null
+	portalUsername?: string
 }
 
 export interface HomeImmersiveOverviewConfig {

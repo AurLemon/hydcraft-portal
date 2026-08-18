@@ -110,6 +110,7 @@
 						<p class="mt-1 truncate text-sm text-white/60">{{ player.id }}</p>
 					</div>
 					<p
+						v-if="player.description"
 						class="mt-4 line-clamp-3 font-serif text-lg leading-7 text-white/78"
 					>
 						{{ player.description }}
@@ -180,6 +181,7 @@
 									{{ member.nickname }}
 								</span>
 								<span
+									v-if="member.description"
 									class="mt-0.5 block truncate text-xs leading-4 text-white/62"
 								>
 									{{ member.description }}
@@ -226,6 +228,7 @@
 								{{ member.nickname }}
 							</span>
 							<span
+								v-if="member.description"
 								class="mt-1 block line-clamp-2 text-xs leading-5 text-white/62"
 							>
 								{{ member.description }}
@@ -235,6 +238,14 @@
 				</UMarquee>
 			</aside>
 		</Transition>
+
+		<button
+			v-if="detail"
+			type="button"
+			class="pointer-events-auto absolute inset-0 z-40 lg:hidden"
+			:aria-label="t('home.immersive.overview.back')"
+			@click="closeDetail"
+		/>
 
 		<Transition name="detail-panel">
 			<aside
@@ -266,12 +277,41 @@
 							<p class="mt-1 truncate text-sm text-white/60">{{ detail.id }}</p>
 						</div>
 					</div>
-					<div class="mt-8 min-h-0 overflow-y-auto pr-2">
-						<p
-							class="whitespace-pre-line font-serif text-lg leading-8 text-white/80"
-						>
-							{{ detail.description }}
-						</p>
+					<div class="mt-8 min-h-0 flex-1 overflow-y-auto pr-2">
+						<div class="flex min-h-full flex-col">
+							<p
+								class="whitespace-pre-line font-serif text-lg leading-8 text-white/80"
+							>
+								{{
+									detail.description || t('home.immersive.overview.noBiography')
+								}}
+							</p>
+							<div
+								v-if="detail.portalAccount"
+								class="mt-auto flex shrink-0 flex-wrap items-center gap-1 pt-6 text-sm text-white/72"
+							>
+								<UIcon
+									name="i-lucide-corner-down-right"
+									class="size-4 shrink-0 text-white/56"
+								/>
+								<span>{{ t('home.immersive.overview.portalProfile') }}</span>
+								<NuxtLink
+									:to="localePath(`/u/${detail.portalAccount.username}`)"
+									class="pointer-events-auto inline-flex items-center gap-1 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
+								>
+									<UAvatar
+										:src="detail.portalAccount.avatarUrl || undefined"
+										:alt="detail.portalAccount.username"
+										size="xs"
+										:text="
+											detail.portalAccount.username.slice(0, 1).toUpperCase()
+										"
+									/>
+									<span>@{{ detail.portalAccount.username }}</span>
+									<UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
+								</NuxtLink>
+							</div>
+						</div>
 					</div>
 				</div>
 			</aside>
@@ -281,6 +321,7 @@
 
 <script setup lang="ts">
 import type { HomeImmersiveMapPosition } from '~/utils/home/immersive-scenes'
+import type { HomePortalAccountSummary } from '~/utils/home/portal-accounts'
 
 export type HomeOverviewPhase =
 	| 'hidden'
@@ -292,7 +333,8 @@ export type HomeOverviewPhase =
 export interface HomeOverviewPerson {
 	id: string
 	nickname: string
-	description: string
+	description: string | null
+	portalAccount: HomePortalAccountSummary | null
 	avatarUrl: string
 	isAdministrator: boolean
 	position?: HomeImmersiveMapPosition
@@ -317,6 +359,7 @@ const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
 }>()
 const { locale, t } = useI18n()
+const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
 const detail = computed(() => {

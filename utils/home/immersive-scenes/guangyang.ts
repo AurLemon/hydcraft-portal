@@ -43,6 +43,7 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: qixuanjun233.nickname,
 			bio: qixuanjun233.bio,
+			portalUsername: qixuanjun233.portalUsername,
 			focusOrder: 0,
 		},
 		{
@@ -50,6 +51,7 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: dotkk.nickname,
 			bio: dotkk.bio,
+			portalUsername: dotkk.portalUsername,
 			focusOrder: 1,
 		},
 		{
@@ -57,6 +59,7 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 			serverId: 'hydcraft-oxygen',
 			nickname: xxlm233.nickname,
 			bio: xxlm233.bio,
+			portalUsername: xxlm233.portalUsername,
 			focusOrder: 2,
 		},
 	],
