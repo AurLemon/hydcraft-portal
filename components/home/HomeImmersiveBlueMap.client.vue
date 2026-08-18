@@ -174,7 +174,7 @@ const applyScrollProgress = (progress: number): void => {
 	let targetCamera = props.camera
 
 	if (
-		scrollProgress >= props.storyLayout.heroProgressEnd &&
+		scrollProgress >= props.storyLayout.heroExitStart &&
 		scrollProgress < focusEnd &&
 		props.focusPositions.length
 	) {
@@ -195,7 +195,9 @@ const applyScrollProgress = (progress: number): void => {
 			previousCamera,
 			focusCamera(currentPosition, overview),
 			smoothStep(
-				segment?.transitionStart ?? props.storyLayout.heroProgressEnd,
+				segment?.index === 0
+					? props.storyLayout.heroExitStart
+					: (segment?.transitionStart ?? props.storyLayout.heroProgressEnd),
 				segment?.focusStart ?? props.storyLayout.playerEntryProgressEnd,
 				scrollProgress,
 			),

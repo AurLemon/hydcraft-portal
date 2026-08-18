@@ -482,9 +482,9 @@ const playerCardStyle = (index: number) => {
 	const offset = index - props.playerProgress
 	const distance = Math.abs(offset)
 	const translate = Math.max(-78, Math.min(78, offset * 52))
-	const scale = Math.max(0.76, 1 - Math.min(distance, 1) * 0.1)
+	const scale = Math.max(0.9, 1 - Math.min(distance, 1) * 0.06)
 	const adjacentVisibility = 1 - smoothStep(0.45, 1.35, distance)
-	const sideAttenuation = 1 - smoothStep(0.45, 1.35, distance) * 0.72
+	const sideAttenuation = 1 - smoothStep(0.45, 1.35, distance) * 0.2
 	const entryVisibility =
 		index === 0
 			? smoothStep(0, 1, props.playerStackEntryProgress)
@@ -499,7 +499,9 @@ const playerCardStyle = (index: number) => {
 		sideAttenuation *
 		entryVisibility *
 		exitVisibility
-	const blurAmount = (1 - Math.sqrt(Math.max(opacity, 0))) * 8
+	const disappearanceProgress =
+		1 - adjacentVisibility * entryVisibility * exitVisibility
+	const blurAmount = smoothStep(0.65, 1, disappearanceProgress) * 8
 
 	return {
 		opacity,
