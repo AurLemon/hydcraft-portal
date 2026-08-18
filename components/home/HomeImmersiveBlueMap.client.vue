@@ -174,20 +174,18 @@ const applyScrollProgress = (progress: number): void => {
 	let targetCamera = props.camera
 
 	if (
-		scrollProgress >= props.storyLayout.heroExitStart &&
+		scrollProgress >= props.storyLayout.heroProgressEnd &&
 		scrollProgress < focusEnd &&
 		props.focusPositions.length
 	) {
-		const focusProgress =
-			(scrollProgress - props.storyLayout.heroExitStart) /
-			Math.max(focusEnd - props.storyLayout.heroExitStart, 0.01)
-		const segmentLength = 1 / props.focusPositions.length
+		const segment =
+			props.storyLayout.playerSegments.find(
+				(candidate) => scrollProgress <= candidate.dwellEnd,
+			) ?? props.storyLayout.playerSegments.at(-1)
 		const segmentIndex = Math.min(
+			segment?.index ?? 0,
 			props.focusPositions.length - 1,
-			Math.floor(focusProgress / segmentLength),
 		)
-		const segmentProgress =
-			(focusProgress - segmentIndex * segmentLength) / segmentLength
 		const currentPosition = props.focusPositions[segmentIndex]!
 		const previousPosition = props.focusPositions[segmentIndex - 1]
 		const previousCamera = previousPosition
@@ -196,7 +194,11 @@ const applyScrollProgress = (progress: number): void => {
 		targetCamera = interpolateCamera(
 			previousCamera,
 			focusCamera(currentPosition, overview),
-			smoothStep(0, 0.34, segmentProgress),
+			smoothStep(
+				segment?.transitionStart ?? props.storyLayout.heroProgressEnd,
+				segment?.focusStart ?? props.storyLayout.playerEntryProgressEnd,
+				scrollProgress,
+			),
 		)
 	} else if (scrollProgress >= focusEnd && scrollProgress < overviewEnd) {
 		const departureCamera = props.focusPositions.length

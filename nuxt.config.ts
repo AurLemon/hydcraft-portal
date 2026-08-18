@@ -332,6 +332,8 @@ export default defineNuxtConfig({
 				'chart.js',
 				'dayjs',
 				'dayjs/plugin/utc',
+				'gsap',
+				'gsap/ScrollTrigger',
 				'hammerjs',
 				'lunar-typescript',
 				'skinview-utils',

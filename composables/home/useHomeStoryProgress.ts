@@ -6,6 +6,7 @@ export interface HomeStoryLayout {
 	heroProgressEnd: number
 	atmosphereProgressEnd: number
 	playerEntryProgressEnd: number
+	playerSegments: readonly HomeStoryPlayerSegment[]
 	focusProgressEnd: number
 	overviewTransitionSpan: number
 	communityProgressStart: number
@@ -13,6 +14,13 @@ export interface HomeStoryLayout {
 	outroProgressStart: number
 	outroPresentationStart: number
 	outroPresentationEnd: number
+}
+
+export interface HomeStoryPlayerSegment {
+	index: number
+	transitionStart: number
+	focusStart: number
+	dwellEnd: number
 }
 
 export interface HomeStoryMapHandle {
@@ -24,70 +32,50 @@ interface HomeStoryStop {
 	progress: number
 }
 
-interface PlayerFocusSegment {
-	index: number
-	start: number
-	dwellEnd: number
-	transitionEnd: number
-}
-
 const HERO_EXIT_START = 0.02
 const HERO_PROGRESS_END = 0.14
 const ATMOSPHERE_PROGRESS_END = 0.22
-const PLAYER_ENTRY_PROGRESS_END = 0.24
-const OVERVIEW_TRANSITION_SPAN = 0.04
-const PLAYER_FIRST_FOCUS_DWELL_SHARE = 0.52
-const PLAYER_FOCUS_DWELL_SHARE = 0.3
-const COMMUNITY_SCROLL_DVH = 16
-const OUTRO_TRANSITION_DVH = 56
+const PLAYER_ENTRY_TRANSITION_DVH = 12
+const PLAYER_TRANSITION_DVH = 60
+const PLAYER_FOCUS_DWELL_DVH = 26
+const OVERVIEW_TRANSITION_DVH = 10
+const COMMUNITY_SCROLL_DVH = 72
+const OUTRO_TRANSITION_DVH = 36
 const OUTRO_SCROLL_BUFFER_DVH = 6
 
 const clampProgress = (progress: number): number =>
 	Math.min(Math.max(progress, 0), 1)
 
-const resolvePlayerFocusSegments = (
-	playerCount: number,
-): PlayerFocusSegment[] => {
-	if (playerCount <= 0) return []
-
-	const totalDwellShare =
-		PLAYER_FIRST_FOCUS_DWELL_SHARE +
-		PLAYER_FOCUS_DWELL_SHARE * (playerCount - 1)
-	const transitionShare = (1 - totalDwellShare) / Math.max(playerCount - 1, 1)
-	let cursor = 0
-
-	return Array.from({ length: playerCount }, (_, index) => {
-		const start = cursor
-		const dwellShare =
-			index === 0 ? PLAYER_FIRST_FOCUS_DWELL_SHARE : PLAYER_FOCUS_DWELL_SHARE
-		const dwellEnd = start + dwellShare
-		const transitionEnd =
-			index < playerCount - 1 ? dwellEnd + transitionShare : dwellEnd
-		cursor = transitionEnd
-
-		return { index, start, dwellEnd, transitionEnd }
-	})
+const smoothStepProgress = (progress: number): number => {
+	const normalized = clampProgress(progress)
+	return normalized * normalized * (3 - 2 * normalized)
 }
 
 const resolvePlayerCarouselProgress = (
 	progress: number,
-	playerCount: number,
+	segments: readonly HomeStoryPlayerSegment[],
 ): number => {
-	const segments = resolvePlayerFocusSegments(playerCount)
+	if (!segments.length) return 0
+
 	for (const segment of segments) {
-		if (progress <= segment.dwellEnd || segment.index === playerCount - 1) {
-			return segment.index
+		if (progress < segment.transitionStart) {
+			return Math.max(segment.index - 1, 0)
 		}
-		if (progress <= segment.transitionEnd) {
-			return (
-				segment.index +
-				(progress - segment.dwellEnd) /
-					Math.max(segment.transitionEnd - segment.dwellEnd, 0.0001)
+		if (progress < segment.focusStart) {
+			if (segment.index === 0) return 0
+			const transitionProgress = smoothStepProgress(
+				(progress - segment.transitionStart) /
+					Math.max(segment.focusStart - segment.transitionStart, 0.0001),
 			)
+
+			return segment.index - 1 + transitionProgress
+		}
+		if (progress <= segment.dwellEnd) {
+			return segment.index
 		}
 	}
 
-	return Math.max(playerCount - 1, 0)
+	return segments.at(-1)?.index ?? 0
 }
 
 export const useHomeStoryProgress = (options: {
@@ -103,45 +91,76 @@ export const useHomeStoryProgress = (options: {
 	const playerStackEntryProgress = ref(0)
 	const playerStackExitProgress = ref(0)
 	const mapOpacity = ref(1)
-	const sceneStoryHeightDvh = computed(() => {
-		if (options.playerCount.value <= 1) return 300 + OUTRO_SCROLL_BUFFER_DVH
-		if (options.playerCount.value === 2) return 400 + OUTRO_SCROLL_BUFFER_DVH
-		return 450 + OUTRO_SCROLL_BUFFER_DVH
-	})
-	const focusProgressEnd = computed(() => {
-		if (options.playerCount.value <= 1) return 0.34
-		if (options.playerCount.value === 2) return 0.46
-		return 0.56
-	})
-	const storyLayout = computed<HomeStoryLayout>(() => {
-		const communityProgressStart = Math.min(
-			focusProgressEnd.value + OVERVIEW_TRANSITION_SPAN,
-			0.94,
+	const playerSequenceScrollDvh = computed(() => {
+		const playerCount = options.playerCount.value
+		if (playerCount <= 0) return 0
+
+		return (
+			PLAYER_ENTRY_TRANSITION_DVH +
+			(playerCount - 1) * PLAYER_TRANSITION_DVH +
+			playerCount * PLAYER_FOCUS_DWELL_DVH
 		)
-		const communityProgressEnd = Math.min(
-			communityProgressStart +
-				COMMUNITY_SCROLL_DVH / (sceneStoryHeightDvh.value - 100),
-			0.98,
+	})
+	const sceneStoryScrollDvh = computed(
+		() =>
+			(playerSequenceScrollDvh.value +
+				OVERVIEW_TRANSITION_DVH +
+				COMMUNITY_SCROLL_DVH +
+				OUTRO_TRANSITION_DVH +
+				OUTRO_SCROLL_BUFFER_DVH) /
+			(1 - HERO_PROGRESS_END),
+	)
+	const sceneStoryHeightDvh = computed(() => sceneStoryScrollDvh.value + 100)
+	const storyLayout = computed<HomeStoryLayout>(() => {
+		const toProgress = (scrollDvh: number): number =>
+			clampProgress(scrollDvh / Math.max(sceneStoryScrollDvh.value, 1))
+		let playerCursorDvh = HERO_PROGRESS_END * sceneStoryScrollDvh.value
+		const playerSegments = Array.from(
+			{ length: options.playerCount.value },
+			(_, index): HomeStoryPlayerSegment => {
+				const transitionStartDvh = playerCursorDvh
+				const transitionDvh =
+					index === 0 ? PLAYER_ENTRY_TRANSITION_DVH : PLAYER_TRANSITION_DVH
+				const focusStartDvh = transitionStartDvh + transitionDvh
+				const dwellEndDvh = focusStartDvh + PLAYER_FOCUS_DWELL_DVH
+				playerCursorDvh = dwellEndDvh
+
+				return {
+					index,
+					transitionStart: toProgress(transitionStartDvh),
+					focusStart: toProgress(focusStartDvh),
+					dwellEnd: toProgress(dwellEndDvh),
+				}
+			},
+		)
+		const focusProgressEnd = toProgress(playerCursorDvh)
+		const overviewTransitionSpan = toProgress(OVERVIEW_TRANSITION_DVH)
+		const communityProgressStart = toProgress(
+			playerCursorDvh + OVERVIEW_TRANSITION_DVH,
+		)
+		const communityProgressEnd = toProgress(
+			playerCursorDvh + OVERVIEW_TRANSITION_DVH + COMMUNITY_SCROLL_DVH,
 		)
 		const outroProgressStart = Math.max(
 			communityProgressEnd,
 			1 -
 				(OUTRO_TRANSITION_DVH + OUTRO_SCROLL_BUFFER_DVH) /
-					Math.max(sceneStoryHeightDvh.value - 100, 1),
+					Math.max(sceneStoryScrollDvh.value, 1),
 		)
 		const outroPresentationEnd = Math.max(
 			outroProgressStart,
-			1 -
-				OUTRO_SCROLL_BUFFER_DVH / Math.max(sceneStoryHeightDvh.value - 100, 1),
+			1 - OUTRO_SCROLL_BUFFER_DVH / Math.max(sceneStoryScrollDvh.value, 1),
 		)
 
 		return {
 			heroExitStart: HERO_EXIT_START,
 			heroProgressEnd: HERO_PROGRESS_END,
 			atmosphereProgressEnd: ATMOSPHERE_PROGRESS_END,
-			playerEntryProgressEnd: PLAYER_ENTRY_PROGRESS_END,
-			focusProgressEnd: focusProgressEnd.value,
-			overviewTransitionSpan: OVERVIEW_TRANSITION_SPAN,
+			playerEntryProgressEnd:
+				playerSegments[0]?.focusStart ?? HERO_PROGRESS_END,
+			playerSegments,
+			focusProgressEnd,
+			overviewTransitionSpan,
 			communityProgressStart,
 			communityProgressEnd,
 			outroProgressStart,
@@ -154,18 +173,10 @@ export const useHomeStoryProgress = (options: {
 	let scrollTriggerRefresh: (() => void) | null = null
 
 	const resolveOverviewStoryStops = (): HomeStoryStop[] => {
-		const layout = storyLayout.value
-		const focusSpan = Math.max(
-			layout.focusProgressEnd - layout.playerEntryProgressEnd,
-			0.01,
-		)
-
-		return resolvePlayerFocusSegments(options.playerCount.value).map(
-			(segment) => ({
-				id: 'player',
-				progress: layout.playerEntryProgressEnd + segment.start * focusSpan,
-			}),
-		)
+		return storyLayout.value.playerSegments.map((segment) => ({
+			id: 'player',
+			progress: (segment.focusStart + segment.dwellEnd) / 2,
+		}))
 	}
 
 	const resolveStoryStops = (): HomeStoryStop[] => {
@@ -175,6 +186,11 @@ export const useHomeStoryProgress = (options: {
 			{ id: 'hero', progress: layout.heroProgressEnd },
 			...resolveOverviewStoryStops(),
 			{ id: 'community', progress: layout.communityProgressStart },
+			{
+				id: 'community',
+				progress:
+					(layout.communityProgressStart + layout.communityProgressEnd) / 2,
+			},
 			{ id: 'community', progress: layout.communityProgressEnd },
 			{ id: 'outro-start', progress: layout.outroProgressStart },
 			{ id: 'outro-end', progress: 1 },
@@ -192,12 +208,16 @@ export const useHomeStoryProgress = (options: {
 
 	const resolveStorySnapProgress = (progress: number): number => {
 		const nearest = resolveStoryStops().reduce((closest, stop) =>
-			Math.abs(stop.progress - progress) < Math.abs(closest.progress - progress)
-				? stop
-				: closest,
+				Math.abs(stop.progress - progress) < Math.abs(closest.progress - progress)
+					? stop
+					: closest,
 		)
 
-		return Math.abs(nearest.progress - progress) <= 0.035
+		// Player cards must remain directly scroll-controlled. Snapping them to
+		// a focus stop makes a short pause force a fast, fixed-duration switch.
+		if (nearest.id === 'player') return progress
+
+		return Math.abs(nearest.progress - progress) <= 0.02
 			? nearest.progress
 			: progress
 	}
@@ -238,13 +258,9 @@ export const useHomeStoryProgress = (options: {
 		)
 
 		if (options.playerCount.value > 0) {
-			const playerProgress = clampProgress(
-				(normalized - layout.heroProgressEnd) /
-					Math.max(layout.focusProgressEnd - layout.heroProgressEnd, 0.01),
-			)
 			playerCarouselProgress.value = resolvePlayerCarouselProgress(
-				playerProgress,
-				options.playerCount.value,
+				normalized,
+				layout.playerSegments,
 			)
 			activePlayerIndex.value = Math.round(playerCarouselProgress.value)
 			return
@@ -306,14 +322,14 @@ export const useHomeStoryProgress = (options: {
 					trigger: scrollStory,
 					start: 'top top',
 					end: 'bottom bottom',
-					scrub: true,
+						scrub: 1.5,
 					snap: {
 						snapTo: resolveStorySnapProgress,
 						directional: true,
 						inertia: false,
-						delay: 0.12,
-						duration: { min: 0.12, max: 0.28 },
-						ease: 'power2.out',
+						delay: 0.18,
+						duration: { min: 0.2, max: 0.42 },
+						ease: 'sine.inOut',
 					},
 					onUpdate: (scrollTrigger) => syncMapProgress(scrollTrigger.progress),
 					onRefresh: (scrollTrigger) => syncMapProgress(scrollTrigger.progress),

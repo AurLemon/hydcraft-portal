@@ -1,6 +1,7 @@
 <template>
 	<div
 		data-home-hero-panel
+		:data-desktop-gallery-count="sceneGallery.length"
 		class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,filter,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
 		:class="
 			sceneSwitching
@@ -40,7 +41,7 @@
 			>
 				<template v-if="desktopDisplayName?.layout === 'vertical'">
 					<div
-						class="relative mt-2 left-1.5 text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright]"
+						class="home-hero-display-prefix relative mt-2 left-1.5 text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright]"
 					>
 						{{ desktopDisplayName.prefix }}
 					</div>
@@ -48,7 +49,7 @@
 						<p
 							v-for="column in desktopVerticalNameColumns"
 							:key="column"
-							class="text-[clamp(4.5rem,11vw,11rem)] leading-[1.05] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright]"
+							class="home-hero-display-name text-[clamp(4.5rem,11vw,11rem)] leading-[1.05] tracking-[0.08em] [writing-mode:vertical-lr] [text-orientation:upright]"
 						>
 							{{ column }}
 						</p>
@@ -56,19 +57,19 @@
 				</template>
 				<template v-else-if="desktopDisplayName">
 					<div
-						class="relative left-1.5 whitespace-pre-line text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em]"
+						class="home-hero-display-prefix relative left-1.5 whitespace-pre-line text-[clamp(1.5rem,2.5vw,3.5rem)] leading-[1.16] tracking-[0.08em]"
 					>
 						{{ desktopDisplayName.prefix }}
 					</div>
 					<div
-						class="text-[clamp(4.5rem,11vw,11rem)] leading-[1.05] tracking-[0.08em] whitespace-pre-line"
+						class="home-hero-display-name text-[clamp(4.5rem,11vw,11rem)] leading-[1.05] tracking-[0.08em] whitespace-pre-line"
 					>
 						{{ desktopDisplayName.name }}
 					</div>
 				</template>
 				<p
 					v-else
-					class="inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-words hyphens-auto"
+					class="home-hero-display-name inline-block max-w-full text-[clamp(4.5rem,11vw,11rem)] tracking-[-0.04em] whitespace-pre-line uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] select-none break-words hyphens-auto"
 					:class="
 						props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold'
 					"
@@ -139,14 +140,22 @@
 			data-home-exit="content"
 			class="mt-2 max-w-full pb-8 [text-shadow:0_2px_16px_rgba(2,6,23,0.8)] lg:mt-auto lg:pb-12"
 		>
-			<div class="max-w-xl">
+			<div class="home-hero-copy-content max-w-xl">
 				<h1
-					class="uppercase whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-xl font-semibold tracking-[0.08em] sm:text-3xl"
+					:lang="props.locale"
+					class="home-hero-copy-title text-pretty uppercase whitespace-pre-line break-words hyphens-auto text-xl font-semibold tracking-[0.08em] sm:text-3xl"
+					:class="props.locale.startsWith('en') ? 'break-all' : ''"
 				>
 					{{ scenePresentation.title }}
 				</h1>
 				<p
-					class="mt-2 whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-sm text-white/72 sm:text-lg"
+					:lang="props.locale"
+					class="home-hero-copy-description mt-2 whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-sm text-white/72 sm:text-lg"
+					:class="
+						props.locale.startsWith('en')
+							? 'break-all text-justify [text-align-last:left]'
+							: ''
+					"
 				>
 					{{ scenePresentation.description }}
 				</p>
@@ -371,6 +380,51 @@ const handleSceneGalleryLightboxOpenChange = (open: boolean): void => {
 @media (prefers-reduced-motion: reduce) {
 	.home-scene-gallery-frame {
 		animation: none;
+	}
+}
+
+@media (min-width: 1024px) {
+	[data-home-hero-panel] {
+		--home-hero-gallery-width: 0rem;
+	}
+
+	[data-home-hero-panel][data-desktop-gallery-count='1'] {
+		--home-hero-gallery-width: 13rem;
+	}
+
+	[data-home-hero-panel][data-desktop-gallery-count='2'] {
+		--home-hero-gallery-width: 26.5rem;
+	}
+
+	[data-home-hero-panel][data-desktop-gallery-count='3'] {
+		--home-hero-gallery-width: 40rem;
+	}
+
+	.home-hero-copy-content {
+		max-width: min(36rem, calc(100% - var(--home-hero-gallery-width) - 2rem));
+	}
+}
+
+@media (min-width: 1024px) and (max-height: 700px) {
+	.home-hero-display-prefix {
+		font-size: clamp(1.25rem, 4dvh, 2.25rem);
+		line-height: 1.08;
+	}
+
+	.home-hero-display-name {
+		font-size: clamp(3.75rem, 15dvh, 8rem);
+		line-height: 0.98;
+	}
+
+	.home-hero-copy-title {
+		font-size: clamp(1rem, 3.2dvh, 1.5rem);
+		line-height: 1.15;
+	}
+
+	.home-hero-copy-description {
+		margin-top: 0.25rem;
+		font-size: clamp(0.75rem, 2.4dvh, 1rem);
+		line-height: 1.35;
 	}
 }
 

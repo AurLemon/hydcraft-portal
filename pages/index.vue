@@ -61,15 +61,17 @@
 					/>
 				</div>
 
-				<HomeHeroPresentation
-					:scene="scene"
-					:locale="locale"
-					:scene-switching="sceneSwitching"
-					:server-name="serverName"
-					:online-count="onlineCount"
-					:max-players="maxPlayers"
-					:online="online"
-				/>
+				<div class="contents" :class="heroActive ? 'visible' : 'invisible'">
+					<HomeHeroPresentation
+						:scene="scene"
+						:locale="locale"
+						:scene-switching="sceneSwitching"
+						:server-name="serverName"
+						:online-count="onlineCount"
+						:max-players="maxPlayers"
+						:online="online"
+					/>
+				</div>
 
 				<div class="pointer-events-none absolute inset-0 z-30">
 					<HomeOverviewStory
@@ -263,7 +265,7 @@ const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 	const people =
 		overviewPhase.value === 'community'
 			? overviewCommunityMembers.value
-			: overviewPhase.value === 'scene' || overviewPhase.value === 'players'
+			: overviewPhase.value === 'players'
 				? sceneOverviewPlayers.value
 				: []
 	const markerGroup =
@@ -370,7 +372,7 @@ const handleWorldPlayerMarkerClick = (
 	const people =
 		overviewPhase.value === 'community'
 			? overviewCommunityMembers.value
-			: overviewPhase.value === 'scene' || overviewPhase.value === 'players'
+			: overviewPhase.value === 'players'
 				? sceneOverviewPlayers.value
 				: []
 	if (!people.some((person) => person.id === payload.marker.playerId)) return

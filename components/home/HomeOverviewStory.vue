@@ -61,78 +61,74 @@
 			</div>
 		</div>
 
-		<Transition name="overview-panel">
-			<section
-				v-if="
-					(phase === 'scene' || phase === 'players') &&
-					players.length &&
-					!detail
-				"
-				class="absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
-				:aria-label="t('home.immersive.overview.scenePlayers')"
+		<section
+			v-if="
+				(phase === 'scene' || phase === 'players') && players.length && !detail
+			"
+			class="absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
+			:aria-label="t('home.immersive.overview.scenePlayers')"
+		>
+			<article
+				v-for="(player, index) in players"
+				:key="player.id"
+				class="pointer-events-auto absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] overflow-hidden rounded-lg border border-white/18 bg-slate-950 will-change-[opacity,transform]"
+				:style="playerCardStyle(index)"
 			>
-				<article
-					v-for="(player, index) in players"
-					:key="player.id"
-					class="pointer-events-auto absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[opacity,transform,filter] duration-300 ease-out will-change-[opacity,transform,filter]"
-					:style="playerCardStyle(index)"
+				<div
+					class="relative hidden w-36 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
 				>
+					<SkeletonImage
+						:src="player.avatarUrl"
+						:alt="player.id"
+						class="h-full w-full"
+						image-class="h-full w-full scale-110 object-cover [image-rendering:pixelated]"
+						skeleton-class="rounded-none"
+					/>
 					<div
-						class="relative hidden w-36 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
-					>
+						class="absolute inset-0 bg-linear-to-r from-transparent via-transparent to-slate-950/72"
+					/>
+				</div>
+				<div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+					<div class="flex min-w-0 items-center gap-3 sm:hidden">
 						<SkeletonImage
 							:src="player.avatarUrl"
 							:alt="player.id"
-							class="h-full w-full"
-							image-class="h-full w-full scale-110 object-cover [image-rendering:pixelated]"
-							skeleton-class="rounded-none"
+							class="size-12 shrink-0"
+							image-class="size-12 rounded-md object-cover [image-rendering:pixelated]"
 						/>
-						<div
-							class="absolute inset-0 bg-linear-to-r from-transparent via-transparent to-slate-950/72"
-						/>
-					</div>
-					<div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
-						<div class="flex min-w-0 items-center gap-3 sm:hidden">
-							<SkeletonImage
-								:src="player.avatarUrl"
-								:alt="player.id"
-								class="size-12 shrink-0"
-								image-class="size-12 rounded-md object-cover [image-rendering:pixelated]"
-							/>
-							<div class="min-w-0">
-								<p class="truncate font-arkpixel text-xl leading-none">
-									{{ player.nickname }}
-								</p>
-								<p class="truncate text-xs text-white/60">{{ player.id }}</p>
-							</div>
-						</div>
-						<div class="hidden min-w-0 sm:block">
-							<p class="truncate font-arkpixel text-2xl leading-none">
+						<div class="min-w-0">
+							<p class="truncate font-arkpixel text-xl leading-none">
 								{{ player.nickname }}
 							</p>
-							<p class="mt-1 truncate text-sm text-white/60">{{ player.id }}</p>
+							<p class="truncate text-xs text-white/60">{{ player.id }}</p>
 						</div>
-						<p
-							class="mt-4 line-clamp-4 font-serif text-lg leading-7 text-white/78"
-						>
-							{{ player.description }}
-						</p>
-						<UButton
-							v-if="index === activePlayerIndex"
-							type="button"
-							color="neutral"
-							variant="link"
-							size="sm"
-							trailing-icon="i-lucide-arrow-right"
-							class="mt-auto w-fit px-0 text-white/78 hover:text-white"
-							@click="openPlayerDetail(player)"
-						>
-							{{ t('home.immersive.overview.viewFullIntroduction') }}
-						</UButton>
 					</div>
-				</article>
-			</section>
-		</Transition>
+					<div class="hidden min-w-0 sm:block">
+						<p class="truncate font-arkpixel text-2xl leading-none">
+							{{ player.nickname }}
+						</p>
+						<p class="mt-1 truncate text-sm text-white/60">{{ player.id }}</p>
+					</div>
+					<p
+						class="mt-4 line-clamp-3 font-serif text-lg leading-7 text-white/78"
+					>
+						{{ player.description }}
+					</p>
+					<UButton
+						v-if="index === activePlayerIndex"
+						type="button"
+						color="neutral"
+						variant="link"
+						size="sm"
+						trailing-icon="i-lucide-arrow-right"
+						class="mt-auto w-fit px-0 text-white/78 hover:text-white"
+						@click="openPlayerDetail(player)"
+					>
+						{{ t('home.immersive.overview.viewFullIntroduction') }}
+					</UButton>
+				</div>
+			</article>
+		</section>
 
 		<Transition name="community-rail">
 			<aside
@@ -335,37 +331,35 @@ const communityMemberRows = computed(() => [
 	props.communityMembers.filter((_, index) => index % 2 === 1),
 ])
 
+const smoothStep = (start: number, end: number, value: number): number => {
+	const progress = Math.min(Math.max((value - start) / (end - start), 0), 1)
+	return progress * progress * (3 - 2 * progress)
+}
+
 const playerCardStyle = (index: number) => {
 	const offset = index - props.playerProgress
 	const distance = Math.abs(offset)
 	const translate = Math.max(-78, Math.min(78, offset * 52))
 	const scale = Math.max(0.76, 1 - Math.min(distance, 1) * 0.1)
-	const adjacentVisibility = Math.max(0, Math.min(1, (1.15 - distance) / 0.2))
+	const adjacentVisibility = 1 - smoothStep(0.45, 1.35, distance)
 	const entryVisibility =
 		index === 0
-			? Math.min(1, props.playerStackEntryProgress * 1.5)
-			: Math.max(0, Math.min(1, (props.playerStackEntryProgress - 0.35) / 0.65))
+			? smoothStep(0, 1, props.playerStackEntryProgress)
+			: smoothStep(0.15, 1, props.playerStackEntryProgress)
 	const exitVisibility =
 		index === props.players.length - 1
-			? Math.max(0, Math.min(1, (1 - props.playerStackExitProgress) / 0.55))
-			: Math.max(0, 1 - props.playerStackExitProgress * 1.8)
-	const centeredIndex = Math.round(props.playerProgress)
-	const isVisibleSlot = Math.abs(index - centeredIndex) <= 1
+			? 1 - smoothStep(0.35, 1, props.playerStackExitProgress)
+			: 1 - smoothStep(0, 0.7, props.playerStackExitProgress)
 	const opacity =
 		(1 - Math.min(distance, 1) * 0.18) *
 		adjacentVisibility *
 		entryVisibility *
 		exitVisibility
-	const visibleOpacity =
-		isVisibleSlot && entryVisibility * exitVisibility > 0
-			? Math.max(0.8, opacity)
-			: 0
 
 	return {
-		filter: `blur(${Math.min(distance * 0.75, 1.2)}px)`,
-		opacity: visibleOpacity,
-		transform: `translateX(${translate}%) scale(${scale})`,
-		zIndex: index === centeredIndex ? 30 : offset > 0 ? 20 : 10,
+		opacity,
+		transform: `translate3d(${translate}%, 0, 0) scale(${scale})`,
+		zIndex: Math.round(10 + (1 - Math.min(distance, 1)) * 20),
 	}
 }
 
