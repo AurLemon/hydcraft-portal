@@ -62,18 +62,26 @@
 		</div>
 
 		<section
-			v-if="
-				(phase === 'scene' || phase === 'players') && players.length && !detail
-			"
+			v-if="(phase === 'scene' || phase === 'players') && players.length"
 			class="absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
 			:aria-label="t('home.immersive.overview.scenePlayers')"
 		>
 			<article
 				v-for="(player, index) in players"
 				:key="player.id"
-				class="pointer-events-auto absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] overflow-hidden rounded-lg border border-white/18 bg-slate-950 will-change-[opacity,transform]"
+				role="button"
+				class="pointer-events-auto group absolute bottom-0 flex h-60 w-[min(34rem,calc(100vw-3rem))] cursor-pointer overflow-hidden rounded-lg border border-white/18 bg-slate-950 transition-[background-color,border-color,box-shadow] duration-200 ease-out will-change-[opacity,transform,filter] hover:border-white/32 hover:bg-slate-900 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 active:border-white/40"
 				:style="playerCardStyle(index)"
+				:tabindex="playerCardIsInteractive(index) ? 0 : -1"
+				:aria-hidden="playerCardIsInteractive(index) ? undefined : 'true'"
+				@click="selectPlayer(player, index)"
+				@keydown.enter.prevent="selectPlayer(player, index)"
+				@keydown.space.prevent="selectPlayer(player, index)"
 			>
+				<span
+					class="pointer-events-none absolute inset-0 z-20 bg-white/0 transition-colors duration-100 group-active:bg-white/8"
+					aria-hidden="true"
+				/>
 				<div
 					class="relative hidden w-36 shrink-0 overflow-hidden bg-slate-900/60 sm:block"
 				>
@@ -115,18 +123,13 @@
 					>
 						{{ player.description }}
 					</p>
-					<UButton
+					<span
 						v-if="index === activePlayerIndex"
-						type="button"
-						color="neutral"
-						variant="link"
-						size="sm"
-						trailing-icon="i-lucide-arrow-right"
-						class="mt-auto w-fit px-0 text-white/78 hover:text-white"
-						@click="openPlayerDetail(player)"
+						class="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-medium text-white/78 transition-colors group-hover:text-white"
 					>
 						{{ t('home.immersive.overview.viewFullIntroduction') }}
-					</UButton>
+						<UIcon name="i-lucide-arrow-right" class="size-4" />
+					</span>
 				</div>
 			</article>
 		</section>
@@ -229,7 +232,7 @@
 							</span>
 							<span
 								v-if="member.description"
-								class="mt-1 block line-clamp-2 text-xs leading-5 text-white/62"
+								class="mt-1 block truncate text-xs leading-5 text-white/62"
 							>
 								{{ member.description }}
 							</span>
@@ -250,70 +253,126 @@
 		<Transition name="detail-panel">
 			<aside
 				v-if="detail"
-				class="pointer-events-auto absolute right-0 bottom-0 z-50 flex h-[min(34rem,64dvh)] max-h-[64dvh] w-full flex-col border-t border-white/16 bg-slate-950/94 p-5 backdrop-blur-2xl sm:p-8 lg:top-0 lg:h-auto lg:max-h-none lg:w-[min(30rem,78vw)] lg:border-t-0 lg:border-l lg:p-10 lg:pt-36"
+				class="pointer-events-auto absolute right-0 bottom-0 z-50 h-[min(34rem,64dvh)] max-h-[64dvh] w-full overflow-hidden border-t border-white/16 bg-slate-950/94 backdrop-blur-2xl lg:top-0 lg:h-auto lg:max-h-none lg:w-[min(30rem,78vw)] lg:border-t-0 lg:border-l"
 			>
-				<UButton
-					type="button"
-					color="neutral"
-					variant="ghost"
-					icon="i-lucide-arrow-left"
-					class="w-fit text-white hover:bg-white/12 hover:text-white"
-					@click="closeDetail"
+				<div
+					ref="detailScrollRef"
+					class="detail-scroll h-full overflow-y-auto overscroll-contain"
+					@scroll.passive="handleDetailScroll"
 				>
-					{{ t('home.immersive.overview.back') }}
-				</UButton>
-				<div class="mt-8 flex min-h-0 flex-1 flex-col">
-					<div class="flex items-center gap-4">
-						<SkeletonImage
-							:src="detail.avatarUrl"
-							:alt="detail.id"
-							class="size-20 shrink-0"
-							image-class="size-20 rounded-lg object-cover [image-rendering:pixelated]"
-						/>
-						<div class="min-w-0">
-							<h2 class="truncate font-arkpixel text-3xl leading-none">
-								{{ detail.nickname }}
-							</h2>
-							<p class="mt-1 truncate text-sm text-white/60">{{ detail.id }}</p>
-						</div>
-					</div>
-					<div class="mt-8 min-h-0 flex-1 overflow-y-auto pr-2">
-						<div class="flex min-h-full flex-col">
-							<p
-								class="whitespace-pre-line font-serif text-lg leading-8 text-white/80"
-							>
-								{{
-									detail.description || t('home.immersive.overview.noBiography')
-								}}
-							</p>
-							<div
-								v-if="detail.portalAccount"
-								class="mt-auto flex shrink-0 flex-wrap items-center gap-1 pt-6 text-sm text-white/72"
-							>
-								<UIcon
-									name="i-lucide-corner-down-right"
-									class="size-4 shrink-0 text-white/56"
-								/>
-								<span>{{ t('home.immersive.overview.portalProfile') }}</span>
-								<NuxtLink
-									:to="localePath(`/u/${detail.portalAccount.username}`)"
-									class="pointer-events-auto inline-flex items-center gap-1 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
-								>
-									<UAvatar
-										:src="detail.portalAccount.avatarUrl || undefined"
-										:alt="detail.portalAccount.username"
-										size="xs"
-										:text="
-											detail.portalAccount.username.slice(0, 1).toUpperCase()
-										"
+					<div
+						ref="detailScrollContentRef"
+						class="flex min-h-full flex-col p-5 sm:p-8 lg:p-10 lg:pt-36"
+					>
+						<UButton
+							type="button"
+							color="neutral"
+							variant="ghost"
+							icon="i-lucide-arrow-left"
+							class="w-fit text-white hover:bg-white/12 hover:text-white"
+							@click="closeDetail"
+						>
+							{{ t('home.immersive.overview.back') }}
+						</UButton>
+						<div class="mt-8 flex items-center gap-4">
+							<div class="grid size-20 shrink-0">
+								<Transition name="detail-avatar">
+									<SkeletonImage
+										:key="detail.id"
+										:src="detail.avatarUrl"
+										:alt="detail.id"
+										class="col-start-1 row-start-1 size-20"
+										image-class="size-20 rounded-lg object-cover [image-rendering:pixelated]"
 									/>
-									<span>@{{ detail.portalAccount.username }}</span>
-									<UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
-								</NuxtLink>
+								</Transition>
+							</div>
+							<div class="grid min-w-0 flex-1">
+								<Transition name="detail-identity">
+									<div
+										:key="detail.id"
+										class="col-start-1 row-start-1 min-w-0 self-center"
+									>
+										<h2 class="truncate font-arkpixel text-3xl leading-none">
+											{{ detail.nickname }}
+										</h2>
+										<p class="mt-1 truncate text-sm text-white/60">
+											{{ detail.id }}
+										</p>
+									</div>
+								</Transition>
+							</div>
+						</div>
+						<div class="mt-8 flex flex-1 flex-col">
+							<Transition name="detail-biography" mode="out-in">
+								<div :key="`${detail.id}-${locale}`" class="overflow-hidden">
+									<div class="font-serif text-lg leading-8 text-white/80">
+										<p
+											v-for="(paragraph, index) in detailParagraphs"
+											:key="`${detail.id}-paragraph-${index}`"
+											:lang="detailParagraphLang"
+											:class="detailParagraphClass"
+										>
+											{{ paragraph }}
+										</p>
+									</div>
+								</div>
+							</Transition>
+							<div class="mt-auto">
+								<Transition name="detail-account" mode="out-in">
+									<div
+										v-if="detail.portalAccount"
+										:key="`${detail.id}-${detail.portalAccount.username}`"
+										class="overflow-hidden"
+									>
+										<div
+											class="flex flex-wrap items-center gap-1 pt-8 text-sm text-white/72"
+										>
+											<UIcon
+												name="i-lucide-corner-down-right"
+												class="size-4 shrink-0 text-white/56"
+											/>
+											<span>{{
+												t('home.immersive.overview.portalProfile')
+											}}</span>
+											<NuxtLink
+												:to="localePath(`/u/${detail.portalAccount.username}`)"
+												class="pointer-events-auto inline-flex items-center gap-1 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
+											>
+												<UAvatar
+													:src="detail.portalAccount.avatarUrl || undefined"
+													:alt="detail.portalAccount.username"
+													size="xs"
+													:text="
+														detail.portalAccount.username
+															.slice(0, 1)
+															.toUpperCase()
+													"
+												/>
+												<span>@{{ detail.portalAccount.username }}</span>
+												<UIcon
+													name="i-lucide-arrow-up-right"
+													class="size-3.5"
+												/>
+											</NuxtLink>
+										</div>
+									</div>
+								</Transition>
 							</div>
 						</div>
 					</div>
 				</div>
+				<Transition name="detail-scroll-hint">
+					<div
+						v-if="detailScrollState.canScroll && !detailScrollState.isAtEnd"
+						class="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex h-20 items-end justify-center bg-linear-to-t from-slate-950 via-slate-950/88 to-transparent pb-3"
+						aria-hidden="true"
+					>
+						<UIcon
+							name="i-lucide-chevrons-down"
+							class="mb-1 size-5 text-white/72 drop-shadow-md"
+						/>
+					</div>
+				</Transition>
 			</aside>
 		</Transition>
 	</div>
@@ -340,6 +399,11 @@ export interface HomeOverviewPerson {
 	position?: HomeImmersiveMapPosition
 }
 
+export interface HomeOverviewPlayerFocusPayload {
+	playerIndex: number
+	playerId: string
+}
+
 interface HomeOverviewStoryProps {
 	phase: HomeOverviewPhase
 	sceneShortName: string
@@ -354,20 +418,55 @@ interface HomeOverviewStoryProps {
 	detailPersonId: string | null
 }
 
+interface DetailScrollState {
+	canScroll: boolean
+	isAtEnd: boolean
+}
+
 const props = defineProps<HomeOverviewStoryProps>()
 const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
+	'focus-player': [payload: HomeOverviewPlayerFocusPayload]
 }>()
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
+const detailScrollRef = ref<HTMLDivElement | null>(null)
+const detailScrollContentRef = ref<HTMLDivElement | null>(null)
+const detailScrollState = reactive<DetailScrollState>({
+	canScroll: false,
+	isAtEnd: true,
+})
+let detailResizeObserver: ResizeObserver | null = null
 const detail = computed(() => {
 	if (!props.detailPersonId) return null
 	const people =
 		props.phase === 'community' ? props.communityMembers : props.players
 
 	return people.find((person) => person.id === props.detailPersonId) ?? null
+})
+const detailParagraphs = computed(() => {
+	const description = detail.value?.description
+	if (!description) return [t('home.immersive.overview.noBiography')]
+
+	return description
+		.split(/\r?\n\s*\r?\n/)
+		.map((paragraph) => paragraph.trim())
+		.filter(Boolean)
+})
+const detailParagraphLang = computed(() => {
+	if (locale.value.startsWith('en')) return 'en'
+	if (locale.value.startsWith('ja')) return 'ja'
+	if (locale.value.startsWith('zh-TW')) return 'zh-Hant'
+	return 'zh-Hans'
+})
+const detailParagraphClass = computed(() => {
+	const baseClass =
+		'my-1.5 w-full text-pretty text-justify first:mt-0 last:mb-0 [text-align-last:left]'
+	return detailParagraphLang.value === 'en'
+		? `${baseClass} break-words hyphens-auto [text-justify:inter-word]`
+		: `${baseClass} break-normal [line-break:loose] [text-justify:inter-character]`
 })
 const communityMemberRows = computed(() => [
 	props.communityMembers.filter((_, index) => index % 2 === 0),
@@ -385,6 +484,7 @@ const playerCardStyle = (index: number) => {
 	const translate = Math.max(-78, Math.min(78, offset * 52))
 	const scale = Math.max(0.76, 1 - Math.min(distance, 1) * 0.1)
 	const adjacentVisibility = 1 - smoothStep(0.45, 1.35, distance)
+	const sideAttenuation = 1 - smoothStep(0.45, 1.35, distance) * 0.72
 	const entryVisibility =
 		index === 0
 			? smoothStep(0, 1, props.playerStackEntryProgress)
@@ -396,18 +496,35 @@ const playerCardStyle = (index: number) => {
 	const opacity =
 		(1 - Math.min(distance, 1) * 0.18) *
 		adjacentVisibility *
+		sideAttenuation *
 		entryVisibility *
 		exitVisibility
+	const blurAmount = (1 - Math.sqrt(Math.max(opacity, 0))) * 8
 
 	return {
 		opacity,
 		transform: `translate3d(${translate}%, 0, 0) scale(${scale})`,
+		filter: `blur(${blurAmount}px)`,
 		zIndex: Math.round(10 + (1 - Math.min(distance, 1)) * 20),
+		pointerEvents: playerCardIsInteractive(index)
+			? ('auto' as const)
+			: ('none' as const),
 	}
 }
 
+const playerCardIsInteractive = (index: number): boolean =>
+	Math.abs(index - props.playerProgress) < 1.35
+
 const openPlayerDetail = (player: HomeOverviewPerson): void => {
 	emit('update:detailPersonId', player.id)
+}
+
+const selectPlayer = (
+	player: HomeOverviewPerson,
+	playerIndex: number,
+): void => {
+	emit('focus-player', { playerIndex, playerId: player.id })
+	openPlayerDetail(player)
 }
 
 const openCommunityDetail = (member: HomeOverviewPerson): void => {
@@ -418,12 +535,69 @@ const closeDetail = (): void => {
 	emit('update:detailPersonId', null)
 }
 
+const updateDetailScrollState = (): void => {
+	const scrollElement = detailScrollRef.value
+	if (!scrollElement) {
+		detailScrollState.canScroll = false
+		detailScrollState.isAtEnd = true
+		return
+	}
+
+	const remainingScroll =
+		scrollElement.scrollHeight -
+		scrollElement.clientHeight -
+		scrollElement.scrollTop
+	detailScrollState.canScroll =
+		scrollElement.scrollHeight - scrollElement.clientHeight > 2
+	detailScrollState.isAtEnd = remainingScroll <= 2
+}
+
+const observeDetailScrollSize = (): void => {
+	detailResizeObserver?.disconnect()
+	if (!detailResizeObserver) return
+	if (detailScrollRef.value) detailResizeObserver.observe(detailScrollRef.value)
+	if (detailScrollContentRef.value) {
+		detailResizeObserver.observe(detailScrollContentRef.value)
+	}
+}
+
+const handleDetailScroll = (): void => {
+	updateDetailScrollState()
+}
+
 watch(
 	() => props.phase,
 	() => {
 		if (props.detailPersonId) closeDetail()
 	},
 )
+
+watch(
+	() => props.detailPersonId,
+	async (personId) => {
+		await nextTick()
+		if (personId && detailScrollRef.value) detailScrollRef.value.scrollTop = 0
+		observeDetailScrollSize()
+		updateDetailScrollState()
+	},
+)
+
+watch(locale, async () => {
+	await nextTick()
+	observeDetailScrollSize()
+	updateDetailScrollState()
+})
+
+onMounted(() => {
+	detailResizeObserver = new ResizeObserver(updateDetailScrollState)
+	observeDetailScrollSize()
+	updateDetailScrollState()
+})
+
+onBeforeUnmount(() => {
+	detailResizeObserver?.disconnect()
+	detailResizeObserver = null
+})
 </script>
 
 <style scoped>
@@ -499,6 +673,100 @@ watch(
 	pointer-events: auto !important;
 }
 
+.detail-scroll {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.detail-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+.detail-avatar-enter-active,
+.detail-avatar-leave-active {
+	transition:
+		clip-path 260ms cubic-bezier(0.22, 1, 0.36, 1),
+		transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.detail-avatar-enter-active {
+	z-index: 1;
+}
+
+.detail-avatar-enter-from {
+	clip-path: inset(100% 0 0 0);
+	transform: translateY(0.5rem) scale(0.9);
+}
+
+.detail-avatar-leave-to {
+	clip-path: inset(0 0 100% 0);
+	transform: translateY(-0.5rem) scale(0.95);
+}
+
+.detail-identity-enter-active,
+.detail-identity-leave-active {
+	transition:
+		clip-path 280ms cubic-bezier(0.22, 1, 0.36, 1),
+		transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.detail-identity-enter-active {
+	z-index: 1;
+}
+
+.detail-identity-enter-from {
+	clip-path: inset(0 100% 0 0);
+	transform: translateX(0.75rem);
+}
+
+.detail-identity-leave-to {
+	clip-path: inset(0 0 0 100%);
+	transform: translateX(-0.75rem);
+}
+
+.detail-biography-enter-active,
+.detail-biography-leave-active,
+.detail-account-enter-active,
+.detail-account-leave-active {
+	display: grid;
+	overflow: hidden;
+	transition: grid-template-rows 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.detail-biography-enter-active > *,
+.detail-biography-leave-active > *,
+.detail-account-enter-active > *,
+.detail-account-leave-active > * {
+	min-height: 0;
+}
+
+.detail-biography-enter-from,
+.detail-biography-leave-to,
+.detail-account-enter-from,
+.detail-account-leave-to {
+	grid-template-rows: 0fr;
+}
+
+.detail-biography-enter-to,
+.detail-biography-leave-from,
+.detail-account-enter-to,
+.detail-account-leave-from {
+	grid-template-rows: 1fr;
+}
+
+.detail-scroll-hint-enter-active,
+.detail-scroll-hint-leave-active {
+	transition:
+		opacity 180ms ease,
+		transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.detail-scroll-hint-enter-from,
+.detail-scroll-hint-leave-to {
+	opacity: 0;
+	transform: translateY(0.5rem);
+}
+
 @media (max-width: 1023px) {
 	.detail-panel-enter-from,
 	.detail-panel-leave-to {
@@ -548,6 +816,16 @@ watch(
 	.detail-panel-leave-active,
 	.community-rail-enter-active,
 	.community-rail-leave-active,
+	.detail-avatar-enter-active,
+	.detail-avatar-leave-active,
+	.detail-identity-enter-active,
+	.detail-identity-leave-active,
+	.detail-biography-enter-active,
+	.detail-biography-leave-active,
+	.detail-account-enter-active,
+	.detail-account-leave-active,
+	.detail-scroll-hint-enter-active,
+	.detail-scroll-hint-leave-active,
 	.community-member-card,
 	article {
 		transition: none;

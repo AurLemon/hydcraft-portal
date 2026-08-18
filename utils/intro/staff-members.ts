@@ -1,3 +1,5 @@
+import { introStaffBios } from './staff-bios'
+
 export type IntroStaffBadgeKey =
 	| 'member'
 	| 'advisor'
@@ -37,8 +39,22 @@ const createStaffMember = <TMember extends { id: string; nickname: string }>(
  * person who belongs to multiple groups still has one nickname and bio.
  */
 const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
-	createStaffMember({ id: 'Aurora_Lemon', nickname: '柠檬' }, null),
-	createStaffMember({ id: 'Xiao_awa_', nickname: '肖阿瓦' }, null),
+	createStaffMember(
+		{
+			id: 'Aurora_Lemon',
+			nickname: '柠檬',
+			portalUsername: 'AurLemon',
+		},
+		introStaffBios.Aurora_Lemon,
+	),
+	createStaffMember(
+		{
+			id: 'Xiao_awa_',
+			nickname: '肖阿瓦',
+			portalUsername: 'Xiao_awa_',
+		},
+		introStaffBios.Xiao_awa_,
+	),
 	createStaffMember({ id: 'Complex_Colors', nickname: '杂色' }, null),
 	createStaffMember(
 		{
@@ -46,26 +62,59 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 			nickname: '仓鼠',
 			portalUsername: 'CatPillager',
 		},
-		{
-			'zh-CN':
-				'广东深圳人，七周目、八周目地图设计者。擅长地图绘制、小比例设计与机械动力装置，也能够很好地驾驭欧美风格建筑。',
-			'zh-TW':
-				'廣東深圳人，七週目、八週目地圖設計者。擅長地圖繪製、小比例設計與機械動力裝置，也能很好地駕馭歐美風格建築。',
-			'en-US':
-				'A Shenzhen-based map designer for Seasons 7 and 8, known for compact urban design, kinetic machinery, and Western architecture.',
-			'ja-JP':
-				'深圳出身の第7・第8シーズンのマップデザイナー。小規模都市設計、動力機械、欧米風建築を得意としています。',
-		},
+		introStaffBios.CatPillager,
 	),
-	createStaffMember({ id: 'qixuanjun233', nickname: '七炫' }, null),
+	createStaffMember(
+		{
+			id: 'qixuanjun233',
+			nickname: '七炫',
+			portalUsername: 'qixuanjun233',
+		},
+		introStaffBios.qixuanjun233,
+	),
 	createStaffMember({ id: 'larker_package', nickname: '拉克' }, null),
-	createStaffMember({ id: 'FisheyeArtist59', nickname: '题散' }, null),
-	createStaffMember({ id: 'xwTeng', nickname: '小万' }, null),
-	createStaffMember({ id: 'Nina_Naganohara', nickname: 'afe' }, null),
-	createStaffMember({ id: 'xxlm233', nickname: '宵宵狸猫' }, null),
+	createStaffMember(
+		{
+			id: 'FisheyeArtist59',
+			nickname: '题散',
+			portalUsername: 'JrZhang',
+		},
+		introStaffBios.FisheyeArtist59,
+	),
+	createStaffMember(
+		{
+			id: 'xwTeng',
+			nickname: '小万',
+			portalUsername: 'xwTeng',
+		},
+		introStaffBios.xwTeng,
+	),
+	createStaffMember(
+		{
+			id: 'Nina_Naganohara',
+			nickname: 'afe',
+			portalUsername: 'NinaNaganohara',
+		},
+		introStaffBios.Nina_Naganohara,
+	),
+	createStaffMember(
+		{
+			id: 'xxlm233',
+			nickname: '宵宵狸猫',
+			portalUsername: 'xxlm233',
+		},
+		introStaffBios.xxlm233,
+	),
 	createStaffMember({ id: 'CN_DaJiChi', nickname: '鸡翅' }, null),
 	createStaffMember({ id: 'Chuxia_SF', nickname: '初夏' }, null),
-	createStaffMember({ id: 'Dotkk', nickname: 'Dotkk' }, null),
+	createStaffMember(
+		{
+			id: 'Dotkk',
+			nickname: 'Dotkk',
+			portalUsername: 'Dotkk',
+		},
+		introStaffBios.Dotkk,
+	),
 	createStaffMember({ id: 'ColaFrog', nickname: '可蛙' }, null),
 	createStaffMember({ id: 'QiShui233', nickname: '汽水' }, null),
 	createStaffMember({ id: 'TochoShizuku', nickname: '远绪' }, null),
@@ -89,8 +138,14 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 	createStaffMember({ id: 'FruKyuu', nickname: '芙秋' }, null),
 	createStaffMember({ id: 'LynaCrystal', nickname: '乾喵' }, null),
 	createStaffMember({ id: 'xiaobaimao233', nickname: '小白猫' }, null),
-	createStaffMember({ id: 'RUSH132', nickname: 'RUSH' }, null),
-	createStaffMember({ id: 'Kezzyblue', nickname: 'Kevin' }, null),
+	createStaffMember(
+		{ id: 'RUSH132', nickname: 'RUSH' },
+		introStaffBios.RUSH132,
+	),
+	createStaffMember(
+		{ id: 'Kezzyblue', nickname: 'Kevin' },
+		introStaffBios.Kezzyblue,
+	),
 	createStaffMember({ id: 'Mr_Z0406', nickname: '冰可乐' }, null),
 ]
 

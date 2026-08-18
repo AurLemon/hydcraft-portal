@@ -86,6 +86,7 @@
 						:founded-days="foundedDays"
 						:member-count="homeImmersiveOverview.stats.memberCount"
 						v-model:detail-person-id="overviewDetailPersonId"
+						@focus-player="handleOverviewPlayerFocus"
 					/>
 				</div>
 
@@ -107,7 +108,10 @@ import owenCoastConcert1 from '~/assets/resources/minecraft-gallery/season_8/owe
 import outroBackground from '~/assets/resources/minecraft-gallery/season_8/owen_screenshots_1.webp'
 import outroTerrain from '~/assets/resources/minecraft-gallery/season_8/terrain_advance_screenshots.webp'
 import outroSpawn from '~/assets/resources/minecraft-gallery/season_8/spawnpoint_screenshots_1.webp'
-import type { HomeOverviewPerson } from '~/components/home/HomeOverviewStory.vue'
+import type {
+	HomeOverviewPerson,
+	HomeOverviewPlayerFocusPayload,
+} from '~/components/home/HomeOverviewStory.vue'
 import { useHomePlayerLocations } from '~/composables/home/useHomePlayerLocations'
 import {
 	type HomeStoryMapHandle,
@@ -169,6 +173,7 @@ const {
 	playerStackEntryProgress,
 	playerStackExitProgress,
 	mapOpacity,
+	scrollToPlayerFocus,
 	refreshScrollStory,
 	reapplyMapProgress,
 } = useHomeStoryProgress({ playerCount: scenePlayerCount, homeMapRef })
@@ -404,6 +409,15 @@ const handleWorldPlayerMarkerClick = (
 				: []
 	if (!people.some((person) => person.id === payload.marker.playerId)) return
 	overviewDetailPersonId.value = payload.marker.playerId
+}
+
+const handleOverviewPlayerFocus = (
+	payload: HomeOverviewPlayerFocusPayload,
+): void => {
+	const player = sceneOverviewPlayers.value[payload.playerIndex]
+	if (!player || player.id !== payload.playerId) return
+
+	scrollToPlayerFocus(payload.playerIndex)
 }
 
 watch(

@@ -32,6 +32,18 @@ interface HomeStoryStop {
 	progress: number
 }
 
+interface HomeStoryProgressTarget {
+	progress: number
+	scrollTop: number
+}
+
+interface ScrollTriggerTweenOptions {
+	duration: number
+	ease: string
+	onComplete: () => void
+	onInterrupt: () => void
+}
+
 const HERO_EXIT_START = 0.02
 const HERO_PROGRESS_END = 0.14
 const ATMOSPHERE_PROGRESS_END = 0.22
@@ -42,6 +54,8 @@ const OVERVIEW_TRANSITION_DVH = 10
 const COMMUNITY_SCROLL_DVH = 72
 const OUTRO_TRANSITION_DVH = 36
 const OUTRO_SCROLL_BUFFER_DVH = 6
+const STORY_SCRUB_SECONDS = 1.5
+const CLICK_FOCUS_SCROLL_SECONDS = 1.1
 
 const clampProgress = (progress: number): number =>
 	Math.min(Math.max(progress, 0), 1)
@@ -171,12 +185,49 @@ export const useHomeStoryProgress = (options: {
 	let latestStoryProgress = 0
 	let revertScrollStory: (() => void) | null = null
 	let scrollTriggerRefresh: (() => void) | null = null
+	let seekScrollStory: ((target: HomeStoryProgressTarget) => void) | null = null
+
+	const scrollWindowImmediately = (scrollTop: number): void => {
+		const documentElement = document.documentElement
+		const previousScrollBehavior = documentElement.style.scrollBehavior
+		documentElement.style.scrollBehavior = 'auto'
+		window.scrollTo({ top: scrollTop, behavior: 'auto' })
+		documentElement.style.scrollBehavior = previousScrollBehavior
+	}
 
 	const resolveOverviewStoryStops = (): HomeStoryStop[] => {
 		return storyLayout.value.playerSegments.map((segment) => ({
 			id: 'player',
 			progress: (segment.focusStart + segment.dwellEnd) / 2,
 		}))
+	}
+
+	const scrollToPlayerFocus = (playerIndex: number): void => {
+		if (!import.meta.client) return
+
+		const segment = storyLayout.value.playerSegments[playerIndex]
+		const scrollStory = scrollStoryRef.value
+		if (!segment || !scrollStory) return
+
+		const focusProgress = (segment.focusStart + segment.dwellEnd) / 2
+		const storyTop = window.scrollY + scrollStory.getBoundingClientRect().top
+		const storyScrollDistance = Math.max(
+			scrollStory.offsetHeight - window.innerHeight,
+			0,
+		)
+		const target = {
+			progress: focusProgress,
+			scrollTop: storyTop + storyScrollDistance * focusProgress,
+		}
+
+		if (seekScrollStory) {
+			seekScrollStory(target)
+			return
+		}
+
+		scrollWindowImmediately(target.scrollTop)
+		options.homeMapRef.value?.setScrollProgress(target.progress)
+		syncStoryProgress(target.progress)
 	}
 
 	const resolveStoryStops = (): HomeStoryStop[] => {
@@ -322,7 +373,7 @@ export const useHomeStoryProgress = (options: {
 					trigger: scrollStory,
 					start: 'top top',
 					end: 'bottom bottom',
-					scrub: 1.5,
+					scrub: STORY_SCRUB_SECONDS,
 					snap: {
 						snapTo: resolveStorySnapProgress,
 						directional: true,
@@ -387,6 +438,23 @@ export const useHomeStoryProgress = (options: {
 					{ autoAlpha: 0, duration: 0.12, ease: 'none' },
 					storyLayout.value.heroExitStart,
 				)
+
+			seekScrollStory = (target): void => {
+				const scrollTrigger = timeline.scrollTrigger
+				if (!scrollTrigger) return
+
+				const tweenTo = scrollTrigger.tweenTo as unknown as (
+					position: number,
+					options: ScrollTriggerTweenOptions,
+				) => ReturnType<typeof scrollTrigger.tweenTo>
+				tweenTo(target.scrollTop, {
+					duration: CLICK_FOCUS_SCROLL_SECONDS,
+					ease: 'sine.inOut',
+					onComplete: () => scrollTrigger.scrubDuration(STORY_SCRUB_SECONDS),
+					onInterrupt: () => scrollTrigger.scrubDuration(STORY_SCRUB_SECONDS),
+				})
+				scrollTrigger.scrubDuration(0)
+			}
 		}, scrollStory)
 		revertScrollStory = () => context.revert()
 		scrollTriggerRefresh = () => ScrollTrigger.refresh()
@@ -396,6 +464,7 @@ export const useHomeStoryProgress = (options: {
 		revertScrollStory?.()
 		revertScrollStory = null
 		scrollTriggerRefresh = null
+		seekScrollStory = null
 	})
 
 	return {
@@ -410,6 +479,7 @@ export const useHomeStoryProgress = (options: {
 		playerStackEntryProgress,
 		playerStackExitProgress,
 		mapOpacity,
+		scrollToPlayerFocus,
 		refreshScrollStory,
 		reapplyMapProgress,
 	}
