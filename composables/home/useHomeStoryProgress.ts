@@ -208,9 +208,9 @@ export const useHomeStoryProgress = (options: {
 
 	const resolveStorySnapProgress = (progress: number): number => {
 		const nearest = resolveStoryStops().reduce((closest, stop) =>
-				Math.abs(stop.progress - progress) < Math.abs(closest.progress - progress)
-					? stop
-					: closest,
+			Math.abs(stop.progress - progress) < Math.abs(closest.progress - progress)
+				? stop
+				: closest,
 		)
 
 		// Player cards must remain directly scroll-controlled. Snapping them to
@@ -322,7 +322,7 @@ export const useHomeStoryProgress = (options: {
 					trigger: scrollStory,
 					start: 'top top',
 					end: 'bottom bottom',
-						scrub: 1.5,
+					scrub: 1.5,
 					snap: {
 						snapTo: resolveStorySnapProgress,
 						directional: true,
@@ -331,12 +331,23 @@ export const useHomeStoryProgress = (options: {
 						duration: { min: 0.2, max: 0.42 },
 						ease: 'sine.inOut',
 					},
-					onUpdate: (scrollTrigger) => syncMapProgress(scrollTrigger.progress),
-					onRefresh: (scrollTrigger) => syncMapProgress(scrollTrigger.progress),
+					onRefresh: (scrollTrigger) => {
+						timelineClock.progress = scrollTrigger.progress
+						syncMapProgress(scrollTrigger.progress)
+					},
 				},
 			})
 			timeline
-				.to(timelineClock, { progress: 1, duration: 1, ease: 'none' }, 0)
+				.to(
+					timelineClock,
+					{
+						progress: 1,
+						duration: 1,
+						ease: 'none',
+						onUpdate: () => syncMapProgress(timelineClock.progress),
+					},
+					0,
+				)
 				.to(
 					contentExitElements,
 					{
