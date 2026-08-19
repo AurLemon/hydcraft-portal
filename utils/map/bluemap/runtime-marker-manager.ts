@@ -252,6 +252,10 @@ export class BlueMapRuntimeMarkerManager {
 			marker.element.dataset.homeFocused = String(
 				definition.isFocused !== false,
 			)
+			marker.element.style.setProperty(
+				'--home-marker-mobile-screen-offset-y',
+				definition.mobileScreenOffsetY ?? '0px',
+			)
 			if (!createdEntry) {
 				marker.element.style.opacity =
 					definition.isFocused === false
@@ -262,8 +266,8 @@ export class BlueMapRuntimeMarkerManager {
 			}
 			marker.element.style.transform =
 				definition.isFocused === false
-					? 'translate(-50%, -100%) scale(0.72)'
-					: 'translate(-50%, -100%) scale(1)'
+					? 'translate(-50%, calc(-100% + var(--home-marker-screen-offset-y))) scale(0.72)'
+					: 'translate(-50%, calc(-100% + var(--home-marker-screen-offset-y))) scale(1)'
 			marker.element.setAttribute('role', 'button')
 			marker.element.setAttribute('aria-label', definition.label)
 			marker.element.tabIndex = 0

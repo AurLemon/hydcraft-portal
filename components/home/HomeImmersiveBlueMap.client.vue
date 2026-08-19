@@ -433,6 +433,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :deep(.home-world-player-marker) {
+	--home-marker-screen-offset-y: 0px;
 	position: relative;
 	display: flex;
 	min-width: 1.5rem;
@@ -517,6 +518,10 @@ onBeforeUnmount(() => {
 
 @media (max-width: 639px) {
 	:deep(.home-world-player-marker) {
+		--home-marker-screen-offset-y: var(
+			--home-marker-mobile-screen-offset-y,
+			0px
+		);
 		min-width: 1.25rem;
 	}
 

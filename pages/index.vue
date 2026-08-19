@@ -352,6 +352,11 @@ const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 								: person.id === focusedCommunityMemberId
 									? true
 									: undefined,
+						mobileScreenOffsetY:
+							markerGroup === 'community' &&
+							person.id === focusedCommunityMemberId
+								? 'clamp(-11rem, -16dvh, -5rem)'
+								: undefined,
 						x: person.position.x,
 						y: person.position.y,
 						z: person.position.z,

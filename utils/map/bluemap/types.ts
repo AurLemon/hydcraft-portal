@@ -78,6 +78,8 @@ export interface BlueMapWorldPlayerMarker {
 	avatarUrl: string
 	isAdministrator?: boolean
 	isFocused?: boolean
+	/** Visual-only mobile screen-space offset for an overlay obscuring the map. */
+	mobileScreenOffsetY?: string
 	x: number
 	y: number
 	z: number
