@@ -30,6 +30,7 @@ export type {
 const DEFAULT_VIEWPORT_HEIGHT_PX = 800
 const CLICK_FOCUS_SCROLL_SECONDS = 1.1
 const NAVIGATION_EPSILON = 0.0005
+const STORY_INPUT_ENTRY_TOLERANCE_PX = 24
 
 const clampProgress = (progress: number): number =>
 	Math.min(Math.max(progress, 0), 1)
@@ -113,6 +114,8 @@ export const useHomeStoryProgress = (options: {
 	const scrollStoryRef = ref<HTMLElement | null>(null)
 	const viewportHeightPx = ref(DEFAULT_VIEWPORT_HEIGHT_PX)
 	const viewportReady = ref(false)
+	const storyInputActive = ref(false)
+	const storyTouchInputControlled = ref(false)
 	const heroActive = ref(true)
 	const overviewPhase = ref<HomeOverviewPhase>('hidden')
 	const outroProgress = ref(0)
@@ -189,10 +192,7 @@ export const useHomeStoryProgress = (options: {
 	const syncPlayerActionVisibility = (): void => {
 		const stop = storyLayout.value.stops[settledStopIndex.value]
 		playerActionVisible.value = Boolean(
-			navigationStatus.value === 'idle' &&
-			inputEnded.value &&
-			stop?.id === 'player' &&
-			Math.abs(latestStoryProgress.value - stop.progress) <= NAVIGATION_EPSILON,
+			navigationStatus.value === 'idle' && stop?.id === 'player',
 		)
 	}
 
@@ -434,18 +434,11 @@ export const useHomeStoryProgress = (options: {
 	}
 
 	const getInputSnapshot = (): HomeStoryInputSnapshot => {
-		const scrollStory = scrollStoryRef.value
-		const rect = scrollStory?.getBoundingClientRect()
 		return {
 			progress: latestStoryProgress.value,
 			storyStart: 0,
 			storyEnd: 1,
-			storyViewportActive: Boolean(
-				rect &&
-				rect.top <= 1 &&
-				rect.bottom >=
-					(window.visualViewport?.height ?? window.innerHeight) - 1,
-			),
+			storyViewportActive: storyInputActive.value,
 			storyScrollDistancePx: storyLayout.value.storyScrollDistancePx,
 			stopProgresses: storyLayout.value.stops.map((stop) => stop.progress),
 			settledStopIndex: settledStopIndex.value,
@@ -480,13 +473,15 @@ export const useHomeStoryProgress = (options: {
 				Math.round(viewportMedia?.height ?? window.innerHeight),
 				1,
 			)
-			if (Math.abs(nextHeight - viewportHeightPx.value) < 1) return
-			viewportHeightPx.value = nextHeight
+			const heightChanged = Math.abs(nextHeight - viewportHeightPx.value) >= 1
+			if (heightChanged) {
+				viewportHeightPx.value = nextHeight
+				dispatchStoryEvent({
+					type: 'layout-refreshed',
+					viewportHeightPx: nextHeight,
+				})
+			}
 			viewportReady.value = true
-			dispatchStoryEvent({
-				type: 'layout-refreshed',
-				viewportHeightPx: nextHeight,
-			})
 			void nextTick(() => refreshScrollStory())
 		})
 	}
@@ -501,6 +496,7 @@ export const useHomeStoryProgress = (options: {
 	})
 
 	onMounted(async () => {
+		storyTouchInputControlled.value = navigator.maxTouchPoints > 0
 		const [gsapModule, scrollTriggerModule] = await Promise.all([
 			import('gsap'),
 			import('gsap/ScrollTrigger'),
@@ -554,18 +550,40 @@ export const useHomeStoryProgress = (options: {
 		gsap.registerPlugin(ScrollTrigger)
 		const context = gsap.context(() => {
 			const timelineClock = { progress: 0 }
+			const syncStoryInputActive = (scrollTrigger: {
+				start: number
+				end: number
+				scroll(): number
+			}): void => {
+				const scrollPosition = scrollTrigger.scroll()
+				storyInputActive.value =
+					scrollPosition >=
+						scrollTrigger.start - STORY_INPUT_ENTRY_TOLERANCE_PX &&
+					scrollPosition <= scrollTrigger.end
+			}
 			const timeline = gsap.timeline({
 				scrollTrigger: {
 					trigger: scrollStory,
 					start: 'top top',
 					end: 'bottom bottom',
 					scrub: true,
+					onEnter: (scrollTrigger) => {
+						syncStoryInputActive(scrollTrigger)
+					},
 					onEnterBack: (scrollTrigger) => {
+						syncStoryInputActive(scrollTrigger)
 						timelineClock.progress = scrollTrigger.progress
 						syncMapProgress(scrollTrigger.progress, 'native')
 					},
-					onLeave: () => syncMapProgress(1, 'native'),
+					onLeave: (scrollTrigger) => {
+						syncStoryInputActive(scrollTrigger)
+						syncMapProgress(1, 'native')
+					},
+					onLeaveBack: (scrollTrigger) => {
+						syncStoryInputActive(scrollTrigger)
+					},
 					onRefresh: (scrollTrigger) => {
+						syncStoryInputActive(scrollTrigger)
 						timelineClock.progress = scrollTrigger.progress
 						syncMapProgress(scrollTrigger.progress, 'refresh')
 					},
@@ -626,11 +644,21 @@ export const useHomeStoryProgress = (options: {
 				| HomeStoryScrollTrigger
 				| undefined
 			if (scrollTrigger) {
+				syncStoryInputActive(scrollTrigger)
 				seekScrollStory = (target, duration, ease, onComplete, onInterrupt) => {
 					const restoreScrollBehavior = useControlledScrollBehavior()
-					const tween = scrollTrigger.tweenTo(target.scrollTop, {
+					const scrollClock = { value: scrollTrigger.scroll() }
+					const tween = gsap.to(scrollClock, {
+						value: target.scrollTop,
 						duration,
 						ease,
+						overwrite: true,
+						onUpdate: () => {
+							window.scrollTo({
+								top: scrollClock.value,
+								behavior: 'auto',
+							})
+						},
 						onComplete: () => {
 							restoreScrollBehavior()
 							onComplete()
@@ -680,6 +708,8 @@ export const useHomeStoryProgress = (options: {
 	onBeforeUnmount(() => {
 		inputRuntime?.destroy()
 		inputRuntime = null
+		storyInputActive.value = false
+		storyTouchInputControlled.value = false
 		window.removeEventListener('resize', scheduleViewportRefresh)
 		viewportMedia?.removeEventListener('resize', scheduleViewportRefresh)
 		viewportMedia = null
@@ -702,6 +732,8 @@ export const useHomeStoryProgress = (options: {
 		scrollStoryRef,
 		storyLayout,
 		storyState,
+		storyInputActive,
+		storyTouchInputControlled,
 		sceneStoryHeightDvh,
 		sceneStoryHeightStyle,
 		heroActive,

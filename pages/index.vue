@@ -7,7 +7,13 @@
 		>
 			<section
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
-				:class="overviewDetailPersonId ? 'touch-auto' : 'touch-none'"
+				:class="
+					overviewDetailPersonId
+						? 'touch-auto'
+						: storyInputActive && storyTouchInputControlled
+							? 'touch-none'
+							: 'touch-pan-y'
+				"
 			>
 				<div
 					class="absolute inset-0 transition-[opacity,filter,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -171,6 +177,8 @@ const scenePlayerCount = computed(() => scene.value.players.length)
 const {
 	scrollStoryRef,
 	storyLayout,
+	storyInputActive,
+	storyTouchInputControlled,
 	sceneStoryHeightStyle,
 	heroActive,
 	overviewPhase,

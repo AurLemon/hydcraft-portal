@@ -108,15 +108,9 @@ export interface HomeStoryProgressTarget {
 }
 
 export interface HomeStoryScrollTrigger {
-	tweenTo(
-		position: number,
-		options?: {
-			duration?: number
-			ease?: string
-			onComplete?: () => void
-			onInterrupt?: () => void
-		},
-	): { kill(): void }
+	start: number
+	end: number
+	scroll(): number
 }
 
 export type HomeStoryEvent =
