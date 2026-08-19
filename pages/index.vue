@@ -84,6 +84,7 @@
 				<div class="pointer-events-none absolute inset-0 z-30">
 					<HomeOverviewStory
 						:phase="overviewPhase"
+						:community-visible="communityVisible"
 						:scene-short-name="sceneShortName"
 						:players="sceneOverviewPlayers"
 						:active-player-index="activePlayerIndex"
@@ -94,7 +95,6 @@
 						:community-members="overviewCommunityMembers"
 						:founded-days="foundedDays"
 						:member-count="homeImmersiveOverview.stats.memberCount"
-						:outro-progress="outroProgress"
 						v-model:detail-person-id="overviewDetailPersonId"
 						@focus-player="handleOverviewPlayerFocus"
 					/>
@@ -102,7 +102,9 @@
 
 				<div
 					class="pointer-events-none absolute inset-0"
-					:class="outroProgress > 0.18 ? 'z-40' : 'z-20'"
+					:class="
+						outroProgress > OUTRO_COMMUNITY_HANDOFF_PROGRESS ? 'z-40' : 'z-20'
+					"
 				>
 					<HomeOutroSection
 						mode="story"
@@ -174,6 +176,7 @@ const scene = computed(
 )
 const homeMapRef = ref<HomeStoryMapHandle | null>(null)
 const scenePlayerCount = computed(() => scene.value.players.length)
+const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.18
 const {
 	scrollStoryRef,
 	storyLayout,
@@ -193,6 +196,11 @@ const {
 	refreshScrollStory,
 	reapplyMapProgress,
 } = useHomeStoryProgress({ playerCount: scenePlayerCount, homeMapRef })
+const communityVisible = computed(
+	() =>
+		overviewPhase.value === 'community' &&
+		outroProgress.value <= OUTRO_COMMUNITY_HANDOFF_PROGRESS,
+)
 const { scenePlayerPositions, overviewMemberPositions } =
 	useHomePlayerLocations(scene)
 const overviewMemberOrder = useState<string[]>(

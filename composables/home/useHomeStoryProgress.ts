@@ -29,6 +29,7 @@ export type {
 
 const DEFAULT_VIEWPORT_HEIGHT_PX = 800
 const CLICK_FOCUS_SCROLL_SECONDS = 1.1
+const COMMUNITY_PHASE_HYSTERESIS = 0.01
 const NAVIGATION_EPSILON = 0.0005
 const STORY_INPUT_ENTRY_TOLERANCE_PX = 24
 
@@ -223,6 +224,7 @@ export const useHomeStoryProgress = (options: {
 	): void => {
 		const normalized = clampProgress(progress)
 		const layout = storyLayout.value
+		const previousPhase = overviewPhase.value
 		latestStoryProgress.value = normalized
 		dispatchStoryEvent({ type: 'scroll-sampled', progress: normalized, source })
 		if (navigationStatus.value === 'idle') {
@@ -232,7 +234,13 @@ export const useHomeStoryProgress = (options: {
 			if (exactStop) settledStopIndex.value = exactStop.index
 		}
 		heroActive.value = normalized < layout.playerEntryProgressEnd
-		overviewPhase.value = resolveStoryPhase(normalized, layout)
+		const resolvedPhase = resolveStoryPhase(normalized, layout)
+		overviewPhase.value =
+			previousPhase === 'community' &&
+			resolvedPhase === 'players' &&
+			normalized >= layout.communityProgressEnd - COMMUNITY_PHASE_HYSTERESIS
+				? 'community'
+				: resolvedPhase
 		const communityToOutroProgress =
 			(normalized - layout.outroPresentationStart) /
 			Math.max(

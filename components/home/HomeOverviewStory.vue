@@ -1,8 +1,5 @@
 <template>
-	<div
-		class="pointer-events-none absolute inset-0 z-30 text-white"
-		:style="{ opacity: overviewOpacity }"
-	>
+	<div class="pointer-events-none absolute inset-0 z-30 text-white">
 		<div class="immersive-site-shell absolute inset-0">
 			<div class="relative h-full">
 				<div
@@ -38,7 +35,7 @@
 
 				<Transition name="overview-panel">
 					<div
-						v-if="phase === 'community'"
+						v-if="communityVisible"
 						class="absolute bottom-8 left-0 font-medium [text-shadow:0_2px_14px_rgba(2,6,23,0.88)] lg:bottom-12"
 					>
 						<p class="text-sm font-medium text-white/70 sm:text-base">
@@ -139,7 +136,7 @@
 
 		<Transition name="community-rail">
 			<aside
-				v-if="phase === 'community' && communityMembers.length && !detail"
+				v-if="communityVisible && communityMembers.length && !detail"
 				class="community-member-rail !pointer-events-auto absolute right-0 bottom-36 z-20 w-full sm:bottom-24 lg:top-24 lg:bottom-20 lg:w-[min(28rem,32vw)]"
 				:data-hovered="communityRailHovered"
 				:aria-label="t('home.immersive.overview.communityMembers')"
@@ -417,6 +414,7 @@ export interface HomeOverviewPlayerFocusPayload {
 
 interface HomeOverviewStoryProps {
 	phase: HomeOverviewPhase
+	communityVisible: boolean
 	sceneShortName: string
 	players: readonly HomeOverviewPerson[]
 	activePlayerIndex: number
@@ -427,7 +425,6 @@ interface HomeOverviewStoryProps {
 	communityMembers: readonly HomeOverviewPerson[]
 	foundedDays: number
 	memberCount: number
-	outroProgress: number
 	detailPersonId: string | null
 }
 
@@ -445,9 +442,6 @@ const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
 const communityRailHovered = ref(false)
-const overviewOpacity = computed(
-	() => 1 - smoothStep(0.02, 0.42, props.outroProgress),
-)
 const detailScrollRef = ref<HTMLDivElement | null>(null)
 const detailScrollContentRef = ref<HTMLDivElement | null>(null)
 const detailScrollState = reactive<DetailScrollState>({
