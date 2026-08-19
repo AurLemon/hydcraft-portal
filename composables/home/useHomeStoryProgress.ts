@@ -150,6 +150,12 @@ export const useHomeStoryProgress = (options: {
 			: `${sceneStoryHeightDvh.value}dvh`,
 	)
 	const latestStoryProgress = ref(0)
+	const storyTouchInputControlled = computed(
+		() =>
+			storyInputActive.value &&
+			latestStoryProgress.value > NAVIGATION_EPSILON &&
+			latestStoryProgress.value < 1 - NAVIGATION_EPSILON,
+	)
 	let revertScrollStory: (() => void) | null = null
 	let scrollTriggerRefresh: (() => void) | null = null
 	let storyScrollTrigger: HomeStoryScrollTrigger | null = null
@@ -761,6 +767,7 @@ export const useHomeStoryProgress = (options: {
 		storyLayout,
 		storyState,
 		storyInputActive,
+		storyTouchInputControlled,
 		sceneStoryHeightDvh,
 		sceneStoryHeightStyle,
 		heroActive,

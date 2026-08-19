@@ -92,11 +92,18 @@ const stopClock = (): void => {
 	lastTimestamp = null
 }
 
-const resetProgress = (): void => {
-	if (elapsedMs.value <= 0) return
+const resetProgress = (force = false): void => {
+	if (!force && elapsedMs.value <= 0) return
 	if (progressResetFrame !== null) cancelAnimationFrame(progressResetFrame)
 	if (progressResetTimer) clearTimeout(progressResetTimer)
 
+	stopClock()
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		elapsedMs.value = 0
+		progressResetting.value = false
+		startClock()
+		return
+	}
 	progressResetting.value = true
 	progressResetFrame = requestAnimationFrame(() => {
 		progressResetFrame = null
@@ -104,19 +111,19 @@ const resetProgress = (): void => {
 		progressResetTimer = setTimeout(() => {
 			progressResetting.value = false
 			progressResetTimer = null
+			startClock()
 		}, 300)
 	})
 }
 
 const selectScene = (index: number): void => {
 	if (index < 0 || index >= props.scenes.length) return
-	elapsedMs.value = 0
-	lastTimestamp = null
+	if (index === props.modelValue) resetProgress(true)
 	emit('update:modelValue', index)
 }
 
 const advanceScene = (): void => {
-	if (props.scenes.length <= 1) return
+	if (!props.active || props.scenes.length <= 1) return
 	selectScene((props.modelValue + 1) % props.scenes.length)
 }
 
@@ -181,8 +188,7 @@ watch(
 watch(
 	() => props.modelValue,
 	() => {
-		elapsedMs.value = 0
-		lastTimestamp = null
+		resetProgress()
 	},
 )
 

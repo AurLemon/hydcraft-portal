@@ -1,5 +1,8 @@
 <template>
-	<div class="pointer-events-none absolute inset-0 z-30 text-white">
+	<div
+		class="pointer-events-none absolute inset-0 z-30 text-white"
+		:style="detailMotionStyle"
+	>
 		<div class="immersive-site-shell absolute inset-0">
 			<div class="relative h-full">
 				<div
@@ -61,7 +64,9 @@
 
 		<section
 			v-if="(phase === 'scene' || phase === 'players') && players.length"
-			class="home-overview-player-rail absolute inset-x-0 bottom-8 flex h-68 items-end justify-center sm:bottom-10 lg:bottom-12"
+			ref="playerRailRef"
+			data-home-horizontal-swipe
+			class="home-overview-player-rail absolute inset-x-0 bottom-8 flex h-68 touch-pan-y items-end justify-center sm:bottom-10 lg:bottom-12"
 			:aria-label="t('home.immersive.overview.scenePlayers')"
 		>
 			<article
@@ -389,6 +394,8 @@
 <script setup lang="ts">
 import type { HomeImmersiveMapPosition } from '~/utils/home/immersive-scenes'
 import type { HomePortalAccountSummary } from '~/utils/home/portal-accounts'
+import { useHomeHorizontalSwipe } from '~/composables/home/useHomeHorizontalSwipe'
+import { HOME_DETAIL_MOTION } from '~/utils/home/detail-motion'
 
 export type HomeOverviewPhase =
 	| 'hidden'
@@ -438,9 +445,17 @@ const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
 	'focus-player': [payload: HomeOverviewPlayerFocusPayload]
 }>()
+const playerRailRef = ref<HTMLElement | null>(null)
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
 const isEnglish = computed(() => locale.value.startsWith('en'))
+const detailMotionStyle = {
+	'--home-detail-panel-duration': `${HOME_DETAIL_MOTION.panel}ms`,
+	'--home-detail-content-duration': `${HOME_DETAIL_MOTION.content}ms`,
+	'--home-detail-identity-duration': `${HOME_DETAIL_MOTION.identity}ms`,
+	'--home-detail-avatar-duration': `${HOME_DETAIL_MOTION.avatar}ms`,
+	'--home-detail-account-duration': `${HOME_DETAIL_MOTION.account}ms`,
+} as Record<string, string>
 const communityRailHovered = ref(false)
 const detailScrollRef = ref<HTMLDivElement | null>(null)
 const detailScrollContentRef = ref<HTMLDivElement | null>(null)
@@ -455,6 +470,25 @@ const detail = computed(() => {
 		props.phase === 'community' ? props.communityMembers : props.players
 
 	return people.find((person) => person.id === props.detailPersonId) ?? null
+})
+const playerSwipeEnabled = computed(
+	() =>
+		(props.phase === 'scene' || props.phase === 'players') &&
+		props.players.length > 1 &&
+		!detail.value,
+)
+useHomeHorizontalSwipe(playerRailRef, {
+	enabled: playerSwipeEnabled,
+	onCommit: (direction) => {
+		const nextIndex = props.activePlayerIndex + direction
+		if (nextIndex < 0 || nextIndex >= props.players.length) return
+		const nextPlayer = props.players[nextIndex]
+		if (!nextPlayer) return
+		emit('focus-player', {
+			playerIndex: nextIndex,
+			playerId: nextPlayer.id,
+		})
+	},
 })
 const detailParagraphs = computed(() => {
 	const description = detail.value?.description
@@ -644,9 +678,9 @@ onBeforeUnmount(() => {
 .detail-panel-enter-active,
 .detail-panel-leave-active {
 	transition:
-		opacity 220ms ease,
-		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-		filter 360ms ease;
+		opacity var(--home-detail-panel-duration) ease,
+		transform var(--home-detail-panel-duration) cubic-bezier(0.22, 1, 0.36, 1),
+		filter var(--home-detail-panel-duration) ease;
 }
 
 .community-rail-enter-active,
@@ -783,8 +817,8 @@ onBeforeUnmount(() => {
 .detail-avatar-enter-active,
 .detail-avatar-leave-active {
 	transition:
-		opacity 240ms ease,
-		filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
+		opacity var(--home-detail-avatar-duration) ease,
+		filter var(--home-detail-avatar-duration) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .detail-avatar-enter-active {
@@ -804,8 +838,8 @@ onBeforeUnmount(() => {
 .detail-identity-enter-active,
 .detail-identity-leave-active {
 	transition:
-		opacity 240ms ease,
-		filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
+		opacity var(--home-detail-identity-duration) ease,
+		filter var(--home-detail-identity-duration) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .detail-identity-enter-active {
@@ -828,7 +862,7 @@ onBeforeUnmount(() => {
 .detail-account-leave-active {
 	display: grid;
 	overflow: hidden;
-	transition: grid-template-rows 360ms linear;
+	transition: grid-template-rows var(--home-detail-content-duration) linear;
 }
 
 .detail-biography-enter-active > *,
@@ -853,7 +887,8 @@ onBeforeUnmount(() => {
 }
 
 .detail-biography-enter-active .detail-biography-content {
-	animation: detail-biography-reveal 520ms linear both;
+	animation: detail-biography-reveal var(--home-detail-content-duration) linear
+		both;
 }
 
 @keyframes detail-biography-reveal {

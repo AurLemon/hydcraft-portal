@@ -2,13 +2,19 @@
 	<div
 		data-home-hero-panel
 		:data-desktop-gallery-count="sceneGallery.length"
-		class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
+		class="immersive-site-shell pointer-events-none relative z-10 flex h-full touch-pan-y flex-col px-6 pt-28 pb-8 text-white transition-[opacity,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
 		:class="
 			sceneSwitching
 				? '!opacity-0 translate-y-2 duration-[625ms]'
 				: 'duration-[625ms]'
 		"
 	>
+		<div
+			ref="heroRootRef"
+			data-home-horizontal-swipe
+			class="pointer-events-none absolute inset-0 z-0 touch-pan-y max-[639px]:pointer-events-auto lg:hidden"
+			aria-hidden="true"
+		/>
 		<div class="mt-auto flex flex-col gap-3 lg:contents">
 			<p
 				data-home-exit="content"
@@ -230,6 +236,7 @@ import type {
 	HomeImmersiveScene,
 	HomeImmersiveSceneGalleryAsset,
 } from '~/utils/home/immersive-scenes'
+import { useHomeHorizontalSwipe } from '~/composables/home/useHomeHorizontalSwipe'
 
 interface HomeHeroPresentationProps {
 	scene: HomeImmersiveScene
@@ -242,6 +249,15 @@ interface HomeHeroPresentationProps {
 }
 
 const props = defineProps<HomeHeroPresentationProps>()
+const emit = defineEmits<{
+	'swipe-scene': [direction: -1 | 1]
+}>()
+const heroRootRef = ref<HTMLElement | null>(null)
+const heroSwipeEnabled = computed(() => !props.sceneSwitching)
+useHomeHorizontalSwipe(heroRootRef, {
+	enabled: heroSwipeEnabled,
+	onCommit: (direction) => emit('swipe-scene', direction),
+})
 
 const sceneGallerySources: Record<HomeImmersiveSceneGalleryAsset, string> = {
 	owenCoastConcert1,

@@ -191,6 +191,7 @@ export class BlueMapRuntimeMarkerManager {
 		for (const definition of markers) {
 			let entry = this.worldPlayerMarkerEntries.get(definition.id)
 			let createdEntry = false
+			const previousDefinition = entry?.definition
 			if (entry && entry.definition.playerId !== definition.playerId) {
 				entry.unbind()
 				viewer.markers.remove(entry.marker)
@@ -252,10 +253,6 @@ export class BlueMapRuntimeMarkerManager {
 			marker.element.dataset.homeFocused = String(
 				definition.isFocused !== false,
 			)
-			marker.element.style.setProperty(
-				'--home-marker-mobile-screen-offset-y',
-				definition.mobileScreenOffsetY ?? '0px',
-			)
 			if (!createdEntry) {
 				marker.element.style.opacity =
 					definition.isFocused === false
@@ -266,21 +263,28 @@ export class BlueMapRuntimeMarkerManager {
 			}
 			marker.element.style.transform =
 				definition.isFocused === false
-					? 'translate(-50%, calc(-100% + var(--home-marker-screen-offset-y))) scale(0.72)'
-					: 'translate(-50%, calc(-100% + var(--home-marker-screen-offset-y))) scale(1)'
+					? 'translate(-50%, -100%) scale(0.72)'
+					: 'translate(-50%, -100%) scale(1)'
 			marker.element.setAttribute('role', 'button')
 			marker.element.setAttribute('aria-label', definition.label)
 			marker.element.tabIndex = 0
 			marker.playerHeadElement.style.display = ''
 			marker.playerHeadElement.src = definition.avatarUrl
 			marker.playerHeadElement.alt = definition.label
-			marker.updateFromData({
-				uuid: definition.playerId,
-				name: ' ',
-				foreign: false,
-				position: { x: definition.x, y: definition.y, z: definition.z },
-				rotation: { yaw: 0, pitch: 0, roll: 0 },
-			})
+			const positionChanged =
+				!previousDefinition ||
+				previousDefinition.x !== definition.x ||
+				previousDefinition.y !== definition.y ||
+				previousDefinition.z !== definition.z
+			if (positionChanged) {
+				marker.updateFromData({
+					uuid: definition.playerId,
+					name: ' ',
+					foreign: false,
+					position: { x: definition.x, y: definition.y, z: definition.z },
+					rotation: { yaw: 0, pitch: 0, roll: 0 },
+				})
+			}
 			marker.playerNameElement.textContent = definition.label
 		}
 

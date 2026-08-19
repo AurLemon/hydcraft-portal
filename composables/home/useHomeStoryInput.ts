@@ -5,6 +5,7 @@ import type {
 	HomeStoryInputSnapshot,
 	HomeStoryInputSource,
 } from '~/utils/home/story/types'
+import { isHomeHorizontalIntent } from './useHomeHorizontalSwipe'
 
 interface HomeStoryObserverVars {
 	target: Document
@@ -83,6 +84,8 @@ export const createHomeStoryInput = async (
 	let pointerCommitted = false
 	let wheelBlockedUntil = 0
 	let pointerStartY: number | null = null
+	let pointerStartX: number | null = null
+	let pointerStartTarget: EventTarget | null = null
 
 	const eventClientY = (event: Event): number | null => {
 		if (event instanceof TouchEvent) {
@@ -108,8 +111,37 @@ export const createHomeStoryInput = async (
 
 		const clientY = eventClientY(event)
 		if (pointerStartY === null || clientY === null) return false
+		const clientX = eventClientX(event)
+		const horizontalTarget =
+			pointerStartTarget instanceof Element &&
+			pointerStartTarget.closest('[data-home-horizontal-swipe]')
+		if (
+			horizontalTarget &&
+			pointerStartX !== null &&
+			clientX !== null &&
+			isHomeHorizontalIntent(clientX - pointerStartX, clientY - pointerStartY)
+		) {
+			return ![
+				'pointerup',
+				'pointercancel',
+				'touchend',
+				'touchcancel',
+			].includes(event.type)
+		}
 		const direction = resolveDocumentDirection(event, clientY - pointerStartY)
 		return direction ? !canCaptureStoryInput(snapshot, direction) : false
+	}
+
+	const eventClientX = (event: Event): number | null => {
+		if (event instanceof TouchEvent) {
+			return (
+				event.changedTouches[0]?.clientX ?? event.touches[0]?.clientX ?? null
+			)
+		}
+		if (event instanceof PointerEvent || event instanceof MouseEvent) {
+			return event.clientX
+		}
+		return null
 	}
 
 	const handleNavigationSettled = (): void => {
@@ -158,6 +190,8 @@ export const createHomeStoryInput = async (
 			const snapshot = callbacks.getSnapshot()
 			const event = observer.event
 			pointerStartY = event ? eventClientY(event) : null
+			pointerStartX = event ? eventClientX(event) : null
+			pointerStartTarget = event?.target ?? null
 			pointerCommitted = false
 			if (snapshot.navigationStatus === 'idle') {
 				gestureCaptured = false
@@ -165,6 +199,8 @@ export const createHomeStoryInput = async (
 		},
 		onRelease: () => {
 			pointerStartY = null
+			pointerStartX = null
+			pointerStartTarget = null
 			pointerCommitted = false
 			callbacks.setInputEnded(true)
 		},

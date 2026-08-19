@@ -7,7 +7,13 @@
 		>
 			<section
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
-				:class="overviewDetailPersonId ? 'touch-auto' : 'touch-pan-y'"
+				:class="
+					overviewDetailPersonId
+						? 'touch-auto'
+						: storyTouchInputControlled
+							? 'touch-pan-y max-[639px]:touch-none'
+							: 'touch-pan-y'
+				"
 			>
 				<div
 					class="absolute inset-0 transition-[opacity,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -74,6 +80,7 @@
 						:online-count="onlineCount"
 						:max-players="maxPlayers"
 						:online="online"
+						@swipe-scene="handleHeroSceneSwipe"
 					/>
 				</div>
 
@@ -175,6 +182,7 @@ const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.18
 const {
 	scrollStoryRef,
 	storyLayout,
+	storyTouchInputControlled,
 	sceneStoryHeightStyle,
 	heroActive,
 	overviewPhase,
@@ -220,6 +228,7 @@ let sceneCountdownResumeTimer: ReturnType<typeof setTimeout> | null = null
 let sceneSwitchWatchdogTimer: ReturnType<typeof setTimeout> | null = null
 let mapRecoveryTimer: ReturnType<typeof setTimeout> | null = null
 let mapRecoveryInFlight = false
+let sceneSwitchGeneration = 0
 
 const HERO_TO_PLAYER_DURATION_MS = 1250
 const SCENE_SWITCH_OUT_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
@@ -370,11 +379,6 @@ const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 								: person.id === focusedCommunityMemberId
 									? true
 									: undefined,
-						mobileScreenOffsetY:
-							markerGroup === 'community' &&
-							person.id === focusedCommunityMemberId
-								? 'clamp(-11rem, -16dvh, -5rem)'
-								: undefined,
 						x: person.position.x,
 						y: person.position.y,
 						z: person.position.z,
@@ -444,10 +448,62 @@ const handleSceneMapSettled = (): void => {
 	sceneSwitchWatchdogTimer = null
 	sceneSwitching.value = false
 	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+	if (!heroActive.value) return
+	const generation = sceneSwitchGeneration
 	sceneCountdownResumeTimer = setTimeout(() => {
+		if (!heroActive.value || generation !== sceneSwitchGeneration) return
 		sceneCountdownPaused.value = false
 		sceneCountdownResumeTimer = null
 	}, SCENE_SWITCH_IN_DURATION_MS)
+}
+
+const handleHeroSceneSwipe = (direction: -1 | 1): void => {
+	if (!heroActive.value || sceneSwitching.value) return
+	const nextIndex = selectedSceneIndex.value + direction
+	if (nextIndex < 0 || nextIndex >= homeImmersiveScenes.length) return
+	selectedSceneIndex.value = nextIndex
+}
+
+const invalidateSceneSwitch = (): void => {
+	sceneSwitchGeneration++
+	if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
+	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+	if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
+	sceneSwitchTimer = null
+	sceneCountdownResumeTimer = null
+	sceneSwitchWatchdogTimer = null
+}
+
+const queueSceneSwitch = (nextSceneIndex: number): void => {
+	if (
+		!heroActive.value ||
+		nextSceneIndex === activeSceneIndex.value ||
+		nextSceneIndex < 0 ||
+		nextSceneIndex >= homeImmersiveScenes.length
+	)
+		return
+
+	invalidateSceneSwitch()
+	sceneSwitching.value = true
+	sceneCountdownPaused.value = true
+	const generation = sceneSwitchGeneration
+	sceneSwitchTimer = setTimeout(() => {
+		if (
+			!heroActive.value ||
+			generation !== sceneSwitchGeneration ||
+			selectedSceneIndex.value !== nextSceneIndex
+		) {
+			sceneSwitchTimer = null
+			return
+		}
+		activeSceneIndex.value = nextSceneIndex
+		void nextTick(() => requestAnimationFrame(refreshScrollStory))
+		sceneSwitchTimer = null
+		sceneSwitchWatchdogTimer = setTimeout(
+			handleSceneMapSettled,
+			SCENE_SWITCH_MAX_WAIT_MS,
+		)
+	}, SCENE_SWITCH_OUT_DURATION_MS)
 }
 
 const handleMapContextLost = (): void => {
@@ -507,29 +563,33 @@ watch(
 )
 
 watch(selectedSceneIndex, (nextSceneIndex) => {
-	if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
-	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
-	if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
+	invalidateSceneSwitch()
 	if (nextSceneIndex === activeSceneIndex.value) {
-		sceneSwitchTimer = null
-		sceneCountdownResumeTimer = null
-		sceneSwitchWatchdogTimer = null
 		sceneSwitching.value = false
-		sceneCountdownPaused.value = false
+		sceneCountdownPaused.value = !heroActive.value
+		return
+	}
+	if (!heroActive.value) {
+		sceneSwitching.value = false
+		sceneCountdownPaused.value = true
 		return
 	}
 
-	sceneSwitching.value = true
+	queueSceneSwitch(nextSceneIndex)
+})
+
+watch(heroActive, (active) => {
+	if (active) {
+		if (selectedSceneIndex.value !== activeSceneIndex.value) {
+			queueSceneSwitch(selectedSceneIndex.value)
+			return
+		}
+		if (!sceneSwitching.value) sceneCountdownPaused.value = false
+		return
+	}
+	invalidateSceneSwitch()
+	sceneSwitching.value = false
 	sceneCountdownPaused.value = true
-	sceneSwitchTimer = setTimeout(() => {
-		activeSceneIndex.value = nextSceneIndex
-		void nextTick(() => requestAnimationFrame(refreshScrollStory))
-		sceneSwitchTimer = null
-		sceneSwitchWatchdogTimer = setTimeout(
-			handleSceneMapSettled,
-			SCENE_SWITCH_MAX_WAIT_MS,
-		)
-	}, SCENE_SWITCH_OUT_DURATION_MS)
 })
 
 onMounted(() => {
@@ -551,6 +611,7 @@ onBeforeUnmount(() => {
 	sceneSwitchTimer = null
 	sceneCountdownResumeTimer = null
 	sceneSwitchWatchdogTimer = null
+	sceneSwitchGeneration++
 	mapRecoveryTimer = null
 })
 </script>

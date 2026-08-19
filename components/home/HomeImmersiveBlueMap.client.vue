@@ -95,6 +95,7 @@ const SCENE_CAMERA_TRANSITION_SMOOTHING = 0.04
 const SCENE_CAMERA_POSITION_EPSILON = 1
 const SCENE_CAMERA_ORIENTATION_EPSILON = 0.001
 const MOBILE_PLAYER_DETAIL_SCREEN_OFFSET = 2400
+const DETAIL_CAMERA_SMOOTHING = 0.04
 
 const handleViewChanged = (view: BlueMapViewChangedEventPayload): void => {
 	const target = sceneCameraTransitionTarget
@@ -157,24 +158,22 @@ const focusCamera = (
 	tilt: overview.tilt,
 })
 
-const communityFocusCamera = (
+const detailFocusCamera = (
 	position: HomeImmersiveMapPosition,
 	overview: HomeImmersiveSceneCamera,
-): HomeImmersiveSceneCamera => ({
-	x: position.x,
-	y: position.y,
-	z: position.z,
-	distance: Math.min(15000, Math.max(6400, overview.distance * 0.5)),
-	rotation: overview.rotation + 0.1,
-	angle: overview.angle,
-	tilt: overview.tilt,
-})
-
-const playerDetailFocusCamera = (
-	position: HomeImmersiveMapPosition,
-	overview: HomeImmersiveSceneCamera,
+	mobile: boolean,
 ): HomeImmersiveSceneCamera => {
-	const camera = communityFocusCamera(position, overview)
+	const camera: HomeImmersiveSceneCamera = {
+		x: position.x,
+		y: position.y,
+		z: position.z,
+		distance: Math.min(11000, Math.max(5200, overview.distance * 0.42)),
+		rotation: overview.rotation + 0.1,
+		angle: overview.angle,
+		tilt: overview.tilt,
+	}
+	if (!mobile) return camera
+
 	const horizontalX = Math.sin(camera.rotation)
 	const horizontalZ = -Math.cos(camera.rotation)
 
@@ -188,7 +187,7 @@ const playerDetailFocusCamera = (
 		z:
 			position.z -
 			horizontalZ * Math.cos(camera.angle) * MOBILE_PLAYER_DETAIL_SCREEN_OFFSET,
-		distance: Math.min(11000, Math.max(5200, overview.distance * 0.42)),
+		distance: camera.distance,
 	}
 }
 
@@ -224,9 +223,10 @@ const applyScrollProgress = (progress: number): void => {
 		scrollProgress >= props.storyLayout.playerEntryProgressEnd &&
 		scrollProgress < props.storyLayout.communityProgressEnd
 	) {
-		targetCamera = playerDetailFocusCamera(
+		targetCamera = detailFocusCamera(
 			props.playerDetailFocusPosition,
 			overview,
+			true,
 		)
 	} else if (
 		scrollProgress >= props.storyLayout.heroExitStart &&
@@ -271,7 +271,11 @@ const applyScrollProgress = (progress: number): void => {
 		scrollProgress >= overviewEnd &&
 		scrollProgress < props.storyLayout.outroProgressStart
 	) {
-		targetCamera = communityFocusCamera(props.communityFocusPosition, overview)
+		targetCamera = detailFocusCamera(
+			props.communityFocusPosition,
+			overview,
+			viewportMediaQuery?.matches === true,
+		)
 	} else if (
 		scrollProgress >= props.storyLayout.communityProgressEnd &&
 		scrollProgress < props.storyLayout.outroProgressStart
@@ -292,9 +296,13 @@ const applyScrollProgress = (progress: number): void => {
 	}
 
 	controller.setView(targetCamera, {
-		smoothing: sceneCameraTransitionPending
-			? SCENE_CAMERA_TRANSITION_SMOOTHING
-			: undefined,
+		smoothing:
+			(props.playerDetailFocusPosition && viewportMediaQuery?.matches) ||
+			props.communityFocusPosition
+				? DETAIL_CAMERA_SMOOTHING
+				: sceneCameraTransitionPending
+					? SCENE_CAMERA_TRANSITION_SMOOTHING
+					: undefined,
 	})
 	if (sceneCameraTransitionPending) {
 		sceneCameraTransitionTarget = { ...targetCamera }
@@ -488,7 +496,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :deep(.home-world-player-marker) {
-	--home-marker-screen-offset-y: 0px;
 	position: relative;
 	display: flex;
 	min-width: 1.5rem;
@@ -573,10 +580,6 @@ onBeforeUnmount(() => {
 
 @media (max-width: 639px) {
 	:deep(.home-world-player-marker) {
-		--home-marker-screen-offset-y: var(
-			--home-marker-mobile-screen-offset-y,
-			0px
-		);
 		min-width: 1.25rem;
 	}
 
