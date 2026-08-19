@@ -16,9 +16,9 @@
 				"
 			>
 				<div
-					class="absolute inset-0 transition-[opacity,filter,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+					class="absolute inset-0 transition-[opacity,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
 					:class="[
-						sceneSwitching ? 'scale-[1.01] opacity-40 blur-[2px]' : '',
+						sceneSwitching ? 'scale-[1.01] opacity-40' : '',
 						developerControlsEnabled && heroActive ? 'z-50' : '',
 					]"
 					:style="{
@@ -27,8 +27,8 @@
 				>
 					<HomeImmersiveBlueMap
 						ref="homeMapRef"
-						:key="scene.mapAssetsBaseUrl"
-						:assets-base-url="mapAssetsProxyBaseUrl"
+						:key="mapRecoveryKey"
+						:assets-base-url="scene.mapAssetsBaseUrl"
 						:camera="scene.camera"
 						:overview-camera="scene.overviewCamera"
 						:mobile-overview-camera="scene.mobileOverviewCamera"
@@ -39,6 +39,7 @@
 						:water="homeImmersiveWater"
 						:focus-positions="scenePlayerFocusPositions"
 						:community-focus-position="communityFocusPosition"
+						:player-detail-focus-position="playerDetailFocusPosition"
 						:world-player-markers="worldPlayerMarkers"
 						:render-active="mapOpacity > 0"
 						:marker-clicks-only="!developerControlsEnabled"
@@ -47,6 +48,7 @@
 						@world-player-marker-click="handleWorldPlayerMarkerClick"
 						@ready="handleSceneMapSettled"
 						@error="handleSceneMapSettled"
+						@context-lost="handleMapContextLost"
 						@scene-camera-settled="handleSceneMapSettled"
 					/>
 				</div>
@@ -134,7 +136,6 @@ import {
 } from '~/composables/home/useHomeStoryProgress'
 import {
 	defaultHomeImmersiveScene,
-	getHomeImmersiveMapAssetsProxyBaseUrl,
 	HOME_IMMERSIVE_DEVELOPER_CONTROLS_ENABLED,
 	homeImmersiveOverview,
 	homeImmersiveScenes,
@@ -176,7 +177,7 @@ const scene = computed(
 )
 const homeMapRef = ref<HomeStoryMapHandle | null>(null)
 const scenePlayerCount = computed(() => scene.value.players.length)
-const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.18
+const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.001
 const {
 	scrollStoryRef,
 	storyLayout,
@@ -218,12 +219,15 @@ const { data: liveOverview, refresh: refreshLiveOverview } = liveOverviewRequest
 const { data: homePortalAccounts } = portalAccountsRequest
 const sceneSwitching = ref(false)
 const sceneCountdownPaused = ref(false)
+const mapRecoveryKey = ref(0)
 const overviewDetailPersonId = ref<string | null>(null)
 const developerControlsEnabled = HOME_IMMERSIVE_DEVELOPER_CONTROLS_ENABLED
 let liveOverviewRefreshTimer: ReturnType<typeof setInterval> | null = null
 let sceneSwitchTimer: ReturnType<typeof setTimeout> | null = null
 let sceneCountdownResumeTimer: ReturnType<typeof setTimeout> | null = null
 let sceneSwitchWatchdogTimer: ReturnType<typeof setTimeout> | null = null
+let mapRecoveryTimer: ReturnType<typeof setTimeout> | null = null
+let mapRecoveryInFlight = false
 
 const HERO_TO_PLAYER_DURATION_MS = 1250
 const SCENE_SWITCH_OUT_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
@@ -329,11 +333,25 @@ const communityFocusPosition = computed(() => {
 		)?.position ?? null
 	)
 })
+const playerDetailFocusPosition = computed(() => {
+	if (
+		(overviewPhase.value !== 'scene' && overviewPhase.value !== 'players') ||
+		!overviewDetailPersonId.value
+	) {
+		return null
+	}
+
+	return (
+		sceneOverviewPlayers.value.find(
+			(player) => player.id === overviewDetailPersonId.value,
+		)?.position ?? null
+	)
+})
 const worldPlayerMarkers = computed<BlueMapWorldPlayerMarker[]>(() => {
 	const people =
 		overviewPhase.value === 'community'
 			? overviewCommunityMembers.value
-			: overviewPhase.value === 'players'
+			: overviewPhase.value === 'scene' || overviewPhase.value === 'players'
 				? sceneOverviewPlayers.value
 				: []
 	const markerGroup =
@@ -396,9 +414,6 @@ const outroScreenshots = computed(() => [
 		alt: t('home.immersive.outro.screenshotAlt', { index: 3 }),
 	},
 ])
-const mapAssetsProxyBaseUrl = computed(() =>
-	getHomeImmersiveMapAssetsProxyBaseUrl(scene.value.id),
-)
 const defaultServer = computed(() => {
 	const overview = liveOverview.value
 	if (!overview) return null
@@ -443,13 +458,39 @@ const handleSceneMapSettled = (): void => {
 	}, SCENE_SWITCH_IN_DURATION_MS)
 }
 
+const handleMapContextLost = (): void => {
+	if (mapRecoveryInFlight) return
+
+	mapRecoveryInFlight = true
+	sceneSwitching.value = false
+	sceneCountdownPaused.value = true
+	if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
+	if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
+	if (mapRecoveryTimer) clearTimeout(mapRecoveryTimer)
+
+	mapRecoveryTimer = setTimeout(() => {
+		mapRecoveryKey.value++
+		void nextTick(() => {
+			refreshScrollStory()
+			reapplyMapProgress()
+		})
+		mapRecoveryInFlight = false
+		mapRecoveryTimer = null
+		if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+		sceneCountdownResumeTimer = setTimeout(() => {
+			sceneCountdownPaused.value = false
+			sceneCountdownResumeTimer = null
+		}, SCENE_SWITCH_IN_DURATION_MS)
+	}, 0)
+}
+
 const handleWorldPlayerMarkerClick = (
 	payload: BlueMapWorldPlayerMarkerClickEventPayload,
 ): void => {
 	const people =
 		overviewPhase.value === 'community'
 			? overviewCommunityMembers.value
-			: overviewPhase.value === 'players'
+			: overviewPhase.value === 'scene' || overviewPhase.value === 'players'
 				? sceneOverviewPlayers.value
 				: []
 	if (!people.some((person) => person.id === payload.marker.playerId)) return
@@ -513,9 +554,11 @@ onBeforeUnmount(() => {
 	if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
 	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
 	if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
+	if (mapRecoveryTimer) clearTimeout(mapRecoveryTimer)
 	liveOverviewRefreshTimer = null
 	sceneSwitchTimer = null
 	sceneCountdownResumeTimer = null
 	sceneSwitchWatchdogTimer = null
+	mapRecoveryTimer = null
 })
 </script>

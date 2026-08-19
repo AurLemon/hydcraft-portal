@@ -2,10 +2,10 @@
 	<div
 		data-home-hero-panel
 		:data-desktop-gallery-count="sceneGallery.length"
-		class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,filter,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
+		class="immersive-site-shell pointer-events-none relative z-10 flex h-full flex-col px-6 pt-28 pb-8 text-white transition-[opacity,transform] ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-10 lg:px-16 lg:pb-12"
 		:class="
 			sceneSwitching
-				? '!opacity-0 !blur-md translate-y-2 duration-[625ms]'
+				? '!opacity-0 translate-y-2 duration-[625ms]'
 				: 'duration-[625ms]'
 		"
 	>
@@ -20,7 +20,7 @@
 			>
 				<template v-if="mobileSceneNamePrefix">
 					<span
-						class="relative left-1.5 block text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.16] tracking-[0.08em]"
+						class="relative left-1.5 block bg-none text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.16] tracking-[0.08em] text-white"
 					>
 						{{ mobileSceneNamePrefix }}
 					</span>

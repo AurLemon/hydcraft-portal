@@ -51,6 +51,7 @@ interface HomeImmersiveBlueMapProps {
 	water?: HomeImmersiveSceneWater
 	focusPositions: readonly HomeImmersiveMapPosition[]
 	communityFocusPosition?: HomeImmersiveMapPosition | null
+	playerDetailFocusPosition?: HomeImmersiveMapPosition | null
 	renderActive?: boolean
 	worldPlayerMarkers?: readonly BlueMapWorldPlayerMarker[]
 	markerClicksOnly?: boolean
@@ -62,6 +63,7 @@ const props = defineProps<HomeImmersiveBlueMapProps>()
 const emit = defineEmits<{
 	ready: []
 	error: []
+	'context-lost': []
 	'scene-camera-settled': []
 	'world-player-marker-click': [
 		payload: BlueMapWorldPlayerMarkerClickEventPayload,
@@ -83,9 +85,16 @@ let scrollProgress = 0
 let sceneCameraTransitionPending = false
 let sceneCameraTransitionTarget: HomeImmersiveSceneCamera | null = null
 
+const handleWebGlContextLost = (event: Event): void => {
+	event.preventDefault()
+	status.value = 'error'
+	emit('context-lost')
+}
+
 const SCENE_CAMERA_TRANSITION_SMOOTHING = 0.04
 const SCENE_CAMERA_POSITION_EPSILON = 1
 const SCENE_CAMERA_ORIENTATION_EPSILON = 0.001
+const MOBILE_PLAYER_DETAIL_SCREEN_OFFSET = 2400
 
 const handleViewChanged = (view: BlueMapViewChangedEventPayload): void => {
 	const target = sceneCameraTransitionTarget
@@ -161,6 +170,28 @@ const communityFocusCamera = (
 	tilt: overview.tilt,
 })
 
+const playerDetailFocusCamera = (
+	position: HomeImmersiveMapPosition,
+	overview: HomeImmersiveSceneCamera,
+): HomeImmersiveSceneCamera => {
+	const camera = communityFocusCamera(position, overview)
+	const horizontalX = Math.sin(camera.rotation)
+	const horizontalZ = -Math.cos(camera.rotation)
+
+	return {
+		...camera,
+		// Shift the target along the camera's screen-down axis, not just world Y.
+		x:
+			position.x -
+			horizontalX * Math.cos(camera.angle) * MOBILE_PLAYER_DETAIL_SCREEN_OFFSET,
+		y: position.y - Math.sin(camera.angle) * MOBILE_PLAYER_DETAIL_SCREEN_OFFSET,
+		z:
+			position.z -
+			horizontalZ * Math.cos(camera.angle) * MOBILE_PLAYER_DETAIL_SCREEN_OFFSET,
+		distance: Math.min(11000, Math.max(5200, overview.distance * 0.42)),
+	}
+}
+
 const applyScrollProgress = (progress: number): void => {
 	scrollProgress = Math.min(Math.max(progress, 0), 1)
 	if (props.developerControlsActive) {
@@ -188,6 +219,16 @@ const applyScrollProgress = (progress: number): void => {
 	let targetCamera = props.camera
 
 	if (
+		props.playerDetailFocusPosition &&
+		viewportMediaQuery?.matches &&
+		scrollProgress >= props.storyLayout.playerEntryProgressEnd &&
+		scrollProgress < props.storyLayout.communityProgressEnd
+	) {
+		targetCamera = playerDetailFocusCamera(
+			props.playerDetailFocusPosition,
+			overview,
+		)
+	} else if (
 		scrollProgress >= props.storyLayout.heroExitStart &&
 		scrollProgress < focusEnd &&
 		props.focusPositions.length
@@ -280,6 +321,14 @@ watch(
 
 watch(
 	() => props.communityFocusPosition,
+	() => {
+		if (status.value === 'ready') applyScrollProgress(scrollProgress)
+	},
+	{ deep: true },
+)
+
+watch(
+	() => props.playerDetailFocusPosition,
 	() => {
 		if (status.value === 'ready') applyScrollProgress(scrollProgress)
 	},
@@ -411,6 +460,7 @@ onMounted(() => {
 		resizeObserver = new ResizeObserver(resize)
 		resizeObserver.observe(container)
 	}
+	container?.addEventListener('webglcontextlost', handleWebGlContextLost, true)
 })
 
 onBeforeUnmount(() => {
@@ -418,6 +468,11 @@ onBeforeUnmount(() => {
 	viewportMediaQuery = null
 	resizeObserver?.disconnect()
 	resizeObserver = null
+	containerRef.value?.removeEventListener(
+		'webglcontextlost',
+		handleWebGlContextLost,
+		true,
+	)
 	if (resizeAnimationFrame !== null) {
 		cancelAnimationFrame(resizeAnimationFrame)
 		resizeAnimationFrame = null

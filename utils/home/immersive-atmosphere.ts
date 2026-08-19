@@ -21,7 +21,7 @@ const HOME_IMMERSIVE_ATMOSPHERE_PRESET: HomeImmersiveAtmospherePreset = {
 	hazeStrength: 0.82,
 	animationSpeed: 1.05,
 	desktopQualityScale: 0.5,
-	mobileQualityScale: 0.34,
+	mobileQualityScale: 0.25,
 }
 
 export const createHomeImmersiveAtmosphereOptions = (

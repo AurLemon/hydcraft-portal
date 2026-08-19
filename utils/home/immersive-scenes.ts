@@ -18,14 +18,6 @@ export { owenIslandsScene } from './immersive-scenes/owen-islands'
 export { saikongScene } from './immersive-scenes/saikong'
 export { spawnpointScene } from './immersive-scenes/spawnpoint'
 
-export const HOME_IMMERSIVE_MAP_ASSETS_PROXY_BASE_URL =
-	'/api/public/home-map-assets'
-
-export const getHomeImmersiveMapAssetsProxyBaseUrl = (
-	sceneId: string,
-): string =>
-	`${HOME_IMMERSIVE_MAP_ASSETS_PROXY_BASE_URL}/${encodeURIComponent(sceneId)}`
-
 /**
  * 仅在开发环境显式开启环境变量时，允许首页地图交互与镜头参数输出。
  * 生产构建始终关闭。

@@ -62,6 +62,7 @@ export interface BlueMapRuntimeViewer {
 	}
 	renderer: {
 		debug: { checkShaderErrors: boolean }
+		setPixelRatio(value: number): void
 		dispose(): void
 		forceContextLoss?: () => void
 		domElement: HTMLElement

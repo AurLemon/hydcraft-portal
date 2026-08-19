@@ -12,6 +12,7 @@ import type { BlueMapRuntimeMountOptions } from './types'
 
 const HOME_DEVELOPER_LOWRES_VIEW_DISTANCE = 2_000
 const HOME_DEVELOPER_CAMERA_FAR = 1_000_000
+const MAX_MOBILE_PIXEL_RATIO = 1.5
 
 /**
  * Thin adapter around the vendored BlueMap v5.3 rendering core. The official
@@ -180,6 +181,16 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				)
 			}
 			const viewer = new MapViewer(options.container, events)
+			if (window.matchMedia('(max-width: 639px)').matches) {
+				const resizeViewer = viewer.handleContainerResize.bind(viewer)
+				viewer.handleContainerResize = () => {
+					resizeViewer()
+					viewer.renderer.setPixelRatio(
+						Math.min(window.devicePixelRatio, MAX_MOBILE_PIXEL_RATIO),
+					)
+				}
+				viewer.handleContainerResize()
+			}
 			const unrestrictedViewDistance = options.unrestrictedViewDistance === true
 			if (unrestrictedViewDistance) {
 				viewer.data.loadedLowresViewDistance =

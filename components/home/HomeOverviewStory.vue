@@ -304,7 +304,7 @@
 							</div>
 						</div>
 						<div class="mt-8 flex flex-1 flex-col">
-							<Transition name="detail-biography" mode="out-in">
+							<Transition name="detail-biography" mode="out-in" appear>
 								<div :key="`${detail.id}-${locale}`" class="overflow-hidden">
 									<div
 										class="detail-biography-content font-serif text-lg leading-8"
@@ -326,7 +326,7 @@
 								</div>
 							</Transition>
 							<div class="mt-auto">
-								<Transition name="detail-account" mode="out-in">
+								<Transition name="detail-account" mode="out-in" appear>
 									<div
 										v-if="detail.portalAccount"
 										:key="`${detail.id}-${detail.portalAccount.username}`"
@@ -559,7 +559,9 @@ const selectPlayer = (
 	player: HomeOverviewPerson,
 	playerIndex: number,
 ): void => {
-	emit('focus-player', { playerIndex, playerId: player.id })
+	if (playerIndex !== props.activePlayerIndex) {
+		emit('focus-player', { playerIndex, playerId: player.id })
+	}
 	openPlayerDetail(player)
 }
 
@@ -640,13 +642,16 @@ onBeforeUnmount(() => {
 .overview-panel-enter-active,
 .overview-panel-leave-active,
 .detail-panel-enter-active,
-.detail-panel-leave-active,
-.community-rail-enter-active,
-.community-rail-leave-active {
+.detail-panel-leave-active {
 	transition:
 		opacity 220ms ease,
 		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
 		filter 360ms ease;
+}
+
+.community-rail-enter-active,
+.community-rail-leave-active {
+	transition: opacity 220ms ease;
 }
 
 .overview-panel-enter-from,
@@ -664,11 +669,6 @@ onBeforeUnmount(() => {
 }
 
 .community-rail-enter-from,
-.community-rail-leave-to {
-	filter: blur(10px);
-	transform: translateX(3rem);
-}
-
 .community-rail-leave-to {
 	opacity: 0;
 }
@@ -828,7 +828,7 @@ onBeforeUnmount(() => {
 .detail-account-leave-active {
 	display: grid;
 	overflow: hidden;
-	transition: grid-template-rows 280ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: grid-template-rows 360ms linear;
 }
 
 .detail-biography-enter-active > *,
@@ -853,7 +853,7 @@ onBeforeUnmount(() => {
 }
 
 .detail-biography-enter-active .detail-biography-content {
-	animation: detail-biography-reveal 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	animation: detail-biography-reveal 520ms linear both;
 }
 
 @keyframes detail-biography-reveal {
@@ -884,9 +884,27 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1023px) {
+	.detail-panel-enter-active,
+	.detail-panel-leave-active {
+		transition:
+			height 360ms cubic-bezier(0.22, 1, 0.36, 1),
+			max-height 360ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 260ms ease,
+			transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+			filter 360ms ease;
+	}
+
 	.detail-panel-enter-from,
 	.detail-panel-leave-to {
+		height: 0;
+		max-height: 0;
 		transform: translateY(100%);
+	}
+
+	.detail-panel-enter-to,
+	.detail-panel-leave-from {
+		height: min(34rem, 64dvh);
+		max-height: 64dvh;
 	}
 
 	.community-member-rail {
@@ -917,13 +935,11 @@ onBeforeUnmount(() => {
 
 @keyframes community-member-card-in {
 	from {
-		filter: blur(10px);
-		transform: translateX(2rem);
+		opacity: 0;
 	}
 
 	to {
-		filter: blur(0);
-		transform: translateX(0);
+		opacity: 1;
 	}
 }
 
