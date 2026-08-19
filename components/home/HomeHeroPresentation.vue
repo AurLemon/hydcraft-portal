@@ -18,7 +18,8 @@
 		<div class="mt-auto flex flex-col gap-3 lg:contents">
 			<p
 				data-home-exit="content"
-				class="lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,11vw,11rem)] tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[1.05] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-words hyphens-auto mb-2"
+				:lang="props.locale"
+				class="home-hero-mobile-scene-name lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,12vw,8rem)] tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[0.98] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-words hyphens-auto [text-wrap:balance] mb-2"
 				:class="
 					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold'
 				"
@@ -149,22 +150,88 @@
 			<div class="home-hero-copy-content max-w-xl">
 				<h1
 					:lang="props.locale"
-					class="home-hero-copy-title text-pretty uppercase whitespace-pre-line break-words hyphens-auto text-xl font-semibold tracking-[0.08em] sm:text-3xl"
-					:class="props.locale.startsWith('en') ? 'break-all' : ''"
+					class="home-hero-copy-title text-pretty uppercase whitespace-pre-line break-words hyphens-auto [text-wrap:balance] text-xl font-semibold tracking-[0.08em] sm:text-3xl"
 				>
 					{{ scenePresentation.title }}
 				</h1>
-				<p
-					:lang="props.locale"
-					class="home-hero-copy-description mt-2 whitespace-pre-line break-words hyphens-auto [text-justify:inter-word] text-sm text-white/72 sm:text-lg"
-					:class="
-						props.locale.startsWith('en')
-							? 'break-all text-justify [text-align-last:left]'
-							: ''
-					"
+				<div
+					ref="descriptionViewportRef"
+					class="home-hero-description-shell pointer-events-auto mt-2"
 				>
-					{{ scenePresentation.description }}
-				</p>
+					<template v-if="descriptionExpanded">
+						<p
+							id="home-hero-description"
+							ref="descriptionExpandedRef"
+							data-home-detail-scroll
+							:lang="props.locale"
+							class="home-hero-copy-description home-hero-copy-description--expanded whitespace-pre-line break-words hyphens-auto [text-wrap:pretty] text-sm leading-6 text-white/72 sm:text-lg sm:leading-normal"
+							:class="
+								props.locale.startsWith('en')
+									? 'text-justify [text-align-last:left]'
+									: ''
+							"
+							@pointerdown.stop
+							@touchstart.stop
+							@touchmove.stop
+							@wheel.stop
+						>
+							{{ scenePresentation.description }}
+							<button
+								type="button"
+								class="home-hero-description-toggle pointer-events-auto inline-flex items-center gap-1 text-xs font-medium text-white/90 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+								:aria-expanded="true"
+								aria-controls="home-hero-description"
+								@click="setDescriptionExpanded(false)"
+							>
+								<span>{{ t('home.immersive.hero.collapseDescription') }}</span>
+								<UIcon name="i-lucide-chevron-up" class="size-3.5" />
+							</button>
+						</p>
+					</template>
+					<p
+						v-else
+						id="home-hero-description"
+						ref="descriptionCollapsedRef"
+						:lang="props.locale"
+						class="home-hero-copy-description home-hero-copy-description--collapsed whitespace-pre-line break-words hyphens-auto [text-wrap:pretty] text-sm leading-6 text-white/72 sm:text-lg sm:leading-normal"
+						:class="
+							props.locale.startsWith('en')
+								? 'text-justify [text-align-last:left]'
+								: ''
+						"
+						@pointerdown.stop
+						@touchstart.stop
+						@touchmove.stop
+						@wheel.stop
+					>
+						{{ collapsedDescription
+						}}<template v-if="descriptionHasOverflow">… </template>
+						<button
+							v-if="descriptionHasOverflow"
+							type="button"
+							class="home-hero-description-toggle pointer-events-auto inline-flex items-center gap-1 text-xs font-medium text-white/90 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+							:aria-expanded="false"
+							aria-controls="home-hero-description"
+							@click="setDescriptionExpanded(true)"
+						>
+							<span>{{ t('home.immersive.hero.expandDescription') }}</span>
+							<UIcon name="i-lucide-chevron-down" class="size-3.5" />
+						</button>
+					</p>
+					<p
+						ref="descriptionMeasureRef"
+						aria-hidden="true"
+						:lang="props.locale"
+						class="home-hero-copy-description home-hero-description-measure whitespace-pre-line break-words hyphens-auto [text-wrap:pretty] text-sm leading-6 text-white/72 sm:text-lg sm:leading-normal"
+						:class="
+							props.locale.startsWith('en')
+								? 'text-justify [text-align-last:left]'
+								: ''
+						"
+					>
+						{{ scenePresentation.description }}
+					</p>
+				</div>
 			</div>
 		</div>
 
@@ -237,6 +304,7 @@ import type {
 	HomeImmersiveSceneGalleryAsset,
 } from '~/utils/home/immersive-scenes'
 import { useHomeHorizontalSwipe } from '~/composables/home/useHomeHorizontalSwipe'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 interface HomeHeroPresentationProps {
 	scene: HomeImmersiveScene
@@ -249,10 +317,20 @@ interface HomeHeroPresentationProps {
 }
 
 const props = defineProps<HomeHeroPresentationProps>()
+const { t } = useI18n()
 const emit = defineEmits<{
 	'swipe-scene': [direction: -1 | 1]
+	'description-scroll-change': [expanded: boolean]
 }>()
 const heroRootRef = ref<HTMLElement | null>(null)
+const descriptionViewportRef = ref<HTMLElement | null>(null)
+const descriptionCollapsedRef = ref<HTMLElement | null>(null)
+const descriptionExpandedRef = ref<HTMLElement | null>(null)
+const descriptionMeasureRef = ref<HTMLElement | null>(null)
+const descriptionExpanded = ref(false)
+const descriptionHasOverflow = ref(false)
+const collapsedDescription = ref('')
+let descriptionResizeObserver: ResizeObserver | null = null
 const heroSwipeEnabled = computed(() => !props.sceneSwitching)
 useHomeHorizontalSwipe(heroRootRef, {
 	enabled: heroSwipeEnabled,
@@ -328,6 +406,83 @@ const desktopVerticalNameColumns = computed(() =>
 		: [],
 )
 
+const isMobileDescription = (): boolean =>
+	typeof window !== 'undefined' &&
+	window.matchMedia('(max-width: 1023px)').matches
+
+const trimDescriptionCandidate = (value: string): string =>
+	value.replace(/[\s\n]+$/, '')
+
+const setDescriptionExpanded = (expanded: boolean): void => {
+	descriptionExpanded.value = expanded
+	emit('description-scroll-change', expanded)
+}
+
+const updateDescriptionOverflow = async (): Promise<void> => {
+	await nextTick()
+	const measure = descriptionMeasureRef.value
+	const collapsed = descriptionCollapsedRef.value
+	const fullDescription = scenePresentation.value.description
+	if (!measure || !collapsed || !isMobileDescription()) {
+		descriptionHasOverflow.value = false
+		collapsedDescription.value = fullDescription
+		return
+	}
+
+	const lineHeight = Number.parseFloat(getComputedStyle(collapsed).lineHeight)
+	const maxHeight = (Number.isFinite(lineHeight) ? lineHeight : 24) * 5
+	const fullOverflow = measure.scrollHeight > maxHeight + 1
+	descriptionHasOverflow.value = fullOverflow
+	if (!fullOverflow) {
+		collapsedDescription.value = fullDescription
+		return
+	}
+
+	// Fit the visible copy and its inline button into exactly five lines.
+	let low = 1
+	let high = fullDescription.length
+	collapsedDescription.value = fullDescription
+	await nextTick()
+	while (low < high) {
+		const middle = Math.ceil((low + high) / 2)
+		collapsedDescription.value = trimDescriptionCandidate(
+			fullDescription.slice(0, middle),
+		)
+		await nextTick()
+		if (collapsed.scrollHeight <= maxHeight + 1) low = middle
+		else high = middle - 1
+	}
+	const candidate = trimDescriptionCandidate(fullDescription.slice(0, low))
+	const wordBoundary = candidate.lastIndexOf(' ')
+	collapsedDescription.value =
+		wordBoundary > candidate.length * 0.6
+			? candidate.slice(0, wordBoundary)
+			: candidate
+}
+
+watch([() => props.scene.id, () => props.locale], async () => {
+	setDescriptionExpanded(false)
+	await updateDescriptionOverflow()
+})
+
+onMounted(async () => {
+	await updateDescriptionOverflow()
+	if (typeof ResizeObserver === 'undefined') return
+
+	descriptionResizeObserver = new ResizeObserver(updateDescriptionOverflow)
+	if (descriptionViewportRef.value) {
+		descriptionResizeObserver.observe(descriptionViewportRef.value)
+	}
+	if (descriptionMeasureRef.value) {
+		descriptionResizeObserver.observe(descriptionMeasureRef.value)
+	}
+})
+
+onBeforeUnmount(() => {
+	descriptionResizeObserver?.disconnect()
+	descriptionResizeObserver = null
+})
+
 const openSceneGalleryImage = (image: {
 	src: string
 	alt: string
@@ -357,6 +512,95 @@ const handleSceneGalleryLightboxOpenChange = (open: boolean): void => {
 
 [data-home-exit] {
 	will-change: opacity, transform, filter;
+}
+
+.home-hero-description-shell {
+	position: relative;
+	min-width: 0;
+}
+
+.home-hero-copy-description {
+	margin: 0;
+	overflow-wrap: break-word;
+}
+
+.home-hero-description-toggle {
+	position: static;
+	vertical-align: baseline;
+	white-space: nowrap;
+	text-shadow: 0 2px 12px rgba(2, 6, 23, 0.8);
+}
+
+.home-hero-description-measure {
+	position: absolute;
+	inset-inline: 0;
+	top: 0;
+	height: auto;
+	max-height: none;
+	overflow: visible;
+	pointer-events: none;
+	visibility: hidden;
+}
+
+@media (max-width: 1023px) {
+	:lang(en).home-hero-mobile-scene-name {
+		font-size: clamp(2.75rem, 11vw, 5rem);
+		max-height: 1.96em;
+		overflow: hidden;
+	}
+
+	.home-hero-description-shell {
+		display: block;
+		block-size: 7.5rem;
+		overflow: hidden;
+	}
+
+	.home-hero-copy-description {
+		block-size: 100%;
+		min-height: 0;
+		overflow: hidden;
+		touch-action: pan-y;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.home-hero-copy-description--collapsed {
+		block-size: 100%;
+		overflow: hidden;
+	}
+
+	.home-hero-copy-description--expanded {
+		overflow-y: auto;
+		overflow-x: hidden;
+		overflow-wrap: break-word;
+		overflow-anchor: none;
+		padding-bottom: 1.5rem;
+		overscroll-behavior: contain;
+		touch-action: pan-y;
+	}
+
+	.home-hero-description-measure {
+		block-size: auto;
+	}
+
+	.home-hero-description-toggle {
+		padding-inline: 0.15rem;
+	}
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+	.home-hero-description-shell {
+		block-size: 8.5rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.home-hero-description-shell {
+		max-width: 100%;
+	}
+
+	.home-hero-description-toggle {
+		display: none;
+	}
 }
 
 @keyframes home-scene-gallery-frame-in {

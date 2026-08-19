@@ -7,6 +7,10 @@
 				"label": "ホームページのシーン",
 				"select": "{name} に切り替える"
 			},
+			"hero": {
+				"expandDescription": "続きを読む",
+				"collapseDescription": "閉じる"
+			},
 			"overview": {
 				"responsibleBy": "彼らの傑作です。",
 				"beyondScene": "{name} のほかにも",

@@ -7,6 +7,10 @@
 				"label": "首頁場景",
 				"select": "切換至 {name}"
 			},
+			"hero": {
+				"expandDescription": "展開",
+				"collapseDescription": "收起"
+			},
 			"overview": {
 				"responsibleBy": "是他們的傑出作品。",
 				"beyondScene": "除了{name}",

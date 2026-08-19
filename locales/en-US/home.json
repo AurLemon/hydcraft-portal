@@ -7,6 +7,10 @@
 				"label": "Homepage scenes",
 				"select": "Switch to {name}"
 			},
+			"hero": {
+				"expandDescription": "More",
+				"collapseDescription": "Less"
+			},
 			"overview": {
 				"responsibleBy": "Their outstanding work.",
 				"beyondScene": "Beyond {name}",

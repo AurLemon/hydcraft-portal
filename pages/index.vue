@@ -10,7 +10,7 @@
 				:class="
 					overviewDetailPersonId
 						? 'touch-auto'
-						: storyTouchInputControlled
+						: storyTouchInputControlled && !heroDescriptionExpanded
 							? 'touch-pan-y max-[639px]:touch-none'
 							: 'touch-pan-y'
 				"
@@ -81,6 +81,7 @@
 						:max-players="maxPlayers"
 						:online="online"
 						@swipe-scene="handleHeroSceneSwipe"
+						@description-scroll-change="heroDescriptionExpanded = $event"
 					/>
 				</div>
 
@@ -218,6 +219,7 @@ const [liveOverviewRequest, portalAccountsRequest] = await Promise.all([
 const { data: liveOverview, refresh: refreshLiveOverview } = liveOverviewRequest
 const { data: homePortalAccounts } = portalAccountsRequest
 const sceneSwitching = ref(false)
+const heroDescriptionExpanded = ref(false)
 const sceneCountdownPaused = ref(false)
 const mapRecoveryKey = ref(0)
 const overviewDetailPersonId = ref<string | null>(null)
