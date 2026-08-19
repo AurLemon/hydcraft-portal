@@ -29,8 +29,10 @@ export type {
 
 const DEFAULT_VIEWPORT_HEIGHT_PX = 800
 const CLICK_FOCUS_SCROLL_SECONDS = 1.1
+const COMMUNITY_PHASE_HYSTERESIS = 0.01
 const NAVIGATION_EPSILON = 0.0005
 const STORY_INPUT_ENTRY_TOLERANCE_PX = 24
+const STORY_INPUT_EXIT_CAPTURE_PX = 240
 
 const clampProgress = (progress: number): number =>
 	Math.min(Math.max(progress, 0), 1)
@@ -115,7 +117,6 @@ export const useHomeStoryProgress = (options: {
 	const viewportHeightPx = ref(DEFAULT_VIEWPORT_HEIGHT_PX)
 	const viewportReady = ref(false)
 	const storyInputActive = ref(false)
-	const storyTouchInputControlled = ref(false)
 	const heroActive = ref(true)
 	const overviewPhase = ref<HomeOverviewPhase>('hidden')
 	const outroProgress = ref(0)
@@ -151,6 +152,8 @@ export const useHomeStoryProgress = (options: {
 	const latestStoryProgress = ref(0)
 	let revertScrollStory: (() => void) | null = null
 	let scrollTriggerRefresh: (() => void) | null = null
+	let storyScrollTrigger: HomeStoryScrollTrigger | null = null
+	let storyActivityListener: ((event: Event) => void) | null = null
 	let seekScrollStory:
 		| ((
 				target: HomeStoryProgressTarget,
@@ -171,6 +174,7 @@ export const useHomeStoryProgress = (options: {
 		source: 'native' | 'controlled' | 'refresh'
 	} | null = null
 	let lastAppliedProgress = -1
+	let viewportRefreshInFlight = false
 
 	const storyState = computed<HomeStoryRenderState>(() => {
 		const progress = latestStoryProgress.value
@@ -233,7 +237,12 @@ export const useHomeStoryProgress = (options: {
 		}
 		heroActive.value = normalized < layout.playerEntryProgressEnd
 		const resolvedPhase = resolveStoryPhase(normalized, layout)
-		overviewPhase.value = resolvedPhase
+		overviewPhase.value =
+			overviewPhase.value === 'community' &&
+			resolvedPhase === 'players' &&
+			normalized >= layout.communityProgressEnd - COMMUNITY_PHASE_HYSTERESIS
+				? 'community'
+				: resolvedPhase
 		const communityToOutroProgress =
 			(normalized - layout.outroPresentationStart) /
 			Math.max(
@@ -293,17 +302,14 @@ export const useHomeStoryProgress = (options: {
 	}
 
 	const resolveProgressTarget = (progress: number): HomeStoryProgressTarget => {
-		const scrollStory = scrollStoryRef.value
-		const storyTop = scrollStory
-			? window.scrollY + scrollStory.getBoundingClientRect().top
-			: 0
-		const storyScrollDistance = scrollStory
-			? Math.max(scrollStory.offsetHeight - window.innerHeight, 0)
-			: storyLayout.value.storyScrollDistancePx
+		const storyStart = storyScrollTrigger?.start ?? 0
+		const storyEnd =
+			storyScrollTrigger?.end ??
+			storyStart + storyLayout.value.storyScrollDistancePx
 
 		return {
 			progress: clampProgress(progress),
-			scrollTop: storyTop + storyScrollDistance * clampProgress(progress),
+			scrollTop: storyStart + (storyEnd - storyStart) * clampProgress(progress),
 		}
 	}
 
@@ -382,6 +388,7 @@ export const useHomeStoryProgress = (options: {
 			},
 			() => {
 				if (
+					!viewportRefreshInFlight &&
 					stop.id === 'community' &&
 					latestStoryProgress.value > storyLayout.value.communityProgressEnd
 				) {
@@ -435,11 +442,19 @@ export const useHomeStoryProgress = (options: {
 	}
 
 	const getInputSnapshot = (): HomeStoryInputSnapshot => {
+		const progress = latestStoryProgress.value
+		const stops = storyLayout.value.stops
 		return {
-			progress: latestStoryProgress.value,
+			progress,
 			storyStart: 0,
 			storyEnd: 1,
 			storyViewportActive: storyInputActive.value,
+			canNavigateBackward: stops.some(
+				(stop) => stop.progress < progress - NAVIGATION_EPSILON,
+			),
+			canNavigateForward: stops.some(
+				(stop) => stop.progress > progress + NAVIGATION_EPSILON,
+			),
 			storyScrollDistancePx: storyLayout.value.storyScrollDistancePx,
 			stopProgresses: storyLayout.value.stops.map((stop) => stop.progress),
 			settledStopIndex: settledStopIndex.value,
@@ -451,14 +466,6 @@ export const useHomeStoryProgress = (options: {
 	const isIgnoredInputTarget = (target: EventTarget | null): boolean => {
 		if (!(target instanceof Element)) return false
 		return Boolean(target.closest('[data-home-detail-scroll]'))
-	}
-
-	const releaseStoryBoundary = (direction: HomeStoryDirection): void => {
-		const target = resolveProgressTarget(direction === 1 ? 1 : 0)
-		window.scrollTo({
-			top: target.scrollTop + direction * 2,
-			behavior: 'auto',
-		})
 	}
 
 	const reapplyMapProgress = (): void => {
@@ -476,6 +483,11 @@ export const useHomeStoryProgress = (options: {
 			)
 			const heightChanged = Math.abs(nextHeight - viewportHeightPx.value) >= 1
 			if (heightChanged) {
+				viewportRefreshInFlight = true
+				activeScrollTween?.kill()
+				activeScrollTween = null
+				clearPendingProgress()
+				lastAppliedProgress = -1
 				viewportHeightPx.value = nextHeight
 				dispatchStoryEvent({
 					type: 'layout-refreshed',
@@ -483,7 +495,10 @@ export const useHomeStoryProgress = (options: {
 				})
 			}
 			viewportReady.value = true
-			void nextTick(() => refreshScrollStory())
+			void nextTick(() => {
+				refreshScrollStory()
+				viewportRefreshInFlight = false
+			})
 		})
 	}
 
@@ -497,7 +512,6 @@ export const useHomeStoryProgress = (options: {
 	})
 
 	onMounted(async () => {
-		storyTouchInputControlled.value = navigator.maxTouchPoints > 0
 		const [gsapModule, scrollTriggerModule] = await Promise.all([
 			import('gsap'),
 			import('gsap/ScrollTrigger'),
@@ -560,7 +574,10 @@ export const useHomeStoryProgress = (options: {
 				storyInputActive.value =
 					scrollPosition >=
 						scrollTrigger.start - STORY_INPUT_ENTRY_TOLERANCE_PX &&
-					scrollPosition <= scrollTrigger.end
+					scrollPosition <= scrollTrigger.end + STORY_INPUT_EXIT_CAPTURE_PX
+			}
+			storyActivityListener = () => {
+				if (storyScrollTrigger) syncStoryInputActive(storyScrollTrigger)
 			}
 			const timeline = gsap.timeline({
 				scrollTrigger: {
@@ -645,6 +662,7 @@ export const useHomeStoryProgress = (options: {
 				| HomeStoryScrollTrigger
 				| undefined
 			if (scrollTrigger) {
+				storyScrollTrigger = scrollTrigger
 				syncStoryInputActive(scrollTrigger)
 				seekScrollStory = (target, duration, ease, onComplete, onInterrupt) => {
 					const restoreScrollBehavior = useControlledScrollBehavior()
@@ -684,13 +702,18 @@ export const useHomeStoryProgress = (options: {
 		inputRuntime = await createHomeStoryInput({
 			getSnapshot: getInputSnapshot,
 			commit: commitInputDirection,
-			releaseBoundary: releaseStoryBoundary,
 			isIgnoredTarget: isIgnoredInputTarget,
 			setInputEnded: (value) => {
 				inputEnded.value = value
 				syncPlayerActionVisibility()
 			},
 		})
+		const activeStoryActivityListener = storyActivityListener
+		if (activeStoryActivityListener) {
+			window.addEventListener('scroll', activeStoryActivityListener, {
+				passive: true,
+			})
+		}
 		window.addEventListener('resize', scheduleViewportRefresh, {
 			passive: true,
 		})
@@ -710,7 +733,10 @@ export const useHomeStoryProgress = (options: {
 		inputRuntime?.destroy()
 		inputRuntime = null
 		storyInputActive.value = false
-		storyTouchInputControlled.value = false
+		if (storyActivityListener) {
+			window.removeEventListener('scroll', storyActivityListener)
+		}
+		storyActivityListener = null
 		window.removeEventListener('resize', scheduleViewportRefresh)
 		viewportMedia?.removeEventListener('resize', scheduleViewportRefresh)
 		viewportMedia = null
@@ -726,6 +752,7 @@ export const useHomeStoryProgress = (options: {
 		revertScrollStory?.()
 		revertScrollStory = null
 		scrollTriggerRefresh = null
+		storyScrollTrigger = null
 		seekScrollStory = null
 	})
 
@@ -734,7 +761,6 @@ export const useHomeStoryProgress = (options: {
 		storyLayout,
 		storyState,
 		storyInputActive,
-		storyTouchInputControlled,
 		sceneStoryHeightDvh,
 		sceneStoryHeightStyle,
 		heroActive,

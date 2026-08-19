@@ -7,13 +7,7 @@
 		>
 			<section
 				class="sticky top-0 isolate h-dvh min-h-160 w-full overflow-hidden bg-[var(--color-surface-0)]"
-				:class="
-					overviewDetailPersonId
-						? 'touch-auto'
-						: storyInputActive && storyTouchInputControlled
-							? 'touch-none'
-							: 'touch-pan-y'
-				"
+				:class="overviewDetailPersonId ? 'touch-auto' : 'touch-pan-y'"
 			>
 				<div
 					class="absolute inset-0 transition-[opacity,transform] duration-[625ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -177,12 +171,10 @@ const scene = computed(
 )
 const homeMapRef = ref<HomeStoryMapHandle | null>(null)
 const scenePlayerCount = computed(() => scene.value.players.length)
-const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.001
+const OUTRO_COMMUNITY_HANDOFF_PROGRESS = 0.18
 const {
 	scrollStoryRef,
 	storyLayout,
-	storyInputActive,
-	storyTouchInputControlled,
 	sceneStoryHeightStyle,
 	heroActive,
 	overviewPhase,

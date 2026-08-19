@@ -29,7 +29,10 @@
 				</template>
 			</div>
 
-			<div @mouseleave="hoveredRecordLink = null" class="w-fit flex gap-1.5">
+			<div
+				@mouseleave="hoveredRecordLink = null"
+				class="w-fit flex justify-center flex-wrap gap-x-1.5"
+			>
 				<template
 					v-for="(link, index) in footerLinkGroups.records"
 					:key="link.labelKey"

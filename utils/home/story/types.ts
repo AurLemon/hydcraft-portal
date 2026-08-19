@@ -83,6 +83,8 @@ export interface HomeStoryInputSnapshot {
 	storyStart: number
 	storyEnd: number
 	storyViewportActive: boolean
+	canNavigateBackward: boolean
+	canNavigateForward: boolean
 	storyScrollDistancePx: number
 	stopProgresses: readonly number[]
 	settledStopIndex: number
@@ -93,7 +95,6 @@ export interface HomeStoryInputSnapshot {
 export interface HomeStoryInputCallbacks {
 	getSnapshot(): HomeStoryInputSnapshot
 	commit(direction: HomeStoryDirection, source: HomeStoryInputSource): boolean
-	releaseBoundary(direction: HomeStoryDirection): void
 	isIgnoredTarget(target: EventTarget | null): boolean
 	setInputEnded(inputEnded: boolean): void
 }

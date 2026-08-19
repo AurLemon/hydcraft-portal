@@ -64,21 +64,10 @@ const canCaptureStoryInput = (
 	direction: HomeStoryDirection,
 ): boolean => {
 	if (!snapshot.storyViewportActive) return false
-	const epsilon = 0.0005
-	if (direction === -1 && snapshot.progress <= snapshot.storyStart + epsilon) {
-		return false
-	}
-	if (direction === 1 && snapshot.progress >= snapshot.storyEnd - epsilon) {
-		return false
-	}
-	if (
-		snapshot.progress > snapshot.storyStart + epsilon &&
-		snapshot.progress < snapshot.storyEnd - epsilon
-	) {
-		return true
-	}
 
-	return true
+	return direction === -1
+		? snapshot.canNavigateBackward
+		: snapshot.canNavigateForward
 }
 
 const preventCapturedInput = (event: Event): void => {
@@ -119,9 +108,8 @@ export const createHomeStoryInput = async (
 
 		const clientY = eventClientY(event)
 		if (pointerStartY === null || clientY === null) return false
-		const deltaY = clientY - pointerStartY
-		if (Math.abs(deltaY) < 2) return false
-		return false
+		const direction = resolveDocumentDirection(event, clientY - pointerStartY)
+		return direction ? !canCaptureStoryInput(snapshot, direction) : false
 	}
 
 	const handleNavigationSettled = (): void => {
@@ -146,10 +134,6 @@ export const createHomeStoryInput = async (
 			return
 		}
 		if (!canCaptureStoryInput(snapshot, direction)) {
-			if (source === 'touch') {
-				callbacks.releaseBoundary(direction)
-				preventCapturedInput(event)
-			}
 			return
 		}
 
