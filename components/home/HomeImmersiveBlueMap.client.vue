@@ -91,6 +91,7 @@ const handleWebGlContextLost = (event: Event): void => {
 	event.preventDefault()
 	if (webGlContextLost) return
 	webGlContextLost = true
+	controller.setRenderActive(false)
 	status.value = 'error'
 	emit('context-lost')
 }

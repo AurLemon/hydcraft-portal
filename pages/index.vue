@@ -231,6 +231,7 @@ let sceneCountdownResumeTimer: ReturnType<typeof setTimeout> | null = null
 let sceneSwitchWatchdogTimer: ReturnType<typeof setTimeout> | null = null
 let mapRecoveryTimer: ReturnType<typeof setTimeout> | null = null
 let mapRecoveryInFlight = false
+let mapRecoveryAwaitingReady = false
 let sceneSwitchGeneration = 0
 
 const HERO_TO_PLAYER_DURATION_MS = 1250
@@ -447,6 +448,10 @@ const online = computed(() =>
 )
 
 const handleSceneMapSettled = (): void => {
+	if (mapRecoveryAwaitingReady) {
+		finishMapRecovery()
+		return
+	}
 	if (!sceneSwitching.value) return
 	if (sceneSwitchWatchdogTimer) clearTimeout(sceneSwitchWatchdogTimer)
 	sceneSwitchWatchdogTimer = null
@@ -514,6 +519,7 @@ const handleMapContextLost = (): void => {
 	if (mapRecoveryInFlight) return
 
 	mapRecoveryInFlight = true
+	mapRecoveryAwaitingReady = false
 	sceneSwitching.value = false
 	sceneCountdownPaused.value = true
 	if (sceneSwitchTimer) clearTimeout(sceneSwitchTimer)
@@ -521,26 +527,32 @@ const handleMapContextLost = (): void => {
 	if (mapRecoveryTimer) clearTimeout(mapRecoveryTimer)
 
 	mapRecoveryTimer = setTimeout(() => {
+		mapRecoveryAwaitingReady = true
 		mapRecoveryKey.value++
-		void nextTick(() => {
-			refreshScrollStory()
-			reapplyMapProgress()
-		})
-		mapRecoveryInFlight = false
 		mapRecoveryTimer = null
 	}, MAP_CONTEXT_RESTORE_TIMEOUT_MS)
 }
 
 const handleMapContextRestored = (): void => {
 	if (!mapRecoveryInFlight) return
+	finishMapRecovery()
+}
+
+const finishMapRecovery = (): void => {
 	if (mapRecoveryTimer) clearTimeout(mapRecoveryTimer)
 	mapRecoveryTimer = null
 	mapRecoveryInFlight = false
+	mapRecoveryAwaitingReady = false
 	refreshScrollStory()
 	reapplyMapProgress()
+	if (!heroActive.value) {
+		sceneCountdownPaused.value = true
+		return
+	}
 	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
 	sceneCountdownResumeTimer = setTimeout(() => {
-		sceneCountdownPaused.value = !heroActive.value
+		if (!heroActive.value) return
+		sceneCountdownPaused.value = false
 		sceneCountdownResumeTimer = null
 	}, SCENE_SWITCH_IN_DURATION_MS)
 }
