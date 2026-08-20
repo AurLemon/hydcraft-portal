@@ -19,10 +19,11 @@
 			<p
 				data-home-exit="content"
 				:lang="props.locale"
-				class="home-hero-mobile-scene-name lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,12vw,8rem)] tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[0.98] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-words hyphens-auto [text-wrap:balance] mb-2"
-				:class="
-					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold'
-				"
+				class="home-hero-mobile-scene-name lg:hidden lg:-translate-x-2 pointer-events-none inline-block max-w-full self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-[clamp(4.5rem,12vw,8rem)] tracking-[-0.04em] whitespace-pre-line text-transparent uppercase leading-[0.98] drop-shadow-[0_2px_16px_rgba(2,6,23,0.8)] lg:mt-16 select-none break-words hyphens-auto [text-wrap:balance]"
+				:class="[
+					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold',
+					scenePresentation.credit ? 'mb-0' : 'mb-2',
+				]"
 				aria-hidden="true"
 			>
 				<template v-if="mobileSceneNamePrefix">
@@ -88,9 +89,7 @@
 		<div
 			data-home-exit="content"
 			class="pointer-events-auto inline-flex w-fit items-center gap-1 text-sm text-white/90 select-none"
-			:class="
-				scenePresentation.credit ? 'lg:-translate-x-2 mt-3 lg:mx-4' : 'hidden'
-			"
+			:class="scenePresentation.credit ? 'lg:-translate-x-2 lg:mx-4' : 'hidden'"
 		>
 			<template v-if="scenePresentation.credit">
 				<UIcon
