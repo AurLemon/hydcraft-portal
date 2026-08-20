@@ -5,6 +5,7 @@ import {
 	loadBlueMapSettings,
 } from './assets'
 import { OfficialBlueMapRuntime } from './official-runtime'
+import { areWorldPlayerMarkersEqual } from './world-player-markers'
 import { BlueMapRuntimeError } from './runtime-error'
 import type {
 	BlueMapAssetsSource,
@@ -181,6 +182,7 @@ export class BlueMapControllerImpl implements BlueMapController {
 	}
 
 	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]) {
+		if (areWorldPlayerMarkersEqual(this.worldPlayerMarkers, markers)) return
 		this.worldPlayerMarkers = [...markers]
 		this.runtime?.setWorldPlayerMarkers(this.worldPlayerMarkers)
 	}

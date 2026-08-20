@@ -49,6 +49,7 @@
 						@ready="handleSceneMapSettled"
 						@error="handleSceneMapSettled"
 						@context-lost="handleMapContextLost"
+						@context-restored="handleMapContextRestored"
 						@scene-camera-settled="handleSceneMapSettled"
 					/>
 				</div>
@@ -236,6 +237,7 @@ const HERO_TO_PLAYER_DURATION_MS = 1250
 const SCENE_SWITCH_OUT_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
 const SCENE_SWITCH_IN_DURATION_MS = HERO_TO_PLAYER_DURATION_MS / 2
 const SCENE_SWITCH_MAX_WAIT_MS = SCENE_SWITCH_IN_DURATION_MS
+const MAP_CONTEXT_RESTORE_TIMEOUT_MS = 4_000
 
 const resolveLocalizedText = (text: HomeImmersiveLocalizedText): string =>
 	text[locale.value] ?? text['en-US'] ?? Object.values(text)[0] ?? ''
@@ -526,12 +528,21 @@ const handleMapContextLost = (): void => {
 		})
 		mapRecoveryInFlight = false
 		mapRecoveryTimer = null
-		if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
-		sceneCountdownResumeTimer = setTimeout(() => {
-			sceneCountdownPaused.value = false
-			sceneCountdownResumeTimer = null
-		}, SCENE_SWITCH_IN_DURATION_MS)
-	}, 0)
+	}, MAP_CONTEXT_RESTORE_TIMEOUT_MS)
+}
+
+const handleMapContextRestored = (): void => {
+	if (!mapRecoveryInFlight) return
+	if (mapRecoveryTimer) clearTimeout(mapRecoveryTimer)
+	mapRecoveryTimer = null
+	mapRecoveryInFlight = false
+	refreshScrollStory()
+	reapplyMapProgress()
+	if (sceneCountdownResumeTimer) clearTimeout(sceneCountdownResumeTimer)
+	sceneCountdownResumeTimer = setTimeout(() => {
+		sceneCountdownPaused.value = !heroActive.value
+		sceneCountdownResumeTimer = null
+	}, SCENE_SWITCH_IN_DURATION_MS)
 }
 
 const handleWorldPlayerMarkerClick = (

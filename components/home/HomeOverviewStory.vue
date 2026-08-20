@@ -148,7 +148,7 @@
 				@pointerenter="communityRailHovered = true"
 				@pointerleave="communityRailHovered = false"
 			>
-				<div class="grid gap-2 lg:hidden">
+				<div v-if="!desktopCommunityRail" class="grid gap-2 lg:hidden">
 					<UMarquee
 						v-for="(row, rowIndex) in communityMemberRows"
 						:key="`mobile-community-row-${rowIndex}`"
@@ -200,6 +200,7 @@
 				</div>
 
 				<UMarquee
+					v-else
 					class="pointer-events-auto hidden h-full lg:block"
 					orientation="vertical"
 					reverse
@@ -464,6 +465,11 @@ const detailScrollState = reactive<DetailScrollState>({
 	isAtEnd: true,
 })
 let detailResizeObserver: ResizeObserver | null = null
+const desktopCommunityRail = ref(false)
+let desktopCommunityRailMediaQuery: MediaQueryList | null = null
+const syncCommunityRailViewport = (): void => {
+	desktopCommunityRail.value = desktopCommunityRailMediaQuery?.matches === true
+}
 const detail = computed(() => {
 	if (!props.detailPersonId) return null
 	const people =
@@ -661,12 +667,23 @@ watch(locale, async () => {
 })
 
 onMounted(() => {
+	desktopCommunityRailMediaQuery = window.matchMedia('(min-width: 1024px)')
+	desktopCommunityRailMediaQuery.addEventListener(
+		'change',
+		syncCommunityRailViewport,
+	)
+	syncCommunityRailViewport()
 	detailResizeObserver = new ResizeObserver(updateDetailScrollState)
 	observeDetailScrollSize()
 	updateDetailScrollState()
 })
 
 onBeforeUnmount(() => {
+	desktopCommunityRailMediaQuery?.removeEventListener(
+		'change',
+		syncCommunityRailViewport,
+	)
+	desktopCommunityRailMediaQuery = null
 	detailResizeObserver?.disconnect()
 	detailResizeObserver = null
 })

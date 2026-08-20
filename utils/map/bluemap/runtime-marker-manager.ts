@@ -10,6 +10,7 @@ import type {
 	BlueMapRuntimeWorldMarkerFactory,
 	WorldPlayerMarkerEntry,
 } from './runtime-types'
+import { areWorldPlayerMarkersEqual } from './world-player-markers'
 import type {
 	BlueMapPlayerMarker,
 	BlueMapViewMode,
@@ -156,6 +157,11 @@ export class BlueMapRuntimeMarkerManager {
 	}
 
 	setWorldPlayerMarkers(markers: readonly BlueMapWorldPlayerMarker[]): void {
+		if (
+			areWorldPlayerMarkersEqual(this.worldPlayerMarkerDefinitions, markers)
+		) {
+			return
+		}
 		this.worldPlayerMarkerDefinitions = [...markers]
 		const viewer = this.dependencies.getViewer()
 		const createMarker = this.createWorldPlayerMarker

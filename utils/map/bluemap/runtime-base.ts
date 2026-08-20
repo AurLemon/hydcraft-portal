@@ -31,6 +31,11 @@ import type {
 	BlueMapWorldPlayerMarkerClickEventPayload,
 } from './types'
 
+interface BlueMapRenderLoopController {
+	renderLoop(now: number): void
+	lastFrame: number
+}
+
 export type { NativeBlueMapWorldPlayerMarker }
 
 /**
@@ -50,6 +55,10 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 		BLUE_MAP_RUNTIME.PLAYER_MARKER_HEIGHT_OFFSET
 	protected postProcessor: BlueMapRuntimePostProcessor | null = null
 	protected cacheBustFreeAssetsBaseUrl: string | null = null
+	private renderLoopGate: {
+		setActive(active: boolean): void
+		dispose(): void
+	} | null = null
 	protected onViewChanged:
 		| ((view: BlueMapViewChangedEventPayload) => void)
 		| null = null
@@ -168,7 +177,41 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	setRenderActive(active: boolean): void {
 		this.postProcessor?.setRenderActive(active)
-		if (active) this.viewer?.redraw()
+		const viewer = this.viewer
+		if (!viewer) return
+		this.renderLoopGate?.setActive(active)
+		if (active) viewer.redraw()
+	}
+
+	protected installRenderLoopGate(): void {
+		const viewer = this.viewer
+		if (!viewer || this.renderLoopGate) return
+
+		const controlledViewer = viewer as BlueMapRuntimeViewer &
+			BlueMapRenderLoopController
+		const nativeRenderLoop = controlledViewer.renderLoop
+		let active = true
+		let lastTimestamp = Number.NEGATIVE_INFINITY
+		const controlledRenderLoop = (now: number): void => {
+			if (now === lastTimestamp) return
+			lastTimestamp = now
+			if (!active) return
+			nativeRenderLoop(now)
+		}
+		controlledViewer.renderLoop = controlledRenderLoop
+		this.renderLoopGate = {
+			setActive: (nextActive) => {
+				if (active === nextActive) return
+				active = nextActive
+				if (!active) return
+				controlledViewer.lastFrame = 0
+				window.requestAnimationFrame(controlledRenderLoop)
+			},
+			dispose: () => {
+				active = false
+				controlledViewer.renderLoop = nativeRenderLoop
+			},
+		}
 	}
 
 	setMode(
@@ -239,6 +282,8 @@ export abstract class OfficialBlueMapRuntimeBase implements BlueMapRuntime {
 
 	destroy(): void {
 		this.markerManager.dispose()
+		this.renderLoopGate?.dispose()
+		this.renderLoopGate = null
 		this.postProcessor?.dispose()
 		this.postProcessor = null
 		unregisterCacheBustFreeAssets(this.cacheBustFreeAssetsBaseUrl)

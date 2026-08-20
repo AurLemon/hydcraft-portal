@@ -64,6 +64,7 @@ const emit = defineEmits<{
 	ready: []
 	error: []
 	'context-lost': []
+	'context-restored': []
 	'scene-camera-settled': []
 	'world-player-marker-click': [
 		payload: BlueMapWorldPlayerMarkerClickEventPayload,
@@ -84,11 +85,24 @@ let unbindViewChanged: (() => void) | null = null
 let scrollProgress = 0
 let sceneCameraTransitionPending = false
 let sceneCameraTransitionTarget: HomeImmersiveSceneCamera | null = null
+let webGlContextLost = false
 
 const handleWebGlContextLost = (event: Event): void => {
 	event.preventDefault()
+	if (webGlContextLost) return
+	webGlContextLost = true
 	status.value = 'error'
 	emit('context-lost')
+}
+
+const handleWebGlContextRestored = (): void => {
+	if (!webGlContextLost) return
+	webGlContextLost = false
+	status.value = 'ready'
+	controller.setRenderActive(props.renderActive !== false)
+	applyScrollProgress(scrollProgress)
+	resize()
+	emit('context-restored')
 }
 
 const SCENE_CAMERA_TRANSITION_SMOOTHING = 0.04
@@ -469,6 +483,11 @@ onMounted(() => {
 		resizeObserver.observe(container)
 	}
 	container?.addEventListener('webglcontextlost', handleWebGlContextLost, true)
+	container?.addEventListener(
+		'webglcontextrestored',
+		handleWebGlContextRestored,
+		true,
+	)
 })
 
 onBeforeUnmount(() => {
@@ -479,6 +498,11 @@ onBeforeUnmount(() => {
 	containerRef.value?.removeEventListener(
 		'webglcontextlost',
 		handleWebGlContextLost,
+		true,
+	)
+	containerRef.value?.removeEventListener(
+		'webglcontextrestored',
+		handleWebGlContextRestored,
 		true,
 	)
 	if (resizeAnimationFrame !== null) {

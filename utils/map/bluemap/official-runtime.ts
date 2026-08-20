@@ -181,6 +181,8 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				)
 			}
 			const viewer = new MapViewer(options.container, events)
+			this.viewer = viewer
+			this.installRenderLoopGate()
 			if (window.matchMedia('(max-width: 639px)').matches) {
 				const resizeViewer = viewer.handleContainerResize.bind(viewer)
 				viewer.handleContainerResize = () => {
@@ -232,7 +234,6 @@ export class OfficialBlueMapRuntime extends OfficialBlueMapRuntimeBase {
 				() => Promise.resolve(),
 				events,
 			)
-			this.viewer = viewer
 			this.map = map
 			if (options.postProcessing?.profile === 'homeAtmosphere') {
 				const { createHomeAtmospherePostProcessor } =
