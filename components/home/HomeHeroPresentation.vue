@@ -27,11 +27,11 @@
 			>
 				<template v-if="mobileSceneNamePrefix">
 					<span
-						class="relative left-1.5 block bg-none text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.16] tracking-[0.08em] text-white"
+						class="relative left-1.5 block bg-none text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.15] tracking-[0.08em] text-white"
 					>
 						{{ mobileSceneNamePrefix }}
 					</span>
-					<span class="block">{{ mobileSceneName }}</span>
+					<span class="block leading-[1.15]">{{ mobileSceneName }}</span>
 				</template>
 				<template v-else>{{ scenePresentation.name }}</template>
 			</p>
