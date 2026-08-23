@@ -102,6 +102,7 @@
 						:member-count="homeImmersiveOverview.stats.memberCount"
 						v-model:detail-person-id="overviewDetailPersonId"
 						@focus-player="handleOverviewPlayerFocus"
+						@navigate-story="handleOverviewStoryNavigation"
 					/>
 				</div>
 
@@ -196,6 +197,7 @@ const {
 	mapOpacity,
 	playerActionVisible,
 	scrollToPlayerFocus,
+	navigateStory,
 	refreshScrollStory,
 	reapplyMapProgress,
 } = useHomeStoryProgress({ playerCount: scenePlayerCount, homeMapRef })
@@ -577,6 +579,10 @@ const handleOverviewPlayerFocus = (
 	if (!player || player.id !== payload.playerId) return
 
 	scrollToPlayerFocus(payload.playerIndex)
+}
+
+const handleOverviewStoryNavigation = (direction: -1 | 1): void => {
+	navigateStory(direction)
 }
 
 watch(

@@ -447,6 +447,11 @@ export const useHomeStoryProgress = (options: {
 		return seekToStop(targetStopIndex, source)
 	}
 
+	const navigateStory = (
+		direction: HomeStoryDirection,
+		source: HomeStoryInputSource = 'touch',
+	): boolean => commitInputDirection(direction, source)
+
 	const getInputSnapshot = (): HomeStoryInputSnapshot => {
 		const progress = latestStoryProgress.value
 		const stops = storyLayout.value.stops
@@ -780,6 +785,7 @@ export const useHomeStoryProgress = (options: {
 		mapOpacity,
 		playerActionVisible,
 		scrollToPlayerFocus,
+		navigateStory,
 		refreshScrollStory,
 		reapplyMapProgress,
 	}

@@ -445,6 +445,7 @@ const props = defineProps<HomeOverviewStoryProps>()
 const emit = defineEmits<{
 	'update:detailPersonId': [personId: string | null]
 	'focus-player': [payload: HomeOverviewPlayerFocusPayload]
+	'navigate-story': [direction: -1 | 1]
 }>()
 const playerRailRef = ref<HTMLElement | null>(null)
 const { locale, t } = useI18n()
@@ -480,14 +481,17 @@ const detail = computed(() => {
 const playerSwipeEnabled = computed(
 	() =>
 		(props.phase === 'scene' || props.phase === 'players') &&
-		props.players.length > 1 &&
+		props.players.length > 0 &&
 		!detail.value,
 )
 useHomeHorizontalSwipe(playerRailRef, {
 	enabled: playerSwipeEnabled,
 	onCommit: (direction) => {
 		const nextIndex = props.activePlayerIndex + direction
-		if (nextIndex < 0 || nextIndex >= props.players.length) return
+		if (nextIndex < 0 || nextIndex >= props.players.length) {
+			emit('navigate-story', direction)
+			return
+		}
 		const nextPlayer = props.players[nextIndex]
 		if (!nextPlayer) return
 		emit('focus-player', {

@@ -140,7 +140,7 @@ const backgroundProgress = computed(() =>
 	props.mode === 'story' ? visualProgress.value : 1,
 )
 const imageStyle = computed(() => ({
-	filter: 'grayscale(0.42) saturate(0.72) brightness(0.84)',
+	filter: 'grayscale(0.42) saturate(0.72) brightness(0.72)',
 	opacity: 1,
 	transform: `translate3d(0, ${(1 - backgroundProgress.value) * 12}px, 0) scale(${1.02 - backgroundProgress.value * 0.02})`,
 }))
