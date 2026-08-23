@@ -174,12 +174,7 @@
 							<SkeletonImage
 								:src="member.avatarUrl"
 								:alt="member.nickname"
-								class="size-9 shrink-0 rounded-md border-2"
-								:class="
-									member.isAdministrator
-										? 'border-amber-300 bg-amber-300/16'
-										: 'border-transparent'
-								"
+								class="size-9 shrink-0 rounded-md border-2 border-transparent"
 								image-class="size-full rounded-md object-cover [image-rendering:pixelated]"
 							/>
 							<span class="min-w-0">
@@ -224,12 +219,7 @@
 						<SkeletonImage
 							:src="member.avatarUrl"
 							:alt="member.nickname"
-							class="size-10 shrink-0 rounded-md border-2 sm:size-11"
-							:class="
-								member.isAdministrator
-									? 'border-amber-300 bg-amber-300/16'
-									: 'border-transparent'
-							"
+							class="size-10 shrink-0 rounded-md border-2 border-transparent sm:size-11"
 							image-class="size-full rounded-md object-cover [image-rendering:pixelated]"
 						/>
 						<span class="min-w-0">
@@ -256,137 +246,168 @@
 			@click="closeDetail"
 		/>
 
-		<Transition name="detail-panel">
+		<Transition
+			name="detail-panel"
+			@before-enter="resetDetailSheetDrag"
+			@after-leave="resetDetailSheetDrag"
+		>
 			<aside
 				v-if="detail"
-				class="pointer-events-auto absolute right-0 bottom-0 z-50 h-[min(34rem,64dvh)] max-h-[64dvh] w-full overflow-hidden border-t border-white/16 bg-slate-950/94 backdrop-blur-2xl lg:top-0 lg:h-auto lg:max-h-none lg:w-[min(30rem,78vw)] lg:border-t-0 lg:border-l"
+				class="pointer-events-auto absolute right-0 bottom-0 z-50 h-[min(34rem,64dvh)] max-h-[64dvh] w-full overflow-hidden lg:top-0 lg:h-auto lg:max-h-none lg:w-[min(30rem,78vw)]"
 			>
 				<div
-					ref="detailScrollRef"
-					class="detail-scroll h-full overflow-y-auto overscroll-contain"
-					data-home-detail-scroll
-					@scroll.passive="handleDetailScroll"
+					ref="detailSheetRef"
+					class="detail-sheet-drag-layer relative h-full overflow-hidden border-t border-white/16 bg-slate-950/94 backdrop-blur-2xl lg:border-t-0 lg:border-l"
+					:style="detailSheetDragStyle"
+					:data-dragging="detailSheetDragging"
+					:data-settling="detailSheetSettling"
+					@transitionend="handleDetailSheetTransitionEnd"
 				>
-					<div
-						ref="detailScrollContentRef"
-						class="flex min-h-full flex-col p-5 sm:p-8 lg:p-10 lg:pt-36"
+					<button
+						type="button"
+						class="pointer-events-auto absolute inset-x-0 top-0 z-20 flex h-11 touch-none cursor-grab items-start justify-center pt-3 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-sky-300 active:cursor-grabbing sm:hidden"
+						data-home-detail-scroll
+						:aria-label="t('home.immersive.overview.collapse')"
+						@pointerdown="handleDetailSheetPointerDown"
+						@pointermove="handleDetailSheetPointerMove"
+						@pointerup="handleDetailSheetPointerUp"
+						@pointercancel="handleDetailSheetPointerCancel"
+						@click="handleDetailSheetClick"
 					>
-						<button
-							type="button"
-							class="inline-flex w-fit items-center gap-1.5 py-1 text-sm font-medium text-white/72 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
-							@click="closeDetail"
+						<span
+							class="h-1 w-10 rounded-full bg-white/78 shadow-sm"
+							aria-hidden="true"
+						/>
+					</button>
+					<div
+						ref="detailScrollRef"
+						class="detail-scroll h-full overflow-y-auto overscroll-contain"
+						data-home-detail-scroll
+						@scroll.passive="handleDetailScroll"
+					>
+						<div
+							ref="detailScrollContentRef"
+							class="flex min-h-full flex-col px-5 pt-12 pb-5 sm:p-8 lg:p-10 lg:pt-36"
 						>
-							<UIcon name="i-lucide-chevrons-right" class="size-4" />
-							<span class="leading-[normal]">{{
-								t('home.immersive.overview.collapse')
-							}}</span>
-						</button>
-						<div class="mt-8 flex items-center gap-4">
-							<div class="grid size-20 shrink-0">
-								<Transition name="detail-avatar">
-									<SkeletonImage
-										:key="detail.id"
-										:src="detail.avatarUrl"
-										:alt="detail.id"
-										class="col-start-1 row-start-1 size-20"
-										image-class="size-20 rounded-lg object-cover [image-rendering:pixelated]"
-									/>
-								</Transition>
-							</div>
-							<div class="grid min-w-0 flex-1">
-								<Transition name="detail-identity">
-									<div
-										:key="detail.id"
-										class="col-start-1 row-start-1 min-w-0 self-center"
-									>
-										<h2 class="truncate font-arkpixel text-3xl leading-none">
-											{{ detail.nickname }}
-										</h2>
-										<p class="mt-1 truncate text-sm text-white/60">
-											{{ detail.id }}
-										</p>
-									</div>
-								</Transition>
-							</div>
-						</div>
-						<div class="mt-8 flex flex-1 flex-col">
-							<Transition name="detail-biography" mode="out-in" appear>
-								<div :key="`${detail.id}-${locale}`" class="overflow-hidden">
-									<div
-										class="detail-biography-content font-serif text-lg leading-8"
-										:class="
-											detailHasDescription
-												? 'text-white'
-												: 'flex flex-1 items-center justify-center text-center text-white/45'
-										"
-									>
-										<p
-											v-for="(paragraph, index) in detailParagraphs"
-											:key="`${detail.id}-paragraph-${index}`"
-											:lang="detailParagraphLang"
-											:class="detailParagraphClass"
-										>
-											{{ paragraph }}
-										</p>
-									</div>
+							<button
+								type="button"
+								class="inline-flex w-fit items-center gap-1.5 py-1 text-sm font-medium text-white/72 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
+								@click="closeDetail"
+							>
+								<UIcon name="i-lucide-chevrons-right" class="size-4" />
+								<span class="leading-[normal]">{{
+									t('home.immersive.overview.collapse')
+								}}</span>
+							</button>
+							<div class="mt-8 flex items-center gap-4">
+								<div class="grid size-20 shrink-0">
+									<Transition name="detail-avatar">
+										<SkeletonImage
+											:key="detail.id"
+											:src="detail.avatarUrl"
+											:alt="detail.id"
+											class="col-start-1 row-start-1 size-20"
+											image-class="size-20 rounded-lg object-cover [image-rendering:pixelated]"
+										/>
+									</Transition>
 								</div>
-							</Transition>
-							<div class="mt-auto">
-								<Transition name="detail-account" mode="out-in" appear>
-									<div
-										v-if="detail.portalAccount"
-										:key="`${detail.id}-${detail.portalAccount.username}`"
-										class="overflow-hidden"
-									>
+								<div class="grid min-w-0 flex-1">
+									<Transition name="detail-identity">
 										<div
-											class="flex flex-wrap items-center gap-1 pt-8 text-sm text-white/72"
+											:key="detail.id"
+											class="col-start-1 row-start-1 min-w-0 self-center"
 										>
-											<UIcon
-												name="i-lucide-corner-down-right"
-												class="size-4 shrink-0 text-white/56"
-											/>
-											<span>{{
-												t('home.immersive.overview.portalProfile')
-											}}</span>
-											<NuxtLink
-												:to="localePath(`/u/${detail.portalAccount.username}`)"
-												class="pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
+											<h2 class="truncate font-arkpixel text-3xl leading-none">
+												{{ detail.nickname }}
+											</h2>
+											<p class="mt-1 truncate text-sm text-white/60">
+												{{ detail.id }}
+											</p>
+										</div>
+									</Transition>
+								</div>
+							</div>
+							<div class="mt-8 flex flex-1 flex-col">
+								<Transition name="detail-biography" mode="out-in" appear>
+									<div :key="`${detail.id}-${locale}`" class="overflow-hidden">
+										<div
+											class="detail-biography-content font-serif text-lg leading-8"
+											:class="
+												detailHasDescription
+													? 'text-white'
+													: 'flex flex-1 items-center justify-center text-center text-white/45'
+											"
+										>
+											<p
+												v-for="(paragraph, index) in detailParagraphs"
+												:key="`${detail.id}-paragraph-${index}`"
+												:lang="detailParagraphLang"
+												:class="detailParagraphClass"
 											>
-												<UAvatar
-													:src="detail.portalAccount.avatarUrl || undefined"
-													:alt="detail.portalAccount.username"
-													size="xs"
-													:text="
-														detail.portalAccount.username
-															.slice(0, 1)
-															.toUpperCase()
-													"
-												/>
-												<span>@{{ detail.portalAccount.username }}</span>
-												<UIcon
-													name="i-lucide-arrow-up-right"
-													class="size-3.5"
-												/>
-											</NuxtLink>
+												{{ paragraph }}
+											</p>
 										</div>
 									</div>
 								</Transition>
+								<div class="mt-auto">
+									<Transition name="detail-account" mode="out-in" appear>
+										<div
+											v-if="detail.portalAccount"
+											:key="`${detail.id}-${detail.portalAccount.username}`"
+											class="overflow-hidden"
+										>
+											<div
+												class="flex flex-wrap items-center gap-1 pt-8 text-sm text-white/72"
+											>
+												<UIcon
+													name="i-lucide-corner-down-right"
+													class="size-4 shrink-0 text-white/56"
+												/>
+												<span>{{
+													t('home.immersive.overview.portalProfile')
+												}}</span>
+												<NuxtLink
+													:to="
+														localePath(`/u/${detail.portalAccount.username}`)
+													"
+													class="pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-1 py-0.5 font-medium text-white/88 transition-colors hover:bg-white/10 hover:text-white"
+												>
+													<UAvatar
+														:src="detail.portalAccount.avatarUrl || undefined"
+														:alt="detail.portalAccount.username"
+														size="xs"
+														:text="
+															detail.portalAccount.username
+																.slice(0, 1)
+																.toUpperCase()
+														"
+													/>
+													<span>@{{ detail.portalAccount.username }}</span>
+													<UIcon
+														name="i-lucide-arrow-up-right"
+														class="size-3.5"
+													/>
+												</NuxtLink>
+											</div>
+										</div>
+									</Transition>
+								</div>
 							</div>
 						</div>
 					</div>
+					<Transition name="detail-scroll-hint">
+						<div
+							v-if="detailScrollState.canScroll && !detailScrollState.isAtEnd"
+							class="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex h-20 items-end justify-center bg-linear-to-t from-slate-950 via-slate-950/88 to-transparent pb-3"
+							aria-hidden="true"
+						>
+							<UIcon
+								name="i-lucide-chevrons-down"
+								class="mb-1 size-5 text-white/72 drop-shadow-md"
+							/>
+						</div>
+					</Transition>
 				</div>
-				<Transition name="detail-scroll-hint">
-					<div
-						v-if="detailScrollState.canScroll && !detailScrollState.isAtEnd"
-						class="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex h-20 items-end justify-center bg-linear-to-t from-slate-950 via-slate-950/88 to-transparent pb-3"
-						aria-hidden="true"
-					>
-						<UIcon
-							name="i-lucide-chevrons-down"
-							class="mb-1 size-5 text-white/72 drop-shadow-md"
-						/>
-					</div>
-				</Transition>
 			</aside>
 		</Transition>
 	</div>
@@ -395,6 +416,7 @@
 <script setup lang="ts">
 import type { HomeImmersiveMapPosition } from '~/utils/home/immersive-scenes'
 import type { HomePortalAccountSummary } from '~/utils/home/portal-accounts'
+import { useHomeDetailSheetDrag } from '~/composables/home/useHomeDetailSheetDrag'
 import { useHomeHorizontalSwipe } from '~/composables/home/useHomeHorizontalSwipe'
 import { HOME_DETAIL_MOTION } from '~/utils/home/detail-motion'
 
@@ -411,7 +433,6 @@ export interface HomeOverviewPerson {
 	description: string | null
 	portalAccount: HomePortalAccountSummary | null
 	avatarUrl: string
-	isAdministrator: boolean
 	position?: HomeImmersiveMapPosition
 }
 
@@ -459,6 +480,7 @@ const detailMotionStyle = {
 	'--home-detail-account-duration': `${HOME_DETAIL_MOTION.account}ms`,
 } as Record<string, string>
 const communityRailHovered = ref(false)
+const detailSheetRef = ref<HTMLElement | null>(null)
 const detailScrollRef = ref<HTMLDivElement | null>(null)
 const detailScrollContentRef = ref<HTMLDivElement | null>(null)
 const detailScrollState = reactive<DetailScrollState>({
@@ -617,6 +639,24 @@ const closeDetail = (): void => {
 	emit('update:detailPersonId', null)
 }
 
+const detailSheetDragEnabled = computed(() => Boolean(detail.value))
+const {
+	dragStyle: detailSheetDragStyle,
+	isDragging: detailSheetDragging,
+	isSettling: detailSheetSettling,
+	handlePointerDown: handleDetailSheetPointerDown,
+	handlePointerMove: handleDetailSheetPointerMove,
+	handlePointerUp: handleDetailSheetPointerUp,
+	handlePointerCancel: handleDetailSheetPointerCancel,
+	handleClick: handleDetailSheetClick,
+	handleTransitionEnd: handleDetailSheetTransitionEnd,
+	reset: resetDetailSheetDrag,
+} = useHomeDetailSheetDrag({
+	enabled: detailSheetDragEnabled,
+	sheet: detailSheetRef,
+	onDismiss: closeDetail,
+})
+
 const updateDetailScrollState = (): void => {
 	const scrollElement = detailScrollRef.value
 	if (!scrollElement) {
@@ -650,13 +690,17 @@ const handleDetailScroll = (): void => {
 watch(
 	() => props.phase,
 	() => {
-		if (props.detailPersonId) closeDetail()
+		if (props.detailPersonId) {
+			resetDetailSheetDrag()
+			closeDetail()
+		}
 	},
 )
 
 watch(
 	() => props.detailPersonId,
 	async (personId) => {
+		if (personId) resetDetailSheetDrag()
 		await nextTick()
 		if (personId && detailScrollRef.value) detailScrollRef.value.scrollTop = 0
 		observeDetailScrollSize()
@@ -824,6 +868,21 @@ onBeforeUnmount(() => {
 .community-member-rail :deep([data-slot='content']),
 .community-member-rail :deep(.community-member-card) {
 	pointer-events: auto !important;
+}
+
+@media (max-width: 639px) {
+	.detail-sheet-drag-layer {
+		transform: translate3d(0, var(--home-detail-drag-offset, 0px), 0);
+	}
+
+	.detail-sheet-drag-layer[data-dragging='true'],
+	.detail-sheet-drag-layer[data-settling='true'] {
+		will-change: transform;
+	}
+
+	.detail-sheet-drag-layer[data-settling='true'] {
+		transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
 }
 
 .detail-scroll {
@@ -1029,6 +1088,10 @@ onBeforeUnmount(() => {
 
 	.detail-biography-enter-active .detail-biography-content {
 		animation: none;
+	}
+
+	.detail-sheet-drag-layer[data-settling='true'] {
+		transition: none;
 	}
 }
 </style>

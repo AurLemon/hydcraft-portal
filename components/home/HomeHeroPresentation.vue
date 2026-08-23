@@ -89,7 +89,11 @@
 		<div
 			data-home-exit="content"
 			class="pointer-events-auto inline-flex w-fit items-center gap-1 text-sm text-white/90 select-none"
-			:class="scenePresentation.credit ? 'lg:-translate-x-2 lg:mx-4' : 'hidden'"
+			:class="
+				scenePresentation.credit
+					? 'lg:-translate-x-2 lg:mx-4 lg:mt-2'
+					: 'hidden'
+			"
 		>
 			<template v-if="scenePresentation.credit">
 				<UIcon

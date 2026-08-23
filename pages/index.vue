@@ -159,6 +159,10 @@ import { getMinecraftAvatarRendererUrl } from '~/utils/minecraft/body-renderer'
 import { resolveMinecraftServerLocalizedName } from '~/utils/minecraft/server-name'
 import type { ServerOverviewLiveResponse } from '~/utils/server/overview'
 
+interface HomeOverviewMarkerPerson extends HomeOverviewPerson {
+	isAdministrator: boolean
+}
+
 definePageMeta({
 	headerVariant: 'hero',
 	pageContainerVariant: 'immersive',
@@ -297,7 +301,7 @@ const mobileOutroCamera = computed<HomeImmersiveSceneCamera>(() => ({
 	distance: 7600,
 	angle: 0.3,
 }))
-const sceneOverviewPlayers = computed<HomeOverviewPerson[]>(() =>
+const sceneOverviewPlayers = computed<HomeOverviewMarkerPerson[]>(() =>
 	[...scene.value.players]
 		.sort((left, right) => left.focusOrder - right.focusOrder)
 		.map((player) => ({
@@ -310,7 +314,7 @@ const sceneOverviewPlayers = computed<HomeOverviewPerson[]>(() =>
 			position: scenePlayerPositions.value[player.id],
 		})),
 )
-const overviewCommunityMembers = computed<HomeOverviewPerson[]>(() =>
+const overviewCommunityMembers = computed<HomeOverviewMarkerPerson[]>(() =>
 	overviewMemberOrder.value
 		.map((memberId) =>
 			homeImmersiveOverview.members.find((member) => member.id === memberId),
