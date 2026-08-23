@@ -33,6 +33,7 @@ const COMMUNITY_PHASE_HYSTERESIS = 0.01
 const NAVIGATION_EPSILON = 0.0005
 const STORY_INPUT_ENTRY_TOLERANCE_PX = 24
 const STORY_INPUT_EXIT_CAPTURE_PX = 240
+const MOBILE_STORY_VIEWPORT_QUERY = '(max-width: 639px)'
 
 const clampProgress = (progress: number): number =>
 	Math.min(Math.max(progress, 0), 1)
@@ -114,7 +115,7 @@ export const useHomeStoryProgress = (options: {
 	homeMapRef: Ref<HomeStoryMapHandle | null>
 }) => {
 	const scrollStoryRef = ref<HTMLElement | null>(null)
-	const viewportHeightPx = ref(DEFAULT_VIEWPORT_HEIGHT_PX)
+	const storyViewportHeightPx = ref(DEFAULT_VIEWPORT_HEIGHT_PX)
 	const viewportReady = ref(false)
 	const storyInputActive = ref(false)
 	const heroActive = ref(true)
@@ -132,7 +133,10 @@ export const useHomeStoryProgress = (options: {
 	const transitionSettled = ref(true)
 	const playerActionVisible = ref(true)
 	const storyMetrics = computed(() =>
-		resolveHomeStoryMetrics(viewportHeightPx.value, options.playerCount.value),
+		resolveHomeStoryMetrics(
+			storyViewportHeightPx.value,
+			options.playerCount.value,
+		),
 	)
 	const storyLayout = computed<HomeStoryLayout>(() =>
 		resolveHomeStoryLayout(storyMetrics.value, options.playerCount.value),
@@ -146,7 +150,7 @@ export const useHomeStoryProgress = (options: {
 	)
 	const sceneStoryHeightStyle = computed(() =>
 		viewportReady.value
-			? `${storyLayout.value.storyHeightPx}px`
+			? `calc(${storyLayout.value.storyScrollDistancePx}px + 100dvh)`
 			: `${sceneStoryHeightDvh.value}dvh`,
 	)
 	const latestStoryProgress = ref(0)
@@ -174,6 +178,7 @@ export const useHomeStoryProgress = (options: {
 	let restoreControlledScrollBehavior: (() => void) | null = null
 	let viewportResizeFrame: number | null = null
 	let viewportMedia: VisualViewport | null = null
+	let storyViewportWidthPx = 0
 	let progressFrame: number | null = null
 	let pendingProgress: {
 		value: number
@@ -488,24 +493,30 @@ export const useHomeStoryProgress = (options: {
 		if (viewportResizeFrame !== null) return
 		viewportResizeFrame = requestAnimationFrame(() => {
 			viewportResizeFrame = null
-			const nextHeight = Math.max(
-				Math.round(viewportMedia?.height ?? window.innerHeight),
-				1,
-			)
-			const heightChanged = Math.abs(nextHeight - viewportHeightPx.value) >= 1
-			if (heightChanged) {
-				viewportRefreshInFlight = true
-				activeScrollTween?.kill()
-				activeScrollTween = null
-				clearPendingProgress()
-				lastAppliedProgress = -1
-				viewportHeightPx.value = nextHeight
-				dispatchStoryEvent({
-					type: 'layout-refreshed',
-					viewportHeightPx: nextHeight,
-				})
-			}
+			const nextWidth = Math.max(Math.round(window.innerWidth), 1)
+			const nextHeight = Math.max(Math.round(window.innerHeight), 1)
+			const widthChanged = Math.abs(nextWidth - storyViewportWidthPx) >= 1
+			const heightChanged =
+				Math.abs(nextHeight - storyViewportHeightPx.value) >= 1
+			const mobileHeightOnlyResize =
+				heightChanged &&
+				!widthChanged &&
+				window.matchMedia(MOBILE_STORY_VIEWPORT_QUERY).matches
+
 			viewportReady.value = true
+			if (mobileHeightOnlyResize || (!widthChanged && !heightChanged)) return
+
+			viewportRefreshInFlight = true
+			activeScrollTween?.kill()
+			activeScrollTween = null
+			clearPendingProgress()
+			lastAppliedProgress = -1
+			storyViewportWidthPx = nextWidth
+			storyViewportHeightPx.value = nextHeight
+			dispatchStoryEvent({
+				type: 'layout-refreshed',
+				viewportHeightPx: nextHeight,
+			})
 			void nextTick(() => {
 				refreshScrollStory()
 				viewportRefreshInFlight = false
@@ -539,10 +550,8 @@ export const useHomeStoryProgress = (options: {
 		if (!scrollStory || !firstBackdrop || !firstPanel) return
 
 		viewportMedia = window.visualViewport ?? null
-		viewportHeightPx.value = Math.max(
-			Math.round(viewportMedia?.height ?? window.innerHeight),
-			1,
-		)
+		storyViewportWidthPx = Math.max(Math.round(window.innerWidth), 1)
+		storyViewportHeightPx.value = Math.max(Math.round(window.innerHeight), 1)
 		viewportReady.value = true
 
 		const contentExitElements = Array.from(
