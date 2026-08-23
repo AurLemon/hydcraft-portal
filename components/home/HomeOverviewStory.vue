@@ -45,7 +45,7 @@
 							{{ t('home.immersive.overview.establishedFor') }}
 							<HomeStatFlipNumber
 								:value="foundedDays"
-								class="mx-1 text-3xl font-medium text-white drop-shadow-[0_2px_8px_rgba(2,6,23,0.88)] sm:text-4xl"
+								class="mx-1 text-3xl font-medium text-white [text-shadow:0_1px_4px_rgba(2,6,23,0.72)] sm:text-4xl"
 							/>
 							{{ t('home.immersive.overview.days') }}
 						</p>
@@ -53,7 +53,7 @@
 							{{ t('home.immersive.overview.memberCountPrefix') }}
 							<HomeStatFlipNumber
 								:value="memberCount"
-								class="mx-1 text-3xl font-medium text-white drop-shadow-[0_2px_8px_rgba(2,6,23,0.88)] sm:text-4xl"
+								class="mx-1 text-3xl font-medium text-white [text-shadow:0_1px_4px_rgba(2,6,23,0.72)] sm:text-4xl"
 							/>
 							{{ t('home.immersive.overview.people') }}
 						</p>
