@@ -82,6 +82,7 @@ interface AttachmentPolicyMetadata {
 	allowedContentTypes: string[]
 	maxSizeBytes: number
 	requiresCrop: boolean
+	directUploadContentTypes: string[]
 	aspectRatio?: number | null
 	category: string
 	visibility: string
@@ -213,7 +214,10 @@ const handleFileChange = (event: Event): void => {
 
 	selectedFile.value = file
 
-	if (policy.value?.requiresCrop) {
+	if (
+		policy.value?.requiresCrop &&
+		!policy.value.directUploadContentTypes.includes(file.type)
+	) {
 		cropperOpen.value = true
 		return
 	}

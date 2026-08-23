@@ -79,6 +79,7 @@
 			"INVALID_CONTENT_TYPE": "このファイル形式はサポートされていません。",
 			"FILE_TOO_LARGE": "ファイルがサイズ制限を超えています。",
 			"INVALID_CROP": "切り抜き比率が正しくありません。",
+			"INVALID_SVG_CONTENT": "SVG に安全でない、またはサポートされていない内容が含まれています。",
 			"IMAGE_PROCESSING_FAILED": "画像処理に失敗しました。",
 			"ATTACHMENT_NOT_FOUND": "添付ファイルが見つからないか利用できません。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "利用可能な画像バージョンがありません。",

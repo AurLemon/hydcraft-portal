@@ -79,6 +79,7 @@
 			"INVALID_CONTENT_TYPE": "不支持的文件类型。",
 			"FILE_TOO_LARGE": "文件超过大小限制。",
 			"INVALID_CROP": "裁剪比例不正确。",
+			"INVALID_SVG_CONTENT": "SVG 包含不安全或不支持的内容。",
 			"IMAGE_PROCESSING_FAILED": "图片处理失败。",
 			"ATTACHMENT_NOT_FOUND": "附件不存在或不可用。",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "附件缺少可用图片版本。",

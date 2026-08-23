@@ -79,6 +79,7 @@
 			"INVALID_CONTENT_TYPE": "This file type is not supported.",
 			"FILE_TOO_LARGE": "The file exceeds the size limit.",
 			"INVALID_CROP": "The crop ratio is invalid.",
+			"INVALID_SVG_CONTENT": "The SVG contains unsafe or unsupported content.",
 			"IMAGE_PROCESSING_FAILED": "Image processing failed.",
 			"ATTACHMENT_NOT_FOUND": "The attachment was not found or is unavailable.",
 			"ATTACHMENT_VARIANT_NOT_FOUND": "The attachment has no usable image variant.",

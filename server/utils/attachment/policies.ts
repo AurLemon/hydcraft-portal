@@ -3,6 +3,8 @@ import type { AttachmentPolicy, AttachmentPurpose } from './types'
 import { ATTACHMENT_VARIANT_NAMES, buildSourceVariantPolicy } from './variants'
 
 const IMAGE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const SVG_CONTENT_TYPE = 'image/svg+xml'
+const MANUAL_IMAGE_CONTENT_TYPES = [...IMAGE_CONTENT_TYPES, SVG_CONTENT_TYPE]
 // GIF is intentionally rejected in v1 instead of being silently converted to a
 // single-frame image. Add an explicit animated-image branch before allowing it.
 
@@ -11,9 +13,10 @@ export const attachmentPolicies = {
 		purpose: 'user-avatar',
 		category: 'profile',
 		visibility: 'PUBLIC',
-		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		allowedContentTypes: MANUAL_IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 8 * 1024 * 1024,
 		requiresCrop: true,
+		directUploadContentTypes: [SVG_CONTENT_TYPE],
 		aspectRatio: 1,
 		outputFormat: 'webp',
 		variants: [
@@ -27,9 +30,10 @@ export const attachmentPolicies = {
 		purpose: 'user-cover',
 		category: 'profile',
 		visibility: 'PUBLIC',
-		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		allowedContentTypes: MANUAL_IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 12 * 1024 * 1024,
 		requiresCrop: true,
+		directUploadContentTypes: [SVG_CONTENT_TYPE],
 		outputFormat: 'webp',
 		variants: [buildSourceVariantPolicy(ATTACHMENT_VARIANT_NAMES.coverPrimary)],
 	},
@@ -40,6 +44,7 @@ export const attachmentPolicies = {
 		allowedContentTypes: IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 8 * 1024 * 1024,
 		requiresCrop: false,
+		directUploadContentTypes: [],
 		outputFormat: 'webp',
 		variants: [
 			{ name: 'avatar_64', width: 64, height: 64, fit: 'cover' },
@@ -52,9 +57,10 @@ export const attachmentPolicies = {
 		purpose: 'partner-avatar',
 		category: 'partner',
 		visibility: 'PUBLIC',
-		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		allowedContentTypes: MANUAL_IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 8 * 1024 * 1024,
 		requiresCrop: true,
+		directUploadContentTypes: [SVG_CONTENT_TYPE],
 		aspectRatio: 1,
 		outputFormat: 'webp',
 		variants: [
@@ -68,9 +74,10 @@ export const attachmentPolicies = {
 		purpose: 'partner-cover',
 		category: 'partner',
 		visibility: 'PUBLIC',
-		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		allowedContentTypes: MANUAL_IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 12 * 1024 * 1024,
 		requiresCrop: true,
+		directUploadContentTypes: [SVG_CONTENT_TYPE],
 		outputFormat: 'webp',
 		variants: [buildSourceVariantPolicy(ATTACHMENT_VARIANT_NAMES.coverPrimary)],
 	},
@@ -78,9 +85,10 @@ export const attachmentPolicies = {
 		purpose: 'friend-link-avatar',
 		category: 'link',
 		visibility: 'PUBLIC',
-		allowedContentTypes: IMAGE_CONTENT_TYPES,
+		allowedContentTypes: MANUAL_IMAGE_CONTENT_TYPES,
 		maxSizeBytes: 8 * 1024 * 1024,
 		requiresCrop: true,
+		directUploadContentTypes: [SVG_CONTENT_TYPE],
 		aspectRatio: 1,
 		outputFormat: 'webp',
 		variants: [
@@ -108,6 +116,7 @@ export const getPublicAttachmentPolicies = () =>
 		allowedContentTypes: policy.allowedContentTypes,
 		maxSizeBytes: policy.maxSizeBytes,
 		requiresCrop: policy.requiresCrop,
+		directUploadContentTypes: policy.directUploadContentTypes,
 		aspectRatio: 'aspectRatio' in policy ? policy.aspectRatio : undefined,
 		category: policy.category,
 		visibility: policy.visibility,

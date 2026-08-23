@@ -6,6 +6,8 @@ import type {
 	AttachmentResizeVariantPolicy,
 	AttachmentSourceVariantPolicy,
 } from './types'
+import { getPrimaryVariantNames } from './variants'
+import { validateSvgAttachment } from './svg-validator'
 
 interface ProcessedImageVariant {
 	name: string
@@ -27,6 +29,8 @@ interface ProcessImageAttachmentResult {
 	sha256: string
 	variants: ProcessedImageVariant[]
 }
+
+const SVG_CONTENT_TYPE = 'image/svg+xml'
 
 const CROP_ASPECT_RATIO_TOLERANCE = 0.03
 const SUPPORTED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp'])
@@ -150,5 +154,44 @@ export const processImageAttachment = async (
 		height: sourceHeight,
 		sha256,
 		variants,
+	}
+}
+
+export const processSvgAttachment = async (
+	input: ProcessImageAttachmentInput,
+): Promise<ProcessImageAttachmentResult> => {
+	validateSvgAttachment(input.originalBuffer)
+	const primaryVariantName = getPrimaryVariantNames(input.policy.purpose)[0]
+	if (!primaryVariantName) {
+		throw badRequest('INVALID_ATTACHMENT_PURPOSE')
+	}
+
+	const metadata = await sharp(input.originalBuffer, {
+		failOn: 'warning',
+	}).metadata()
+	if (metadata.format !== 'svg' || !metadata.width || !metadata.height) {
+		throw badRequest('INVALID_SVG_CONTENT')
+	}
+
+	const originalBytes = new Uint8Array(
+		input.originalBuffer.buffer,
+		input.originalBuffer.byteOffset,
+		input.originalBuffer.byteLength,
+	)
+
+	return {
+		width: metadata.width,
+		height: metadata.height,
+		sha256: createHash('sha256').update(originalBytes).digest('hex'),
+		variants: [
+			{
+				name: primaryVariantName,
+				buffer: input.originalBuffer,
+				width: metadata.width,
+				height: metadata.height,
+				contentType: SVG_CONTENT_TYPE,
+				ext: 'svg',
+			},
+		],
 	}
 }

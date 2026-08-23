@@ -42,6 +42,7 @@ export interface AttachmentPolicy {
 	allowedContentTypes: string[]
 	maxSizeBytes: number
 	requiresCrop: boolean
+	directUploadContentTypes: string[]
 	aspectRatio?: number
 	outputFormat: AttachmentOutputFormat
 	variants: AttachmentVariantPolicy[]

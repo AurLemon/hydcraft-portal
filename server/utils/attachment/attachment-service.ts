@@ -20,7 +20,7 @@ import type {
 	AttachmentPublicVariant,
 	StorageProfiles,
 } from './types'
-import { processImageAttachment } from './image-processor'
+import { processImageAttachment, processSvgAttachment } from './image-processor'
 import { findPrimaryVariant } from './variants'
 
 const ADMIN_ATTACHMENT_SORT_FIELDS = new Set([
@@ -367,10 +367,14 @@ export class AttachmentService {
 		const uploadedObjectKeys: string[] = []
 
 		try {
-			const processed = await processImageAttachment({
+			const processingInput = {
 				originalBuffer: input.buffer,
 				policy,
-			})
+			}
+			const processed =
+				contentType === 'image/svg+xml'
+					? await processSvgAttachment(processingInput)
+					: await processImageAttachment(processingInput)
 
 			for (const variant of processed.variants) {
 				const objectKey = buildFinalObjectKey({
