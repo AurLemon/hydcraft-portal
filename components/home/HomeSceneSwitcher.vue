@@ -1,7 +1,7 @@
 <template>
 	<nav
 		v-if="scenes.length > 1"
-		class="absolute top-24 left-1/2 z-[200] -translate-x-1/2 transition-[opacity,transform] duration-300 ease-out sm:top-28"
+		class="absolute top-24 left-1/2 z-[200] -translate-x-1/2 transition-[opacity,translate] duration-300 ease-out sm:top-28"
 		:class="
 			active
 				? 'pointer-events-auto opacity-100'
@@ -79,6 +79,7 @@ let animationFrame: number | null = null
 let lastTimestamp: number | null = null
 let progressResetFrame: number | null = null
 let progressResetTimer: ReturnType<typeof setTimeout> | null = null
+let inactiveResetTimer: ReturnType<typeof setTimeout> | null = null
 
 const progress = computed(() =>
 	Math.min(Math.max(elapsedMs.value / props.durationMs, 0), 1),
@@ -177,11 +178,17 @@ watch(
 	() => [props.active, props.counting, props.scenes.length] as const,
 	() => {
 		if (props.active) {
+			if (inactiveResetTimer) clearTimeout(inactiveResetTimer)
+			inactiveResetTimer = null
 			startClock()
 			return
 		}
-		resetProgress()
 		stopClock()
+		if (inactiveResetTimer) clearTimeout(inactiveResetTimer)
+		inactiveResetTimer = setTimeout(() => {
+			inactiveResetTimer = null
+			if (!props.active) elapsedMs.value = 0
+		}, 300)
 	},
 )
 
@@ -202,6 +209,7 @@ onBeforeUnmount(() => {
 	stopClock()
 	if (progressResetFrame !== null) cancelAnimationFrame(progressResetFrame)
 	if (progressResetTimer) clearTimeout(progressResetTimer)
+	if (inactiveResetTimer) clearTimeout(inactiveResetTimer)
 	document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>

@@ -106,6 +106,7 @@ export interface HomeImmersiveSceneDefinition {
 	id: string
 	shortName: HomeImmersiveLocalizedText
 	mapAssetsBaseUrl: string
+	mapAssetsFallbackBaseUrls: readonly string[]
 	camera: HomeImmersiveSceneCamera
 	lighting: HomeImmersiveSceneLighting
 	players: readonly HomeImmersiveScenePlayer[]

@@ -15,7 +15,8 @@ export const saikongScene: HomeImmersiveSceneDefinition = {
 		'en-US': 'Saikong',
 		'ja-JP': '西港城区',
 	},
-	mapAssetsBaseUrl: 'https://map-assets.hydcraft.cn/oxygen/world',
+	mapAssetsBaseUrl: 'https://map.oxygen.hydcraft.cn/maps/world',
+	mapAssetsFallbackBaseUrls: ['https://map-assets.hydcraft.cn/oxygen/world'],
 	camera: {
 		x: -957.12,
 		y: 63,

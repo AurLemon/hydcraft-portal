@@ -29,6 +29,7 @@
 						ref="homeMapRef"
 						:key="mapRecoveryKey"
 						:assets-base-url="scene.mapAssetsBaseUrl"
+						:assets-fallback-base-urls="scene.mapAssetsFallbackBaseUrls"
 						:camera="scene.camera"
 						:overview-camera="scene.overviewCamera"
 						:mobile-overview-camera="scene.mobileOverviewCamera"

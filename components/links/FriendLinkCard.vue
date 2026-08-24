@@ -2,7 +2,7 @@
 	<a
 		:href="link.url"
 		target="_blank"
-		class="group relative flex h-full min-h-34 flex-col rounded-xl border border-slate-200 bg-white px-4 text-center text-slate-500 transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:bg-slate-900"
+		class="group relative flex h-full min-h-34 min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white px-4 text-center text-slate-500 transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:bg-slate-900"
 		rel="noopener noreferrer"
 	>
 		<div v-if="link.archived" class="absolute right-3 top-3 z-10">
@@ -13,11 +13,11 @@
 			</UTooltip>
 		</div>
 		<div
-			class="flex flex-1 flex-col px-2 py-6"
+			class="flex min-w-0 flex-1 flex-col px-2 py-6"
 			:class="link.summary ? 'justify-center' : 'justify-center'"
 		>
 			<div
-				class="flex items-center justify-center gap-3"
+				class="flex w-full min-w-0 items-center justify-center gap-3"
 				:class="link.summary ? 'mb-3' : ''"
 			>
 				<div
@@ -40,9 +40,9 @@
 					class="h-12 w-12 shrink-0 rounded-lg"
 					:ui="avatarUi"
 				/>
-				<div class="min-w-0">
+				<div class="min-w-0 max-w-[calc(100%-3.75rem)] overflow-hidden">
 					<p
-						class="truncate leading-[normal] text-xl"
+						class="block w-full truncate leading-[normal] text-xl"
 						:class="
 							link.archived
 								? 'text-slate-500 dark:text-slate-400'

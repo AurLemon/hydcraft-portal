@@ -41,6 +41,7 @@ import type {
 
 interface HomeImmersiveBlueMapProps {
 	assetsBaseUrl: string
+	assetsFallbackBaseUrls?: readonly string[]
 	camera: HomeImmersiveSceneCamera
 	overviewCamera: HomeImmersiveSceneCamera
 	mobileOverviewCamera: HomeImmersiveSceneCamera
@@ -59,7 +60,9 @@ interface HomeImmersiveBlueMapProps {
 	developerControlsActive?: boolean
 }
 
-const props = defineProps<HomeImmersiveBlueMapProps>()
+const props = withDefaults(defineProps<HomeImmersiveBlueMapProps>(), {
+	assetsFallbackBaseUrls: () => [],
+})
 const emit = defineEmits<{
 	ready: []
 	error: []
@@ -86,6 +89,8 @@ let scrollProgress = 0
 let sceneCameraTransitionPending = false
 let sceneCameraTransitionTarget: HomeImmersiveSceneCamera | null = null
 let webGlContextLost = false
+let mountHasFallback = false
+let mountCanFallback = false
 
 const handleWebGlContextLost = (event: Event): void => {
 	event.preventDefault()
@@ -400,8 +405,10 @@ const focus = (): BlueMapFocus => ({
 	z: props.camera.z,
 })
 
-const resolveAssetsBaseUrl = (): string =>
-	new URL(props.assetsBaseUrl, window.location.origin).toString()
+const resolveAssetsBaseUrls = (): string[] =>
+	[props.assetsBaseUrl, ...props.assetsFallbackBaseUrls]
+		.map((baseUrl) => new URL(baseUrl, window.location.origin).toString())
+		.filter((baseUrl, index, baseUrls) => baseUrls.indexOf(baseUrl) === index)
 
 const resize = () => {
 	if (resizeAnimationFrame !== null) {
@@ -435,7 +442,9 @@ const mountMap = async () => {
 		resize()
 		emit('ready')
 	})
-	unbindError = controller.on('error', () => {
+	unbindError = controller.on('error', (payload) => {
+		mountCanFallback = mountHasFallback && payload.code.startsWith('ASSETS_')
+		if (mountCanFallback) return
 		status.value = 'error'
 		emit('error')
 	})
@@ -444,32 +453,40 @@ const mountMap = async () => {
 		(payload) => emit('world-player-marker-click', payload),
 	)
 	unbindViewChanged = controller.on('viewChanged', handleViewChanged)
-	try {
-		await controller.mount({
-			container,
-			assets: { assetsBaseUrl: resolveAssetsBaseUrl() },
-			mode: 'perspective',
-			initialDistance: props.camera.distance,
-			focus: focus(),
-			focusHeightOffset: 0,
-			initialOrientation: {
-				rotation: props.camera.rotation,
-				angle: props.camera.angle,
-				tilt: props.camera.tilt,
-			},
-			unrestrictedPerspectiveAngle: true,
-			unrestrictedViewDistance: props.developerControlsEnabled,
-			keyboardControls: false,
-			postProcessing: createHomeImmersiveAtmosphereOptions(
-				props.lighting,
-				props.water,
-			),
-			worldPlayerMarkers: props.worldPlayerMarkers ?? [],
-			markerClicksOnly: props.markerClicksOnly,
-		})
-		controller.setRenderActive(props.renderActive !== false)
-	} catch {
-		// Controller emits the typed failure event used by this presentation.
+	const assetsBaseUrls = resolveAssetsBaseUrls()
+	for (const [index, assetsBaseUrl] of assetsBaseUrls.entries()) {
+		mountHasFallback = index < assetsBaseUrls.length - 1
+		mountCanFallback = false
+		try {
+			await controller.mount({
+				container,
+				assets: { assetsBaseUrl },
+				mode: 'perspective',
+				initialDistance: props.camera.distance,
+				focus: focus(),
+				focusHeightOffset: 0,
+				initialOrientation: {
+					rotation: props.camera.rotation,
+					angle: props.camera.angle,
+					tilt: props.camera.tilt,
+				},
+				unrestrictedPerspectiveAngle: true,
+				unrestrictedViewDistance: props.developerControlsEnabled,
+				keyboardControls: false,
+				postProcessing: createHomeImmersiveAtmosphereOptions(
+					props.lighting,
+					props.water,
+				),
+				worldPlayerMarkers: props.worldPlayerMarkers ?? [],
+				markerClicksOnly: props.markerClicksOnly,
+			})
+			mountHasFallback = false
+			controller.setRenderActive(props.renderActive !== false)
+			return
+		} catch {
+			if (mountCanFallback) continue
+			return
+		}
 	}
 }
 

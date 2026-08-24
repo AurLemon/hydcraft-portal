@@ -17,7 +17,8 @@ export const guangyangScene: HomeImmersiveSceneDefinition = {
 		'en-US': 'Guangyang',
 		'ja-JP': '広陽',
 	},
-	mapAssetsBaseUrl: 'https://map-assets.hydcraft.cn/oxygen/world',
+	mapAssetsBaseUrl: 'https://map.oxygen.hydcraft.cn/maps/world',
+	mapAssetsFallbackBaseUrls: ['https://map-assets.hydcraft.cn/oxygen/world'],
 	camera: {
 		x: 4443.83,
 		y: 65,

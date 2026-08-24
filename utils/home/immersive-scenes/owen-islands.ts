@@ -15,7 +15,8 @@ export const owenIslandsScene: HomeImmersiveSceneDefinition = {
 		'en-US': 'Owen',
 		'ja-JP': 'オーウェン',
 	},
-	mapAssetsBaseUrl: 'https://map-assets.hydcraft.cn/oxygen/world',
+	mapAssetsBaseUrl: 'https://map.oxygen.hydcraft.cn/maps/world',
+	mapAssetsFallbackBaseUrls: ['https://map-assets.hydcraft.cn/oxygen/world'],
 	camera: {
 		x: 13874.57,
 		y: 63,

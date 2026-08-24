@@ -17,7 +17,8 @@ export const spawnpointScene: HomeImmersiveSceneDefinition = {
 		'en-US': 'Spawnpoint',
 		'ja-JP': 'スポーンポイント',
 	},
-	mapAssetsBaseUrl: 'https://map-assets.hydcraft.cn/oxygen/world',
+	mapAssetsBaseUrl: 'https://map.oxygen.hydcraft.cn/maps/world',
+	mapAssetsFallbackBaseUrls: ['https://map-assets.hydcraft.cn/oxygen/world'],
 	camera: {
 		x: 1026.39,
 		y: 63,

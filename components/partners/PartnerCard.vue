@@ -1,10 +1,10 @@
 <template>
 	<div
-		class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
+		class="group relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
 	>
 		<button
 			type="button"
-			class="relative block w-full overflow-hidden text-left"
+			class="relative block w-full min-w-0 overflow-hidden text-left"
 			@click="onActivate"
 		>
 			<div class="relative h-46 overflow-hidden">
@@ -71,10 +71,10 @@
 								}"
 							/>
 						</div>
-						<div class="min-w-0 max-w-54">
+						<div class="min-w-0 max-w-54 overflow-hidden">
 							<div class="relative pr-6">
 								<h3
-									class="truncate text-2xl text-center font-medium tracking-wide text-white"
+									class="block w-full truncate text-center text-2xl font-medium tracking-wide text-white"
 								>
 									{{ partner.name }}
 								</h3>
