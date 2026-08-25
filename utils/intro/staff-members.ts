@@ -148,7 +148,7 @@ const introStaffProfileDefinitions: IntroStaffMemberIdentity[] = [
 		{
 			id: 'QiShui233',
 			nickname: '汽水',
-			portalUsername: 'PanL',
+			portalUsername: 'QiShui233',
 		},
 		introStaffBios.QiShui233,
 	),
