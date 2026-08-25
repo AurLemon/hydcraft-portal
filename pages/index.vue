@@ -475,8 +475,10 @@ const handleSceneMapSettled = (): void => {
 
 const handleHeroSceneSwipe = (direction: -1 | 1): void => {
 	if (!heroActive.value || sceneSwitching.value) return
-	const nextIndex = selectedSceneIndex.value + direction
-	if (nextIndex < 0 || nextIndex >= homeImmersiveScenes.length) return
+	if (!homeImmersiveScenes.length) return
+	const nextIndex =
+		(selectedSceneIndex.value + direction + homeImmersiveScenes.length) %
+		homeImmersiveScenes.length
 	selectedSceneIndex.value = nextIndex
 }
 
