@@ -168,10 +168,13 @@ const syncExternalAccountAvatar = async (input: {
 	proxyEnabled: boolean
 	ownerType?: 'external-account' | 'registration-ticket'
 	expiresAt?: Date
+	createInitialUserAvatar?: boolean
 }): Promise<{
 	synced: boolean
 	avatarAttachmentId: string | null
 	avatarUrl: string | null
+	initialAvatarAttachmentId: string | null
+	initialAvatarUrl: string | null
 }> => {
 	try {
 		const asset = await fetchOAuthAvatarAsset({
@@ -180,6 +183,17 @@ const syncExternalAccountAvatar = async (input: {
 			avatarUrl: input.profileAvatarUrl,
 			proxyEnabled: input.proxyEnabled,
 		})
+
+		if (!asset) {
+			return {
+				synced: false,
+				avatarAttachmentId: null,
+				avatarUrl: null,
+				initialAvatarAttachmentId: null,
+				initialAvatarUrl: null,
+			}
+		}
+
 		const result = await syncOAuthAvatarAttachment({
 			user: input.user,
 			account: input.account,
@@ -187,10 +201,30 @@ const syncExternalAccountAvatar = async (input: {
 			expiresAt: input.expiresAt,
 			asset,
 		})
+		let initialAvatar = {
+			avatarAttachmentId: null as string | null,
+			avatarUrl: null as string | null,
+		}
+
+		if (input.createInitialUserAvatar) {
+			try {
+				initialAvatar = await syncOAuthAvatarAttachment({
+					account: input.account,
+					ownerType: input.ownerType,
+					expiresAt: input.expiresAt,
+					asset,
+					purpose: 'user-avatar',
+				})
+			} catch (error) {
+				console.error('OAUTH_INITIAL_AVATAR_SYNC_FAILED', error)
+			}
+		}
 
 		return {
 			synced: true,
 			...result,
+			initialAvatarAttachmentId: initialAvatar.avatarAttachmentId,
+			initialAvatarUrl: initialAvatar.avatarUrl,
 		}
 	} catch (error) {
 		console.error('OAUTH_AVATAR_SYNC_FAILED', error)
@@ -199,6 +233,8 @@ const syncExternalAccountAvatar = async (input: {
 			synced: false,
 			avatarAttachmentId: null,
 			avatarUrl: null,
+			initialAvatarAttachmentId: null,
+			initialAvatarUrl: null,
 		}
 	}
 }
@@ -363,6 +399,8 @@ export default defineEventHandler(async (event) => {
 				userId: user.id,
 				externalAccountId: existing.id,
 				activeAttachmentId: syncedAvatar.avatarAttachmentId,
+				previousAvatarUrl: existing.avatarUrl,
+				activeAvatarUrl: syncedAvatar.avatarUrl,
 			})
 		}
 		await prisma.oAuthStateToken.update({
@@ -411,6 +449,7 @@ export default defineEventHandler(async (event) => {
 			proxyEnabled: config.proxyEnabled,
 			ownerType: 'registration-ticket',
 			expiresAt: ticket.expiresAt,
+			createInitialUserAvatar: true,
 		})
 
 		if (syncedAvatar.synced) {
@@ -425,6 +464,8 @@ export default defineEventHandler(async (event) => {
 						providerEmail: normalizeOAuthEmail(profile.email),
 						avatarAttachmentId: syncedAvatar.avatarAttachmentId,
 						avatarUrl: syncedAvatar.avatarUrl,
+						initialAvatarAttachmentId: syncedAvatar.initialAvatarAttachmentId,
+						initialAvatarUrl: syncedAvatar.initialAvatarUrl,
 						accessToken,
 						scope: token.scope ?? config.scopes.join(' '),
 						rawProfile: profile.raw,
@@ -477,7 +518,6 @@ export default defineEventHandler(async (event) => {
 		update: {
 			providerUsername: profile.username,
 			providerEmail: profile.email,
-			avatarUrl: profile.avatarUrl,
 			scope: token.scope ?? config.scopes.join(' '),
 			rawProfile: profile.raw,
 			lastUsedAt: new Date(),
@@ -535,6 +575,8 @@ export default defineEventHandler(async (event) => {
 			userId: stateToken.userId!,
 			externalAccountId: account.id,
 			activeAttachmentId: syncedAvatar.avatarAttachmentId,
+			previousAvatarUrl: existing?.avatarUrl ?? null,
+			activeAvatarUrl: syncedAvatar.avatarUrl,
 		})
 	}
 

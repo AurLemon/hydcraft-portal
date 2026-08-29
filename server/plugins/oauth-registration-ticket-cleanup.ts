@@ -23,11 +23,16 @@ export default defineNitroPlugin(() => {
 			})
 
 			for (const ticket of expiredTickets) {
-				await getAttachmentService().expireAttachments({
-					ownerType: 'registration-ticket',
-					ownerId: ticket.id,
-					purpose: 'external-account-avatar',
-				})
+				for (const purpose of [
+					'external-account-avatar',
+					'user-avatar',
+				] as const) {
+					await getAttachmentService().expireAttachments({
+						ownerType: 'registration-ticket',
+						ownerId: ticket.id,
+						purpose,
+					})
+				}
 			}
 
 			if (expiredTickets.length > 0) {

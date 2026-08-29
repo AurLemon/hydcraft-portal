@@ -66,6 +66,7 @@ const themeModes = computed<ThemeModeItem[]>(() => [
 
 const selectedLocale = computed(() => locale.value as LocaleCode)
 const userMenuOpen = ref(false)
+const failedUserAvatarUrl = ref<string | null>(null)
 const popoverContentClass = 'z-[40000]'
 const MANUAL_LOCALE_SWITCH_STORAGE_KEY = 'hydcraft:manual-locale-switch-at'
 const loginRoute = computed(() => ({
@@ -98,6 +99,11 @@ const userAvatarLabel = computed(() =>
 		.slice(0, 1)
 		.toUpperCase(),
 )
+const displayedUserAvatarUrl = computed(() => {
+	const avatarUrl = user.value?.avatarUrl ?? null
+
+	return avatarUrl && avatarUrl !== failedUserAvatarUrl.value ? avatarUrl : null
+})
 const routeMiddleware = computed(() => route.meta.middleware)
 const shouldRedirectAfterLogout = computed(() => {
 	const middleware = routeMiddleware.value
@@ -154,6 +160,10 @@ const handleLogout = async (): Promise<void> => {
 	notifySuccess({
 		title: t('header.userMenu.logoutSuccessTitle'),
 	})
+}
+
+const markUserAvatarFailed = (): void => {
+	failedUserAvatarUrl.value = user.value?.avatarUrl ?? null
 }
 
 onMounted(() => {
@@ -366,11 +376,12 @@ onMounted(() => {
 										leave-to-class="scale-95 opacity-0"
 									>
 										<img
-											v-if="user.avatarUrl"
-											:key="user.avatarUrl"
-											:src="user.avatarUrl"
+											v-if="displayedUserAvatarUrl"
+											:key="displayedUserAvatarUrl"
+											:src="displayedUserAvatarUrl"
 											:alt="user.displayName ?? user.handle"
 											class="h-full w-full object-cover"
+											@error="markUserAvatarFailed"
 										/>
 										<span v-else :key="userAvatarLabel" class="leading-none">
 											{{ userAvatarLabel }}

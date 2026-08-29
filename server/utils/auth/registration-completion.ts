@@ -19,6 +19,8 @@ interface OAuthRegistrationPayload {
 	providerEmail: string | null
 	avatarAttachmentId: string | null
 	avatarUrl: string | null
+	initialAvatarAttachmentId: string | null
+	initialAvatarUrl: string | null
 	accessToken: string | null
 	scope: string | null
 	rawProfile: Prisma.JsonValue | null
@@ -54,6 +56,14 @@ const normalizeOAuthRegistrationPayload = (
 				? value.avatarAttachmentId
 				: null,
 		avatarUrl: typeof value.avatarUrl === 'string' ? value.avatarUrl : null,
+		initialAvatarAttachmentId:
+			typeof value.initialAvatarAttachmentId === 'string'
+				? value.initialAvatarAttachmentId
+				: null,
+		initialAvatarUrl:
+			typeof value.initialAvatarUrl === 'string'
+				? value.initialAvatarUrl
+				: null,
 		accessToken:
 			typeof value.accessToken === 'string' ? value.accessToken : null,
 		scope: typeof value.scope === 'string' ? value.scope : null,
@@ -100,6 +110,7 @@ export const createUserShell = async (
 		email: string
 		displayName: string | null
 		avatarUrl?: string | null
+		avatarAttachmentId?: string | null
 		credential?: {
 			passwordHash: string
 		}
@@ -172,6 +183,7 @@ export const createUserShell = async (
 			email: input.email,
 			emailVerifiedAt: now,
 			avatarUrl: input.avatarUrl ?? null,
+			avatarAttachmentId: input.avatarAttachmentId ?? null,
 			role: 'USER',
 			status: 'ACTIVE',
 			emails: {
@@ -275,13 +287,21 @@ export const completeRegistrationFromTicket = async (
 					code: 'REGISTRATION_TICKET_INVALID',
 				})
 			}
+			const initialAvatar =
+				payload.initialAvatarAttachmentId && payload.initialAvatarUrl
+					? {
+							attachmentId: payload.initialAvatarAttachmentId,
+							url: payload.initialAvatarUrl,
+						}
+					: null
 
 			const createdUser = await createUserShell(tx, {
 				handle,
 				username,
 				email: verifiedEmail,
 				displayName: payload.providerUsername ?? username,
-				avatarUrl: payload.avatarUrl,
+				avatarUrl: initialAvatar?.url ?? payload.avatarUrl,
+				avatarAttachmentId: initialAvatar?.attachmentId,
 			})
 			const externalAccount = await tx.externalAccount.create({
 				data: {
@@ -307,6 +327,19 @@ export const completeRegistrationFromTicket = async (
 					data: {
 						ownerType: 'external-account',
 						ownerId: externalAccount.id,
+						expiresAt: null,
+					},
+				})
+			}
+			if (initialAvatar) {
+				await tx.attachment.update({
+					where: {
+						id: initialAvatar.attachmentId,
+					},
+					data: {
+						ownerType: 'user',
+						ownerId: createdUser.id,
+						createdById: createdUser.id,
 						expiresAt: null,
 					},
 				})

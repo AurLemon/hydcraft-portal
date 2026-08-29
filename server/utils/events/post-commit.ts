@@ -20,6 +20,8 @@ export interface PostCommitEventMap {
 		userId: string
 		externalAccountId: string
 		activeAttachmentId: string | null
+		previousAvatarUrl: string | null
+		activeAvatarUrl: string | null
 	}
 	'user.oauth.unlinked': {
 		userId: string

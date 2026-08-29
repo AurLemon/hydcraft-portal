@@ -107,6 +107,7 @@ export const syncOAuthAvatarAttachment = async (input: {
 	ownerType?: AttachmentOwnerType
 	expiresAt?: Date
 	asset: OAuthAvatarAsset | null
+	purpose?: 'external-account-avatar' | 'user-avatar'
 }): Promise<{
 	avatarAttachmentId: string | null
 	avatarUrl: string | null
@@ -120,8 +121,7 @@ export const syncOAuthAvatarAttachment = async (input: {
 
 	const summary = input.user
 		? await getAttachmentService().uploadAttachment(input.user, {
-				purpose: 'external-account-avatar',
-				category: 'oauth',
+				purpose: input.purpose ?? 'external-account-avatar',
 				ownerType: input.ownerType ?? 'external-account',
 				ownerId: input.account.id,
 				expiresAt: input.expiresAt,
@@ -129,8 +129,7 @@ export const syncOAuthAvatarAttachment = async (input: {
 				buffer: input.asset.buffer,
 			})
 		: await getAttachmentService().uploadSystemAttachment({
-				purpose: 'external-account-avatar',
-				category: 'oauth',
+				purpose: input.purpose ?? 'external-account-avatar',
 				ownerType: input.ownerType ?? 'external-account',
 				ownerId: input.account.id,
 				expiresAt: input.expiresAt,

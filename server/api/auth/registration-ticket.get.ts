@@ -87,7 +87,11 @@ export default defineEventHandler(async (event) => {
 						? payload.providerEmail
 						: null,
 				avatarUrl:
-					typeof payload.avatarUrl === 'string' ? payload.avatarUrl : null,
+					typeof payload.initialAvatarUrl === 'string'
+						? payload.initialAvatarUrl
+						: typeof payload.avatarUrl === 'string'
+							? payload.avatarUrl
+							: null,
 			},
 		},
 	}

@@ -4,6 +4,23 @@ import { onPostCommitEvent } from '../utils/events/post-commit'
 
 export default defineNitroPlugin(() => {
 	onPostCommitEvent('user.oauth.attachment-replaced', async ({ payload }) => {
+		if (
+			payload.previousAvatarUrl &&
+			payload.activeAvatarUrl !== undefined &&
+			payload.previousAvatarUrl !== payload.activeAvatarUrl
+		) {
+			await prisma.user.updateMany({
+				where: {
+					id: payload.userId,
+					avatarAttachmentId: null,
+					avatarUrl: payload.previousAvatarUrl,
+				},
+				data: {
+					avatarUrl: payload.activeAvatarUrl,
+				},
+			})
+		}
+
 		await getAttachmentService().deleteExternalAccountAvatarAttachmentsExcept({
 			externalAccountId: payload.externalAccountId,
 			activeAttachmentId: payload.activeAttachmentId,
