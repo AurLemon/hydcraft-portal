@@ -28,7 +28,7 @@
 			>
 				<template v-if="mobileSceneNamePrefix">
 					<span
-						class="relative left-1.5 block bg-none text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.15] tracking-[0.08em] text-white"
+						class="home-hero-display-prefix relative left-1.5 block bg-none text-[clamp(1.5rem,4.5vw,2.75rem)] leading-[1.15] tracking-[0.08em] text-white"
 					>
 						{{ mobileSceneNamePrefix }}
 					</span>
@@ -38,7 +38,7 @@
 			</p>
 			<div
 				data-home-exit="content"
-				class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_22%,rgba(255,255,255,0.8)_100%)] bg-clip-text font-serif text-transparent lg:flex"
+				class="lg:-translate-x-2 pointer-events-none mt-auto hidden self-start font-serif lg:flex"
 				:class="[
 					props.locale.startsWith('en') ? 'font-semibold' : 'font-extrabold',
 					desktopDisplayName?.layout === 'vertical'
@@ -507,6 +507,23 @@ const handleSceneGalleryLightboxOpenChange = (open: boolean): void => {
 </script>
 
 <style scoped>
+.home-hero-display-prefix {
+	-webkit-text-fill-color: currentColor;
+}
+
+.home-hero-display-name {
+	background-image: linear-gradient(
+		to right,
+		rgb(255 255 255) 0%,
+		rgb(255 255 255) 22%,
+		rgb(255 255 255 / 0.8) 100%
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	-webkit-text-fill-color: transparent;
+}
+
 .home-scene-gallery-frame {
 	animation: home-scene-gallery-frame-in 620ms cubic-bezier(0.22, 1, 0.36, 1)
 		both;
