@@ -39,9 +39,9 @@ environment; they are not per-server Portal records.
 corepack enable
 pnpm install
 cp .env.example .env
-pnpm prisma:generate
-pnpm prisma:migrate
-pnpm prisma:seed
+pnpm db:generate
+pnpm db:migrate:dev
+pnpm db:seed
 pnpm dev
 ```
 
@@ -54,14 +54,14 @@ Useful commands:
 pnpm lint
 pnpm format
 pnpm build
-pnpm prisma:studio
+pnpm db:studio
 pnpm sync:external
 pnpm archive:import --server <serverId> --artifact <path>
 ```
 
 ## Database And Initialization
 
-Development seed data is explicit: `pnpm prisma:seed` creates the default
+Development seed data is explicit: `pnpm db:seed` creates the default
 owner and `hydcraft-main` server. Set `DEFAULT_OWNER_PASSWORD` only when the
 seed should create or refresh that account credential.
 
@@ -69,7 +69,7 @@ Production initialization is also explicit and never runs from a normal
 request path:
 
 ```bash
-pnpm prisma:deploy
+pnpm db:migrate:deploy
 pnpm data:production-init
 ```
 
